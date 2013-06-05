@@ -114,7 +114,7 @@ public class ViewScopedContext implements Context, SystemEventListener {
      *
      * @see javax.faces.event.SystemEventListener#processEvent(javax.faces.event.SystemEvent)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void processEvent(final SystemEvent event) {
         if (event instanceof PreDestroyViewMapEvent) {
             Map<Contextual<?>, Object> componentInstanceMap = getComponentInstanceMap();
@@ -124,7 +124,7 @@ public class ViewScopedContext implements Context, SystemEventListener {
                 for (Entry<Contextual<?>, Object> componentEntry : componentInstanceMap.entrySet()) {
                     /*
                      * No way to inform the compiler of type <T> information, so it has to be abandoned here :(
-                     */
+                     */                    
                     Contextual contextual = componentEntry.getKey();
                     Object instance = componentEntry.getValue();
                     CreationalContext creational = creationalContextMap.get(contextual);

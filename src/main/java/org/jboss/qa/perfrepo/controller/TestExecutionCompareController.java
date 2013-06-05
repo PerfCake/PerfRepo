@@ -2,24 +2,17 @@ package org.jboss.qa.perfrepo.controller;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Conversation;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.TestExecution;
-import org.jboss.qa.perfrepo.model.TestExecutionTag;
-import org.jboss.qa.perfrepo.model.Value;
-import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.service.TestExecutionService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
 import org.richfaces.component.SortOrder;

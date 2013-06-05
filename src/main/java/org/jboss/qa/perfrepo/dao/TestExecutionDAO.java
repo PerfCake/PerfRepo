@@ -9,9 +9,7 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Named;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import org.jboss.qa.perfrepo.model.Tag;
@@ -19,7 +17,6 @@ import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
-import org.jboss.qa.perfrepo.model.Value;
 
 @Named
 @Stateless
@@ -50,7 +47,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       if (search.getTags() != null && !"".equals(search.getTags())) {
          Join<TestExecution, TestExecutionTag> tegRoot = root.join("testExecutionTags");
          Join<TestExecutionTag, Tag> tagRoot = tegRoot.join("tag");
-         String[] tags = search.getTags().split(";");
+         Object[] tags = search.getTags().split(";");
          criteria.where((tagRoot.get("name").in(tags)));         
          criteria.having(cb.greaterThanOrEqualTo(cb.count(tagRoot), Long.valueOf(tags.length)));
       }

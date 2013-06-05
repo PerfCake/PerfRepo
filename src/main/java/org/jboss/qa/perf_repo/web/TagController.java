@@ -50,8 +50,7 @@ public class TagController implements Serializable {
    public List<Tag> getBeanList() {
       if (beanList == null) {
          Map<String, Object> queryParams = new HashMap<String, Object>();
-         StringBuffer querySB = new StringBuffer();
-         boolean whereAppended = false;
+         StringBuffer querySB = new StringBuffer();         
          querySB.append("SELECT x FROM Tag x");
          
          beanList = dao.findByQuery(querySB.toString(), queryParams);
