@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+<h:body>
+	<ui:composition template="/layout/commonLayout.xhtml">
+		<ui:define name="title">TestExecution List -</ui:define>
+		<ui:define name="content">
+			<h1>Compare Test Executions</h1>
+			<h:form>
+			
+			<h2>Test executions</h2>
+			<rich:extendedDataTable id="teTable" value="#{simpleReportController.testExecutions}" var="te">				    
+					<rich:column sortable="true" sortOrder="#{simpleReportController.sortsOrders['id']}" sortBy="#{te.id}" width="100px">
+						<f:facet name="header">
+							<a4j:commandLink value="Id" render="teTable" action="#{simpleReportController.sort()}">
+								<f:param name="sortProperty" value="id" />
+								<f:ajax render="teTable" />
+							</a4j:commandLink>
+						</f:facet>
+						<h:outputText value="#{te.id}" />
+					</rich:column>
+					
+					<rich:column sortable="true" sortOrder="#{simpleReportController.sortsOrders['name']}" sortBy="#{te.name}" width="200px">
+						<f:facet name="header">
+							<a4j:commandLink value="Name" render="teTable" action="#{simpleReportController.sort()}">
+								<f:param name="sortProperty" value="name" />
+								<f:ajax render="teTable" />
+							</a4j:commandLink>
+						</f:facet>
+						<h:outputText value="#{te.name}" />
+					</rich:column>
+					
+					<rich:column sortable="true" sortOrder="#{simpleReportController.sortsOrders['testName']}" sortBy="#{te.test.name}" width="200px">
+						<f:facet name="header">
+							<a4j:commandLink value="Test Name" render="teTable" action="#{simpleReportController.sort()}">
+								<f:param name="sortProperty" value="testName" />
+								<f:ajax render="teTable" />
+							</a4j:commandLink>
+						</f:facet>
+						<h:outputText value="#{te.test.name}" />
+					</rich:column>
+					
+					<rich:column sortable="true" sortOrder="#{simpleReportController.sortsOrders['started']}" sortBy="#{te.started}" width="200px">
+						<f:facet name="header">
+							<a4j:commandLink value="Test Execution Date" render="teTable" action="#{simpleReportController.sort()}">
+								<f:param name="sortProperty" value="started" />
+								<f:ajax render="teTable" />
+							</a4j:commandLink>
+						</f:facet>
+						<h:outputText value="#{te.started}" />
+					</rich:column>
+					<rich:column width="600px">
+						<f:facet name="header">
+							Tags
+						</f:facet>
+						<h:outputText value="#{simpleReportController.getTags(te)}" />
+					</rich:column>
+				</rich:extendedDataTable>
+				    
+				    
+				<h2>Test execution parameters</h2>
+				<rich:extendedDataTable id="paramTable" value="#{simpleReportController.teParamRows}" var="row">
+				    <c:forEach items="#{simpleReportController.teParamColumns}" var="column">
+				        <rich:column id="#{column}" sortable="true" sortOrder="#{simpleReportController.sortsOrders[column]}" sortBy="#{row[column]}">
+				            <f:facet name="header">
+					            <a4j:commandLink value="#{column}" render="paramTable" action="#{simpleReportController.sort()}">
+					                <f:param name="sortProperty" value="#{column}"/>
+					                <f:ajax  render="paramTable"  />
+					            </a4j:commandLink>            
+				            </f:facet>
+				            <h:outputText value="#{row[column]}"/>            
+				        </rich:column> 
+				    </c:forEach>
+				</rich:extendedDataTable>					    
+				    
+			
+				<h2>Test execution values</h2>
+				<rich:extendedDataTable id="table" value="#{simpleReportController.valueRows}" var="row">
+				    <c:forEach items="#{simpleReportController.valueColumns}" var="column">
+				        <rich:column id="#{column}" sortable="true" sortOrder="#{simpleReportController.sortsOrders[column]}" sortBy="#{row[column]}">
+				            <f:facet name="header">
+					            <a4j:commandLink value="#{column}" render="table" action="#{simpleReportController.sort()}">
+					                <f:param name="sortProperty" value="#{column}"/>
+					                <f:ajax  render="table"  />
+					            </a4j:commandLink>            
+				            </f:facet>
+				            <h:outputText value="#{row[column]}"/>            
+				        </rich:column> 
+				    </c:forEach>
+				</rich:extendedDataTable>	  
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

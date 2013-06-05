@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PROCESS model-entity="JSFProcess">
+ <PROCESS-ITEM NAME="rules:" SHAPE="32,17,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::0" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT ID="Home::#index.xhtml" NAME="output"
+    PATH="/index.xhtml" TARGET="rules:#index.xhtml" TITLE="Home" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="TestExecutionTagDetail::#testExecutionTag#detail.xhtml"
+    NAME="output1" PATH="/testExecutionTag/detail.xhtml"
+    TARGET="rules:#testExecutionTag#detail.xhtml"
+    TITLE="TestExecutionTagDetail" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="TestExecutionTagEdit::#testExecutionTag#edit.xhtml"
+    NAME="output2" PATH="/testExecutionTag/edit.xhtml"
+    TARGET="rules:#testExecutionTag#edit.xhtml"
+    TITLE="TestExecutionTagEdit" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="TestExecutionTagList::#testExecutionTag#list.xhtml"
+    NAME="output3" PATH="/testExecutionTag/list.xhtml"
+    TARGET="rules:#testExecutionTag#list.xhtml"
+    TITLE="TestExecutionTagList" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="TestExecutionTagNew::#testExecutionTag#new.xhtml" NAME="output4"
+    PATH="/testExecutionTag/new.xhtml"
+    TARGET="rules:#testExecutionTag#new.xhtml"
+    TITLE="TestExecutionTagNew" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TestMetricDetail::#testMetric#detail.xhtml"
+    NAME="output5" PATH="/testMetric/detail.xhtml"
+    TARGET="rules:#testMetric#detail.xhtml" TITLE="TestMetricDetail" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TestMetricEdit::#testMetric#edit.xhtml"
+    NAME="output6" PATH="/testMetric/edit.xhtml"
+    TARGET="rules:#testMetric#edit.xhtml" TITLE="TestMetricEdit" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TestMetricList::#testMetric#list.xhtml"
+    NAME="output7" PATH="/testMetric/list.xhtml"
+    TARGET="rules:#testMetric#list.xhtml" TITLE="TestMetricList" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TestMetricNew::#testMetric#new.xhtml"
+    NAME="output8" PATH="/testMetric/new.xhtml"
+    TARGET="rules:#testMetric#new.xhtml" TITLE="TestMetricNew" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TagDetail::#tag#detail.xhtml" NAME="output9"
+    PATH="/tag/detail.xhtml" TARGET="rules:#tag#detail.xhtml"
+    TITLE="TagDetail" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TagEdit::#tag#edit.xhtml" NAME="output10"
+    PATH="/tag/edit.xhtml" TARGET="rules:#tag#edit.xhtml"
+    TITLE="TagEdit" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TagList::#tag#list.xhtml" NAME="output11"
+    PATH="/tag/list.xhtml" TARGET="rules:#tag#list.xhtml"
+    TITLE="TagList" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TagNew::#tag#new.xhtml" NAME="output12"
+    PATH="/tag/new.xhtml" TARGET="rules:#tag#new.xhtml" TITLE="TagNew" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="ValueDetail::#value#detail.xhtml"
+    NAME="output13" PATH="/value/detail.xhtml"
+    TARGET="rules:#value#detail.xhtml" TITLE="ValueDetail" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="ValueEdit::#value#edit.xhtml"
+    NAME="output14" PATH="/value/edit.xhtml"
+    TARGET="rules:#value#edit.xhtml" TITLE="ValueEdit" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="ValueList::#value#list.xhtml"
+    NAME="output15" PATH="/value/list.xhtml"
+    TARGET="rules:#value#list.xhtml" TITLE="ValueList" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="ValueNew::#value#new.xhtml" NAME="output16"
+    PATH="/value/new.xhtml" TARGET="rules:#value#new.xhtml"
+    TITLE="ValueNew" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="ValueParameterDetail::#valueParameter#detail.xhtml"
+    NAME="output17" PATH="/valueParameter/detail.xhtml"
+    TARGET="rules:#valueParameter#detail.xhtml"
+    TITLE="ValueParameterDetail" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="ValueParameterEdit::#valueParameter#edit.xhtml" NAME="output18"
+    PATH="/valueParameter/edit.xhtml"
+    TARGET="rules:#valueParameter#edit.xhtml" TITLE="ValueParameterEdit" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="ValueParameterList::#valueParameter#list.xhtml" NAME="output19"
+    PATH="/valueParameter/list.xhtml"
+    TARGET="rules:#valueParameter#list.xhtml" TITLE="ValueParameterList" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="ValueParameterNew::#valueParameter#new.xhtml" NAME="output20"
+    PATH="/valueParameter/new.xhtml"
+    TARGET="rules:#valueParameter#new.xhtml" TITLE="ValueParameterNew" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="MetricDetail::#metric#detail.xhtml"
+    NAME="output21" PATH="/metric/detail.xhtml"
+    TARGET="rules:#metric#detail.xhtml" TITLE="MetricDetail" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="MetricEdit::#metric#edit.xhtml"
+    NAME="output22" PATH="/metric/edit.xhtml"
+    TARGET="rules:#metric#edit.xhtml" TITLE="MetricEdit" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="MetricList::#metric#list.xhtml"
+    NAME="output23" PATH="/metric/list.xhtml"
+    TARGET="rules:#metric#list.xhtml" TITLE="MetricList" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="MetricNew::#metric#new.xhtml"
+    NAME="output24" PATH="/metric/new.xhtml"
+    TARGET="rules:#metric#new.xhtml" TITLE="MetricNew" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="TestExecutionDetail::#testExecution#detail.xhtml"
+    NAME="output25" PATH="/testExecution/detail.xhtml"
+    TARGET="rules:#testExecution#detail.xhtml"
+    TITLE="TestExecutionDetail" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="TestExecutionEdit::#testExecution#edit.xhtml" NAME="output26"
+    PATH="/testExecution/edit.xhtml"
+    TARGET="rules:#testExecution#edit.xhtml" TITLE="TestExecutionEdit" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="TestExecutionList::#testExecution#list.xhtml" NAME="output27"
+    PATH="/testExecution/list.xhtml"
+    TARGET="rules:#testExecution#list.xhtml" TITLE="TestExecutionList" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TestExecutionNew::#testExecution#new.xhtml"
+    NAME="output28" PATH="/testExecution/new.xhtml"
+    TARGET="rules:#testExecution#new.xhtml" TITLE="TestExecutionNew" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TestDetail::#test#detail.xhtml"
+    NAME="output29" PATH="/test/detail.xhtml"
+    TARGET="rules:#test#detail.xhtml" TITLE="TestDetail" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TestEdit::#test#edit.xhtml" NAME="output30"
+    PATH="/test/edit.xhtml" TARGET="rules:#test#edit.xhtml"
+    TITLE="TestEdit" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TestList::#test#list.xhtml" NAME="output31"
+    PATH="/test/list.xhtml" TARGET="rules:#test#list.xhtml"
+    TITLE="TestList" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="TestNew::#test#new.xhtml" NAME="output32"
+    PATH="/test/new.xhtml" TARGET="rules:#test#new.xhtml"
+    TITLE="TestNew" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="TestExecutionParameterDetail::#testExecutionParameter#detail.xhtml"
+    NAME="output33" PATH="/testExecutionParameter/detail.xhtml"
+    TARGET="rules:#testExecutionParameter#detail.xhtml"
+    TITLE="TestExecutionParameterDetail" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="TestExecutionParameterList::#testExecutionParameter#list.xhtml"
+    NAME="output34" PATH="/testExecutionParameter/list.xhtml"
+    TARGET="rules:#testExecutionParameter#list.xhtml"
+    TITLE="TestExecutionParameterList" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="TestExecutionParameterNew::#testExecutionParameter#new.xhtml"
+    NAME="output35" PATH="/testExecutionParameter/new.xhtml"
+    TARGET="rules:#testExecutionParameter#new.xhtml"
+    TITLE="TestExecutionParameterNew" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="Search::#search#search.xhtml"
+    NAME="output36" PATH="/search/search.xhtml"
+    TARGET="rules:#search#search.xhtml" TITLE="Search" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="TestExecutionCompare::#testExecution#teCompare.xhtml"
+    NAME="output37" PATH="/testExecution/teCompare.xhtml"
+    TARGET="rules:#testExecution#teCompare.xhtml"
+    TITLE="TestExecutionCompare" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="SimpleReport::#reports#simpleReport.xhtml"
+    NAME="output38" PATH="/reports/simpleReport.xhtml"
+    TARGET="rules:#reports#simpleReport.xhtml" TITLE="SimpleReport" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules:#testExecution#detail.xhtml"
+  PATH="/testExecution/detail.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#test#new.xhtml" PATH="/test/new.xhtml"
+  SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testExecution#edit.xhtml"
+  PATH="/testExecution/edit.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#test#detail.xhtml" PATH="/test/detail.xhtml"
+  SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#test#list.xhtml" PATH="/test/list.xhtml"
+  SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testExecution#list.xhtml"
+  PATH="/testExecution/list.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#test#edit.xhtml" PATH="/test/edit.xhtml"
+  SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testExecution#new.xhtml"
+  PATH="/testExecution/new.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#index.xhtml" PATH="/index.xhtml"
+  SHAPE="304,881,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testExecutionTag#edit.xhtml"
+  PATH="/testExecutionTag/edit.xhtml" SHAPE="304,1377,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#valueParameter#new.xhtml"
+  PATH="/valueParameter/new.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#valueParameter#detail.xhtml"
+  PATH="/valueParameter/detail.xhtml" SHAPE="304,3169,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testExecutionParameter#edit.xhtml"
+  PATH="/testExecutionParameter/edit.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testExecutionTag#new.xhtml"
+  PATH="/testExecutionTag/new.xhtml" SHAPE="304,1601,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#tag#new.xhtml" PATH="/tag/new.xhtml"
+  SHAPE="304,2609,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#value#detail.xhtml"
+  PATH="/value/detail.xhtml" SHAPE="304,2721,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#metric#detail.xhtml"
+  PATH="/metric/detail.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#tag#edit.xhtml" PATH="/tag/edit.xhtml"
+  SHAPE="304,2385,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testMetric#detail.xhtml"
+  PATH="/testMetric/detail.xhtml" SHAPE="304,1713,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#value#new.xhtml" PATH="/value/new.xhtml"
+  SHAPE="304,3057,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testMetric#new.xhtml"
+  PATH="/testMetric/new.xhtml" SHAPE="304,2161,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testExecutionTag#list.xhtml"
+  PATH="/testExecutionTag/list.xhtml" SHAPE="304,1489,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#metric#edit.xhtml" PATH="/metric/edit.xhtml"
+  SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#tag#list.xhtml" PATH="/tag/list.xhtml"
+  SHAPE="304,2497,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#metric#list.xhtml" PATH="/metric/list.xhtml"
+  SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testExecutionParameter#detail.xhtml"
+  PATH="/testExecutionParameter/detail.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#valueParameter#list.xhtml"
+  PATH="/valueParameter/list.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#metric#new.xhtml" PATH="/metric/new.xhtml"
+  SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testMetric#list.xhtml"
+  PATH="/testMetric/list.xhtml" SHAPE="304,2049,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#valueParameter#edit.xhtml"
+  PATH="/valueParameter/edit.xhtml" SHAPE="304,3281,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#value#list.xhtml" PATH="/value/list.xhtml"
+  SHAPE="304,2945,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testExecutionParameter#list.xhtml"
+  PATH="/testExecutionParameter/list.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testMetric#edit.xhtml"
+  PATH="/testMetric/edit.xhtml" SHAPE="304,1825,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#value#edit.xhtml" PATH="/value/edit.xhtml"
+  SHAPE="304,2833,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#tag#detail.xhtml" PATH="/tag/detail.xhtml"
+  SHAPE="304,2273,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testExecutionParameter#new.xhtml"
+  PATH="/testExecutionParameter/new.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testExecutionTag#detail.xhtml"
+  PATH="/testExecutionTag/detail.xhtml" SHAPE="304,1265,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#search#search.xhtml"
+  PATH="/search/search.xhtml" SHAPE="304,1297,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#testExecution#teCompare.xhtml"
+  PATH="/testExecution/teCompare.xhtml" SHAPE="304,1329,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#reports#simpleReport.xhtml"
+  PATH="/reports/simpleReport.xhtml" SHAPE="304,1361,0,0" model-entity="JSFProcessGroup"/>
+</PROCESS>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html">
+<body>
+	<ui:composition>
+		<ul>
+			<li class="menu-category">#{strings.menuUserCategory}
+				<ul>
+					<li class="menu-item"><a
+						href="#{facesContext.externalContext.requestContextPath}/index.xhtml">#{strings.menuHome}</a></li>
+
+					<li class="menu-item"><a
+						href="#{facesContext.externalContext.requestContextPath}/test/list.xhtml">Test
+							list</a></li>
+					<li class="menu-item"><a
+						href="#{facesContext.externalContext.requestContextPath}/testExecution/list.xhtml">Test execution
+							list</a></li>
+					<li class="menu-item"><a
+						href="#{facesContext.externalContext.requestContextPath}/metric/list.xhtml">Metric list</a></li>
+					<li class="menu-item"><a
+						href="#{facesContext.externalContext.requestContextPath}/tag/list.xhtml">Tag
+							list</a></li>
+					<li class="menu-item"><a
+						href="#{facesContext.externalContext.requestContextPath}/value/list.xhtml">Value
+							list</a></li>
+					<li class="menu-item"><a
+						href="#{facesContext.externalContext.requestContextPath}/search/search.xhtml">Search Test Executions</a></li>
+<!-- 					<li class="menu-item"><a -->
+<!-- 						href="#{facesContext.externalContext.requestContextPath}/parameter/list.xhtml">Parameter -->
+<!-- 							list</a></li> -->
+							
+<!-- 					<li class="menu-item"><a -->
+<!-- 						href="#{facesContext.externalContext.requestContextPath}/reports/reports.xhtml">Reports</a></li> -->
+					<!-- li class="menu-item"><a
+						href="#{facesContext.externalContext.requestContextPath}/testResult/list.xhtml">TestResult
+							list</a></li-->
+				</ul>
+			</li>
+<!-- 			<h:panelGroup rendered="#{securityController.administrator}"> -->
+<!-- 				<li class="menu-category">#{strings.menuAdminCategory} -->
+<!-- 					<ul> -->
+<!-- 						<li class="menu-item"><a href="#">menu item</a></li> -->
+<!-- 						<li class="menu-item"><a href="#">menu item</a></li> -->
+<!-- 						<li class="menu-item"><a href="#">menu item</a></li> -->
+<!-- 						<li class="menu-item"><a href="#">menu item</a></li> -->
+<!-- 					</ul> -->
+<!-- 				</li> -->
+<!-- 			</h:panelGroup> -->
+		</ul>
+	</ui:composition>
+</body>
+</html>

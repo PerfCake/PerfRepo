@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+   <ui:composition template="/layout/commonLayout.xhtml">
+      <ui:define name="title">#{strings.edit} TestMetric -</ui:define>
+      <ui:define name="content">
+         <h1>TestMetric</h1>
+         <h:form>
+            <table class="table">
+               <thead>
+                  <tr>
+                     <td colspan="2" class="table-header">#{strings.properties}</td>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr class="table-row">
+                     <td><label>ID</label></td>
+                     <td><label>#{testMetricController.bean.id}</label></td>
+                  </tr>
+                  <tr class="table-row">
+<td><label>#{entityStrings.TestMetric_metric}</label></td>
+<td><h:selectOneMenu value="#{testMetricController.bean.metric.id}"><f:selectItems styleClass="input-text" value="#{metricController.beanSelectItems}" var="item" itemLabel="#{item.id}" itemValue="#{item.id}"/></h:selectOneMenu></td>
+</tr>
+<tr class="table-row">
+<td><label>#{entityStrings.TestMetric_test}</label></td>
+<td><h:selectOneMenu value="#{testMetricController.bean.test.id}"><f:selectItems styleClass="input-text" value="#{testController.beanSelectItems}" var="item" itemLabel="#{item.id}" itemValue="#{item.id}"/></h:selectOneMenu></td>
+</tr>
+
+               </tbody>
+               <tfoot>
+                  <tr>
+                     <td class="table-footer" colspan="2">
+                        <h:button styleClass="button-left-arrow" outcome="TestMetricList" value="" alt="#{strings.back}" title="#{strings.back}" />
+                        <h:commandButton styleClass="button-check" action="#{testMetricController.update}" value="" alt="#{strings.save}" title="#{strings.save}">
+                           <f:param name="testMetricId" value="#{testMetricController.bean.id}" />
+                        </h:commandButton></td>
+                  </tr>
+               </tfoot>
+            </table>
+         </h:form>
+         
+      </ui:define>
+   </ui:composition>
+</h:body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+   <ui:composition template="/layout/commonLayout.xhtml">
+      <ui:define name="title">TestMetric #{strings.details} -</ui:define>
+      <ui:define name="content">
+         <p>
+            <h:outputText value="#{testMetricController.bean.name}-#{testMetricController.bean.id}" />
+         </p>
+         <h:button styleClass="button-left-arrow" outcome="TestMetricList" value="" alt="#{strings.back}" title="#{strings.back}" />
+      </ui:define>
+   </ui:composition>
+</h:body>
+</html>

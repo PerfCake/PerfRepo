@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+	<ui:composition template="/layout/commonLayout.xhtml">
+		<ui:define name="title">Create new TestMetric -</ui:define>
+		<ui:define name="content">
+			<h1>TestMetric</h1>
+			<h2>Create new TestMetric</h2>
+			<h:form>
+				<table class="table">
+					<thead>
+						<tr>
+							<td colspan="2" class="table-header">#{strings.properties}</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="table-row">
+							<td><label>#{entityStrings.TestMetric_metric}</label></td>
+							<td><h:selectOneMenu
+									value="#{testMetricController.bean.metric.id}">
+									<f:selectItems styleClass="input-text"
+										value="#{metricController.metricList}" var="item"
+										itemLabel="#{item.name}" itemValue="#{item.id}" />
+								</h:selectOneMenu></td>
+						</tr>
+						<tr class="table-row">
+							<td><label>#{entityStrings.TestMetric_test}</label></td>
+							<td><label>#{testController.test.name}</label></td>
+						</tr>
+
+					</tbody>
+					<tfoot>
+						<tr>
+							<td class="table-footer" colspan="2"><h:button
+									styleClass="button-left-arrow" outcome="TestMetricList"
+									value="" alt="#{strings.back}" title="#{strings.back}" /> <h:commandButton
+									styleClass="button-check"
+									action="#{testMetricController.create}" value=""
+									alt="#{strings.save}" title="#{strings.save}">
+								</h:commandButton></td>
+						</tr>
+					</tfoot>
+				</table>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

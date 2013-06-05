@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+	<ui:composition template="/layout/commonLayout.xhtml">
+		<ui:define name="title">#{strings.edit} Metric -</ui:define>
+		<ui:define name="content">
+			<h1>Metric</h1>
+			<h2>#{metricController.metric.name}</h2>
+			<h:form>
+				<table class="table">
+					<thead>
+						<tr>
+							<td colspan="2" class="table-header">#{strings.properties}</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="table-row">
+							<td><label>ID</label></td>
+							<td><label>#{metricController.metric.id}</label></td>
+						</tr>
+						<tr class="table-row">
+							<td><label>#{entityStrings.Metric_comparator}</label></td>
+							<td><h:inputText styleClass="input-text"
+									value="#{metricController.metric.comparator}" /></td>
+						</tr>
+						<tr class="table-row">
+							<td><label>#{entityStrings.Metric_name}</label></td>
+							<td><h:inputText styleClass="input-text"
+									value="#{metricController.metric.name}" /></td>
+						</tr>
+						<tr class="table-row">
+							<td><label>#{entityStrings.Metric_description}</label></td>
+							<td><h:inputText styleClass="input-text"
+									value="#{metricController.metric.description}" /></td>
+						</tr>
+
+					</tbody>
+					<tfoot>
+						<tr>
+							<td class="table-footer" colspan="2"><h:button
+									styleClass="button-left-arrow" outcome="MetricList" value=""
+									alt="#{strings.back}" title="#{strings.back}" /> <h:commandButton
+									styleClass="button-check" action="#{metricController.update}"
+									value="" alt="#{strings.save}" title="#{strings.save}">
+									<f:param name="metricId" value="#{metricController.metric.id}" />
+								</h:commandButton></td>
+						</tr>
+					</tfoot>
+				</table>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

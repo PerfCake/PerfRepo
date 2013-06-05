@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+	<display-name>p-repo</display-name>
+	<welcome-file-list>
+		<welcome-file>index.xhtml</welcome-file>
+	</welcome-file-list>
+	<!-- RESTEasy -->
+	<servlet>
+		<servlet-name>Resteasy</servlet-name>
+		<servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Resteasy</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+	<context-param>
+		<param-name>javax.ws.rs.Application</param-name>
+		<param-value>org.jboss.qa.perfrepo.rest.app.PerfRepoRESTApplication</param-value>
+	</context-param>
+	<context-param>
+		<param-name>resteasy.servlet.mapping.prefix</param-name>
+		<param-value>/rest</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.PARTIAL_STATE_SAVING</param-name>
+		<param-value>true</param-value>
+	</context-param>
+<!-- 	<filter> -->
+<!-- 		<display-name>Ajax4jsf Filter</display-name> -->
+<!-- 		<filter-name>ajax4jsf</filter-name> -->
+<!-- 		<filter-class>org.ajax4jsf.Filter</filter-class> -->
+<!-- 	</filter> -->
+	<!-- <context-param> -->
+	<!-- <param-name>org.richfaces.skin</param-name> -->
+	<!-- <param-value>plain</param-value> -->
+	<!-- </context-param> -->
+	<!-- <context-param> -->
+	<!-- <param-name>org.richfaces.enableControlSkinning</param-name> -->
+	<!-- <param-value>false</param-value> -->
+	<!-- </context-param> -->
+	<listener>
+		<listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+	</listener>
+	<!-- JSF 2 -->
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.xhtml</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.jsf</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.faces</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>/faces/*</url-pattern>
+	</servlet-mapping>
+	<context-param>
+		<param-name>javax.face.PROJECT_STAGE</param-name>
+		<param-value>Development</param-value>
+	</context-param>
+	<!-- Security -->
+	<security-constraint>
+		<display-name>Performance Resutls Repository</display-name>
+		<web-resource-collection>
+			<web-resource-name>repo</web-resource-name>
+			<description />
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<description />
+			<role-name>perfrepouser</role-name>
+			<role-name>perfrepoadmin</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>Performance Results Repository</realm-name>
+	</login-config>
+	<security-role>
+		<description />
+		<role-name>perfrepouser</role-name>
+	</security-role>
+	<security-role>
+		<description />
+		<role-name>perfrepoadmin</role-name>
+	</security-role>
+</web-app>

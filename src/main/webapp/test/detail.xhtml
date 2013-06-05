@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+	<ui:composition template="/layout/commonLayout.xhtml">
+		<ui:define name="title">#{strings.edit} Test -</ui:define>
+		<ui:define name="content">
+			<h1>Test</h1>
+			<h2>#{testController.test.name}</h2>
+			<h:form>
+				<table class="table">
+					<thead>
+						<tr>
+							<td colspan="2" class="table-header">#{strings.properties}</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="table-row">
+							<td><label>ID</label></td>
+							<td><label>#{testController.test.id}</label></td>
+						</tr>
+						<tr class="table-row">
+							<td><label>#{entityStrings.Test_name}</label></td>
+							<td><label>#{testController.test.name}</label></td>
+						</tr>
+						<tr class="table-row">
+							<td><label>#{entityStrings.Test_uid}</label></td>
+							<td><label>#{testController.test.uid}</label></td>
+						</tr>
+
+						<tr class="table-row">
+							<td><label>#{entityStrings.Test_description}</label></td>
+							<td><label>#{testController.test.description}</label></td>
+						</tr>
+
+					</tbody>
+					<tfoot>
+						<tr>
+							<td class="table-footer" colspan="2"><h:button
+									styleClass="button-left-arrow" outcome="TestList" value=""
+									alt="#{strings.back}" title="#{strings.back}" /></td>
+						</tr>
+					</tfoot>
+				</table>
+			</h:form>
+
+			<h2>TestMetric</h2>
+
+			<h:form>
+				<div style="text-align: right;">
+					<h:button styleClass="button-plus" outcome="TestMetricNew" value=""
+						alt="#{strings.new_m}" title="#{strings.new_m}" />
+				</div>
+				<h:dataTable styleClass="table" rowClasses="table-row"
+					columnClasses="common-column,common-column,common-column,button-column,button-column,button-column"
+					headerClass="table-header" footerClass="table-footer"
+					value="#{testMetricController.beanList}" var="item" cellspacing="0"
+					cellpadding="0">
+					<h:column>
+						<f:facet name="header">ID            
+						</f:facet>
+						<h:outputText value="#{item.id}" />
+					</h:column>
+					<h:column>
+						<f:facet name="header">#{entityStrings.TestMetric_metric}</f:facet>
+						<h:outputText value="#{item.metric.name}" />
+					</h:column>
+					<h:column>
+						<f:facet name="header">#{entityStrings.Metric_description}</f:facet>
+						<h:outputText value="#{item.metric.description}" />
+					</h:column>
+
+					<h:column>
+						<f:facet name="header"></f:facet>
+						<h:button styleClass="button-dot" outcome="TestMetricDetail"
+							value="" alt="#{strings.details}" title="#{strings.details}">
+							<f:param name="testMetricId" value="#{item.id}" />
+						</h:button>
+					</h:column>
+					<h:column>
+						<f:facet name="header"></f:facet>
+						<h:button styleClass="button-edit" outcome="TestMetricEdit"
+							value="" alt="#{strings.edit}" title="#{strings.edit}">
+							<f:param name="testMetricId" value="#{item.id}" />
+						</h:button>
+					</h:column>
+					<h:column>
+						<f:facet name="header"></f:facet>
+						<h:commandButton styleClass="button-x"
+							action="#{testMetricController.delete}" value=""
+							alt="#{strings.delete}" title="#{strings.delete}">
+							<f:param name="testMetricId" value="#{item.id}" />
+						</h:commandButton>
+					</h:column>
+					<f:facet name="header">
+
+					</f:facet>
+				</h:dataTable>
+			</h:form>
+
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

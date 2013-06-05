@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+	<ui:composition template="/layout/commonLayout.xhtml">
+		<ui:define name="title">Error #{requestScope['javax.servlet.error.status_code']} -</ui:define>
+		<ui:define name="content">
+			Status code: #{requestScope['javax.servlet.error.status_code']} <br />
+			Exception type: #{requestScope['javax.servlet.error.exception_type']}<br />
+			Message: ${exception.message}
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

@@ -1,0 +1,414 @@
+@charset "UTF-8";
+
+/* Common */
+body {
+	font-family: sans-serif;
+	font-size: 12px;
+	background-color: #ffffff;
+}
+
+h1 {
+	border-bottom: 3px solid #c8c8bc;
+}
+
+
+#page {
+	border-width: 0px;
+	/*border-style: solid;
+	border-color: #CAD6E0;*/
+	border-spacing: 0;
+	border-collapse: collapse;
+	margin-top: 1em;
+	margin-right: auto;
+	margin-bottom: 0;
+	margin-left: auto;
+	width: 100%;
+	height: 100%;
+	overflow: scroll;
+}
+
+#logo {
+	height: 180px;
+	width: 180px; //
+	background-image: url("../resources/images/perfcake-logo-2-180.png");
+	//
+	background-repeat: no-repeat;
+	margin: 0;
+	padding: 0;
+}
+
+#header {
+	font-size: 18px;
+	font-weight: bold;
+	height: 60px;
+	width: 180px;
+	text-align: center;
+	vertical-align: middle;
+	margin: 0;
+	padding: 0;
+	background-color: none;
+}
+
+#menu {
+	width: auto;
+	vertical-align: top;
+	text-align: left;
+	border: 0;
+	padding: 3em 0.5em 0.5em 0.5em;
+	background-color: none;
+	font-size: 14px;
+	/*background-color: white;*/
+	/*background-image: url("../resources/images/menu-bg-200.png");
+	background-repeat: repeat-y;*/
+}
+
+#menu ul {
+	list-style-position: inside;
+	margin: 0;
+	padding: 0.3em;
+	width: auto;
+}
+
+#menu .menu-category {
+	list-style-type: none;
+	height: auto;
+}
+
+#menu .menu-item {
+	list-style-type: square;
+	line-height: 1.5em;
+	padding-left: 0.5em;
+}
+
+#menu a {
+	color: #233345;
+	text-decoration: none;
+}
+
+#content {
+	vertical-align: top;
+	width: auto;
+	height: auto;
+	margin: 0;
+	padding: 0.5em 0.5em 0.5em 3em;
+	border-color: red;
+	border-width: 1px;
+	/*background-color: #f3f5f7;*/
+	background-color: white;
+}
+
+#footer {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	text-align: center;
+	vertical-align: middle;
+	color: #8E969D;
+	margin: 0;
+	padding: 0;
+	background-color: #CAD6E0;
+	padding: 0;
+}
+
+input.button-edit {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-edit.png");
+	background-position: top;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+	margin: 0;
+	height: 20px;
+}
+
+input.button-edit:hover {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-edit.png");
+	background-position: bottom;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-plus {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-plus.png");
+	background-position: top;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-plus:hover {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-plus.png");
+	background-position: bottom;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-minus {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-minus.png");
+	background-position: top;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-minus:hover {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-minus.png");
+	background-position: bottom;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-dot {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-dot.png");
+	background-position: top;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-dot:hover {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-dot.png");
+	background-position: bottom;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-x {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-x.png");
+	background-position: top;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-x:hover {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-x.png");
+	background-position: bottom;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-left-arrow {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-left-arrow.png");
+	background-position: top;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-left-arrow:hover {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-left-arrow.png");
+	background-position: bottom;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-right-arrow {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-right-arrow.png");
+	background-position: top;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-right-arrow:hover {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-right-arrow.png");
+	background-position: bottom;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-check {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-check.png");
+	background-position: top;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+input.button-check:hover {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border: 0;
+	background-image: url("../resources/images/button-check.png");
+	background-position: bottom;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+.table {
+	width: 100%;
+	border-width: 0px;
+	border-style: solid;
+	border-color: #cacfd6;
+	padding: 0.2em;
+}
+
+.table .button-column {
+	margin: 0;
+	padding: 0;
+	width: 20px;
+	text-align: right;
+}
+
+.table .common-column {
+	margin: 0;
+	padding: 0;
+	width: auto;
+	text-align: left;
+}
+
+.table .table-header {
+	background-color: #c8c8bc;
+	text-align: left;
+	vertical-align: middle;
+	padding: 0.2em;
+}
+
+.table .table-footer {
+	background-color: transparent;
+	text-align: right;
+	vertical-align: middle;
+	margin: 0;
+	padding: 0;
+}
+
+.table-row-odd {
+	background-color: #f3f5f7;
+	border: 1px solid #cacfd6;
+	width: auto;
+	padding-left: 0.5em;
+}
+
+.table-row-even {
+	background-color: #eaedf3;
+	width: auto;
+	padding-left: 0.5em;
+}
+
+.table-row {
+	padding: 0.2em;
+	width: auto;
+}
+
+.table-row:hover {
+	background-color: #eaedf3;
+}
+
+.sort-arrow-asc {
+	display: inline-block;
+	height: 8px;
+	width: 10px;
+	border: 0;
+	background-image: url("../resources/images/sortAscArrow.png");
+	background-position: top;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+.sort-arrow-asc:hover {
+	background-position: bottom;
+}
+
+.sort-arrow-desc {
+	display: inline-block;
+	width: 10px;
+	height: 8px;
+	border: 0;
+	background-image: url("../resources/images/sortDescArrow.png");
+	background-position: top;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+.sort-arrow-desc:hover {
+	background-position: bottom;
+}
+
+/* rich table styles */
+.rf-edt-c {
+  height: 25px !important;
+}
+
+.input-text {
+	width: 99%;
+	background-color: white;
+	border-style: solid;
+	border-color: #cacfd6;
+	border-width: 1px;
+}
+
+.command-link {
+	display: inline-block;
+	text-decoration: none;
+	color: inherit;
+}

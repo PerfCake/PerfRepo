@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecution name="CR1" started="2013-06-04T14:13:00.000Z">
+	<test uid="soak_test" />
+	<testExecutionParameters>
+		<testExecutionParameter name="THREAD" value="1"/>
+		<testExecutionParameter name="RESULT_SIZE" value="10"/>
+		<testExecutionParameter name="DB" value="Oracle11g"/>		
+	</testExecutionParameters>
+	<testExecutionTags>
+		<testExecutionTag>
+			<tag name="build=531CR1" />
+		</testExecutionTag>
+		<testExecutionTag>
+			<tag name="product=SOA" />
+		</testExecutionTag>
+	</testExecutionTags>
+	<values>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="10" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="20" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="30" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="40" />
+			</valueParameters>
+		</value>
+		<value resultValue="100.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="50" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="60" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="70" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="80" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="90" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="100" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="110" />
+			</valueParameters>
+		</value>
+		<value resultValue="0.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="120" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="130" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="140" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="150" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="160" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="170" />
+			</valueParameters>
+		</value>
+		<value resultValue="140.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="180" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="190" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="200" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="210" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="220" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="230" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="240" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="250" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="260" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="270" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="280" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="290" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="300" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="310" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="320" />
+			</valueParameters>
+		</value>
+		<value resultValue="30.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="330" />
+			</valueParameters>
+		</value>
+		<value resultValue="40.8">
+			<metric name="THROUGHPUT" />
+			<valueParameters>
+				<valueParameter name="TIME" paramValue="340" />
+			</valueParameters>
+		</value>
+
+	</values>
+</testExecution>

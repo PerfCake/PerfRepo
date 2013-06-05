@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+   <ui:composition template="/layout/commonLayout.xhtml">
+      <ui:define name="title">#{strings.edit} ValueParameter -</ui:define>
+      <ui:define name="content">
+         <h1>ValueParameter</h1>
+         <h2>#{valueParameterController.bean.name}</h2>
+         <h:form>
+            <table class="table">
+               <thead>
+                  <tr>
+                     <td colspan="2" class="table-header">#{strings.properties}</td>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr class="table-row">
+                     <td><label>ID</label></td>
+                     <td><label>#{valueParameterController.bean.id}</label></td>
+                  </tr>
+                  <tr class="table-row">
+<td><label>#{entityStrings.ValueParameter_name}</label></td>
+<td><h:inputText styleClass="input-text" value="#{valueParameterController.bean.name}" /></td>
+</tr>
+<tr class="table-row">
+<td><label>#{entityStrings.ValueParameter_value}</label></td>
+<td><h:selectOneMenu value="#{valueParameterController.bean.value.id}"><f:selectItems styleClass="input-text" value="#{valueController.beanSelectItems}" var="item" itemLabel="#{item.name}" itemValue="#{item.id}"/></h:selectOneMenu></td>
+</tr>
+
+               </tbody>
+               <tfoot>
+                  <tr>
+                     <td class="table-footer" colspan="2">
+                        <h:button styleClass="button-left-arrow" outcome="ValueParameterList" value="" alt="#{strings.back}" title="#{strings.back}" />
+                        <h:commandButton styleClass="button-check" action="#{valueParameterController.update}" value="" alt="#{strings.save}" title="#{strings.save}">
+                           <f:param name="valueParameterId" value="#{valueParameterController.bean.id}" />
+                        </h:commandButton></td>
+                  </tr>
+               </tfoot>
+            </table>
+         </h:form>
+         
+      </ui:define>
+   </ui:composition>
+</h:body>
+</html>

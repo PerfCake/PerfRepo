@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+	<ui:composition template="/layout/commonLayout.xhtml">
+		<ui:define name="title">#{strings.edit} Tag -</ui:define>
+		<ui:define name="content">
+			<h1>Tag</h1>
+			<h2>#{tagController.bean.name}</h2>
+			<h:form>
+				<table class="table">
+					<thead>
+						<tr>
+							<td colspan="2" class="table-header">#{strings.properties}</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="table-row">
+							<td><label>ID</label></td>
+							<td><label>#{tagController.bean.id}</label></td>
+						</tr>
+						<tr class="table-row">
+							<td><label>#{entityStrings.Tag_name}</label></td>
+							<td><label>#{tagController.bean.name}</label></td>
+						</tr>
+
+					</tbody>
+					<tfoot>
+						<tr>
+							<td class="table-footer" colspan="2"><h:button
+									styleClass="button-left-arrow" outcome="TagList" value=""
+									alt="#{strings.back}" title="#{strings.back}" /></td>
+						</tr>
+					</tfoot>
+				</table>
+			</h:form>
+			
+
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+<body>
+	<ui:composition>
+		#{strings.pageGenerated} <h:outputText
+			value="#{session.lastAccessedTime}">
+			<f:convertDateTime pattern="yyyy/MM/dd/ HH:mm:ss" type="date" />
+		</h:outputText>
+		(#{strings.logged} #{facesContext.externalContext.remoteUser} - <h:form
+			styleClass="command-link">
+			<h:commandLink action="#{securityController.logout}"
+				value="#{strings.logout}" />
+		</h:form>)
+	</ui:composition>
+</body>
+</html>
