@@ -4,8 +4,10 @@ import java.security.Principal;
 
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Named;
 
 @RequestScoped
+@Named
 public class UserInfo {
    
    public String getUserName() {      
