@@ -64,24 +64,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    }
    
    public TestExecution getFullTestExecution(Long id) {
-      
       return findWithDepth(id, "testExecutionParameters", "values.valueParameters", "testExecutionTags.tag");
-//      CriteriaQuery<TestExecution> criteria = createCriteria();
-//      Root<TestExecution> root = criteria.from(TestExecution.class);
-//      
-//      CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-//      //root.join("test");
-//      Join<TestExecution, TestExecutionTag> tegRoot = root.joinCollection("testExecutionTags", JoinType.LEFT);      
-//      Fetch<TestExecution, Value> valuesRoot = root.fetch("values");      
-//      tegRoot.join("tag");      
-//      //root.fetch("testExecutionParameters", JoinType.LEFT);
-//      valuesRoot.fetch("valueParameters", JoinType.LEFT);
-//      criteria.select(root);
-//    
-//      criteria.where(cb.equal(root.get("id"), id));                  
-//      return findByCustomCriteriaSingle(criteria);
-      
-      
    }
    
 }

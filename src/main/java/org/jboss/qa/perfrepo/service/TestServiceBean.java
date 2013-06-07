@@ -12,6 +12,7 @@ import org.jboss.qa.perfrepo.dao.TestMetricDAO;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestMetric;
+import org.jboss.qa.perfrepo.security.Secure;
 
 @Named
 @Stateless
@@ -27,7 +28,8 @@ public class TestServiceBean implements TestService {
    TestMetricDAO testMetricDAO;
 
    @Override
-   public Test storeTest(Test test) {      
+   public Test storeTest(Test test) {   
+      //TODO: set guid
       Test createdTest = testDAO.create(test);      
       //store metrics
       if (test.getTestMetrics() != null && test.getTestMetrics().size() > 0) {
@@ -57,16 +59,17 @@ public class TestServiceBean implements TestService {
       return testDAO.findAll();
    }
    
+   @Secure
    public Test updateTest(Test test) {
       return testDAO.update(test);
    }
    
+   @Secure
    public void deleteTest(Test test) {
       Test t = testDAO.get(test.getId());
       //TODO: delete test executions
       testDAO.delete(t);
-   }
-   
+   }   
    
    public Metric getMetric(Long id) {
       return metricDAO.get(id);
@@ -80,6 +83,7 @@ public class TestServiceBean implements TestService {
       return m;
    }   
    
+   @Secure
    public Metric updateMetric(Metric metric) {
       return metricDAO.update(metric);
    }
@@ -88,6 +92,7 @@ public class TestServiceBean implements TestService {
       return metricDAO.getMetrics();
    }
    
+   @Secure
    public void deleteMetric(Metric metric) {
       Metric m  = metricDAO.get(metric.getId());
       metricDAO.delete(m);

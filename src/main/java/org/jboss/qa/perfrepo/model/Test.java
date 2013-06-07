@@ -24,15 +24,8 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "test")
-   @NamedQueries({ @NamedQuery(name = Test.FIND_ALL, query = "SELECT x from Test x"), 
-   @NamedQuery(name = Test.FIND_ALL_SORTED_BY_ID_ASC, query = "SELECT x FROM Test x ORDER BY x.id ASC"), 
-   @NamedQuery(name = Test.FIND_ALL_SORTED_BY_ID_DESC, query = "SELECT x FROM Test x ORDER BY x.id DESC"), 
-   @NamedQuery(name = Test.FIND_ALL_SORTED_BY_NAME_ASC, query = "SELECT x FROM Test x ORDER BY x.name ASC"), 
-   @NamedQuery(name = Test.FIND_ALL_SORTED_BY_NAME_DESC, query = "SELECT x FROM Test x ORDER BY x.name DESC"), 
-   @NamedQuery(name = Test.FIND_ALL_SORTED_BY_UID_ASC, query = "SELECT x FROM Test x ORDER BY x.uid ASC"), 
-   @NamedQuery(name = Test.FIND_ALL_SORTED_BY_UID_DESC, query = "SELECT x FROM Test x ORDER BY x.uid DESC"),
-
-@NamedQuery(name = Test.FIND_BY_ID, query = "SELECT x from Test x WHERE x.id = :" + Test.NQ_ID) })
+@NamedQueries({ 
+   @NamedQuery(name = Test.FIND_TEST_ID, query = "SELECT test from Test test where test = :entity") })
 @XmlRootElement(name = "test")
 @Named("test")
 @RequestScoped
@@ -42,15 +35,7 @@ public class Test implements Serializable {
 
    public static final String FIND_ALL = "Test.findAll";
 
-   public static final String FIND_ALL_SORTED_BY_ID_ASC = "Test.findAllSortedByIdAsc";
-   public static final String FIND_ALL_SORTED_BY_ID_DESC = "Test.findAllSortedByIdDesc";
-   public static final String FIND_ALL_SORTED_BY_NAME_ASC = "Test.findAllSortedByNameAsc";
-   public static final String FIND_ALL_SORTED_BY_NAME_DESC = "Test.findAllSortedByNameDesc";
-   public static final String FIND_ALL_SORTED_BY_UID_ASC = "Test.findAllSortedByUidAsc";
-   public static final String FIND_ALL_SORTED_BY_UID_DESC = "Test.findAllSortedByUidDesc";
-
-   public static final String FIND_BY_ID = "Test.findById";
-   public static final String NQ_ID = "testId";
+   public static final String FIND_TEST_ID = "Test.findTestId";
 
    @Id
    @SequenceGenerator(name = "TEST_ID_GENERATOR", sequenceName = "TEST_SEQUENCE", allocationSize = 1)

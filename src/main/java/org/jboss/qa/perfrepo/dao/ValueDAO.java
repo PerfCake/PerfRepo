@@ -13,6 +13,5 @@ import org.jboss.qa.perfrepo.model.Value;
 public class ValueDAO extends DAO<Value, Long> {
 
    private static final long serialVersionUID = 1L;
-
-
+   
 }

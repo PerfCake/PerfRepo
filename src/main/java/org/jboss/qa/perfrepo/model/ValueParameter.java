@@ -23,9 +23,16 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "value_parameter")
-@NamedQueries({ @NamedQuery(name = ValueParameter.FIND_ALL, query = "SELECT x from ValueParameter x"), @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_ID_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.id ASC"), @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_ID_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.id DESC"), @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_NAME_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.name ASC"), @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_NAME_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.name DESC"), @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_VALUE_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.paramValue ASC"), @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_VALUE_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.paramValue DESC"),
-
-@NamedQuery(name = ValueParameter.FIND_BY_ID, query = "SELECT x from ValueParameter x WHERE x.id = :" + ValueParameter.NQ_ID) })
+@NamedQueries({ 
+   @NamedQuery(name = ValueParameter.FIND_ALL, query = "SELECT x from ValueParameter x"), 
+   @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_ID_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.id ASC"), 
+   @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_ID_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.id DESC"), 
+   @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_NAME_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.name ASC"), 
+   @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_NAME_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.name DESC"), 
+   @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_VALUE_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.paramValue ASC"), 
+   @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_VALUE_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.paramValue DESC"),
+   @NamedQuery(name = ValueParameter.FIND_BY_ID, query = "SELECT x from ValueParameter x WHERE x.id = :" + ValueParameter.NQ_ID),
+   @NamedQuery(name = ValueParameter.FIND_TEST_ID, query = "SELECT test from ValueParameter vp inner join vp.value v inner join v.testExecution te inner join te.test test where vp.id= :entity")})
 @XmlRootElement(name = "valueParameter")
 @Named("valueParameter")
 @RequestScoped
@@ -41,6 +48,8 @@ public class ValueParameter implements Serializable {
    public static final String FIND_ALL_SORTED_BY_NAME_DESC = "ValueParameter.findAllSortedByNameDesc";
    public static final String FIND_ALL_SORTED_BY_VALUE_ASC = "ValueParameter.findAllSortedByValueAsc";
    public static final String FIND_ALL_SORTED_BY_VALUE_DESC = "ValueParameter.findAllSortedByValueDesc";
+   
+   public static final String FIND_TEST_ID = "ValueParameter.findTestId";
 
    public static final String FIND_BY_ID = "ValueParameter.findById";
    public static final String NQ_ID = "valueParameterId";

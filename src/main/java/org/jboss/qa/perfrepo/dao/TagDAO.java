@@ -23,4 +23,5 @@ public class TagDAO extends DAO<Tag, Long> {
       }
       return null;
    }
+
 }

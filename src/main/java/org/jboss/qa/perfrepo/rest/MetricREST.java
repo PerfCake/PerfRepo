@@ -12,35 +12,35 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.jboss.qa.perfrepo.dao.MetricDAO;
 import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.service.TestService;
 
 @Path("/metric")
 @RequestScoped
 public class MetricREST {
 
 	@Inject
-	private MetricDAO dao;
+	private TestService testService;
 
 	@GET()
 	@Produces(MediaType.TEXT_XML)
 	@Path("/getAll")
 	public List<Metric> findAll() {
-		return dao.findAll();
+		return testService.getAllMetrics();
 	}
 
 	@GET()
 	@Produces(MediaType.TEXT_XML)
 	@Path("/get/{metricId}")
 	public Metric findById(@PathParam("metricId") Long metricId) {
-		return dao.get(metricId);
+		return testService.getMetric(metricId);
 	}
 	
 	@POST()
    @Path("/create")
    @Consumes(MediaType.TEXT_XML)
    public Long create(Metric metric) {
-      dao.create(metric);
+      testService.storeMetric(metric);
       return metric.getId();
    }
 	

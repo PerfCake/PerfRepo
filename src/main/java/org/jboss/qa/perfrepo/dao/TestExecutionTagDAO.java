@@ -13,5 +13,6 @@ import org.jboss.qa.perfrepo.model.TestExecutionTag;
 public class TestExecutionTagDAO extends DAO<TestExecutionTag, Long> {
 
    private static final long serialVersionUID = 1L;
-
+   
+   
 }

@@ -23,9 +23,8 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "test_execution_parameter")
-@NamedQueries({ @NamedQuery(name = TestExecutionParameter.FIND_ALL, query = "SELECT x from TestExecutionParameter x"), @NamedQuery(name = TestExecutionParameter.FIND_ALL_SORTED_BY_ID_ASC, query = "SELECT x FROM TestExecutionParameter x ORDER BY x.id ASC"), @NamedQuery(name = TestExecutionParameter.FIND_ALL_SORTED_BY_ID_DESC, query = "SELECT x FROM TestExecutionParameter x ORDER BY x.id DESC"), @NamedQuery(name = TestExecutionParameter.FIND_ALL_SORTED_BY_NAME_ASC, query = "SELECT x FROM TestExecutionParameter x ORDER BY x.name ASC"), @NamedQuery(name = TestExecutionParameter.FIND_ALL_SORTED_BY_NAME_DESC, query = "SELECT x FROM TestExecutionParameter x ORDER BY x.name DESC"), @NamedQuery(name = TestExecutionParameter.FIND_BY_TEST_EXECUTION, query = "SELECT x FROM TestExecutionParameter x WHERE x.testExecution.id = :" + TestExecution.NQ_ID), @NamedQuery(name = TestExecutionParameter.FIND_ALL_SORTED_BY_VALUE_ASC, query = "SELECT x FROM TestExecutionParameter x ORDER BY x.value ASC"), @NamedQuery(name = TestExecutionParameter.FIND_ALL_SORTED_BY_VALUE_DESC, query = "SELECT x FROM TestExecutionParameter x ORDER BY x.value DESC"),
-
-@NamedQuery(name = TestExecutionParameter.FIND_BY_ID, query = "SELECT x from TestExecutionParameter x WHERE x.id = :" + TestExecutionParameter.NQ_ID) })
+@NamedQueries({ 
+   @NamedQuery(name = TestExecutionParameter.FIND_TEST_ID, query = "SELECT test from Test test inner join test.testExecutions te inner join te.testExecutionParameters tep where tep.id = :entity")})
 @XmlRootElement(name = "testExecutionParameter")
 @Named("testExecutionParameter")
 @RequestScoped
@@ -35,16 +34,7 @@ public class TestExecutionParameter implements Serializable {
 
    public static final String FIND_ALL = "TestExecutionParameter.findAll";
 
-   public static final String FIND_ALL_SORTED_BY_ID_ASC = "TestExecutionParameter.findAllSortedByIdAsc";
-   public static final String FIND_ALL_SORTED_BY_ID_DESC = "TestExecutionParameter.findAllSortedByIdDesc";
-   public static final String FIND_ALL_SORTED_BY_NAME_ASC = "TestExecutionParameter.findAllSortedByNameAsc";
-   public static final String FIND_ALL_SORTED_BY_NAME_DESC = "TestExecutionParameter.findAllSortedByNameDesc";
-   public static final String FIND_BY_TEST_EXECUTION = "TestExecutionParameter.findByTestExecution";
-   public static final String FIND_ALL_SORTED_BY_VALUE_ASC = "TestExecutionParameter.findAllSortedByValueAsc";
-   public static final String FIND_ALL_SORTED_BY_VALUE_DESC = "TestExecutionParameter.findAllSortedByValueDesc";
-
-   public static final String FIND_BY_ID = "TestExecutionParameter.findById";
-   public static final String NQ_ID = "testExecutionParameterId";
+   public static final String FIND_TEST_ID = "TestExecutionParameter.findTestId";
 
    @Id
    @SequenceGenerator(name = "TEST_EXECUTION_PARAMETER_ID_GENERATOR", sequenceName = "TEST_EXECUTION_PARAMETER_SEQUENCE", allocationSize = 1)

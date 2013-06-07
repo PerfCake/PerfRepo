@@ -14,16 +14,9 @@ public class PerfRepoRESTApplication extends Application {
    private Set<Class<?>> classes = new HashSet<Class<?>>();
 
    public PerfRepoRESTApplication() {
-      classes.add(TestExecutionTagREST.class);
-      classes.add(TestMetricREST.class);
-      classes.add(TagREST.class);
-      classes.add(ValueREST.class);
-      classes.add(ValueParameterREST.class);
       classes.add(MetricREST.class);
       classes.add(TestExecutionREST.class);
       classes.add(TestREST.class);
-      classes.add(TestExecutionParameterREST.class);
-
    }
 
    @Override

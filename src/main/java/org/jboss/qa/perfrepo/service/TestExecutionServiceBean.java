@@ -24,6 +24,7 @@ import org.jboss.qa.perfrepo.model.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
+import org.jboss.qa.perfrepo.security.Secure;
 
 @Named
 @Stateless
@@ -52,15 +53,14 @@ public class TestExecutionServiceBean implements TestExecutionService {
    
    @Inject
    MetricDAO metricDAO;
-
+   
    @Override   
-   public TestExecution storeTestExecution(TestExecution te) {
-      
+   @Secure
+   public TestExecution storeTestExecution(TestExecution te) {      
       //test
       Test test = testService.getOrCreateTest(te.getTest());      
       te.setTest(test);
       TestExecution storedTestExecution = testExecutionDAO.create(te);
-
       // execution params
       if (te.getTestExecutionParameters() != null && te.getTestExecutionParameters().size() > 0) {
          for (TestExecutionParameter param : te.getTestExecutionParameters()) {
@@ -113,7 +113,7 @@ public class TestExecutionServiceBean implements TestExecutionService {
    
    
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search) {
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(search);
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(search);      
       return result;
    }
 

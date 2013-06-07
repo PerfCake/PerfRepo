@@ -27,29 +27,15 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "value")
-@NamedQueries({ @NamedQuery(name = Value.FIND_ALL, query = "SELECT x from Value x"), @NamedQuery(name = Value.FIND_ALL_SORTED_BY_ID_ASC, query = "SELECT x FROM Value x ORDER BY x.id ASC"), @NamedQuery(name = Value.FIND_ALL_SORTED_BY_ID_DESC, query = "SELECT x FROM Value x ORDER BY x.id DESC"), @NamedQuery(name = Value.FIND_BY_METRIC, query = "SELECT x FROM Value x WHERE x.metric.id = :" + Metric.NQ_ID), @NamedQuery(name = Value.FIND_ALL_SORTED_BY_NAME_ASC, query = "SELECT x FROM Value x ORDER BY x.name ASC"), @NamedQuery(name = Value.FIND_ALL_SORTED_BY_NAME_DESC, query = "SELECT x FROM Value x ORDER BY x.name DESC"), @NamedQuery(name = Value.FIND_ALL_SORTED_BY_RESULT_VALUE_ASC, query = "SELECT x FROM Value x ORDER BY x.resultValue ASC"), @NamedQuery(name = Value.FIND_ALL_SORTED_BY_RESULT_VALUE_DESC, query = "SELECT x FROM Value x ORDER BY x.resultValue DESC"), @NamedQuery(name = Value.FIND_BY_TEST_EXECUTION, query = "SELECT x FROM Value x WHERE x.testExecution.id = :" + TestExecution.NQ_ID),
-
-@NamedQuery(name = Value.FIND_BY_ID, query = "SELECT x from Value x WHERE x.id = :" + Value.NQ_ID) })
+@NamedQueries({ 
+  @NamedQuery(name = Value.FIND_TEST_ID, query = "SELECT test from Value v inner join v.testExecution te inner join te.test test where v.id= :entity")})
 @XmlRootElement(name = "value")
 @Named("value")
 @RequestScoped
 public class Value implements Serializable {
 
    private static final long serialVersionUID = 1L;
-
-   public static final String FIND_ALL = "Value.findAll";
-
-   public static final String FIND_ALL_SORTED_BY_ID_ASC = "Value.findAllSortedByIdAsc";
-   public static final String FIND_ALL_SORTED_BY_ID_DESC = "Value.findAllSortedByIdDesc";
-   public static final String FIND_BY_METRIC = "Value.findByMetric";
-   public static final String FIND_ALL_SORTED_BY_NAME_ASC = "Value.findAllSortedByNameAsc";
-   public static final String FIND_ALL_SORTED_BY_NAME_DESC = "Value.findAllSortedByNameDesc";
-   public static final String FIND_ALL_SORTED_BY_RESULT_VALUE_ASC = "Value.findAllSortedByResultValueAsc";
-   public static final String FIND_ALL_SORTED_BY_RESULT_VALUE_DESC = "Value.findAllSortedByResultValueDesc";
-   public static final String FIND_BY_TEST_EXECUTION = "Value.findByTestExecution";
-
-   public static final String FIND_BY_ID = "Value.findById";
-   public static final String NQ_ID = "valueId";
+   public static final String FIND_TEST_ID = "Value.findTestId";
 
    @Id
    @SequenceGenerator(name = "VALUE_ID_GENERATOR", sequenceName = "VALUE_SEQUENCE", allocationSize = 1)

@@ -14,10 +14,4 @@ public class ValueParameterDAO extends DAO<ValueParameter, Long> {
 
    private static final long serialVersionUID = 1L;
    
-   public Long getOwnerGroup(ValueParameter vp) {
-      //findByQuery("", vp.)
-      //getEntityManager().
-      return null;
-   }
-
 }

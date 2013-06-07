@@ -30,26 +30,15 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "test_execution")
-@NamedQueries({ @NamedQuery(name = TestExecution.FIND_ALL, query = "SELECT x from TestExecution x"), @NamedQuery(name = TestExecution.FIND_ALL_SORTED_BY_ID_ASC, query = "SELECT x FROM TestExecution x ORDER BY x.id ASC"), @NamedQuery(name = TestExecution.FIND_ALL_SORTED_BY_ID_DESC, query = "SELECT x FROM TestExecution x ORDER BY x.id DESC"), @NamedQuery(name = TestExecution.FIND_ALL_SORTED_BY_NAME_ASC, query = "SELECT x FROM TestExecution x ORDER BY x.name ASC"), @NamedQuery(name = TestExecution.FIND_ALL_SORTED_BY_NAME_DESC, query = "SELECT x FROM TestExecution x ORDER BY x.name DESC"), @NamedQuery(name = TestExecution.FIND_BY_TEST, query = "SELECT x FROM TestExecution x WHERE x.test.id = :" + Test.NQ_ID),
-
-@NamedQuery(name = TestExecution.FIND_BY_ID, query = "SELECT x from TestExecution x WHERE x.id = :" + TestExecution.NQ_ID) })
+@NamedQueries({ 
+   @NamedQuery(name = TestExecution.FIND_TEST_ID, query = "SELECT te.test from TestExecution te inner join te.test where te= :entity")})
 @XmlRootElement(name = "testExecution")
 @Named("testExecution")
 @RequestScoped
 public class TestExecution implements Serializable {
 
    private static final long serialVersionUID = 1L;
-
-   public static final String FIND_ALL = "TestExecution.findAll";
-
-   public static final String FIND_ALL_SORTED_BY_ID_ASC = "TestExecution.findAllSortedByIdAsc";
-   public static final String FIND_ALL_SORTED_BY_ID_DESC = "TestExecution.findAllSortedByIdDesc";
-   public static final String FIND_ALL_SORTED_BY_NAME_ASC = "TestExecution.findAllSortedByNameAsc";
-   public static final String FIND_ALL_SORTED_BY_NAME_DESC = "TestExecution.findAllSortedByNameDesc";
-   public static final String FIND_BY_TEST = "TestExecution.findByTest";
-
-   public static final String FIND_BY_ID = "TestExecution.findById";
-   public static final String NQ_ID = "testExecutionId";
+   public static final String FIND_TEST_ID = "TestExecution.findTestId";
 
    @Id
    @SequenceGenerator(name = "TEST_EXECUTION_ID_GENERATOR", sequenceName = "TEST_EXECUTION_SEQUENCE", allocationSize = 1)

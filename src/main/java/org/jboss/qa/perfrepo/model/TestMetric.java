@@ -23,13 +23,8 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "test_metric")
-   @NamedQueries({ @NamedQuery(name = TestMetric.FIND_ALL, query = "SELECT x from TestMetric x"), 
-   @NamedQuery(name = TestMetric.FIND_ALL_SORTED_BY_ID_ASC, query = "SELECT x FROM TestMetric x ORDER BY x.id ASC"), 
-   @NamedQuery(name = TestMetric.FIND_ALL_SORTED_BY_ID_DESC, query = "SELECT x FROM TestMetric x ORDER BY x.id DESC"), 
-   @NamedQuery(name = TestMetric.FIND_BY_METRIC, query = "SELECT x FROM TestMetric x WHERE x.metric.id = :" + Metric.NQ_ID), 
-   @NamedQuery(name = TestMetric.FIND_BY_TEST, query = "SELECT x FROM TestMetric x WHERE x.test.id = :" + Test.NQ_ID),
-
-@NamedQuery(name = TestMetric.FIND_BY_ID, query = "SELECT x from TestMetric x WHERE x.id = :" + TestMetric.NQ_ID) })
+@NamedQueries({ 
+   @NamedQuery(name = TestMetric.FIND_TEST_ID, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm.id= :entity")})
 @XmlRootElement(name = "testMetric")
 @Named("testMetric")
 @RequestScoped
@@ -37,15 +32,7 @@ public class TestMetric implements Serializable {
 
    private static final long serialVersionUID = 1L;
 
-   public static final String FIND_ALL = "TestMetric.findAll";
-
-   public static final String FIND_ALL_SORTED_BY_ID_ASC = "TestMetric.findAllSortedByIdAsc";
-   public static final String FIND_ALL_SORTED_BY_ID_DESC = "TestMetric.findAllSortedByIdDesc";
-   public static final String FIND_BY_METRIC = "TestMetric.findByMetric";
-   public static final String FIND_BY_TEST = "TestMetric.findByTest";
-
-   public static final String FIND_BY_ID = "TestMetric.findById";
-   public static final String NQ_ID = "testMetricId";
+   public static final String FIND_TEST_ID = "TestMetric.findTestId";
 
    @Id
    @SequenceGenerator(name = "TEST_METRIC_ID_GENERATOR", sequenceName = "TEST_METRIC_SEQUENCE", allocationSize = 1)

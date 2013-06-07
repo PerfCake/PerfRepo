@@ -21,6 +21,5 @@ public class TestMetricDAO extends DAO<TestMetric, Long> {
    public List<TestMetric> findByTest(Test test) {
       return findAllByProperty("test", test);
    }
-
-
+   
 }

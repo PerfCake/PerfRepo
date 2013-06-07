@@ -23,25 +23,16 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "test_execution_tag")
-@NamedQueries({ @NamedQuery(name = TestExecutionTag.FIND_ALL, query = "SELECT x from TestExecutionTag x"), @NamedQuery(name = TestExecutionTag.FIND_ALL_SORTED_BY_ID_ASC, query = "SELECT x FROM TestExecutionTag x ORDER BY x.id ASC"), @NamedQuery(name = TestExecutionTag.FIND_ALL_SORTED_BY_ID_DESC, query = "SELECT x FROM TestExecutionTag x ORDER BY x.id DESC"), @NamedQuery(name = TestExecutionTag.FIND_BY_TAG, query = "SELECT x FROM TestExecutionTag x WHERE x.tag.id = :" + Tag.NQ_ID), @NamedQuery(name = TestExecutionTag.FIND_BY_TEST_EXECUTION, query = "SELECT x FROM TestExecutionTag x WHERE x.testExecution.id = :" + TestExecution.NQ_ID),
-
-@NamedQuery(name = TestExecutionTag.FIND_BY_ID, query = "SELECT x from TestExecutionTag x WHERE x.id = :" + TestExecutionTag.NQ_ID) })
+@NamedQueries({ 
+   @NamedQuery(name = TestExecutionTag.FIND_TEST_ID, query = "SELECT test from TestExecutionTag teg inner join teg.testExecution te inner join te.test test WHERE teg = :entity") })
 @XmlRootElement(name = "testExecutionTag")
 @Named("testExecutionTag")
 @RequestScoped
 public class TestExecutionTag implements Serializable {
 
    private static final long serialVersionUID = 1L;
-
-   public static final String FIND_ALL = "TestExecutionTag.findAll";
-
-   public static final String FIND_ALL_SORTED_BY_ID_ASC = "TestExecutionTag.findAllSortedByIdAsc";
-   public static final String FIND_ALL_SORTED_BY_ID_DESC = "TestExecutionTag.findAllSortedByIdDesc";
-   public static final String FIND_BY_TAG = "TestExecutionTag.findByTag";
-   public static final String FIND_BY_TEST_EXECUTION = "TestExecutionTag.findByTestExecution";
-
-   public static final String FIND_BY_ID = "TestExecutionTag.findById";
-   public static final String NQ_ID = "testExecutionTagId";
+   
+   public static final String FIND_TEST_ID = "TestExecutionTag.findTestId";
 
    @Id
    @SequenceGenerator(name = "TEST_EXECUTION_TAG_ID_GENERATOR", sequenceName = "TEST_EXECUTION_TAG_SEQUENCE", allocationSize = 1)

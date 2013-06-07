@@ -24,14 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @Table(name = "metric")
 @NamedQueries({ 
-   @NamedQuery(name = Metric.FIND_ALL, query = "SELECT x from Metric x"), 
-   @NamedQuery(name = Metric.FIND_ALL_SORTED_BY_ID_ASC, query = "SELECT x FROM Metric x ORDER BY x.id ASC"), 
-   @NamedQuery(name = Metric.FIND_ALL_SORTED_BY_ID_DESC, query = "SELECT x FROM Metric x ORDER BY x.id DESC"), 
-   @NamedQuery(name = Metric.FIND_ALL_SORTED_BY_COMPARATOR_ASC, query = "SELECT x FROM Metric x ORDER BY x.comparator ASC"), 
-   @NamedQuery(name = Metric.FIND_ALL_SORTED_BY_COMPARATOR_DESC, query = "SELECT x FROM Metric x ORDER BY x.comparator DESC"), 
-   @NamedQuery(name = Metric.FIND_ALL_SORTED_BY_NAME_ASC, query = "SELECT x FROM Metric x ORDER BY x.name ASC"), 
-   @NamedQuery(name = Metric.FIND_ALL_SORTED_BY_NAME_DESC, query = "SELECT x FROM Metric x ORDER BY x.name DESC"),
-@NamedQuery(name = Metric.FIND_BY_ID, query = "SELECT x from Metric x WHERE x.id = :" + Metric.NQ_ID) })
+   @NamedQuery(name = Metric.FIND_TEST_ID, query = "SELECT test from TestMetric tm inner join tm.test test inner join tm.metric m where m= :entity")})
 @XmlRootElement(name = "metric")
 @Named("metric")
 @RequestScoped
@@ -39,17 +32,8 @@ public class Metric implements Serializable {
 
    private static final long serialVersionUID = 1L;
 
-   public static final String FIND_ALL = "Metric.findAll";
-
-   public static final String FIND_ALL_SORTED_BY_ID_ASC = "Metric.findAllSortedByIdAsc";
-   public static final String FIND_ALL_SORTED_BY_ID_DESC = "Metric.findAllSortedByIdDesc";
-   public static final String FIND_ALL_SORTED_BY_COMPARATOR_ASC = "Metric.findAllSortedByComparatorAsc";
-   public static final String FIND_ALL_SORTED_BY_COMPARATOR_DESC = "Metric.findAllSortedByComparatorDesc";
-   public static final String FIND_ALL_SORTED_BY_NAME_ASC = "Metric.findAllSortedByNameAsc";
-   public static final String FIND_ALL_SORTED_BY_NAME_DESC = "Metric.findAllSortedByNameDesc";
-
-   public static final String FIND_BY_ID = "Metric.findById";
-   public static final String NQ_ID = "metricId";
+   public static final String FIND_TEST_ID = "Metric.findTestId";
+ 
 
    @Id
    @SequenceGenerator(name = "METRIC_ID_GENERATOR", sequenceName = "METRIC_SEQUENCE", allocationSize = 1)
