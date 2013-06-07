@@ -25,7 +25,7 @@ import javax.persistence.criteria.Root;
  * @param <T> entity type
  * @param <PK> primary key type
  */
-public abstract class DAO<T, PK extends Serializable> implements Serializable {
+public abstract class DAO<T, PK extends Serializable> {
    
    
    private static final long serialVersionUID = 3174235359562788810L;

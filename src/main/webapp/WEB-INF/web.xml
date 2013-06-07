@@ -72,7 +72,7 @@
 	</context-param>
 	<!-- Security -->
 	<security-constraint>
-		<display-name>Performance Resutls Repository</display-name>
+		<display-name>PerfRepoRealm</display-name>
 		<web-resource-collection>
 			<web-resource-name>repo</web-resource-name>
 			<description />

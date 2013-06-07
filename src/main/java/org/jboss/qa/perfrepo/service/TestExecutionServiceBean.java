@@ -5,11 +5,14 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.dao.MetricDAO;
 import org.jboss.qa.perfrepo.dao.TagDAO;
+import org.jboss.qa.perfrepo.dao.TestExecutionAttachmentDAO;
 import org.jboss.qa.perfrepo.dao.TestExecutionDAO;
 import org.jboss.qa.perfrepo.dao.TestExecutionParameterDAO;
 import org.jboss.qa.perfrepo.dao.TestExecutionTagDAO;
@@ -19,6 +22,7 @@ import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Tag;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
+import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
@@ -26,8 +30,17 @@ import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.security.Secure;
 
+/**
+ * 
+ * Implements {@link TestExecutionService}.
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Named
 @Stateless
+@TransactionManagement(TransactionManagementType.CONTAINER)
 public class TestExecutionServiceBean implements TestExecutionService {
 
    @Inject
@@ -37,28 +50,31 @@ public class TestExecutionServiceBean implements TestExecutionService {
    TestExecutionParameterDAO testExecutionParameterDAO;
 
    @Inject
+   TestExecutionAttachmentDAO testExecutionAttachmentDAO;
+
+   @Inject
    TagDAO tagDAO;
-   
+
    @Inject
    TestExecutionTagDAO testExecutionTagDAO;
-   
+
    @Inject
    ValueDAO valueDAO;
-   
+
    @Inject
    ValueParameterDAO valueParameterDAO;
-   
+
    @Inject
    TestService testService;
-   
+
    @Inject
    MetricDAO metricDAO;
-   
+
    @Override   
    @Secure
-   public TestExecution storeTestExecution(TestExecution te) {      
+   public TestExecution storeTestExecution(TestExecution te) {
       //test
-      Test test = testService.getOrCreateTest(te.getTest());      
+      Test test = testService.getOrCreateTest(te.getTest());
       te.setTest(test);
       TestExecution storedTestExecution = testExecutionDAO.create(te);
       // execution params
@@ -84,12 +100,12 @@ public class TestExecutionServiceBean implements TestExecutionService {
       if (te.getValues() != null && te.getValues().size() > 0) {
          for (Value value : te.getValues()) {
             value.setTestExecution(storedTestExecution);
-            
+
             Metric metric = metricDAO.findByName(value.getMetric().getName());
             if (metric == null) {
                metric = metricDAO.create(value.getMetric());
             }
-            value.setMetric(metric);            
+            value.setMetric(metric);
             valueDAO.create(value);
             if (value.getValueParameters() != null && value.getValueParameters().size() > 0) {
                for (ValueParameter vp : value.getValueParameters()) {
@@ -101,20 +117,32 @@ public class TestExecutionServiceBean implements TestExecutionService {
       }
       return storedTestExecution;
    }
-   
+
    public List<TestExecution> getTestExecutions(Collection<Long> ids) {
       List<TestExecution> result = new ArrayList<TestExecution>();
       for (Long id : ids) {
          TestExecution testExecution = testExecutionDAO.getFullTestExecution(id);
          result.add(testExecution);
       }
-      return result;      
-   }
-   
-   
-   public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search) {
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(search);      
       return result;
+   }
+
+   public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search) {
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(search);
+      return result;
+   }
+
+   @Override
+   public Long addAttachment(TestExecutionAttachment attachment) {
+      // reload test execution to check whether it exists
+      attachment.setTestExecution(testExecutionDAO.get(attachment.getTestExecution().getId()));
+      TestExecutionAttachment newAttachment = testExecutionAttachmentDAO.create(attachment);
+      return newAttachment.getId();
+   }
+
+   @Override
+   public TestExecutionAttachment getAttachment(Long id) {
+      return testExecutionAttachmentDAO.get(id);
    }
 
 }
