@@ -23,9 +23,9 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "test_metric")
-@NamedQueries({ 
-   @NamedQuery(name = TestMetric.FIND_TEST_ID, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm.id= :entity"),
-   @NamedQuery(name = TestMetric.FIND_TEST_METRIC, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test and m.id= :metric")})
+@NamedQueries({
+      @NamedQuery(name = TestMetric.FIND_TEST_ID, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm.id= :entity"),
+      @NamedQuery(name = TestMetric.FIND_TEST_METRIC, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test and m.id= :metric") })
 @XmlRootElement(name = "testMetric")
 @Named("testMetric")
 @RequestScoped
@@ -44,7 +44,7 @@ public class TestMetric implements Serializable {
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
    @JoinColumn(name = "metric_id", referencedColumnName = "id")
    private Metric metric;
-   
+
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
    @JoinColumn(name = "test_id", referencedColumnName = "id")
    private Test test;
@@ -66,7 +66,7 @@ public class TestMetric implements Serializable {
    @XmlID
    @XmlAttribute(name = "id")
    public String getStringId() {
-      return String.valueOf(id);
+      return id == null ? null : String.valueOf(id);
    }
 
    public void setStringId(String id) {
@@ -81,8 +81,7 @@ public class TestMetric implements Serializable {
    public Metric getMetric() {
       return this.metric;
    }
-   
-   
+
    public void setTest(Test test) {
       this.test = test;
    }

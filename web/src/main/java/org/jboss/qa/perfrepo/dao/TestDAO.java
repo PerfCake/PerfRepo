@@ -14,9 +14,6 @@ import org.jboss.qa.perfrepo.model.Test;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class TestDAO extends DAO<Test, Long> {
 
-   private static final long serialVersionUID = 1L;  
-   
-   
    public Test findByUid(String uid) {
       List<Test> tests = findAllByProperty("uid", uid);
       if (tests.size() > 0)

@@ -72,6 +72,14 @@ public interface TestService {
     */
    Test createTest(Test test);
 
+   /**
+    * Delete a test execution with all it's subobjects.
+    * 
+    * @param testExecution
+    * @throws ServiceException
+    */
+   void deleteTestExecution(TestExecution testExecution) throws ServiceException;
+
    TestExecution getTestExecution(Long id);
 
    List<TestExecution> findAllTestExecutions();
@@ -89,9 +97,21 @@ public interface TestService {
 
    Metric updateMetric(Metric metric);
 
-   Test getTest(Long id);
+   /**
+    * Get test with all metrics but without executions.
+    * 
+    * @param testId Test id
+    * @return Test
+    */
+   Test getTest(Long testId);
 
-   void deleteTest(Test test);
+   /**
+    * Delete a test with all it's sub-objects. Use with caution!
+    * 
+    * @param test
+    * @throws ServiceException
+    */
+   void deleteTest(Test test) throws ServiceException;
 
    Test updateTest(Test test);
 
@@ -104,6 +124,6 @@ public interface TestService {
    List<Metric> getAllMetrics();
 
    void deleteMetric(Metric metric);
-   
+
    TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException;
 }

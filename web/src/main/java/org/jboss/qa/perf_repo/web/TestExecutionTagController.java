@@ -19,9 +19,7 @@ import org.jboss.qa.perfrepo.model.TestExecutionTag;
 
 @Named
 @RequestScoped
-public class TestExecutionTagController implements Serializable {
-
-   private static final long serialVersionUID = 1L;
+public class TestExecutionTagController extends ControllerBase {
 
    @Inject
    private TestExecutionTagDAO dao;
@@ -54,21 +52,21 @@ public class TestExecutionTagController implements Serializable {
          boolean whereAppended = false;
          querySB.append("SELECT x FROM TestExecutionTag x");
          String tagIdN_1 = getRequestParam("tagId");
-if (tagIdN_1 != null) {
-querySB.append(" "+(whereAppended?"AND":"WHERE")+" x.tag.id = :tagId");
-if(!whereAppended){
-whereAppended = true;
-}
-queryParams.put("tagId", Long.valueOf(tagIdN_1));
-}
-String testExecutionIdN_1 = getRequestParam("testExecutionId");
-if (testExecutionIdN_1 != null) {
-querySB.append(" "+(whereAppended?"AND":"WHERE")+" x.testExecution.id = :testExecutionId");
-if(!whereAppended){
-whereAppended = true;
-}
-queryParams.put("testExecutionId", Long.valueOf(testExecutionIdN_1));
-}
+         if (tagIdN_1 != null) {
+            querySB.append(" " + (whereAppended ? "AND" : "WHERE") + " x.tag.id = :tagId");
+            if (!whereAppended) {
+               whereAppended = true;
+            }
+            queryParams.put("tagId", Long.valueOf(tagIdN_1));
+         }
+         String testExecutionIdN_1 = getRequestParam("testExecutionId");
+         if (testExecutionIdN_1 != null) {
+            querySB.append(" " + (whereAppended ? "AND" : "WHERE") + " x.testExecution.id = :testExecutionId");
+            if (!whereAppended) {
+               whereAppended = true;
+            }
+            queryParams.put("testExecutionId", Long.valueOf(testExecutionIdN_1));
+         }
 
          beanList = dao.findByQuery(querySB.toString(), queryParams);
       }
@@ -83,9 +81,8 @@ queryParams.put("testExecutionId", Long.valueOf(testExecutionIdN_1));
    }
 
    /*
-    * If generated bean does not have an attribute called 'name' it is likely
-    * that the select list component wouldn't be used in web application so this
-    * method can be deleted.
+    * If generated bean does not have an attribute called 'name' it is likely that the select list
+    * component wouldn't be used in web application so this method can be deleted.
     */
    public List<SelectItem> getBeanSelectItems() {
       List<SelectItem> list = new ArrayList<SelectItem>();
@@ -122,21 +119,4 @@ queryParams.put("testExecutionId", Long.valueOf(testExecutionIdN_1));
       return "TestExecutionTagList";
    }
 
-   public Map<String, String> getRequestParams() {
-      Map<String, String> map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-      return map;
-   }
-
-   public String getRequestParam(String name) {
-      return getRequestParams().get(name);
-   }
-
-   public String getRequestParam(String name, String _default) {
-      String ret = getRequestParam(name);
-      if (ret == null) {
-         return _default;
-      } else {
-         return ret;
-      }
-   }
 }

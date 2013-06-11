@@ -68,6 +68,9 @@ public class TestExecution implements Serializable {
    @OneToMany(mappedBy = "testExecution")
    private Set<Value> values = new HashSet<Value>();
 
+   @OneToMany(mappedBy = "testExecution")
+   private Set<TestExecutionAttachment> testExecutionAttachments = new HashSet<TestExecutionAttachment>();
+
    @Column(name = "started")
    private Date started;
 
@@ -149,6 +152,15 @@ public class TestExecution implements Serializable {
 
    public void setStarted(Date started) {
       this.started = started;
+   }
+
+   @XmlTransient
+   public Collection<TestExecutionAttachment> getTestExecutionAttachments() {
+      return testExecutionAttachments;
+   }
+
+   public void setTestExecutionAttachments(Set<TestExecutionAttachment> testExecutionAttachments) {
+      this.testExecutionAttachments = testExecutionAttachments;
    }
 
    @Override

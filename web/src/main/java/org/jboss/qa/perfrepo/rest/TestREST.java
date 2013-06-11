@@ -1,15 +1,20 @@
 package org.jboss.qa.perfrepo.rest;
 
+import java.lang.reflect.Method;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
@@ -24,6 +29,15 @@ import org.jboss.qa.perfrepo.service.TestService;
 @Path("/test")
 @RequestScoped
 public class TestREST {
+
+   private static Method GET_TEST_METHOD;
+   static {
+      try {
+         GET_TEST_METHOD = TestREST.class.getMethod("get", Long.class);
+      } catch (Exception e) {
+         e.printStackTrace(System.err);
+      }
+   }
 
    @Inject
    private TestService testService;
@@ -48,8 +62,19 @@ public class TestREST {
    @Path("/create")
    @Consumes(MediaType.TEXT_XML)
    @Logged
-   public Response create(Test test) {
-      return Response.ok(testService.createTest(test).getId()).build();
+   public Response create(Test test, @Context UriInfo uriInfo) throws Exception {
+      Long id = testService.createTest(test).getId();
+      return Response.created(uriInfo.getBaseUriBuilder().path(TestREST.class).path(GET_TEST_METHOD).build(id)).entity(id).build();
+   }
+
+   @DELETE
+   @Path("/{testId}")
+   @Logged
+   public Response delete(@PathParam("testId") Long testId) throws Exception {
+      Test test = new Test();
+      test.setId(testId);
+      testService.deleteTest(test);
+      return Response.noContent().build();
    }
 
    @POST

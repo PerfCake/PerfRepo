@@ -15,9 +15,7 @@ import org.jboss.qa.perfrepo.service.TestService;
 
 @Named
 @RequestScoped
-public class MetricController implements Serializable {
-
-   private static final long serialVersionUID = 1L;
+public class MetricController extends ControllerBase {
 
    @Inject
    TestService testService;
@@ -65,21 +63,4 @@ public class MetricController implements Serializable {
       return "MetricList";
    }
 
-   public Map<String, String> getRequestParams() {
-      Map<String, String> map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-      return map;
-   }
-
-   public String getRequestParam(String name) {
-      return getRequestParams().get(name);
-   }
-
-   public String getRequestParam(String name, String _default) {
-      String ret = getRequestParam(name);
-      if (ret == null) {
-         return _default;
-      } else {
-         return ret;
-      }
-   }
 }

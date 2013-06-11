@@ -1,6 +1,5 @@
 package org.jboss.qa.perf_repo.web;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,9 +18,7 @@ import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 
 @Named
 @RequestScoped
-public class TestExecutionParameterController implements Serializable {
-
-   private static final long serialVersionUID = 1L;
+public class TestExecutionParameterController extends ControllerBase {
 
    @Inject
    private TestExecutionParameterDAO dao;
@@ -54,13 +51,13 @@ public class TestExecutionParameterController implements Serializable {
          boolean whereAppended = false;
          querySB.append("SELECT x FROM TestExecutionParameter x");
          String testExecutionIdN_1 = getRequestParam("testExecutionId");
-if (testExecutionIdN_1 != null) {
-querySB.append(" "+(whereAppended?"AND":"WHERE")+" x.testExecution.id = :testExecutionId");
-if(!whereAppended){
-whereAppended = true;
-}
-queryParams.put("testExecutionId", Long.valueOf(testExecutionIdN_1));
-}
+         if (testExecutionIdN_1 != null) {
+            querySB.append(" " + (whereAppended ? "AND" : "WHERE") + " x.testExecution.id = :testExecutionId");
+            if (!whereAppended) {
+               whereAppended = true;
+            }
+            queryParams.put("testExecutionId", Long.valueOf(testExecutionIdN_1));
+         }
 
          beanList = dao.findByQuery(querySB.toString(), queryParams);
       }
@@ -75,9 +72,8 @@ queryParams.put("testExecutionId", Long.valueOf(testExecutionIdN_1));
    }
 
    /*
-    * If generated bean does not have an attribute called 'name' it is likely
-    * that the select list component wouldn't be used in web application so this
-    * method can be deleted.
+    * If generated bean does not have an attribute called 'name' it is likely that the select list
+    * component wouldn't be used in web application so this method can be deleted.
     */
    public List<SelectItem> getBeanSelectItems() {
       List<SelectItem> list = new ArrayList<SelectItem>();
@@ -114,21 +110,4 @@ queryParams.put("testExecutionId", Long.valueOf(testExecutionIdN_1));
       return "TestExecutionParameterList";
    }
 
-   public Map<String, String> getRequestParams() {
-      Map<String, String> map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-      return map;
-   }
-
-   public String getRequestParam(String name) {
-      return getRequestParams().get(name);
-   }
-
-   public String getRequestParam(String name, String _default) {
-      String ret = getRequestParam(name);
-      if (ret == null) {
-         return _default;
-      } else {
-         return ret;
-      }
-   }
 }

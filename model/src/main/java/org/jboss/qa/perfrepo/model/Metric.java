@@ -21,10 +21,15 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Represents a test metric.
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ */
 @Entity
 @Table(name = "metric")
-@NamedQueries({ 
-   @NamedQuery(name = Metric.FIND_TEST_ID, query = "SELECT test from TestMetric tm inner join tm.test test inner join tm.metric m where m= :entity")})
+@NamedQueries({ @NamedQuery(name = Metric.FIND_TEST_ID, query = "SELECT test from TestMetric tm inner join tm.test test inner join tm.metric m where m= :entity") })
 @XmlRootElement(name = "metric")
 @Named("metric")
 @RequestScoped
@@ -33,7 +38,6 @@ public class Metric implements Serializable {
    private static final long serialVersionUID = 1L;
 
    public static final String FIND_TEST_ID = "Metric.findTestId";
- 
 
    @Id
    @SequenceGenerator(name = "METRIC_ID_GENERATOR", sequenceName = "METRIC_SEQUENCE", allocationSize = 1)
@@ -42,13 +46,16 @@ public class Metric implements Serializable {
 
    @Column(name = "comparator")
    private String comparator;
-   
+
    @Column(name = "name")
    private String name;
-   
+
    @OneToMany(mappedBy = "metric")
    private Collection<Value> values;
-   
+
+   @OneToMany(mappedBy = "metric")
+   private Collection<TestMetric> testMetrics;
+
    @Column(name = "description")
    private String description;
 
@@ -64,7 +71,7 @@ public class Metric implements Serializable {
    @XmlID
    @XmlAttribute(name = "id")
    public String getStringId() {
-      return String.valueOf(id);
+      return id == null ? null : String.valueOf(id);
    }
 
    public void setStringId(String id) {
@@ -98,7 +105,7 @@ public class Metric implements Serializable {
       return this.values;
    }
 
-   @XmlElement(name="description")
+   @XmlElement(name = "description")
    public String getDescription() {
       return description;
    }
@@ -106,7 +113,14 @@ public class Metric implements Serializable {
    public void setDescription(String description) {
       this.description = description;
    }
-   
-   
+
+   @XmlTransient
+   public Collection<TestMetric> getTestMetrics() {
+      return testMetrics;
+   }
+
+   public void setTestMetrics(Collection<TestMetric> testMetrics) {
+      this.testMetrics = testMetrics;
+   }
 
 }

@@ -19,9 +19,7 @@ import org.jboss.qa.perfrepo.model.TestMetric;
 
 @Named
 @RequestScoped
-public class TestMetricController implements Serializable {
-
-   private static final long serialVersionUID = 1L;
+public class TestMetricController extends ControllerBase {
 
    @Inject
    private TestMetricDAO dao;
@@ -54,21 +52,21 @@ public class TestMetricController implements Serializable {
          boolean whereAppended = false;
          querySB.append("SELECT x FROM TestMetric x");
          String metricIdN_1 = getRequestParam("metricId");
-if (metricIdN_1 != null) {
-querySB.append(" "+(whereAppended?"AND":"WHERE")+" x.metric.id = :metricId");
-if(!whereAppended){
-whereAppended = true;
-}
-queryParams.put("metricId", Integer.valueOf(metricIdN_1));
-}
-String testIdN_1 = getRequestParam("testId");
-if (testIdN_1 != null) {
-querySB.append(" "+(whereAppended?"AND":"WHERE")+" x.test.id = :testId");
-if(!whereAppended){
-whereAppended = true;
-}
-queryParams.put("testId", Long.valueOf(testIdN_1));
-}
+         if (metricIdN_1 != null) {
+            querySB.append(" " + (whereAppended ? "AND" : "WHERE") + " x.metric.id = :metricId");
+            if (!whereAppended) {
+               whereAppended = true;
+            }
+            queryParams.put("metricId", Integer.valueOf(metricIdN_1));
+         }
+         String testIdN_1 = getRequestParam("testId");
+         if (testIdN_1 != null) {
+            querySB.append(" " + (whereAppended ? "AND" : "WHERE") + " x.test.id = :testId");
+            if (!whereAppended) {
+               whereAppended = true;
+            }
+            queryParams.put("testId", Long.valueOf(testIdN_1));
+         }
 
          beanList = dao.findByQuery(querySB.toString(), queryParams);
       }
@@ -83,9 +81,8 @@ queryParams.put("testId", Long.valueOf(testIdN_1));
    }
 
    /*
-    * If generated bean does not have an attribute called 'name' it is likely
-    * that the select list component wouldn't be used in web application so this
-    * method can be deleted.
+    * If generated bean does not have an attribute called 'name' it is likely that the select list
+    * component wouldn't be used in web application so this method can be deleted.
     */
    public List<SelectItem> getBeanSelectItems() {
       List<SelectItem> list = new ArrayList<SelectItem>();
@@ -122,21 +119,4 @@ queryParams.put("testId", Long.valueOf(testIdN_1));
       return "TestMetricList";
    }
 
-   public Map<String, String> getRequestParams() {
-      Map<String, String> map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-      return map;
-   }
-
-   public String getRequestParam(String name) {
-      return getRequestParams().get(name);
-   }
-
-   public String getRequestParam(String name, String _default) {
-      String ret = getRequestParam(name);
-      if (ret == null) {
-         return _default;
-      } else {
-         return ret;
-      }
-   }
 }

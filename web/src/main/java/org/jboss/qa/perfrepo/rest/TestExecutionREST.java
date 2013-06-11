@@ -3,6 +3,7 @@ package org.jboss.qa.perfrepo.rest;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -48,10 +49,6 @@ public class TestExecutionREST {
       return Response.ok(testService.findAllTestExecutions()).build();
    }
 
-   /**
-    * @param testExecution
-    * @return Response with id of newly created test execution or error message.
-    */
    @POST()
    @Path("/create")
    @Consumes(MediaType.TEXT_XML)
@@ -60,15 +57,17 @@ public class TestExecutionREST {
       return Response.ok(testService.storeTestExecution(testExecution).getId()).build();
    }
 
-   /**
-    * Add test execution attachment.
-    * 
-    * @param testExecutionId
-    * @param mimeType
-    * @param fileName
-    * @param requestBody
-    * @return Id of newly created attachment
-    */
+   @DELETE
+   @Produces(MediaType.TEXT_XML)
+   @Path("/{testExecutionId}")
+   @Logged
+   public Response delete(@PathParam("testExecutionId") Long testExecutionId) throws Exception {
+      TestExecution idHolder = new TestExecution();
+      idHolder.setId(testExecutionId);
+      testService.deleteTestExecution(idHolder);
+      return Response.noContent().build();
+   }
+
    @POST()
    @Path("/{testExecutionId}/addAttachment")
    @Logged
@@ -84,13 +83,6 @@ public class TestExecutionREST {
       return Response.status(200).entity(testService.addAttachment(attachment)).build();
    }
 
-   /**
-    * 
-    * Fetch test execution attachment.
-    * 
-    * @param attachmentId
-    * @return the attachment
-    */
    @GET
    @Path("/attachment/{attachmentId}")
    @Logged

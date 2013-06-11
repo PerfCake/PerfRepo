@@ -1,6 +1,5 @@
 package org.jboss.qa.perf_repo.web;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,9 +20,7 @@ import org.jboss.qa.perfrepo.service.TestService;
 
 @Named
 @RequestScoped
-public class TestExecutionController implements Serializable {
-
-   private static final long serialVersionUID = 1L;
+public class TestExecutionController extends ControllerBase {
 
    @Inject
    private TestExecutionDAO dao;
@@ -80,9 +77,8 @@ public class TestExecutionController implements Serializable {
    }
 
    /*
-    * If generated bean does not have an attribute called 'name' it is likely
-    * that the select list component wouldn't be used in web application so this
-    * method can be deleted.
+    * If generated bean does not have an attribute called 'name' it is likely that the select list
+    * component wouldn't be used in web application so this method can be deleted.
     */
    public List<SelectItem> getBeanSelectItems() {
       List<SelectItem> list = new ArrayList<SelectItem>();
@@ -116,29 +112,19 @@ public class TestExecutionController implements Serializable {
    }
 
    public String delete() {
-      if (bean != null) {
-         dao.delete(bean);
+      TestExecution objectToDelete = bean;
+      if (bean == null) {
+         objectToDelete = new TestExecution();
+         objectToDelete.setId(new Long(getRequestParam("testExecutionId")));
       }
-
+      try {
+         service.deleteTestExecution(objectToDelete);
+      } catch (Exception e) {
+         // TODO: how to handle web-layer exceptions ?
+         throw new RuntimeException(e);
+      }
       // on successfuly created go back to the entity list
       return "TestExecutionList";
    }
 
-   public Map<String, String> getRequestParams() {
-      Map<String, String> map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-      return map;
-   }
-
-   public String getRequestParam(String name) {
-      return getRequestParams().get(name);
-   }
-
-   public String getRequestParam(String name, String _default) {
-      String ret = getRequestParam(name);
-      if (ret == null) {
-         return _default;
-      } else {
-         return ret;
-      }
-   }
 }

@@ -22,10 +22,17 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Represents one test.
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ */
 @Entity
 @Table(name = "test")
-@NamedQueries({ 
-   @NamedQuery(name = Test.FIND_TEST_ID, query = "SELECT test from Test test where test = :entity") })
+@NamedQueries({
+      @NamedQuery(name = Test.FIND_TEST_ID, query = "SELECT test from Test test where test = :entity"),
+      @NamedQuery(name = Test.FIND_TESTS_USING_METRIC, query = "SELECT test from Test test, TestMetric tm, Metric m where test = tm.test and tm.metric = m and m.id = :metric") })
 @XmlRootElement(name = "test")
 @Named("test")
 @RequestScoped
@@ -36,6 +43,7 @@ public class Test implements Serializable {
    public static final String FIND_ALL = "Test.findAll";
 
    public static final String FIND_TEST_ID = "Test.findTestId";
+   public static final String FIND_TESTS_USING_METRIC = "Test.findTestsUsingMetric";
 
    @Id
    @SequenceGenerator(name = "TEST_ID_GENERATOR", sequenceName = "TEST_SEQUENCE", allocationSize = 1)
@@ -44,22 +52,22 @@ public class Test implements Serializable {
 
    @Column(name = "name")
    private String name;
-   
+
    @OneToMany(mappedBy = "test")
    private Collection<TestExecution> testExecutions;
-   
+
    @OneToMany(mappedBy = "test")
    private Collection<TestMetric> testMetrics;
-   
+
    @Column(name = "uid")
    private String uid;
-   
+
    @Column(name = "groupId")
    private String groupId;
-   
+
    @Column(name = "description")
    private String description;
-   
+
    @XmlTransient
    public Long getId() {
       return id;
@@ -72,7 +80,7 @@ public class Test implements Serializable {
    @XmlID
    @XmlAttribute(name = "id")
    public String getStringId() {
-      return String.valueOf(id);
+      return id == null ? null : String.valueOf(id);
    }
 
    public void setStringId(String id) {
@@ -115,7 +123,7 @@ public class Test implements Serializable {
    public String getUid() {
       return this.uid;
    }
-   
+
    @XmlAttribute(name = "groupId")
    public String getGroupId() {
       return groupId;
@@ -133,7 +141,5 @@ public class Test implements Serializable {
    public void setDescription(String description) {
       this.description = description;
    }
-   
-   
 
 }

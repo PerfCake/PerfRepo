@@ -2,14 +2,19 @@ package org.jboss.qa.perfrepo.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.dao.MetricDAO;
 import org.jboss.qa.perfrepo.dao.TagDAO;
 import org.jboss.qa.perfrepo.dao.TestDAO;
@@ -45,40 +50,43 @@ import org.jboss.qa.perfrepo.security.UserInfo;
 @Named
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class TestServiceBean implements TestService {
 
-   @Inject
-   TestDAO testDAO;
+   private static final Logger log = Logger.getLogger(TestService.class);
 
    @Inject
-   TestExecutionDAO testExecutionDAO;
+   private TestDAO testDAO;
 
    @Inject
-   TestExecutionParameterDAO testExecutionParameterDAO;
+   private TestExecutionDAO testExecutionDAO;
 
    @Inject
-   TestExecutionAttachmentDAO testExecutionAttachmentDAO;
+   private TestExecutionParameterDAO testExecutionParameterDAO;
 
    @Inject
-   TagDAO tagDAO;
+   private TestExecutionAttachmentDAO testExecutionAttachmentDAO;
 
    @Inject
-   TestExecutionTagDAO testExecutionTagDAO;
+   private TagDAO tagDAO;
 
    @Inject
-   ValueDAO valueDAO;
+   private TestExecutionTagDAO testExecutionTagDAO;
 
    @Inject
-   ValueParameterDAO valueParameterDAO;
+   private ValueDAO valueDAO;
 
    @Inject
-   MetricDAO metricDAO;
+   private ValueParameterDAO valueParameterDAO;
 
    @Inject
-   TestMetricDAO testMetricDAO;
+   private MetricDAO metricDAO;
 
    @Inject
-   UserInfo userInfo;
+   private TestMetricDAO testMetricDAO;
+
+   @Inject
+   private UserInfo userInfo;
 
    @Override
    public TestExecution storeTestExecution(TestExecution testExecution) throws ServiceException {
@@ -172,13 +180,19 @@ public class TestServiceBean implements TestService {
       return new SecurityException(String.format("User %s is not in group %s that owns the test %s (uid=%s)", userName, groupId, test, testUid));
    }
 
+   private SecurityException cantCreateTest(String userName, String groupId) {
+      return new SecurityException(String.format("User %s is not in group %s. Can't create test with group id that you're not member of.", userName, groupId));
+   }
+
    private ServiceException serviceException(String msg, Object... args) {
       return new ServiceException(String.format(msg, args));
    }
 
    @Override
    public Test createTest(Test test) {
-      //TODO: set guid
+      if (!userInfo.isUserInRole(test.getGroupId())) {
+         throw cantCreateTest(userInfo.getUserName(), test.getGroupId());
+      }
       Test createdTest = testDAO.create(test);
       //store metrics
       if (test.getTestMetrics() != null && test.getTestMetrics().size() > 0) {
@@ -201,7 +215,12 @@ public class TestServiceBean implements TestService {
    }
 
    public Test getTest(Long id) {
-      return testDAO.get(id);
+      Test test = testDAO.get(id);
+      Collection<TestMetric> tms = test.getTestMetrics();
+      for (TestMetric tm : tms) {
+         tm.getMetric();
+      }
+      return test;
    }
 
    public List<Test> findAllTests() {
@@ -213,11 +232,58 @@ public class TestServiceBean implements TestService {
       return testDAO.update(test);
    }
 
-   @Secure
-   public void deleteTest(Test test) {
-      Test t = testDAO.get(test.getId());
-      //TODO: delete test executions
-      testDAO.delete(t);
+   public void deleteTest(Test test) throws ServiceException {
+      Test freshTest = checkUserCanChangeTest(test);
+      for (TestExecution testExecution : freshTest.getTestExecutions()) {
+         deleteTestExecution(testExecution);
+      }
+      Iterator<TestMetric> allTestMetrics = freshTest.getTestMetrics().iterator();
+      while (allTestMetrics.hasNext()) {
+         TestMetric testMetric = allTestMetrics.next();
+         Metric metric = testMetric.getMetric();
+         List<Test> testsUsingMetric = testDAO.findByNamedQuery(Test.FIND_TESTS_USING_METRIC,
+               Collections.<String, Object> singletonMap("metric", metric.getId()));
+         allTestMetrics.remove();
+         testMetricDAO.delete(testMetric);
+         if (testsUsingMetric.size() == 0) {
+            throw new IllegalStateException();
+         } else if (testsUsingMetric.size() == 1) {
+            if (testsUsingMetric.get(0).getId().equals(test.getId())) {
+               metricDAO.delete(metric);
+            } else {
+               throw new IllegalStateException();
+            }
+         }
+      }
+      testDAO.delete(freshTest);
+   }
+
+   public void deleteTestExecution(TestExecution testExecution) throws ServiceException {
+      TestExecution freshTestExecution = testExecutionDAO.get(testExecution.getId());
+      if (freshTestExecution == null) {
+         throw serviceException("Test execution with id %s doesn't exist", testExecution.getId());
+      }
+      checkUserCanChangeTest(freshTestExecution.getTest());
+      for (TestExecutionParameter testExecutionParameter : freshTestExecution.getTestExecutionParameters()) {
+         testExecutionParameterDAO.delete(testExecutionParameter);
+      }
+      for (Value value : freshTestExecution.getValues()) {
+         for (ValueParameter valueParameter : value.getValueParameters()) {
+            valueParameterDAO.delete(valueParameter);
+         }
+         valueDAO.delete(value);
+      }
+      Iterator<TestExecutionTag> allTestExecutionTags = freshTestExecution.getTestExecutionTags().iterator();
+      while (allTestExecutionTags.hasNext()) {
+         testExecutionTagDAO.delete(allTestExecutionTags.next());
+         allTestExecutionTags.remove();
+      }
+      Iterator<TestExecutionAttachment> allTestExecutionAttachments = freshTestExecution.getTestExecutionAttachments().iterator();
+      while (allTestExecutionAttachments.hasNext()) {
+         testExecutionAttachmentDAO.delete(allTestExecutionAttachments.next());
+         allTestExecutionAttachments.remove();
+      }
+      testExecutionDAO.delete(freshTestExecution);
    }
 
    public Metric getMetric(Long id) {
@@ -268,12 +334,19 @@ public class TestServiceBean implements TestService {
       if (test == null) {
          throw new NullPointerException("test");
       }
-      if (test.getUid() == null) {
-         throw new NullPointerException("test.uid");
-      }
-      Test freshTest = testDAO.findByUid(test.getUid());
-      if (freshTest == null) {
-         throw serviceException("Test execution has to refer to an existing test! There is no test with uid=%s", test.getUid());
+      Test freshTest = null;
+      if (test.getId() != null) {
+         freshTest = testDAO.get(test.getId());
+         if (freshTest == null) {
+            throw serviceException("Test with id=%s, doesn't exist.", test.getId());
+         }
+      } else if (test.getUid() != null) {
+         freshTest = testDAO.findByUid(test.getUid());
+         if (freshTest == null) {
+            throw serviceException("Test with uid=%s, doesn't exist.", test.getUid());
+         }
+      } else {
+         throw serviceException("Can't find test, id or uid needs to be supplied");
       }
       // user can only insert test executions for tests pertaining to his group
       if (!userInfo.isUserInRole(freshTest.getGroupId())) {

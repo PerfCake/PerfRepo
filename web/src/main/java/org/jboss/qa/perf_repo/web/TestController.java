@@ -1,22 +1,18 @@
 package org.jboss.qa.perf_repo.web;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import javax.enterprise.context.RequestScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 
 @Named
 @RequestScoped
-public class TestController implements Serializable {
-
-   private static final long serialVersionUID = 1L;
+public class TestController extends ControllerBase {
 
    @Inject
    TestService testService;
@@ -39,13 +35,12 @@ public class TestController implements Serializable {
 
    @Deprecated
    public List<Test> getTestList() {
-      if (testList == null) {        
-          testList = testService.findAllTests();
+      if (testList == null) {
+         testList = testService.findAllTests();
       }
       return testList;
    }
 
-  
    public String update() {
       if (test != null) {
          testService.updateTest(test);
@@ -61,27 +56,18 @@ public class TestController implements Serializable {
    }
 
    public String delete() {
-      if (test != null) {
-         testService.deleteTest(test);
+      Test testToDelete = test;
+      if (test == null) {
+         testToDelete = new Test();
+         testToDelete.setId(new Long(getRequestParam("testId")));
+      }
+      try {
+         testService.deleteTest(testToDelete);
+      } catch (ServiceException e) {
+         // TODO: how to handle exceptions in web layer?
+         throw new RuntimeException(e);
       }
       return "TestList";
    }
 
-   public Map<String, String> getRequestParams() {
-      Map<String, String> map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-      return map;
-   }
-
-   public String getRequestParam(String name) {
-      return getRequestParams().get(name);
-   }
-
-   public String getRequestParam(String name, String _default) {
-      String ret = getRequestParam(name);
-      if (ret == null) {
-         return _default;
-      } else {
-         return ret;
-      }
-   }
 }
