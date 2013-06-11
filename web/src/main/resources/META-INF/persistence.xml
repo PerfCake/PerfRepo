@@ -13,7 +13,9 @@
       <properties>
          <!-- Properties for Hibernate -->
          <property name="hibernate.hbm2ddl.auto" value="validate" />
-         <property name="hibernate.show_sql" value="true" />
+         <!--property name="hibernate.show_sql" value="true" / -->
+         <!-- please use: http://localhost:9990/console/App.html#logging 
+              and set logging for category org.hibernate.SQL to see SQL -->
       </properties>
    </persistence-unit>
 </persistence>

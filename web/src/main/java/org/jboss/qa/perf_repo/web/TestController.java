@@ -40,7 +40,7 @@ public class TestController implements Serializable {
    @Deprecated
    public List<Test> getTestList() {
       if (testList == null) {        
-          testList = testService.getAllTests();
+          testList = testService.findAllTests();
       }
       return testList;
    }
@@ -55,7 +55,7 @@ public class TestController implements Serializable {
 
    public String create() {
       if (test != null) {
-         testService.storeTest(test);
+         testService.createTest(test);
       }
       return "TestList";
    }

@@ -19,7 +19,7 @@ import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
-import org.jboss.qa.perfrepo.service.TestExecutionService;
+import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
 import org.richfaces.component.SortOrder;
 
@@ -30,7 +30,7 @@ public class SimpleReportController implements Serializable {
    private static final long serialVersionUID = 1L;
 
    @Inject
-   private TestExecutionService testExecutionService;
+   private TestService testExecutionService;
 
    @Inject
    private TEComparatorSession teComparator; 

@@ -24,7 +24,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @Table(name = "test_metric")
 @NamedQueries({ 
-   @NamedQuery(name = TestMetric.FIND_TEST_ID, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm.id= :entity")})
+   @NamedQuery(name = TestMetric.FIND_TEST_ID, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm.id= :entity"),
+   @NamedQuery(name = TestMetric.FIND_TEST_METRIC, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test and m.id= :metric")})
 @XmlRootElement(name = "testMetric")
 @Named("testMetric")
 @RequestScoped
@@ -33,6 +34,7 @@ public class TestMetric implements Serializable {
    private static final long serialVersionUID = 1L;
 
    public static final String FIND_TEST_ID = "TestMetric.findTestId";
+   public static final String FIND_TEST_METRIC = "TestMetric.findTestMetric";
 
    @Id
    @SequenceGenerator(name = "TEST_METRIC_ID_GENERATOR", sequenceName = "TEST_METRIC_SEQUENCE", allocationSize = 1)

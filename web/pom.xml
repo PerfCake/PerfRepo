@@ -110,6 +110,11 @@
          <artifactId>richfaces-components-ui</artifactId>
          <version>4.3.2.Final</version>
       </dependency>
+      <dependency>
+         <groupId>log4j</groupId>
+         <artifactId>log4j</artifactId>
+         <version>1.2.16</version>
+      </dependency>
    </dependencies>
 
    <build>

@@ -28,10 +28,17 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * 
+ * Represents one execution of a test.
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Entity
 @Table(name = "test_execution")
-@NamedQueries({ 
-   @NamedQuery(name = TestExecution.FIND_TEST_ID, query = "SELECT te.test from TestExecution te inner join te.test where te= :entity")})
+@NamedQueries({ @NamedQuery(name = TestExecution.FIND_TEST_ID, query = "SELECT te.test from TestExecution te inner join te.test where te= :entity") })
 @XmlRootElement(name = "testExecution")
 @Named("testExecution")
 @RequestScoped
@@ -47,20 +54,20 @@ public class TestExecution implements Serializable {
 
    @Column(name = "name")
    private String name;
-   
+
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
    @JoinColumn(name = "test_id", referencedColumnName = "id")
    private Test test;
-   
+
    @OneToMany(mappedBy = "testExecution")
    private Set<TestExecutionParameter> testExecutionParameters = new HashSet<TestExecutionParameter>();
-   
+
    @OneToMany(mappedBy = "testExecution")
    private Set<TestExecutionTag> testExecutionTags = new HashSet<TestExecutionTag>();
-   
+
    @OneToMany(mappedBy = "testExecution")
    private Set<Value> values = new HashSet<Value>();
-   
+
    @Column(name = "started")
    private Date started;
 
@@ -204,9 +211,12 @@ public class TestExecution implements Serializable {
          return false;
       return true;
    }
-   
-   
-   
-   
 
+   /**
+    * 
+    * @return test uid
+    */
+   public String getTestUid() {
+      return test == null ? null : test.getUid();
+   }
 }

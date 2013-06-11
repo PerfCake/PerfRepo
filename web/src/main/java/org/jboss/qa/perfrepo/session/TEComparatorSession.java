@@ -9,7 +9,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jboss.qa.perfrepo.service.TestExecutionService;
+import org.jboss.qa.perfrepo.service.TestService;
 
 @Named(value="teComparatorSession")
 @SessionScoped
@@ -18,7 +18,7 @@ public class TEComparatorSession implements Serializable {
    private static final long serialVersionUID = 1L;
 
    @Inject
-   private TestExecutionService testExecutionService;
+   private TestService testExecutionService;
 
    private Set<Long> testExecutions = new HashSet<Long>();
    

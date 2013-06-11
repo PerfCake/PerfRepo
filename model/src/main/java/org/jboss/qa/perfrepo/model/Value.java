@@ -25,10 +25,17 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * 
+ * Represents one value measured in a {@link TestExecution}.
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Entity
 @Table(name = "value")
-@NamedQueries({ 
-  @NamedQuery(name = Value.FIND_TEST_ID, query = "SELECT test from Value v inner join v.testExecution te inner join te.test test where v.id= :entity")})
+@NamedQueries({ @NamedQuery(name = Value.FIND_TEST_ID, query = "SELECT test from Value v inner join v.testExecution te inner join te.test test where v.id= :entity") })
 @XmlRootElement(name = "value")
 @Named("value")
 @RequestScoped
@@ -45,17 +52,17 @@ public class Value implements Serializable {
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
    @JoinColumn(name = "metric_id", referencedColumnName = "id")
    private Metric metric;
-   
+
    @Column(name = "name")
    private String name;
-   
+
    @Column(name = "result_value")
    private Double resultValue;
-   
+
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
    @JoinColumn(name = "test_execution_id", referencedColumnName = "id")
    private TestExecution testExecution;
-   
+
    @OneToMany(mappedBy = "value")
    private Set<ValueParameter> valueParameters;
 
@@ -127,6 +134,10 @@ public class Value implements Serializable {
    @XmlElement(name = "valueParameter")
    public Set<ValueParameter> getValueParameters() {
       return this.valueParameters;
+   }
+
+   public String getMetricName() {
+      return metric == null ? null : metric.getName();
    }
 
 }

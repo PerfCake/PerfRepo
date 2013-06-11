@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.TestExecution;
-import org.jboss.qa.perfrepo.service.TestExecutionService;
+import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
 import org.richfaces.component.SortOrder;
 
@@ -29,7 +29,7 @@ public class TestExecutionCompareController implements Serializable {
    private static final long serialVersionUID = 1L;
 
    @Inject
-   private TestExecutionService testExecutionService;
+   private TestService testExecutionService;
    
    @Inject
    private TEComparatorSession teComparator;   

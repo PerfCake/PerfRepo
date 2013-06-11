@@ -10,7 +10,7 @@ import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionSearchTO;
-import org.jboss.qa.perfrepo.service.TestExecutionService;
+import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 @Named
@@ -20,7 +20,7 @@ public class SearchController implements Serializable {
    private static final long serialVersionUID = 1L;
    
    @Inject
-   private TestExecutionService testExecutionService;
+   private TestService testExecutionService;
    
    private String tag;
    

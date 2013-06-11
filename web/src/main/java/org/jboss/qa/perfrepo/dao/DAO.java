@@ -2,7 +2,6 @@ package org.jboss.qa.perfrepo.dao;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,38 +16,43 @@ import javax.persistence.criteria.FetchParent;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
-
 /**
  * Common ancestor for DAO objects
+ * 
  * @author Pavel Drozd
- *
+ * 
  * @param <T> entity type
  * @param <PK> primary key type
  */
 public abstract class DAO<T, PK extends Serializable> {
-   
-   
-   private static final long serialVersionUID = 3174235359562788810L;
 
    @Inject
    private EntityManager em;
-   
+
    private Class<T> type;
-   
+
    @SuppressWarnings("unchecked")
-   public DAO() {      
+   public DAO() {
       if (getClass().getGenericSuperclass() instanceof ParameterizedType) {
-         type = (Class<T>)((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+         type = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
       } else {
-         type = (Class<T>)((ParameterizedType)getClass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[0];
+         type = (Class<T>) ((ParameterizedType) getClass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[0];
       }
-   }   
-   
-   public T get(final PK id) {      
-      return em.find(type, id);      
    }
 
-   public List<T> findAll() {   
+   /**
+    * TODO: shouldn't be called find to be consistent with entity manager naming ?
+    * 
+    * Find an entity based on it's primary key
+    * 
+    * @param id Primary key
+    * @return Entity
+    */
+   public T get(final PK id) {
+      return em.find(type, id);
+   }
+
+   public List<T> findAll() {
       CriteriaQuery<T> criteria = createCriteria();
       Root<T> root = criteria.from(type);
       criteria.select(root);
@@ -62,33 +66,33 @@ public abstract class DAO<T, PK extends Serializable> {
       criteria.where(em.getCriteriaBuilder().equal(root.get(propertyName), value));
       return em.createQuery(criteria).getResultList();
    }
-   
+
    public List<T> findByCustomCriteria(final CriteriaQuery<T> criteria) {
       return em.createQuery(criteria).getResultList();
    }
-   
+
    public T findByCustomCriteriaSingle(final CriteriaQuery<T> criteria) {
       return em.createQuery(criteria).getSingleResult();
    }
-   
-   public T update(final T entity) {      
+
+   public T update(final T entity) {
       T stored = em.merge(entity);
       em.flush();
-      return stored; 
+      return stored;
    }
-   
+
    public T create(final T entity) {
       em.persist(entity);
       em.flush();
       return entity;
-      
+
    }
-   
-   public void delete(final T entity) {      
+
+   public void delete(final T entity) {
       em.remove(entity);
       em.flush();
    }
-   
+
    public List<T> findByQuery(String query, Map<String, Object> queryParams) {
       TypedQuery<T> tq = em.createQuery(query, type);
       for (Entry<String, Object> entry : queryParams.entrySet()) {
@@ -97,44 +101,50 @@ public abstract class DAO<T, PK extends Serializable> {
       return tq.getResultList();
    }
 
-   protected CriteriaQuery<T> createCriteria() {      
-      return em.getCriteriaBuilder().createQuery(type); 
+   public List<T> findByNamedQuery(String queryName, Map<String, Object> queryParams) {
+      TypedQuery<T> tq = em.createNamedQuery(queryName, type);
+      for (Entry<String, Object> entry : queryParams.entrySet()) {
+         tq.setParameter(entry.getKey(), entry.getValue());
+      }
+      return tq.getResultList();
    }
-   
+
+   protected CriteriaQuery<T> createCriteria() {
+      return em.getCriteriaBuilder().createQuery(type);
+   }
+
    protected EntityManager getEntityManager() {
       return em;
    }
-   
-   
+
    public T findWithDepth(Object id, String... fetchRelations) {
-      CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();      
-     CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(type);
-     Root<T> root = criteriaQuery.from(type);
+      CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+      CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(type);
+      Root<T> root = criteriaQuery.from(type);
       for (String relation : fetchRelations) {
-          FetchParent<T, T> fetch = root;
-          for (String pathSegment : relation.split("\\.")) {
-              fetch = fetch.fetch(pathSegment, JoinType.LEFT);              
-          }
+         FetchParent<T, T> fetch = root;
+         for (String pathSegment : relation.split("\\.")) {
+            fetch = fetch.fetch(pathSegment, JoinType.LEFT);
+         }
       }
       criteriaQuery.where(criteriaBuilder.equal(root.get("id"), id));
       return getSingleOrNoneResult(em.createQuery(criteriaQuery));
-  }
+   }
 
-  private T getSingleOrNoneResult(TypedQuery<T> query) {        
+   private T getSingleOrNoneResult(TypedQuery<T> query) {
       query.setMaxResults(1);
       List<T> result = query.getResultList();
       if (result.isEmpty()) {
-          return null;
+         return null;
       }
       return result.get(0);
-  }
-  
-  public Long getOwnerId(PK id) throws Exception {     
-     String query = (String)type.getDeclaredField("FIND_TEST_ID").get(String.class);
-     Query q = em.createNamedQuery(query);
-     q.setParameter("id", id);
-     return (Long)q.getSingleResult();
-  }
+   }
 
+   public Long getOwnerId(PK id) throws Exception {
+      String query = (String) type.getDeclaredField("FIND_TEST_ID").get(String.class);
+      Query q = em.createNamedQuery(query);
+      q.setParameter("id", id);
+      return (Long) q.getSingleResult();
+   }
 
 }

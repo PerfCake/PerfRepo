@@ -72,7 +72,7 @@
 	</context-param>
 	<!-- Security -->
 	<security-constraint>
-		<display-name>PerfRepoRealm</display-name>
+		<display-name>PerfRepoSecurityRealm</display-name>
 		<web-resource-collection>
 			<web-resource-name>repo</web-resource-name>
 			<description />
@@ -86,7 +86,7 @@
 	</security-constraint>
 	<login-config>
 		<auth-method>BASIC</auth-method>
-		<realm-name>Performance Results Repository</realm-name>
+		<realm-name>PerfRepoSecurityRealm</realm-name>
 	</login-config>
 	<security-role>
 		<description />

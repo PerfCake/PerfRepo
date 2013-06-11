@@ -16,6 +16,8 @@ import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.dao.TestExecutionDAO;
 import org.jboss.qa.perfrepo.model.TestExecution;
+import org.jboss.qa.perfrepo.service.ServiceException;
+import org.jboss.qa.perfrepo.service.TestService;
 
 @Named
 @RequestScoped
@@ -25,6 +27,9 @@ public class TestExecutionController implements Serializable {
 
    @Inject
    private TestExecutionDAO dao;
+
+   @Inject
+   private TestService service;
 
    @Inject
    Conversation conversation;
@@ -90,7 +95,12 @@ public class TestExecutionController implements Serializable {
 
    public String update() {
       if (bean != null) {
-         dao.update(bean);
+         try {
+            service.updateTestExecution(bean);
+         } catch (ServiceException e) {
+            // TODO: how to handle exceptions in web layer ?
+            throw new RuntimeException(e);
+         }
       }
       // on successfuly updated go back to the entity list
       return "TestExecutionList";

@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.service.TestService;
 
 @Named
@@ -32,30 +33,31 @@ public class MetricController implements Serializable {
             metric = testService.getMetric(Long.valueOf(id));
          } else {
             metric = new Metric();
-         }         
+         }
       }
       return metric;
    }
 
    public List<Metric> getMetricList() {
-      if (metricList == null) {               
+      if (metricList == null) {
          metricList = testService.getAllMetrics();
       }
       return metricList;
-   }   
+   }
 
    public String update() {
       if (metric != null) {
-         testService.storeMetric(metric);
+         testService.updateMetric(metric);
       }
       return "MetricList";
    }
 
    public String create() {
-      if (metric != null) {
-         testService.storeMetric(metric);
-      }
-      return "MetricList";
+      throw new UnsupportedOperationException();
+      //      //      if (metric != null) {
+      //      //         testService.addMetric(metric.get metric);
+      //      //      }
+      //      return "MetricList";
    }
 
    public String delete(Metric metric) {
