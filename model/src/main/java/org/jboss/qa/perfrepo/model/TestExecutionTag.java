@@ -29,8 +29,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @RequestScoped
 public class TestExecutionTag implements Serializable {
 
-   private static final long serialVersionUID = 1L;
-
    public static final String FIND_TEST_ID = "TestExecutionTag.findTestId";
 
    @Id

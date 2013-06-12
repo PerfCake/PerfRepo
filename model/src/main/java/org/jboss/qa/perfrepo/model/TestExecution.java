@@ -26,6 +26,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -49,7 +51,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @RequestScoped
 public class TestExecution implements Serializable {
 
-   private static final long serialVersionUID = 1L;
    public static final String FIND_TEST_ID = "TestExecution.findTestId";
 
    @Id
@@ -58,6 +59,8 @@ public class TestExecution implements Serializable {
    private Long id;
 
    @Column(name = "name")
+   @NotNull
+   @Size(max = 2047)
    private String name;
 
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
@@ -135,6 +138,18 @@ public class TestExecution implements Serializable {
          test = new Test();
       }
       test.setId(Long.valueOf(id));
+   }
+
+   @XmlAttribute(name = "testUid")
+   public String getTestUid() {
+      return test == null ? null : test.getUid();
+   }
+
+   public void setTestUid(String uid) {
+      if (test == null) {
+         test = new Test();
+      }
+      test.setUid(uid);
    }
 
    public void setParameters(Set<TestExecutionParameter> testExecutionParameters) {
@@ -244,14 +259,6 @@ public class TestExecution implements Serializable {
       } else if (!values.equals(other.values))
          return false;
       return true;
-   }
-
-   /**
-    * 
-    * @return test uid
-    */
-   public String getTestUid() {
-      return test == null ? null : test.getUid();
    }
 
    public TestExecutionParameter addParameter(TestExecutionParameter param) {

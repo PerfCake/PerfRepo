@@ -138,6 +138,7 @@ public class TestServiceBean implements TestService {
             }
          }
       }
+      log.debug("Created new test execution " + storedTestExecution.getId());
       return storedTestExecution;
    }
 
@@ -165,8 +166,7 @@ public class TestServiceBean implements TestService {
       if (testExecution == null) {
          throw serviceException("Trying to add attachment to non-existent test execution (id=%s)", attachment.getTestExecution().getId());
       }
-      Test test = checkUserCanChangeTest(testExecution.getTest());
-      // reload test execution to check whether it exists
+      checkUserCanChangeTest(testExecution.getTest());
       attachment.setTestExecution(testExecution);
       TestExecutionAttachment newAttachment = testExecutionAttachmentDAO.create(attachment);
       return newAttachment.getId();

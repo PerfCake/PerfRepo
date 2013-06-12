@@ -31,8 +31,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @RequestScoped
 public class TestMetric implements Serializable {
 
-   private static final long serialVersionUID = 1L;
-
    public static final String FIND_TEST_ID = "TestMetric.findTestId";
    public static final String FIND_TEST_METRIC = "TestMetric.findTestMetric";
 

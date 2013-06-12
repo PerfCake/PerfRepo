@@ -13,6 +13,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * 
@@ -25,17 +27,19 @@ import javax.persistence.Table;
 @Table(name = "test_execution_attachment")
 public class TestExecutionAttachment implements Serializable {
 
-   private static final long serialVersionUID = 1L;
-
    @Id
    @SequenceGenerator(name = "TEST_EXECUTION_ATTACHMENT_ID_GENERATOR", sequenceName = "TEST_EXECUTION_ATTACHMENT_SEQUENCE", allocationSize = 1)
    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_EXECUTION_ATTACHMENT_ID_GENERATOR")
    private Long id;
 
    @Column(name = "filename")
+   @NotNull
+   @Size(max = 2047)
    private String filename;
 
    @Column(name = "mimetype")
+   @NotNull
+   @Size(max = 255)
    private String mimetype;
 
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
@@ -44,6 +48,8 @@ public class TestExecutionAttachment implements Serializable {
 
    @Lob
    @Column(name = "content")
+   @NotNull
+   @Size(max = 1048576)
    private byte[] content;
 
    public TestExecutionAttachment() {

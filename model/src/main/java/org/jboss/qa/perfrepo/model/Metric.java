@@ -15,6 +15,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
@@ -35,8 +37,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @RequestScoped
 public class Metric implements Serializable, Comparable<Metric> {
 
-   private static final long serialVersionUID = 1L;
-
    public static final String FIND_TEST_ID = "Metric.findTestId";
 
    @Id
@@ -45,9 +45,12 @@ public class Metric implements Serializable, Comparable<Metric> {
    private Long id;
 
    @Column(name = "comparator")
+   @Size(max = 255)
    private String comparator;
 
    @Column(name = "name")
+   @NotNull
+   @Size(max = 2047)
    private String name;
 
    @OneToMany(mappedBy = "metric")
@@ -57,6 +60,8 @@ public class Metric implements Serializable, Comparable<Metric> {
    private Collection<TestMetric> testMetrics;
 
    @Column(name = "description")
+   @NotNull
+   @Size(max = 10239)
    private String description;
 
    public Metric() {

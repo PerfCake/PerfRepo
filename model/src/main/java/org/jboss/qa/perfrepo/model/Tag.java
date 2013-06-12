@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @RequestScoped
 public class Tag implements Serializable, Comparable<Tag> {
 
-   private static final long serialVersionUID = 1L;
-
    @Id
    @SequenceGenerator(name = "TAG_ID_GENERATOR", sequenceName = "TAG_SEQUENCE", allocationSize = 1)
    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TAG_ID_GENERATOR")

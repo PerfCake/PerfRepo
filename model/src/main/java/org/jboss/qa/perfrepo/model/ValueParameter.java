@@ -16,6 +16,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -58,9 +60,13 @@ public class ValueParameter implements Serializable {
    private Long id;
 
    @Column(name = "name")
+   @NotNull
+   @Size(max = 255)
    private String name;
 
    @Column(name = "value")
+   @NotNull
+   @Size(max = 255)
    private String paramValue;
 
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)

@@ -21,6 +21,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -44,7 +45,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @RequestScoped
 public class Value implements Serializable {
 
-   private static final long serialVersionUID = 1L;
    public static final String FIND_TEST_ID = "Value.findTestId";
 
    @Id
@@ -57,6 +57,7 @@ public class Value implements Serializable {
    private Metric metric;
 
    @Column(name = "name")
+   @Size(max = 255)
    private String name;
 
    @Column(name = "result_value")

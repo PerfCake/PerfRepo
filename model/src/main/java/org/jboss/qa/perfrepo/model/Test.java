@@ -18,6 +18,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -41,8 +43,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @RequestScoped
 public class Test implements Serializable {
 
-   private static final long serialVersionUID = 1L;
-
    public static final String FIND_ALL = "Test.findAll";
 
    public static final String FIND_TEST_ID = "Test.findTestId";
@@ -54,6 +54,8 @@ public class Test implements Serializable {
    private Long id;
 
    @Column(name = "name")
+   @NotNull
+   @Size(max = 2047)
    private String name;
 
    @OneToMany(mappedBy = "test")
@@ -63,12 +65,18 @@ public class Test implements Serializable {
    private Collection<TestMetric> testMetrics;
 
    @Column(name = "uid")
+   @NotNull
+   @Size(max = 2047)
    private String uid;
 
    @Column(name = "groupId")
+   @NotNull
+   @Size(max = 255)
    private String groupId;
 
    @Column(name = "description")
+   @NotNull
+   @Size(max = 10239)
    private String description;
 
    @XmlTransient

@@ -16,6 +16,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,8 +31,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @RequestScoped
 public class TestExecutionParameter implements Serializable, Comparable<TestExecutionParameter> {
 
-   private static final long serialVersionUID = 1L;
-
    public static final String FIND_ALL = "TestExecutionParameter.findAll";
 
    public static final String FIND_TEST_ID = "TestExecutionParameter.findTestId";
@@ -41,6 +41,8 @@ public class TestExecutionParameter implements Serializable, Comparable<TestExec
    private Long id;
 
    @Column(name = "name")
+   @NotNull
+   @Size(max = 2047)
    private String name;
 
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
@@ -48,6 +50,8 @@ public class TestExecutionParameter implements Serializable, Comparable<TestExec
    private TestExecution testExecution;
 
    @Column(name = "value")
+   @NotNull
+   @Size(max = 2047)
    private String value;
 
    public TestExecutionParameter() {

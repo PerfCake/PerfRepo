@@ -11,6 +11,11 @@
 
    <dependencies>
       <dependency>
+         <groupId>javax.validation</groupId>
+         <artifactId>validation-api</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
          <groupId>org.jboss.spec.javax.annotation</groupId>
          <artifactId>jboss-annotations-api_1.1_spec</artifactId>
          <scope>provided</scope>
