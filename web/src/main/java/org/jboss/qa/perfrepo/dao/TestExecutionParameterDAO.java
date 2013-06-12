@@ -12,7 +12,6 @@ import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long> {
 
-   private static final long serialVersionUID = 1L;
-   
-   
+   // nothing to add
+
 }

@@ -59,7 +59,7 @@ public class TestExecutionAttachment implements Serializable {
    }
 
    public String getStringId() {
-      return String.valueOf(id);
+      return id == null ? null : String.valueOf(id);
    }
 
    public void setStringId(String id) {

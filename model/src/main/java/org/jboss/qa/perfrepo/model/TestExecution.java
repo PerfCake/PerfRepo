@@ -1,9 +1,14 @@
 package org.jboss.qa.perfrepo.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
@@ -60,7 +65,7 @@ public class TestExecution implements Serializable {
    private Test test;
 
    @OneToMany(mappedBy = "testExecution")
-   private Set<TestExecutionParameter> testExecutionParameters = new HashSet<TestExecutionParameter>();
+   private Set<TestExecutionParameter> parameters = new HashSet<TestExecutionParameter>();
 
    @OneToMany(mappedBy = "testExecution")
    private Set<TestExecutionTag> testExecutionTags = new HashSet<TestExecutionTag>();
@@ -69,7 +74,7 @@ public class TestExecution implements Serializable {
    private Set<Value> values = new HashSet<Value>();
 
    @OneToMany(mappedBy = "testExecution")
-   private Set<TestExecutionAttachment> testExecutionAttachments = new HashSet<TestExecutionAttachment>();
+   private Set<TestExecutionAttachment> attachments = new HashSet<TestExecutionAttachment>();
 
    @Column(name = "started")
    private Date started;
@@ -90,7 +95,7 @@ public class TestExecution implements Serializable {
    @XmlID
    @XmlAttribute(name = "id")
    public String getStringId() {
-      return String.valueOf(id);
+      return id == null ? null : String.valueOf(id);
    }
 
    public void setStringId(String id) {
@@ -110,19 +115,36 @@ public class TestExecution implements Serializable {
       this.test = test;
    }
 
-   @XmlElement(name = "test")
+   /**
+    * this atttribute is {@link XmlTransient} because we don't want to return {@link Test}, which
+    * would need to include {@link Metric} objects. The test is determined from xml attribute testId
+    * which is supplied by {@link TestExecution#getTestId()} method.
+    */
+   @XmlTransient
    public Test getTest() {
       return this.test;
    }
 
-   public void setTestExecutionParameters(Set<TestExecutionParameter> testExecutionParameters) {
-      this.testExecutionParameters = testExecutionParameters;
+   @XmlAttribute(name = "testId")
+   public String getTestId() {
+      return test == null ? null : (test.getId() == null ? null : test.getId().toString());
+   }
+
+   public void setTestId(String id) {
+      if (test == null) {
+         test = new Test();
+      }
+      test.setId(Long.valueOf(id));
+   }
+
+   public void setParameters(Set<TestExecutionParameter> testExecutionParameters) {
+      this.parameters = testExecutionParameters;
    }
 
    @XmlElementWrapper(name = "testExecutionParameters")
    @XmlElement(name = "testExecutionParameter")
-   public Collection<TestExecutionParameter> getTestExecutionParameters() {
-      return this.testExecutionParameters;
+   public Collection<TestExecutionParameter> getParameters() {
+      return this.parameters;
    }
 
    public void setTestExecutionTags(Set<TestExecutionTag> testExecutionTags) {
@@ -155,12 +177,12 @@ public class TestExecution implements Serializable {
    }
 
    @XmlTransient
-   public Collection<TestExecutionAttachment> getTestExecutionAttachments() {
-      return testExecutionAttachments;
+   public Collection<TestExecutionAttachment> getAttachments() {
+      return attachments;
    }
 
-   public void setTestExecutionAttachments(Set<TestExecutionAttachment> testExecutionAttachments) {
-      this.testExecutionAttachments = testExecutionAttachments;
+   public void setAttachments(Set<TestExecutionAttachment> attachments) {
+      this.attachments = attachments;
    }
 
    @Override
@@ -171,7 +193,7 @@ public class TestExecution implements Serializable {
       result = prime * result + ((name == null) ? 0 : name.hashCode());
       result = prime * result + ((started == null) ? 0 : started.hashCode());
       result = prime * result + ((test == null) ? 0 : test.hashCode());
-      result = prime * result + ((testExecutionParameters == null) ? 0 : testExecutionParameters.hashCode());
+      result = prime * result + ((parameters == null) ? 0 : parameters.hashCode());
       result = prime * result + ((testExecutionTags == null) ? 0 : testExecutionTags.hashCode());
       result = prime * result + ((values == null) ? 0 : values.hashCode());
       return result;
@@ -206,10 +228,10 @@ public class TestExecution implements Serializable {
             return false;
       } else if (!test.equals(other.test))
          return false;
-      if (testExecutionParameters == null) {
-         if (other.testExecutionParameters != null)
+      if (parameters == null) {
+         if (other.parameters != null)
             return false;
-      } else if (!testExecutionParameters.equals(other.testExecutionParameters))
+      } else if (!parameters.equals(other.parameters))
          return false;
       if (testExecutionTags == null) {
          if (other.testExecutionTags != null)
@@ -230,5 +252,100 @@ public class TestExecution implements Serializable {
     */
    public String getTestUid() {
       return test == null ? null : test.getUid();
+   }
+
+   public TestExecutionParameter addParameter(TestExecutionParameter param) {
+      if (parameters == null) {
+         parameters = new HashSet<TestExecutionParameter>();
+      }
+      parameters.add(param);
+      return param;
+   }
+
+   public TestExecutionParameter addParameter(String name, String value) {
+      return addParameter(new TestExecutionParameter(name, value));
+   }
+
+   public Tag addTag(String tag) {
+      if (testExecutionTags == null) {
+         testExecutionTags = new HashSet<TestExecutionTag>();
+      }
+      TestExecutionTag intermediate = new TestExecutionTag();
+      Tag tagObj = new Tag();
+      tagObj.setName(tag);
+      intermediate.setTag(tagObj);
+      testExecutionTags.add(intermediate);
+      return tagObj;
+   }
+
+   public Value addValue(Value value) {
+      if (values == null) {
+         values = new HashSet<Value>();
+      }
+      values.add(value);
+      return value;
+   }
+
+   public Value addValue(String metricName, Double value) {
+      return addValue(new Value(metricName, value));
+   }
+
+   public List<String> getSortedTags() {
+      if (testExecutionTags == null || testExecutionTags.isEmpty()) {
+         return new ArrayList<String>(0);
+      } else {
+         List<String> result = new ArrayList<String>();
+         for (TestExecutionTag tet : testExecutionTags) {
+            result.add(tet.getTag().getName());
+         }
+         Collections.sort(result);
+         return result;
+      }
+   }
+
+   public List<TestExecutionParameter> getSortedParameters() {
+      if (parameters == null || parameters.isEmpty()) {
+         return new ArrayList<TestExecutionParameter>(0);
+      } else {
+         List<TestExecutionParameter> result = new ArrayList<TestExecutionParameter>(parameters);
+         Collections.sort(result);
+         return result;
+      }
+   }
+
+   public Map<String, String> getParametersAsMap() {
+      if (parameters == null || parameters.isEmpty()) {
+         return new HashMap<>(0);
+      } else {
+         Map<String, String> r = new HashMap<>();
+         for (TestExecutionParameter p : parameters) {
+            r.put(p.getName(), p.getValue());
+         }
+         return r;
+      }
+   }
+
+   public Map<String, Double> getResultValuesAsMap() {
+      if (values == null || values.isEmpty()) {
+         return new HashMap<>(0);
+      } else {
+         Map<String, Double> r = new HashMap<>();
+         for (Value v : values) {
+            r.put(v.getMetricName(), v.getResultValue());
+         }
+         return r;
+      }
+   }
+
+   public Map<String, Value> getValuesAsMap() {
+      if (values == null || values.isEmpty()) {
+         return new HashMap<>(0);
+      } else {
+         Map<String, Value> r = new HashMap<>();
+         for (Value v : values) {
+            r.put(v.getMetricName(), v);
+         }
+         return r;
+      }
    }
 }

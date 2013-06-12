@@ -27,7 +27,7 @@ public interface TestService {
     * @return Created test execution. Contains database IDs.
     * @throws ServiceException
     */
-   TestExecution storeTestExecution(TestExecution testExecution) throws ServiceException;
+   TestExecution createTestExecution(TestExecution testExecution) throws ServiceException;
 
    /**
     * TODO: comment

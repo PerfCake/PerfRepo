@@ -14,8 +14,6 @@ import org.jboss.qa.perfrepo.model.Tag;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class TagDAO extends DAO<Tag, Long> {
 
-   private static final long serialVersionUID = 1L;  
-   
    public Tag findByName(String name) {
       List<Tag> tags = findAllByProperty("name", name);
       if (tags.size() > 0) {

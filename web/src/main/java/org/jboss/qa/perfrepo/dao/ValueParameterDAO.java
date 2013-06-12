@@ -12,6 +12,6 @@ import org.jboss.qa.perfrepo.model.ValueParameter;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class ValueParameterDAO extends DAO<ValueParameter, Long> {
 
-   private static final long serialVersionUID = 1L;
-   
+   // nothing to add
+
 }

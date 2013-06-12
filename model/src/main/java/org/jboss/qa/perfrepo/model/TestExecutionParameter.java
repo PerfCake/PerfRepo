@@ -23,12 +23,11 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "test_execution_parameter")
-@NamedQueries({ 
-   @NamedQuery(name = TestExecutionParameter.FIND_TEST_ID, query = "SELECT test from Test test inner join test.testExecutions te inner join te.testExecutionParameters tep where tep.id = :entity")})
+@NamedQueries({ @NamedQuery(name = TestExecutionParameter.FIND_TEST_ID, query = "SELECT test from Test test inner join test.testExecutions te inner join te.parameters tep where tep.id = :entity") })
 @XmlRootElement(name = "testExecutionParameter")
 @Named("testExecutionParameter")
 @RequestScoped
-public class TestExecutionParameter implements Serializable {
+public class TestExecutionParameter implements Serializable, Comparable<TestExecutionParameter> {
 
    private static final long serialVersionUID = 1L;
 
@@ -43,16 +42,22 @@ public class TestExecutionParameter implements Serializable {
 
    @Column(name = "name")
    private String name;
-   
+
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
    @JoinColumn(name = "test_execution_id", referencedColumnName = "id")
    private TestExecution testExecution;
-   
+
    @Column(name = "value")
    private String value;
 
    public TestExecutionParameter() {
       this.testExecution = new TestExecution();
+   }
+
+   public TestExecutionParameter(String name, String value) {
+      this.testExecution = new TestExecution();
+      this.name = name;
+      this.value = value;
    }
 
    @XmlTransient
@@ -67,7 +72,7 @@ public class TestExecutionParameter implements Serializable {
    @XmlID
    @XmlAttribute(name = "id")
    public String getStringId() {
-      return String.valueOf(id);
+      return id == null ? null : String.valueOf(id);
    }
 
    public void setStringId(String id) {
@@ -99,6 +104,11 @@ public class TestExecutionParameter implements Serializable {
    @XmlAttribute(name = "value")
    public String getValue() {
       return this.value;
+   }
+
+   @Override
+   public int compareTo(TestExecutionParameter o) {
+      return this.getName().compareTo(o.getName());
    }
 
 }

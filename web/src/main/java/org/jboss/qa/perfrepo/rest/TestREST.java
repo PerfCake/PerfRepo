@@ -31,9 +31,11 @@ import org.jboss.qa.perfrepo.service.TestService;
 public class TestREST {
 
    private static Method GET_TEST_METHOD;
+   private static Method GET_METRIC_METHOD;
    static {
       try {
          GET_TEST_METHOD = TestREST.class.getMethod("get", Long.class);
+         GET_METRIC_METHOD = MetricREST.class.getMethod("get", Long.class);
       } catch (Exception e) {
          e.printStackTrace(System.err);
       }
@@ -81,10 +83,11 @@ public class TestREST {
    @Path("/{testId}/addMetric")
    @Consumes(MediaType.TEXT_XML)
    @Logged
-   public Response addMetric(@PathParam("testId") Long testId, Metric metric) {
+   public Response addMetric(@PathParam("testId") Long testId, Metric metric, @Context UriInfo uriInfo) {
       Test test = new Test();
       test.setId(testId);
-      return Response.ok(testService.addMetric(test, metric).getId()).build();
+      Long id = testService.addMetric(test, metric).getId();
+      return Response.created(uriInfo.getBaseUriBuilder().path(MetricREST.class).path(GET_METRIC_METHOD).build(id)).entity(id).build();
    }
 
    @GET

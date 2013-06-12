@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "tag")
 @Named("tag")
 @RequestScoped
-public class Tag implements Serializable {
+public class Tag implements Serializable, Comparable<Tag> {
 
    private static final long serialVersionUID = 1L;
 
@@ -34,11 +34,10 @@ public class Tag implements Serializable {
 
    @Column(name = "name")
    private String name;
-   
+
    @OneToMany(mappedBy = "tag")
    private Collection<TestExecutionTag> testExecutionTags;
 
- 
    @XmlTransient
    public Long getId() {
       return id;
@@ -51,7 +50,7 @@ public class Tag implements Serializable {
    @XmlID
    @XmlAttribute(name = "id")
    public String getStringId() {
-      return String.valueOf(id);
+      return id == null ? null : String.valueOf(id);
    }
 
    public void setStringId(String id) {
@@ -74,6 +73,11 @@ public class Tag implements Serializable {
    @XmlTransient
    public Collection<TestExecutionTag> getTestExecutionTags() {
       return this.testExecutionTags;
+   }
+
+   @Override
+   public int compareTo(Tag o) {
+      return this.getName().compareTo(o.getName());
    }
 
 }

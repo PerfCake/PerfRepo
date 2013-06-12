@@ -1,7 +1,10 @@
 package org.jboss.qa.perfrepo.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
@@ -140,6 +143,33 @@ public class Test implements Serializable {
    @XmlElement(name = "description")
    public void setDescription(String description) {
       this.description = description;
+   }
+
+   public Metric addMetric(Metric metric) {
+      if (testMetrics == null) {
+         testMetrics = new ArrayList<TestMetric>();
+      }
+      TestMetric intermediate = new TestMetric();
+      intermediate.setMetric(metric);
+      testMetrics.add(intermediate);
+      return metric;
+   }
+
+   public Metric addMetric(String name, String comparator, String description) {
+      return addMetric(new Metric(name, comparator, description));
+   }
+
+   public List<Metric> getSortedMetrics() {
+      if (testMetrics == null || testMetrics.isEmpty()) {
+         return new ArrayList<Metric>(0);
+      } else {
+         List<Metric> result = new ArrayList<Metric>();
+         for (TestMetric tm : testMetrics) {
+            result.add(tm.getMetric());
+         }
+         Collections.sort(result);
+         return result;
+      }
    }
 
 }

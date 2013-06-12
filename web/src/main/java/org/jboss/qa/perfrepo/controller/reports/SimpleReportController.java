@@ -86,8 +86,8 @@ public class SimpleReportController implements Serializable {
       for (TestExecution te : testExecutions) {
          Map<String, Object> teParamRow = new HashMap<String, Object>();
          teParamRow.put("TestExecution", te.getName());               
-         if (te.getTestExecutionParameters() != null && te.getTestExecutionParameters().size() > 0) {
-            for (TestExecutionParameter tep : te.getTestExecutionParameters()) {
+         if (te.getParameters() != null && te.getParameters().size() > 0) {
+            for (TestExecutionParameter tep : te.getParameters()) {
                if (!teParamColumns.contains(tep.getName())) {
                   teParamColumns.add(tep.getName());
                }
@@ -97,8 +97,8 @@ public class SimpleReportController implements Serializable {
          if (te.getValues() != null) {
             for (Value value : te.getValues()) {
                StringBuffer valueParams = new StringBuffer();
-               if (value.getValueParameters() != null && value.getValueParameters().size() > 0) {
-                  for (ValueParameter vp : value.getValueParameters()) {
+               if (value.getParameters() != null && value.getParameters().size() > 0) {
+                  for (ValueParameter vp : value.getParameters()) {
                      valueParams.append(vp.getName()).append("=").append(vp.getParamValue()).append("\n");
                      if (!valueColumns.contains(vp.getName())) {
                         valueColumns.add(vp.getName());

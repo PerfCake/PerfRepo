@@ -1,6 +1,9 @@
 package org.jboss.qa.perfrepo.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
@@ -64,10 +67,18 @@ public class Value implements Serializable {
    private TestExecution testExecution;
 
    @OneToMany(mappedBy = "value")
-   private Set<ValueParameter> valueParameters;
+   private Set<ValueParameter> parameters;
 
    public Value() {
       this.metric = new Metric();
+      this.testExecution = new TestExecution();
+   }
+
+   public Value(String metricName, Double value) {
+      super();
+      this.metric = new Metric();
+      this.metric.setName(metricName);
+      this.resultValue = value;
       this.testExecution = new TestExecution();
    }
 
@@ -83,7 +94,7 @@ public class Value implements Serializable {
    @XmlID
    @XmlAttribute(name = "id")
    public String getStringId() {
-      return String.valueOf(id);
+      return id == null ? null : String.valueOf(id);
    }
 
    public void setStringId(String id) {
@@ -126,18 +137,42 @@ public class Value implements Serializable {
       return this.testExecution;
    }
 
-   public void setValueParameters(Set<ValueParameter> valueParameters) {
-      this.valueParameters = valueParameters;
+   public void setParameters(Set<ValueParameter> valueParameters) {
+      this.parameters = valueParameters;
    }
 
    @XmlElementWrapper(name = "valueParameters")
    @XmlElement(name = "valueParameter")
-   public Set<ValueParameter> getValueParameters() {
-      return this.valueParameters;
+   public Set<ValueParameter> getParameters() {
+      return this.parameters;
    }
 
    public String getMetricName() {
       return metric == null ? null : metric.getName();
+   }
+
+   public ValueParameter addParameter(ValueParameter param) {
+      if (parameters == null) {
+         parameters = new HashSet<ValueParameter>();
+      }
+      parameters.add(param);
+      return param;
+   }
+
+   public ValueParameter addParameter(String name, String value) {
+      return addParameter(new ValueParameter(name, value));
+   }
+
+   public Map<String, String> getParametersAsMap() {
+      if (parameters == null || parameters.isEmpty()) {
+         return new HashMap<>(0);
+      } else {
+         Map<String, String> r = new HashMap<>();
+         for (ValueParameter p : parameters) {
+            r.put(p.getName(), p.getParamValue());
+         }
+         return r;
+      }
    }
 
 }

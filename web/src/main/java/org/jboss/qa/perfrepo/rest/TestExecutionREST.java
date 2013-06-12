@@ -1,5 +1,7 @@
 package org.jboss.qa.perfrepo.rest;
 
+import java.lang.reflect.Method;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -10,10 +12,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
@@ -29,6 +33,17 @@ import org.jboss.qa.perfrepo.service.TestService;
 @Path("/testExecution")
 @RequestScoped
 public class TestExecutionREST {
+
+   private static Method GET_TEST_EXECUTION_METHOD;
+   private static Method GET_ATTACHMENT_METHOD;
+   static {
+      try {
+         GET_TEST_EXECUTION_METHOD = TestExecutionREST.class.getMethod("get", Long.class);
+         GET_ATTACHMENT_METHOD = TestExecutionREST.class.getMethod("getAttachment", Long.class);
+      } catch (Exception e) {
+         e.printStackTrace(System.err);
+      }
+   }
 
    @Inject
    private TestService testService;
@@ -53,8 +68,9 @@ public class TestExecutionREST {
    @Path("/create")
    @Consumes(MediaType.TEXT_XML)
    @Logged
-   public Response create(TestExecution testExecution) throws Exception {
-      return Response.ok(testService.storeTestExecution(testExecution).getId()).build();
+   public Response create(TestExecution testExecution, @Context UriInfo uriInfo) throws Exception {
+      Long id = testService.createTestExecution(testExecution).getId();
+      return Response.created(uriInfo.getBaseUriBuilder().path(TestExecutionREST.class).path(GET_TEST_EXECUTION_METHOD).build(id)).entity(id).build();
    }
 
    @DELETE
@@ -72,7 +88,7 @@ public class TestExecutionREST {
    @Path("/{testExecutionId}/addAttachment")
    @Logged
    public Response addAttachment(@PathParam("testExecutionId") Long testExecutionId, @HeaderParam("Content-type") String mimeType,
-         @HeaderParam("filename") String fileName, byte[] requestBody) throws Exception {
+         @HeaderParam("filename") String fileName, byte[] requestBody, @Context UriInfo uriInfo) throws Exception {
       TestExecutionAttachment attachment = new TestExecutionAttachment();
       attachment.setFilename(fileName);
       attachment.setMimetype(mimeType);
@@ -80,7 +96,8 @@ public class TestExecutionREST {
       TestExecution testExec = new TestExecution();
       testExec.setId(testExecutionId);
       attachment.setTestExecution(testExec);
-      return Response.status(200).entity(testService.addAttachment(attachment)).build();
+      Long id = testService.addAttachment(attachment);
+      return Response.created(uriInfo.getBaseUriBuilder().path(TestExecutionREST.class).path(GET_ATTACHMENT_METHOD).build(id)).entity(id).build();
    }
 
    @GET

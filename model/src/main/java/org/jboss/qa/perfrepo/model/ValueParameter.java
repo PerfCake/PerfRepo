@@ -23,22 +23,20 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "value_parameter")
-@NamedQueries({ 
-   @NamedQuery(name = ValueParameter.FIND_ALL, query = "SELECT x from ValueParameter x"), 
-   @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_ID_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.id ASC"), 
-   @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_ID_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.id DESC"), 
-   @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_NAME_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.name ASC"), 
-   @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_NAME_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.name DESC"), 
-   @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_VALUE_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.paramValue ASC"), 
-   @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_VALUE_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.paramValue DESC"),
-   @NamedQuery(name = ValueParameter.FIND_BY_ID, query = "SELECT x from ValueParameter x WHERE x.id = :" + ValueParameter.NQ_ID),
-   @NamedQuery(name = ValueParameter.FIND_TEST_ID, query = "SELECT test from ValueParameter vp inner join vp.value v inner join v.testExecution te inner join te.test test where vp.id= :entity")})
+@NamedQueries({
+      @NamedQuery(name = ValueParameter.FIND_ALL, query = "SELECT x from ValueParameter x"),
+      @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_ID_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.id ASC"),
+      @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_ID_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.id DESC"),
+      @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_NAME_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.name ASC"),
+      @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_NAME_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.name DESC"),
+      @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_VALUE_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.paramValue ASC"),
+      @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_VALUE_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.paramValue DESC"),
+      @NamedQuery(name = ValueParameter.FIND_BY_ID, query = "SELECT x from ValueParameter x WHERE x.id = :" + ValueParameter.NQ_ID),
+      @NamedQuery(name = ValueParameter.FIND_TEST_ID, query = "SELECT test from ValueParameter vp inner join vp.value v inner join v.testExecution te inner join te.test test where vp.id= :entity") })
 @XmlRootElement(name = "valueParameter")
 @Named("valueParameter")
 @RequestScoped
 public class ValueParameter implements Serializable {
-
-   private static final long serialVersionUID = 1L;
 
    public static final String FIND_ALL = "ValueParameter.findAll";
 
@@ -48,7 +46,7 @@ public class ValueParameter implements Serializable {
    public static final String FIND_ALL_SORTED_BY_NAME_DESC = "ValueParameter.findAllSortedByNameDesc";
    public static final String FIND_ALL_SORTED_BY_VALUE_ASC = "ValueParameter.findAllSortedByValueAsc";
    public static final String FIND_ALL_SORTED_BY_VALUE_DESC = "ValueParameter.findAllSortedByValueDesc";
-   
+
    public static final String FIND_TEST_ID = "ValueParameter.findTestId";
 
    public static final String FIND_BY_ID = "ValueParameter.findById";
@@ -61,10 +59,10 @@ public class ValueParameter implements Serializable {
 
    @Column(name = "name")
    private String name;
-   
+
    @Column(name = "value")
    private String paramValue;
-   
+
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
    @JoinColumn(name = "value_id", referencedColumnName = "id")
    private Value value;
@@ -80,7 +78,12 @@ public class ValueParameter implements Serializable {
 
    public ValueParameter() {
       super();
+   }
 
+   public ValueParameter(String name, String value) {
+      super();
+      this.name = name;
+      this.paramValue = value;
    }
 
    @XmlTransient
@@ -95,7 +98,7 @@ public class ValueParameter implements Serializable {
    @XmlID
    @XmlAttribute(name = "id")
    public String getStringId() {
-      return String.valueOf(id);
+      return id == null ? null : String.valueOf(id);
    }
 
    public void setStringId(String id) {
@@ -115,7 +118,7 @@ public class ValueParameter implements Serializable {
       this.paramValue = value;
    }
 
-   @XmlAttribute(name = "paramValue")   
+   @XmlAttribute(name = "paramValue")
    public String getParamValue() {
       return this.paramValue;
    }

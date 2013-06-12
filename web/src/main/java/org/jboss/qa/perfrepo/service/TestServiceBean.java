@@ -89,14 +89,14 @@ public class TestServiceBean implements TestService {
    private UserInfo userInfo;
 
    @Override
-   public TestExecution storeTestExecution(TestExecution testExecution) throws ServiceException {
+   public TestExecution createTestExecution(TestExecution testExecution) throws ServiceException {
       // The test referred by test execution has to be an existing test
       Test test = checkUserCanChangeTest(testExecution.getTest());
       testExecution.setTest(test);
       TestExecution storedTestExecution = testExecutionDAO.create(testExecution);
       // execution params
-      if (testExecution.getTestExecutionParameters() != null && testExecution.getTestExecutionParameters().size() > 0) {
-         for (TestExecutionParameter param : testExecution.getTestExecutionParameters()) {
+      if (testExecution.getParameters() != null && testExecution.getParameters().size() > 0) {
+         for (TestExecutionParameter param : testExecution.getParameters()) {
             param.setTestExecution(storedTestExecution);
             testExecutionParameterDAO.create(param);
          }
@@ -115,6 +115,7 @@ public class TestServiceBean implements TestService {
       }
       // values
       if (testExecution.getValues() != null && !testExecution.getValues().isEmpty()) {
+         // TODO: Don't allow duplicit value for a metric
          for (Value value : testExecution.getValues()) {
             value.setTestExecution(storedTestExecution);
             if (value.getMetricName() == null) {
@@ -129,8 +130,8 @@ public class TestServiceBean implements TestService {
             }
             value.setMetric(metric);
             valueDAO.create(value);
-            if (value.getValueParameters() != null && value.getValueParameters().size() > 0) {
-               for (ValueParameter vp : value.getValueParameters()) {
+            if (value.getParameters() != null && value.getParameters().size() > 0) {
+               for (ValueParameter vp : value.getParameters()) {
                   vp.setValue(value);
                   valueParameterDAO.create(vp);
                }
@@ -264,11 +265,11 @@ public class TestServiceBean implements TestService {
          throw serviceException("Test execution with id %s doesn't exist", testExecution.getId());
       }
       checkUserCanChangeTest(freshTestExecution.getTest());
-      for (TestExecutionParameter testExecutionParameter : freshTestExecution.getTestExecutionParameters()) {
+      for (TestExecutionParameter testExecutionParameter : freshTestExecution.getParameters()) {
          testExecutionParameterDAO.delete(testExecutionParameter);
       }
       for (Value value : freshTestExecution.getValues()) {
-         for (ValueParameter valueParameter : value.getValueParameters()) {
+         for (ValueParameter valueParameter : value.getParameters()) {
             valueParameterDAO.delete(valueParameter);
          }
          valueDAO.delete(value);
@@ -278,7 +279,7 @@ public class TestServiceBean implements TestService {
          testExecutionTagDAO.delete(allTestExecutionTags.next());
          allTestExecutionTags.remove();
       }
-      Iterator<TestExecutionAttachment> allTestExecutionAttachments = freshTestExecution.getTestExecutionAttachments().iterator();
+      Iterator<TestExecutionAttachment> allTestExecutionAttachments = freshTestExecution.getAttachments().iterator();
       while (allTestExecutionAttachments.hasNext()) {
          testExecutionAttachmentDAO.delete(allTestExecutionAttachments.next());
          allTestExecutionAttachments.remove();
@@ -316,7 +317,12 @@ public class TestServiceBean implements TestService {
 
    @Override
    public TestExecution getTestExecution(Long id) {
-      return testExecutionDAO.getFullTestExecution(id);
+      TestExecution testExecution = testExecutionDAO.getFullTestExecution(id);
+      // fetch lazy collections
+      testExecution.getParametersAsMap();
+      testExecution.getValuesAsMap();
+      testExecution.getSortedTags();
+      return testExecution;
    }
 
    @Override

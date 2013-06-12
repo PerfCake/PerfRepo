@@ -12,3 +12,7 @@ POST   /rest/testExecution/create - create a new test execution
 GET    /rest/testExecution/{testExecutionId} - get test execution with all subobjects
 DELETE /rest/testExecution/{testExecutionId} - delete test execution and all subobjects
 POST   /rest/testExecution/{testExecutionId}/addAttachment - add new attachment to an existing test execution
+
+GET methods, on success, return HTTP STATUS 200 (OK) with requested entity
+POST methods, on success, return HTTP STATUS 201 (Created) with properly set Location header, returned entity contains id of newly created object
+DELETE methods, on success, return HTTP STATUS 204 (No content)

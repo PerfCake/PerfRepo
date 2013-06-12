@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "metric")
 @Named("metric")
 @RequestScoped
-public class Metric implements Serializable {
+public class Metric implements Serializable, Comparable<Metric> {
 
    private static final long serialVersionUID = 1L;
 
@@ -58,6 +58,17 @@ public class Metric implements Serializable {
 
    @Column(name = "description")
    private String description;
+
+   public Metric() {
+      super();
+   }
+
+   public Metric(String name, String comparator, String description) {
+      super();
+      this.name = name;
+      this.comparator = comparator;
+      this.description = description;
+   }
 
    @XmlTransient
    public Long getId() {
@@ -121,6 +132,11 @@ public class Metric implements Serializable {
 
    public void setTestMetrics(Collection<TestMetric> testMetrics) {
       this.testMetrics = testMetrics;
+   }
+
+   @Override
+   public int compareTo(Metric o) {
+      return this.getName().compareTo(o.getName());
    }
 
 }

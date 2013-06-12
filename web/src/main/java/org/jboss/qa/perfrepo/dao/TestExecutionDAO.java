@@ -23,32 +23,29 @@ import org.jboss.qa.perfrepo.model.TestExecutionTag;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
-   private static final long serialVersionUID = 1L;
-   
    public List<TestExecution> findByTest(Long testId) {
       Test test = new Test();
       test.setId(testId);
       return findAllByProperty("test", test);
    }
-   
-   
+
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search) {
       CriteriaQuery<TestExecution> criteria = createCriteria();
       Root<TestExecution> root = criteria.from(TestExecution.class);
       criteria.select(root);
       CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-      
+
       if (search.getStartedFrom() != null) {
-         criteria.where(cb.greaterThanOrEqualTo(root.<Date>get("started"), search.getStartedFrom()));
+         criteria.where(cb.greaterThanOrEqualTo(root.<Date> get("started"), search.getStartedFrom()));
       }
       if (search.getStartedTo() != null) {
-         criteria.where(cb.lessThanOrEqualTo(root.<Date>get("started"), search.getStartedTo()));
+         criteria.where(cb.lessThanOrEqualTo(root.<Date> get("started"), search.getStartedTo()));
       }
       if (search.getTags() != null && !"".equals(search.getTags())) {
          Join<TestExecution, TestExecutionTag> tegRoot = root.join("testExecutionTags");
          Join<TestExecutionTag, Tag> tagRoot = tegRoot.join("tag");
          Object[] tags = search.getTags().split(";");
-         criteria.where((tagRoot.get("name").in(tags)));         
+         criteria.where((tagRoot.get("name").in(tags)));
          criteria.having(cb.greaterThanOrEqualTo(cb.count(tagRoot), Long.valueOf(tags.length)));
       }
       if (search.getTestName() != null && !"".equals(search.getTestName())) {
@@ -59,12 +56,12 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          Join<TestExecution, Test> testRoot = root.join("test");
          criteria.where(cb.equal(testRoot.get("uid"), search.getTestUID()));
       }
-      criteria.groupBy(root.get("id"));      
+      criteria.groupBy(root.get("id"));
       return findByCustomCriteria(criteria);
    }
-   
+
    public TestExecution getFullTestExecution(Long id) {
-      return findWithDepth(id, "testExecutionParameters", "values.valueParameters", "testExecutionTags.tag");
+      return findWithDepth(id, "parameters", "values.parameters", "testExecutionTags.tag");
    }
-   
+
 }
