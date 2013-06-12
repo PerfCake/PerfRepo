@@ -2,16 +2,11 @@ package org.jboss.qa.perfrepo.dao;
 
 import java.util.List;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.Test;
 
 @Named
-@Stateless
-@TransactionManagement(TransactionManagementType.CONTAINER)
 public class TestDAO extends DAO<Test, Long> {
 
    public Test findByUid(String uid) {

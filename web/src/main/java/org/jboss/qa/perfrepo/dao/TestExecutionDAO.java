@@ -3,9 +3,6 @@ package org.jboss.qa.perfrepo.dao;
 import java.util.Date;
 import java.util.List;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.inject.Named;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -19,8 +16,6 @@ import org.jboss.qa.perfrepo.model.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 
 @Named
-@Stateless
-@TransactionManagement(TransactionManagementType.CONTAINER)
 public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
    public List<TestExecution> findByTest(Long testId) {

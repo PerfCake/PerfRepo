@@ -2,16 +2,11 @@ package org.jboss.qa.perfrepo.dao;
 
 import java.util.List;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.Metric;
 
 @Named
-@Stateless
-@TransactionManagement(TransactionManagementType.CONTAINER)
 public class MetricDAO extends DAO<Metric, Long> {
 
    public Metric findByName(String name) {
@@ -20,7 +15,7 @@ public class MetricDAO extends DAO<Metric, Long> {
          return metrics.get(0);
       return null;
    }
-
+   
    public List<Metric> getMetrics() {
       return findAll();
    }

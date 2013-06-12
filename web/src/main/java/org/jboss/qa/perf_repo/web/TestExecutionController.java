@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
@@ -21,6 +20,9 @@ import org.jboss.qa.perfrepo.service.TestService;
 @Named
 @RequestScoped
 public class TestExecutionController extends ControllerBase {
+
+ 
+   private static final long serialVersionUID = 3012075520261954430L;
 
    @Inject
    private TestExecutionDAO dao;

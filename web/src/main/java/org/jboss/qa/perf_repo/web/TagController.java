@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
@@ -19,6 +18,8 @@ import org.jboss.qa.perfrepo.model.Tag;
 @Named
 @RequestScoped
 public class TagController extends ControllerBase {
+
+   private static final long serialVersionUID = -8109085992506268845L;
 
    @Inject
    private TagDAO dao;

@@ -14,6 +14,8 @@ import javax.faces.context.FacesContext;
  */
 public class ControllerBase implements Serializable {
 
+   private static final long serialVersionUID = -1616863465068425778L;
+
    public Map<String, String> getRequestParams() {
       return FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
    }

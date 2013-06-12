@@ -1,6 +1,5 @@
 package org.jboss.qa.perfrepo.controller;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jboss.qa.perf_repo.web.ControllerBase;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.service.TestService;
@@ -15,12 +15,12 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 @Named
 @ViewScoped
-public class SearchController implements Serializable {
+public class SearchController extends ControllerBase {
 
    private static final long serialVersionUID = 1L;
    
    @Inject
-   private TestService testExecutionService;
+   private TestService testService;
    
    private String tag;
    
@@ -38,13 +38,6 @@ public class SearchController implements Serializable {
       }
    }
    
-   public String addTag() {  
-      //getBean().getTags().add(tag);  
-      tag = "";
-      return null;
-  } 
-   
-   
    public TestExecutionSearchTO getBean() {      
       return bean;
    }
@@ -61,7 +54,7 @@ public class SearchController implements Serializable {
 
 
    public String search() {
-      result = testExecutionService.searchTestExecutions(bean);
+      result = testService.searchTestExecutions(bean);
       return null;
    }
 

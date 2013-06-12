@@ -14,6 +14,8 @@ import org.jboss.qa.perfrepo.service.TestService;
 @RequestScoped
 public class TestController extends ControllerBase {
 
+   private static final long serialVersionUID = 370202307562230671L;
+
    @Inject
    TestService testService;
 

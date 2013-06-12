@@ -1,6 +1,5 @@
 package org.jboss.qa.perf_repo.web;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.Map;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
@@ -20,6 +18,8 @@ import org.jboss.qa.perfrepo.model.TestMetric;
 @Named
 @RequestScoped
 public class TestMetricController extends ControllerBase {
+
+   private static final long serialVersionUID = 8154280709144684522L;
 
    @Inject
    private TestMetricDAO dao;

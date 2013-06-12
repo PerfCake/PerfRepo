@@ -2,16 +2,11 @@ package org.jboss.qa.perfrepo.dao;
 
 import java.util.List;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.Tag;
 
 @Named
-@Stateless
-@TransactionManagement(TransactionManagementType.CONTAINER)
 public class TagDAO extends DAO<Tag, Long> {
 
    public Tag findByName(String name) {

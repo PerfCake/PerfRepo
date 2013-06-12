@@ -1,6 +1,5 @@
 package org.jboss.qa.perfrepo.controller;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +11,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jboss.qa.perf_repo.web.ControllerBase;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
@@ -24,12 +24,12 @@ import org.richfaces.component.SortOrder;
  */
 @Named
 @RequestScoped
-public class TestExecutionCompareController implements Serializable {
+public class TestExecutionCompareController extends ControllerBase {
 
    private static final long serialVersionUID = 1L;
 
    @Inject
-   private TestService testExecutionService;
+   private TestService testService;
    
    @Inject
    private TEComparatorSession teComparator;   
@@ -68,7 +68,7 @@ public class TestExecutionCompareController implements Serializable {
 
    public List<TestExecution> getTestExecutions() {
       if (teComparator.getTestExecutions() != null && teComparator.getTestExecutions().size() > 0) {
-         return testExecutionService.getTestExecutions(teComparator.getTestExecutions());
+         return testService.getTestExecutions(teComparator.getTestExecutions());
       }
       return new ArrayList<TestExecution>();
       

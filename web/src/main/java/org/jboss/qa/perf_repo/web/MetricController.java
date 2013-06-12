@@ -1,21 +1,19 @@
 package org.jboss.qa.perf_repo.web;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import javax.enterprise.context.RequestScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.Metric;
-import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.service.TestService;
 
 @Named
 @RequestScoped
 public class MetricController extends ControllerBase {
+
+   private static final long serialVersionUID = -2267332752408811209L;
 
    @Inject
    TestService testService;
