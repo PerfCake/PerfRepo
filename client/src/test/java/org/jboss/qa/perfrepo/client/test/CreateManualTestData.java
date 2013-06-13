@@ -31,7 +31,7 @@ public class CreateManualTestData {
       testUserRole = null;
    }
 
-   private Test createTest() {
+   Test createJDGCSTest() {
       Test test = new Test();
       test.setName("JDG client/server test");
       test.setGroupId(testUserRole);
@@ -40,6 +40,21 @@ public class CreateManualTestData {
       test.addMetric("jdg_cs_avg_read_resp_time", "0", "Average Read response time");
       test.addMetric("jdg_cs_avg_write_resp_time", "1", "Average Write response time");
       test.addMetric("jdg_cs_requests_per_sec", "2", "Number of requests per second");
+      return test;
+   }
+
+   Test createJDGRGTest() {
+      Test test = new Test();
+      test.setName("JDG RadarGun test");
+      test.setGroupId(testUserRole);
+      test.setUid("jdg_rg_test");
+      test.setDescription("JDG RadarGun test");
+      test.addMetric("jdg_lib_rg_reads_per_sec", "0", "Number of reads per second (READS_PER_SEC)");
+      test.addMetric("jdg_lib_rg_writes_per_sec", "1", "Number of writes per second (WRITES_PER_SEC)");
+      test.addMetric("jdg_lib_rg_reads_per_sec_mrd", "2", "Maximum Relative Difference in READS_PER_SEC over all slaves");
+      test.addMetric("jdg_lib_rg_writes_per_sec_mrd", "3", "Maximum Relative Difference in WRITES_PER_SEC over all slaves");
+      test.addMetric("jdg_lib_rg_read_tx_overhead", "4", "Transaction overhead in read operations");
+      test.addMetric("jdg_lib_rg_write_tx_overhead", "5", "Transaction overhead in write operations");
       return test;
    }
 
@@ -64,7 +79,7 @@ public class CreateManualTestData {
 
    @org.testng.annotations.Test
    public void testCreate() throws Exception {
-      Test test = createTest();
+      Test test = createJDGRGTest();
       Long id = client.createTest(test);
       System.out.println("Created test: " + id);
    }
