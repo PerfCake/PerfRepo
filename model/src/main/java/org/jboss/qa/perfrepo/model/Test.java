@@ -27,6 +27,8 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.jboss.qa.perfrepo.model.builder.TestBuilder;
+
 /**
  * Represents one test.
  * 
@@ -153,20 +155,7 @@ public class Test implements Serializable {
       this.description = description;
    }
 
-   public Metric addMetric(Metric metric) {
-      if (testMetrics == null) {
-         testMetrics = new ArrayList<TestMetric>();
-      }
-      TestMetric intermediate = new TestMetric();
-      intermediate.setMetric(metric);
-      testMetrics.add(intermediate);
-      return metric;
-   }
-
-   public Metric addMetric(String name, String comparator, String description) {
-      return addMetric(new Metric(name, comparator, description));
-   }
-
+   @XmlTransient
    public List<Metric> getSortedMetrics() {
       if (testMetrics == null || testMetrics.isEmpty()) {
          return new ArrayList<Metric>(0);
@@ -178,6 +167,10 @@ public class Test implements Serializable {
          Collections.sort(result);
          return result;
       }
+   }
+
+   public static TestBuilder builder() {
+      return new TestBuilder();
    }
 
 }

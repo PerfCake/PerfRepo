@@ -12,16 +12,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.qa.perfrepo.client.PerfRepoClient;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.Value;
+import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -53,33 +57,19 @@ public class PerfRepoClientManualTest {
    }
 
    private Test createTest() {
-      Test test = new Test();
-      test.setName("test1");
-      test.setGroupId(testUserRole);
-      test.setUid("testtestuid");
-      test.setDescription("this is a test test");
-      test.addMetric("metric1", "0", "this is a test metric 1");
-      test.addMetric("metric2", "1", "this is a test metric 2");
-      return test;
+      return Test.builder().name("test1").groupId(testUserRole).uid("testtestuid").description("this is a test test")
+            .metric("metric1", "0", "this is a test metric 1").metric("metric2", "1", "this is a test metric 2").metric("multimetric", "1", "this is a metric with multiple values").build();
+   }
+
+   private TestExecution createTestExecutionWithParam(Long testId) {
+      return TestExecution.builder().testId(testId).name("execution1").started(new Date()).parameter("param1", "value1").parameter("param2", "value2")
+            .tag("tag1").tag("tag2").value("multimetric", 20.0d, "client", "10").value("multimetric", 40.0d, "client", "20")
+            .value("multimetric", 60.0d, "client", "30").build();
    }
 
    private TestExecution createTestExecution(Long testId) {
-      TestExecution testExecution = new TestExecution();
-      Test idHolder = new Test();
-      idHolder.setId(testId);
-      testExecution.setTest(idHolder);
-      testExecution.setName("execution1");
-      testExecution.setStarted(new Date());
-      testExecution.addParameter("param1", "value1");
-      testExecution.addParameter("param2", "value2");
-      testExecution.addTag("tag1");
-      testExecution.addTag("tag2");
-      testExecution.addValue("metric1", 12.0d);
-      Value v2 = testExecution.addValue("metric2", null);
-      v2.addParameter("10", "20.0");
-      v2.addParameter("20", "40.0");
-      v2.addParameter("30", "60.0");
-      return testExecution;
+      return TestExecution.builder().testId(testId).name("execution1").started(new Date()).parameter("param1", "value1").parameter("param2", "value2")
+            .tag("tag1").tag("tag2").value("metric1", 12.0d).value("metric2", 8.0d).build();
    }
 
    private static void assertMetricEquals(Metric actual, Metric expected) {
@@ -145,19 +135,57 @@ public class PerfRepoClientManualTest {
       assertEquals(tags.get(0), "tag1");
       assertEquals(tags.get(1), "tag2");
       assertEquals(testExecution2.getValues().size(), 2);
-      Map<String, Double> results = testExecution2.getResultValuesAsMap();
-      assertEquals(results.size(), 2);
-      assertEquals(results.get("metric1"), 12.0d);
-      assertEquals(results.get("metric2"), null);
-      Value v2 = testExecution2.getValuesAsMap().get("metric2");
-      Map<String, String> v2params = v2.getParametersAsMap();
-      assertEquals(v2params.size(), 3);
-      assertEquals(v2params.get("10"), "20.0");
-      assertEquals(v2params.get("20"), "40.0");
-      assertEquals(v2params.get("30"), "60.0");
+      assertEquals(getFirstValueHavingMetricAndParameter(testExecution2, "metric1", null, null), 12.0);
+      assertEquals(getFirstValueHavingMetricAndParameter(testExecution2, "metric2", null, null), 8.0);
+
+      Long testExecutionId2 = client.createTestExecution(createTestExecutionWithParam(testId));
+      TestExecution testExecution3 = client.getTestExecution(testExecutionId2);
+      assertEquals(getFirstValueHavingMetricAndParameter(testExecution3, "multimetric", "client", "10"), 20.0d);
+      assertEquals(getFirstValueHavingMetricAndParameter(testExecution3, "multimetric", "client", "20"), 40.0d);
+      assertEquals(getFirstValueHavingMetricAndParameter(testExecution3, "multimetric", "client", "30"), 60.0d);
 
       client.deleteTestExecution(testExecutionId);
+      client.deleteTestExecution(testExecutionId2);
       client.deleteTest(testId);
+   }
+
+   private Double getFirstValueHavingMetricAndParameter(TestExecution testExecution, String metric, String propName, String propValue) {
+      return getValuesHavingMetricAndParameter(testExecution, metric, propName, propValue).get(0).getResultValue();
+   }
+
+   /**
+    * TODO: this will probably need changing as well, cause imo mapping ((metric, propName,
+    * propValue) -> value) should be unique.
+    * 
+    * @param metric
+    * @param propName
+    * @param propValue
+    * @return
+    */
+   private List<Value> getValuesHavingMetricAndParameter(TestExecution testExecution, String metric, String propName, String propValue) {
+      Collection<Value> values = testExecution.getValues();
+      ArrayList<Value> result = new ArrayList<>();
+      if (values == null || values.isEmpty()) {
+         return result;
+      } else {
+         for (Value v : values) {
+            if (metric.equals(v.getMetricName())) {
+               if (propName == null && propValue == null) {
+                  result.add(v);
+               } else {
+                  Set<ValueParameter> params = v.getParameters();
+                  if (params != null) {
+                     for (ValueParameter p : params) {
+                        if ((propName == null || propName.equals(p.getName())) && (propValue == null || propValue.equals(p.getParamValue()))) {
+                           result.add(v);
+                        }
+                     }
+                  }
+               }
+            }
+         }
+         return result;
+      }
    }
 
    @org.testng.annotations.Test

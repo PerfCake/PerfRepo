@@ -2,6 +2,7 @@ package org.jboss.qa.perfrepo.client.test;
 
 import org.jboss.qa.perfrepo.client.PerfRepoClient;
 import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.builder.TestBuilder;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -32,30 +33,24 @@ public class CreateManualTestData {
    }
 
    Test createJDGCSTest() {
-      Test test = new Test();
-      test.setName("JDG client/server test");
-      test.setGroupId(testUserRole);
-      test.setUid("jdg_cs_test");
-      test.setDescription("JDG Client/server test");
-      test.addMetric("jdg_cs_avg_read_resp_time", "0", "Average Read response time");
-      test.addMetric("jdg_cs_avg_write_resp_time", "1", "Average Write response time");
-      test.addMetric("jdg_cs_requests_per_sec", "2", "Number of requests per second");
-      return test;
+      return Test.builder().name("JDG client/server test").groupId(testUserRole).uid("jdg_cs_test").description("JDG Client/server test")
+            .metric("jdg_cs_avg_read_resp_time", "0", "Average Read response time").metric("jdg_cs_avg_write_resp_time", "1", "Average Write response time")
+            .metric("jdg_cs_requests_per_sec", "2", "Number of requests per second").build();
    }
 
    Test createJDGRGTest() {
-      Test test = new Test();
-      test.setName("JDG RadarGun test");
-      test.setGroupId(testUserRole);
-      test.setUid("jdg_rg_test");
-      test.setDescription("JDG RadarGun test");
-      test.addMetric("jdg_lib_rg_reads_per_sec", "0", "Number of reads per second (READS_PER_SEC)");
-      test.addMetric("jdg_lib_rg_writes_per_sec", "1", "Number of writes per second (WRITES_PER_SEC)");
-      test.addMetric("jdg_lib_rg_reads_per_sec_mrd", "2", "Maximum Relative Difference in READS_PER_SEC over all slaves");
-      test.addMetric("jdg_lib_rg_writes_per_sec_mrd", "3", "Maximum Relative Difference in WRITES_PER_SEC over all slaves");
-      test.addMetric("jdg_lib_rg_read_tx_overhead", "4", "Transaction overhead in read operations");
-      test.addMetric("jdg_lib_rg_write_tx_overhead", "5", "Transaction overhead in write operations");
-      return test;
+      TestBuilder test = Test.builder();
+      test.name("JDG RadarGun test");
+      test.groupId(testUserRole);
+      test.uid("jdg_rg_test");
+      test.description("JDG RadarGun test");
+      test.metric("jdg_lib_rg_reads_per_sec", "0", "Number of reads per second (READS_PER_SEC)");
+      test.metric("jdg_lib_rg_writes_per_sec", "1", "Number of writes per second (WRITES_PER_SEC)");
+      test.metric("jdg_lib_rg_reads_per_sec_mrd", "2", "Maximum Relative Difference in READS_PER_SEC over all slaves");
+      test.metric("jdg_lib_rg_writes_per_sec_mrd", "3", "Maximum Relative Difference in WRITES_PER_SEC over all slaves");
+      test.metric("jdg_lib_rg_read_tx_overhead", "4", "Transaction overhead in read operations");
+      test.metric("jdg_lib_rg_write_tx_overhead", "5", "Transaction overhead in write operations");
+      return test.build();
    }
 
    //   private TestExecution createTestExecution(Long testId) {

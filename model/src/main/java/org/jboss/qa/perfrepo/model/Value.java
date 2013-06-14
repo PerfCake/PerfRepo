@@ -1,9 +1,6 @@
 package org.jboss.qa.perfrepo.model;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
@@ -75,14 +72,6 @@ public class Value implements Serializable {
       this.testExecution = new TestExecution();
    }
 
-   public Value(String metricName, Double value) {
-      super();
-      this.metric = new Metric();
-      this.metric.setName(metricName);
-      this.resultValue = value;
-      this.testExecution = new TestExecution();
-   }
-
    @XmlTransient
    public Long getId() {
       return id;
@@ -150,30 +139,6 @@ public class Value implements Serializable {
 
    public String getMetricName() {
       return metric == null ? null : metric.getName();
-   }
-
-   public ValueParameter addParameter(ValueParameter param) {
-      if (parameters == null) {
-         parameters = new HashSet<ValueParameter>();
-      }
-      parameters.add(param);
-      return param;
-   }
-
-   public ValueParameter addParameter(String name, String value) {
-      return addParameter(new ValueParameter(name, value));
-   }
-
-   public Map<String, String> getParametersAsMap() {
-      if (parameters == null || parameters.isEmpty()) {
-         return new HashMap<>(0);
-      } else {
-         Map<String, String> r = new HashMap<>();
-         for (ValueParameter p : parameters) {
-            r.put(p.getName(), p.getParamValue());
-         }
-         return r;
-      }
    }
 
 }

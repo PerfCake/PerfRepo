@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
+
 /**
  * 
  * Represents one execution of a test.
@@ -261,42 +263,7 @@ public class TestExecution implements Serializable {
       return true;
    }
 
-   public TestExecutionParameter addParameter(TestExecutionParameter param) {
-      if (parameters == null) {
-         parameters = new HashSet<TestExecutionParameter>();
-      }
-      parameters.add(param);
-      return param;
-   }
-
-   public TestExecutionParameter addParameter(String name, String value) {
-      return addParameter(new TestExecutionParameter(name, value));
-   }
-
-   public Tag addTag(String tag) {
-      if (testExecutionTags == null) {
-         testExecutionTags = new HashSet<TestExecutionTag>();
-      }
-      TestExecutionTag intermediate = new TestExecutionTag();
-      Tag tagObj = new Tag();
-      tagObj.setName(tag);
-      intermediate.setTag(tagObj);
-      testExecutionTags.add(intermediate);
-      return tagObj;
-   }
-
-   public Value addValue(Value value) {
-      if (values == null) {
-         values = new HashSet<Value>();
-      }
-      values.add(value);
-      return value;
-   }
-
-   public Value addValue(String metricName, Double value) {
-      return addValue(new Value(metricName, value));
-   }
-
+   @XmlTransient
    public List<String> getSortedTags() {
       if (testExecutionTags == null || testExecutionTags.isEmpty()) {
          return new ArrayList<String>(0);
@@ -310,6 +277,7 @@ public class TestExecution implements Serializable {
       }
    }
 
+   @XmlTransient
    public List<TestExecutionParameter> getSortedParameters() {
       if (parameters == null || parameters.isEmpty()) {
          return new ArrayList<TestExecutionParameter>(0);
@@ -320,6 +288,7 @@ public class TestExecution implements Serializable {
       }
    }
 
+   @XmlTransient
    public Map<String, String> getParametersAsMap() {
       if (parameters == null || parameters.isEmpty()) {
          return new HashMap<>(0);
@@ -332,27 +301,7 @@ public class TestExecution implements Serializable {
       }
    }
 
-   public Map<String, Double> getResultValuesAsMap() {
-      if (values == null || values.isEmpty()) {
-         return new HashMap<>(0);
-      } else {
-         Map<String, Double> r = new HashMap<>();
-         for (Value v : values) {
-            r.put(v.getMetricName(), v.getResultValue());
-         }
-         return r;
-      }
-   }
-
-   public Map<String, Value> getValuesAsMap() {
-      if (values == null || values.isEmpty()) {
-         return new HashMap<>(0);
-      } else {
-         Map<String, Value> r = new HashMap<>();
-         for (Value v : values) {
-            r.put(v.getMetricName(), v);
-         }
-         return r;
-      }
+   public static TestExecutionBuilder builder() {
+      return new TestExecutionBuilder();
    }
 }
