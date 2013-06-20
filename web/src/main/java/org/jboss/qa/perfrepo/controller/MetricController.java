@@ -1,4 +1,4 @@
-package org.jboss.qa.perf_repo.web;
+package org.jboss.qa.perfrepo.controller;
 
 import java.util.List;
 

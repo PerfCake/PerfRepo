@@ -2,7 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets">
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:perfrepo="http://richfaces.org/perfrepo">
 <h:body>
 	<ui:composition template="/layout/commonLayout.xhtml">
 		<ui:define name="title">#{strings.edit} Test -</ui:define>
@@ -47,9 +50,9 @@
 									<f:param name="testId" value="#{testController.test.id}" />
 								</h:button> 
 								<h:commandButton
-									styleClass="button-check" action="#{testController.update}" outcome="TestDetail"
-									value="" alt="#{strings.save}" title="#{strings.save}">
-									<f:param name="testId" value="#{testController.test.id}" />
+									styleClass="button-check" action="#{testController.update}"
+									value=" " alt="#{strings.save}" title="#{strings.save}">
+									<f:param name="testId" value="#{testController.test.id}"/>
 								</h:commandButton>
 							</td>
 						</tr>

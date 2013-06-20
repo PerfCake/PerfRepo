@@ -1,4 +1,4 @@
-package org.jboss.qa.perf_repo.web;
+package org.jboss.qa.perfrepo.controller;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -38,6 +38,10 @@ public class TestController extends ControllerBase {
    public Test getTest() {      
       return test;
    }
+   
+   public void setTest(Test test) {
+      this.test = test;
+   }
       
    public Metric getMetric() {
       return metric;
@@ -50,8 +54,9 @@ public class TestController extends ControllerBase {
    public String update() {
       if (test != null) {
          testService.updateTest(test);
+         return "/test/detail.xhtml?testId=";
       }
-      return "TestDetail";
+      return null;
    }
    
    public void createMetric() {

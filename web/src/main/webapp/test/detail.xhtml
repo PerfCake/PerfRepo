@@ -46,9 +46,13 @@
 					</tbody>
 					<tfoot>
 						<tr>
-							<td class="table-footer" colspan="2"><h:button
-									styleClass="button-left-arrow" outcome="TestList" value=""
-									alt="#{strings.back}" title="#{strings.back}" /></td>
+							<td class="table-footer" colspan="2">									
+								<h:button
+									styleClass="button-edit" outcome="TestEdit" value=""
+									alt="#{strings.back}" title="#{strings.back}">
+									<f:param name="testId" value="#{testController.test.id}" />
+								</h:button>		
+							</td>
 						</tr>
 					</tfoot>
 				</table>

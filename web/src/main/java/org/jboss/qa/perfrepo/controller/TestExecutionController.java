@@ -1,4 +1,4 @@
-package org.jboss.qa.perf_repo.web;
+package org.jboss.qa.perfrepo.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +90,7 @@ public class TestExecutionController extends ControllerBase {
             throw new RuntimeException(e);
          }
       }
-      return "TestExecutionDetail";
+      return "/testExecution/detail.xhtml?testExecutionId=";
    }
    
    public List<TestExecutionParameter> getTestExecutionParameters() {
