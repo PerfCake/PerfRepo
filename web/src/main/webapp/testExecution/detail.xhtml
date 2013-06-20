@@ -2,13 +2,21 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets">
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:perfrepo="http://richfaces.org/perfrepo">
 <h:body>
 	<ui:composition template="/layout/commonLayout.xhtml">
-		<ui:define name="title">#{strings.edit} TestExecution -</ui:define>
+		<ui:define name="title">#{strings.details} TestExecution -</ui:define>
 		<ui:define name="content">
 			<h1>TestExecution</h1>
-			<h2>#{testExecutionController.bean.name}</h2>
+			<h2>#{testExecutionController.testExecution.name}</h2>
+			<ui:include src="/testExecutionParameter/new_popup.xhtml" />
+			<ui:include src="/testExecutionParameter/edit_popup.xhtml" />
+			<ui:include src="/testExecutionTag/new_popup.xhtml" />
+			<ui:include src="/value/new_popup.xhtml" />
+			<ui:include src="/value/edit_popup.xhtml" />
 			<h:form>
 				<table class="table">
 					<thead>
@@ -19,32 +27,34 @@
 					<tbody>
 						<tr class="table-row">
 							<td><label>ID</label></td>
-							<td><label>#{testExecutionController.bean.id}</label></td>
+							<td><label>#{testExecutionController.testExecution.id}</label></td>
 						</tr>
 						<tr class="table-row">
 							<td><label>#{entityStrings.TestExecution_test}</label></td>
-							<td><label>#{testExecutionController.bean.test.name}</label></td>
+							<td><label>#{testExecutionController.testExecution.test.name}</label></td>
 						</tr>
 						<tr class="table-row">
 							<td><label>#{entityStrings.TestExecution_name}</label></td>
-							<td><label>#{testExecutionController.bean.name}</label></td>
+							<td><label>#{testExecutionController.testExecution.name}</label></td>
 						</tr>
 					</tbody>
 					<tfoot>
 						<tr>
-							<td class="table-footer" colspan="2"><h:button
-									styleClass="button-left-arrow" outcome="TestExecutionList"
-									value="" alt="#{strings.back}" title="#{strings.back}" /></td>
+							<td class="table-footer" colspan="2">
+								<h:button styleClass="button-edit" outcome="TestExecutionEdit" value="" alt="#{strings.edit}" title="#{strings.back}">
+									<f:param name="testExecutionId" value="#{testExecutionController.testExecution.id}" />
+								</h:button>
+							</td>
 						</tr>
 					</tfoot>
 				</table>
 			</h:form>
 			<h2>TestExecutionParameter</h2>
-			<h:form>
+			<h:form id="testExecutionParameterList">
 				<h:dataTable styleClass="table" rowClasses="table-row"
-					columnClasses="common-column,common-column,common-column,button-column,button-column,button-column"
+					columnClasses="common-column,common-column,common-column,button-column,button-column"
 					headerClass="table-header" footerClass="table-footer"
-					value="#{testExecutionParameterController.beanList}" var="item"
+					value="#{testExecutionController.testExecutionParameters}" var="item"
 					cellspacing="0" cellpadding="0">
 					<h:column>
 						<f:facet name="header">ID</f:facet>
@@ -57,43 +67,25 @@
 					<h:column>
 						<f:facet name="header">#{entityStrings.TestExecutionParameter_value}</f:facet>
 						<h:outputText value="#{item.value}" />
-					</h:column>
-
-					<h:column>
+					</h:column>					
+					<h:column> 
 						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-dot" outcome="TestExecutionParameterDetail"
-							value="" alt="#{strings.details}" title="#{strings.details}">
-							<f:param name="testExecutionParameterId" value="#{item.id}" />
-						</h:button>
+						<a4j:commandButton styleClass="button-edit" render="testExecutionParameterEditPopupForm"  action="#{testExecutionController.setTestExecutionParameter(item)}" oncomplete="#{rich:component('testExecutionParameterEditPopup')}.show();"
+							value=" " alt="#{strings.edit}" title="#{strings.edit}" />
 					</h:column>
 					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-edit" outcome="TestExecutionParameterEdit"
-							value="" alt="#{strings.edit}" title="#{strings.edit}">
-							<f:param name="testExecutionParameterId" value="#{item.id}" />
-						</h:button>
-					</h:column>
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:commandButton styleClass="button-x"
-							action="#{testExecutionTagController.delete}" value=""
-							alt="#{strings.delete}" title="#{strings.delete}">
-							<f:param name="testExecutionTagId" value="#{item.id}" />
-						</h:commandButton>
-					</h:column>
-					<f:facet name="footer">
-						<h:button styleClass="button-plus" outcome="TestExecutionTagNew"
-							value="" alt="#{strings.new_m}" title="#{strings.new_m}" />
-					</f:facet>
+						<f:facet name="header"><a4j:commandButton styleClass="button-plus" render="testExecutionParameterNewPopupForm"  action="#{testExecutionController.newTestExecutionParameter()}" oncomplete="#{rich:component('testExecutionParameterNewPopup')}.show();"
+							value=" " alt="#{strings.new_m}" title="#{strings.new_m}" /></f:facet>
+						<a4j:commandButton styleClass="button-x" value=" " onclick="if (!confirm('Are you sure you want to delete test execution parameter (#{item.name})?') ) { return false;}; return true;" action="#{testExecutionController.deleteTestExecutionParamenter(item)}" render="testExecutionParameterList" />					
+					</h:column>					
 				</h:dataTable>
-			</h:form>
-			
+			</h:form>			
 			<h2>TestExecutionTag</h2>
-			<h:form>
+			<h:form id="testExecutionTagList">
 				<h:dataTable styleClass="table" rowClasses="table-row"
-					columnClasses="common-column,common-column,common-column,button-column,button-column,button-column"
+					columnClasses="common-column,common-column,button-column"
 					headerClass="table-header" footerClass="table-footer"
-					value="#{testExecutionTagController.beanList}" var="item"
+					value="#{testExecutionController.testExecutionTags}" var="item"
 					cellspacing="0" cellpadding="0">
 					<h:column>
 						<f:facet name="header">ID</f:facet>
@@ -102,47 +94,21 @@
 					<h:column>
 						<f:facet name="header">#{entityStrings.TestExecutionTag_tag}</f:facet>
 						<h:outputText value="#{item.tag.name}" />
-					</h:column>
+					</h:column>										
 					<h:column>
-						<f:facet name="header">#{entityStrings.TestExecutionTag_testExecution}</f:facet>
-						<h:outputText value="#{item.testExecution.name}" />
-					</h:column>
-
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-dot" outcome="TestExecutionTagDetail"
-							value="" alt="#{strings.details}" title="#{strings.details}">
-							<f:param name="testExecutionTagId" value="#{item.id}" />
-						</h:button>
-					</h:column>
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-edit" outcome="TagEdit"
-							value="" alt="#{strings.edit}" title="#{strings.edit}">
-							<f:param name="tagId" value="#{item.tag.id}" />
-						</h:button>
-					</h:column>
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:commandButton styleClass="button-x"
-							action="#{testExecutionTagController.delete}" value=""
-							alt="#{strings.delete}" title="#{strings.delete}">
-							<f:param name="testExecutionTagId" value="#{item.id}" />
-						</h:commandButton>
-					</h:column>
-					<f:facet name="footer">
-						<h:button styleClass="button-plus" outcome="TestExecutionTagNew"
-							value="" alt="#{strings.new_m}" title="#{strings.new_m}" />
-					</f:facet>
+						<f:facet name="header"><a4j:commandButton styleClass="button-plus" render="testExecutionTagNewPopupForm"  action="#{testExecutionController.newTestExecutionTag()}" oncomplete="#{rich:component('testExecutionTagNewPopup')}.show();"
+							value=" " alt="#{strings.edit}" title="#{strings.edit}" /></f:facet>
+						<a4j:commandButton styleClass="button-x" value=" " onclick="if (!confirm('Are you sure you want to delete tag (#{item.tag.name}) from the current test execution?') ) { return false;}; return true;" action="{#testExecutionController.deleteTestExecutionTag(item)}" render="testExecutionTagList" />						
+					</h:column>					
 				</h:dataTable>
 			</h:form>
 			<h2>Value</h2>
 
-			<h:form>
+			<h:form id="testExecutionValueList">
 				<h:dataTable styleClass="table" rowClasses="table-row"
-					columnClasses="common-column,common-column,common-column,common-column,common-column,button-column,button-column,button-column"
+					columnClasses="common-column,common-column,common-column,button-column,button-column,button-column"
 					headerClass="table-header" footerClass="table-footer"
-					value="#{valueController.beanList}" var="item" cellspacing="0"
+					value="#{testExecutionController.testExecutionValues}" var="item" cellspacing="0"
 					cellpadding="0">
 					<h:column>
 						<f:facet name="header">ID
@@ -152,20 +118,11 @@
 					<h:column>
 						<f:facet name="header">#{entityStrings.Value_metric}</f:facet>
 						<h:outputText value="#{item.metric.name}" />
-					</h:column>
-					<h:column>
-						<f:facet name="header">#{entityStrings.Value_name}</f:facet>
-						<h:outputText value="#{item.name}" />
-					</h:column>
+					</h:column>					
 					<h:column>
 						<f:facet name="header">#{entityStrings.Value_resultValue}</f:facet>
 						<h:outputText value="#{item.resultValue}" />
 					</h:column>
-					<h:column>
-						<f:facet name="header">#{entityStrings.Value_testExecution}</f:facet>
-						<h:outputText value="#{item.testExecution.name}" />
-					</h:column>
-
 					<h:column>
 						<f:facet name="header"></f:facet>
 						<h:button styleClass="button-dot" outcome="ValueDetail" value=""
@@ -175,26 +132,18 @@
 					</h:column>
 					<h:column>
 						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-edit" outcome="ValueEdit" value=""
-							alt="#{strings.edit}" title="#{strings.edit}">
-							<f:param name="valueId" value="#{item.id}" />
-						</h:button>
+						<a4j:commandButton styleClass="button-edit" render="testExecutionValueEditPopupForm"  action="#{testExecutionController.setValue(item)}" oncomplete="#{rich:component('testExecutionValueEditPopup')}.show();"
+							value=" " alt="#{strings.edit}" title="#{strings.edit}" />
 					</h:column>
 					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:commandButton styleClass="button-x"
-							action="#{valueController.delete}" value=""
-							alt="#{strings.delete}" title="#{strings.delete}">
-							<f:param name="valueId" value="#{item.id}" />
-						</h:commandButton>
-					</h:column>
-					<f:facet name="footer">
-						<h:button styleClass="button-plus" outcome="ValueNew" value=""
-							alt="#{strings.new_m}" title="#{strings.new_m}" />
-					</f:facet>
+						<f:facet name="header">
+							<a4j:commandButton styleClass="button-plus" render="testExecutionValueNewPopupForm"  action="#{testExecutionController.createValue()}" oncomplete="#{rich:component('testExecutionValueNewPopup')}.show();"
+							value=" " alt="#{strings.new_m}" title="#{strings.new_m}" />							
+							</f:facet>
+						<a4j:commandButton styleClass="button-x" value=" " onclick="if (!confirm('Are you sure you want to delete value (#{item.resultValue})?') ) { return false;}; return true;" action="#{testExecutionController.deleteValue(item)}" render="testExecutionValueList" />
+					</h:column>					
 				</h:dataTable>
-			</h:form>
-
+			</h:form>			
 		</ui:define>
 	</ui:composition>
 </h:body>

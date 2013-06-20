@@ -2,13 +2,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets">
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:perfrepo="http://richfaces.org/perfrepo">
 <h:body>
 	<ui:composition template="/layout/commonLayout.xhtml">
 		<ui:define name="title">#{strings.edit} Test -</ui:define>
-		<ui:define name="content">
+		<ui:define name="content">			
 			<h1>Test</h1>
 			<h2>#{testController.test.name}</h2>
+			<ui:include src="/metric/new_popup.xhtml" />
+			<ui:include src="/metric/edit_popup.xhtml" />
 			<h:form>
 				<table class="table">
 					<thead>
@@ -29,7 +34,10 @@
 							<td><label>#{entityStrings.Test_uid}</label></td>
 							<td><label>#{testController.test.uid}</label></td>
 						</tr>
-
+						<tr class="table-row">
+							<td><label>#{entityStrings.Test_groupid}</label></td>
+							<td><label>#{testController.test.groupId}</label></td>
+						</tr>
 						<tr class="table-row">
 							<td><label>#{entityStrings.Test_description}</label></td>
 							<td><label>#{testController.test.description}</label></td>
@@ -48,15 +56,11 @@
 
 			<h2>TestMetric</h2>
 
-			<h:form>
-				<div style="text-align: right;">
-					<h:button styleClass="button-plus" outcome="TestMetricNew" value=""
-						alt="#{strings.new_m}" title="#{strings.new_m}" />
-				</div>
+			<h:form id="testMetricList">				
 				<h:dataTable styleClass="table" rowClasses="table-row"
-					columnClasses="common-column,common-column,common-column,button-column,button-column,button-column"
+					columnClasses="common-column,common-column,common-column,button-column,button-column"
 					headerClass="table-header" footerClass="table-footer"
-					value="#{testMetricController.beanList}" var="item" cellspacing="0"
+					value="#{testController.test.sortedMetrics}" var="item" cellspacing="0"
 					cellpadding="0">
 					<h:column>
 						<f:facet name="header">ID            
@@ -64,39 +68,25 @@
 						<h:outputText value="#{item.id}" />
 					</h:column>
 					<h:column>
-						<f:facet name="header">#{entityStrings.TestMetric_metric}</f:facet>
-						<h:outputText value="#{item.metric.name}" />
+						<f:facet name="header">#{entityStrings.Metric_name}</f:facet>
+						<h:outputText value="#{item.name}" />
 					</h:column>
 					<h:column>
 						<f:facet name="header">#{entityStrings.Metric_description}</f:facet>
-						<h:outputText value="#{item.metric.description}" />
-					</h:column>
-
+						<h:outputText value="#{item.description}" />
+					</h:column>					
 					<h:column>
 						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-dot" outcome="TestMetricDetail"
-							value="" alt="#{strings.details}" title="#{strings.details}">
-							<f:param name="testMetricId" value="#{item.id}" />
-						</h:button>
+						<a4j:commandButton styleClass="button-edit" render="testMetricEditPopupForm"  action="#{testController.setMetric(item)}" oncomplete="#{rich:component('testMetricEditPopup')}.show();"
+							value=" " alt="#{strings.edit}" title="#{strings.edit}" />						
 					</h:column>
 					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-edit" outcome="TestMetricEdit"
-							value="" alt="#{strings.edit}" title="#{strings.edit}">
-							<f:param name="testMetricId" value="#{item.id}" />
-						</h:button>
+						<f:facet name="header">
+							<a4j:commandButton styleClass="button-plus" render="testMetricNewPopupForm"  action="#{testController.createMetric()}" oncomplete="#{rich:component('testMetricNewPopup')}.show();"
+							value=" " alt="#{strings.new_m}" title="#{strings.new_m}" />
+						</f:facet>
+						<a4j:commandButton styleClass="button-x" value=" " onclick="if (!confirm('Are you sure you want to delete metric (#{item.name})?') ) { return false;}; return true;" action="#{testController.deleteMetric(item)}" render="testMetricList" />
 					</h:column>
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:commandButton styleClass="button-x"
-							action="#{testMetricController.delete}" value=""
-							alt="#{strings.delete}" title="#{strings.delete}">
-							<f:param name="testMetricId" value="#{item.id}" />
-						</h:commandButton>
-					</h:column>
-					<f:facet name="header">
-
-					</f:facet>
 				</h:dataTable>
 			</h:form>
 

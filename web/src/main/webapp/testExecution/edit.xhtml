@@ -8,7 +8,7 @@
 		<ui:define name="title">#{strings.edit} TestExecution -</ui:define>
 		<ui:define name="content">
 			<h1>TestExecution</h1>
-			<h2>#{testExecutionController.bean.name}</h2>
+			<h2>#{testExecutionController.testExecution.name}</h2>
 			<h:form>
 				<table class="table">
 					<thead>
@@ -19,197 +19,31 @@
 					<tbody>
 						<tr class="table-row">
 							<td><label>ID</label></td>
-							<td><label>#{testExecutionController.bean.id}</label></td>
+							<td><label>#{testExecutionController.testExecution.id}</label></td>
 						</tr>
 						<tr class="table-row">
 							<td><label>#{entityStrings.TestExecution_test}</label></td>
-							<td><label>#{testExecutionController.bean.test.name}</label></td>
+							<td><label>#{testExecutionController.testExecution.test.name}</label></td>
 						</tr>
 						<tr class="table-row">
 							<td><label>#{entityStrings.TestExecution_name}</label></td>
 							<td><h:inputText styleClass="input-text"
-									value="#{testExecutionController.bean.name}" /></td>
+									value="#{testExecutionController.testExecution.name}" /></td>
 						</tr>
 					</tbody>
 					<tfoot>
 						<tr>
-							<td class="table-footer" colspan="2"><h:button
-									styleClass="button-left-arrow" outcome="TestExecutionList"
-									value="" alt="#{strings.back}" title="#{strings.back}" /> <h:commandButton
+							<td class="table-footer" colspan="2"><h:commandButton
 									styleClass="button-check"
 									action="#{testExecutionController.update}" value=""
 									alt="#{strings.save}" title="#{strings.save}">
 									<f:param name="testExecutionId"
-										value="#{testExecutionController.bean.id}" />
+										value="#{testExecutionController.testExecution.id}" />
 								</h:commandButton></td>
 						</tr>
 					</tfoot>
 				</table>
-			</h:form>
-			<h2>TestExecutionParameter</h2>
-			<h:form>
-				<h:dataTable styleClass="table" rowClasses="table-row"
-					columnClasses="common-column,common-column,common-column,button-column,button-column,button-column"
-					headerClass="table-header" footerClass="table-footer"
-					value="#{testExecutionParameterController.beanList}" var="item"
-					cellspacing="0" cellpadding="0">
-					<h:column>
-						<f:facet name="header">ID</f:facet>
-						<h:outputText value="#{item.id}" />
-					</h:column>
-					<h:column>
-						<f:facet name="header">#{entityStrings.TestExecutionParameter_name}</f:facet>
-						<h:outputText value="#{item.name}" />
-					</h:column>
-					<h:column>
-						<f:facet name="header">#{entityStrings.TestExecutionParameter_value}</f:facet>
-						<h:outputText value="#{item.value}" />
-					</h:column>
-
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-dot" outcome="TestExecutionParameterDetail"
-							value="" alt="#{strings.details}" title="#{strings.details}">
-							<f:param name="testExecutionParameterId" value="#{item.id}" />
-						</h:button>
-					</h:column>
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-edit" outcome="TestExecutionParameterEdit"
-							value="" alt="#{strings.edit}" title="#{strings.edit}">
-							<f:param name="testExecutionParameterId" value="#{item.id}" />
-						</h:button>
-					</h:column>
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:commandButton styleClass="button-x"
-							action="#{testExecutionTagController.delete}" value=""
-							alt="#{strings.delete}" title="#{strings.delete}">
-							<f:param name="testExecutionTagId" value="#{item.id}" />
-						</h:commandButton>
-					</h:column>
-					<f:facet name="footer">
-						<h:button styleClass="button-plus" outcome="TestExecutionTagNew"
-							value="" alt="#{strings.new_m}" title="#{strings.new_m}" />
-					</f:facet>
-				</h:dataTable>
-			</h:form>
-			
-			<h2>TestExecutionTag</h2>
-			<h:form>
-				<h:dataTable styleClass="table" rowClasses="table-row"
-					columnClasses="common-column,common-column,common-column,button-column,button-column,button-column"
-					headerClass="table-header" footerClass="table-footer"
-					value="#{testExecutionTagController.beanList}" var="item"
-					cellspacing="0" cellpadding="0">
-					<h:column>
-						<f:facet name="header">ID</f:facet>
-						<h:outputText value="#{item.id}" />
-					</h:column>
-					<h:column>
-						<f:facet name="header">#{entityStrings.TestExecutionTag_tag}</f:facet>
-						<h:outputText value="#{item.tag.name}" />
-					</h:column>
-					<h:column>
-						<f:facet name="header">#{entityStrings.TestExecutionTag_testExecution}</f:facet>
-						<h:outputText value="#{item.testExecution.name}" />
-					</h:column>
-
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-dot" outcome="TestExecutionTagDetail"
-							value="" alt="#{strings.details}" title="#{strings.details}">
-							<f:param name="testExecutionTagId" value="#{item.id}" />
-						</h:button>
-					</h:column>
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-edit" outcome="TagEdit"
-							value="" alt="#{strings.edit}" title="#{strings.edit}">
-							<f:param name="tagId" value="#{item.tag.id}" />
-						</h:button>
-					</h:column>
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:commandButton styleClass="button-x"
-							action="#{testExecutionTagController.delete}" value=""
-							alt="#{strings.delete}" title="#{strings.delete}">
-							<f:param name="testExecutionTagId" value="#{item.id}" />
-						</h:commandButton>
-					</h:column>
-					<f:facet name="footer">
-						<h:button styleClass="button-plus" outcome="TestExecutionTagNew"
-							value="" alt="#{strings.new_m}" title="#{strings.new_m}" />
-					</f:facet>
-				</h:dataTable>
-			</h:form>
-			<h2>Value</h2>
-
-			<h:form>
-				<h:dataTable styleClass="table" rowClasses="table-row"
-					columnClasses="common-column,common-column,common-column,common-column,common-column,button-column,button-column,button-column"
-					headerClass="table-header" footerClass="table-footer"
-					value="#{valueController.beanList}" var="item" cellspacing="0"
-					cellpadding="0">
-					<h:column>
-						<f:facet name="header">ID
-            <!--h:button styleClass="sort-arrow-asc" outcome="ValueList" value="" alt="#{strings.sortAsc}" title="#{strings.sortAsc}">
-               <f:param name="sortBy" value="id" />
-               <f:param name="sortOrder" value="asc" />
-            </h:button>
-            <h:button styleClass="sort-arrow-desc" outcome="ValueList" value="" alt="#{strings.sortDesc}" title="#{strings.sortDesc}">
-               <f:param name="sortBy" value="id" />
-               <f:param name="sortOrder" value="desc" />
-            </h:button-->
-						</f:facet>
-						<h:outputText value="#{item.id}" />
-					</h:column>
-					<h:column>
-						<f:facet name="header">#{entityStrings.Value_metric}</f:facet>
-						<h:outputText value="#{item.metric.name}" />
-					</h:column>
-					<h:column>
-						<f:facet name="header">#{entityStrings.Value_name}</f:facet>
-						<h:outputText value="#{item.name}" />
-					</h:column>
-					<h:column>
-						<f:facet name="header">#{entityStrings.Value_resultValue}</f:facet>
-						<h:outputText value="#{item.resultValue}" />
-					</h:column>
-					<h:column>
-						<f:facet name="header">#{entityStrings.Value_testExecution}</f:facet>
-						<h:outputText value="#{item.testExecution.name}" />
-					</h:column>
-
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-dot" outcome="ValueDetail" value=""
-							alt="#{strings.details}" title="#{strings.details}">
-							<f:param name="valueId" value="#{item.id}" />
-						</h:button>
-					</h:column>
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:button styleClass="button-edit" outcome="ValueEdit" value=""
-							alt="#{strings.edit}" title="#{strings.edit}">
-							<f:param name="valueId" value="#{item.id}" />
-						</h:button>
-					</h:column>
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<h:commandButton styleClass="button-x"
-							action="#{valueController.delete}" value=""
-							alt="#{strings.delete}" title="#{strings.delete}">
-							<f:param name="valueId" value="#{item.id}" />
-						</h:commandButton>
-					</h:column>
-					<f:facet name="footer">
-						<h:button styleClass="button-plus" outcome="ValueNew" value=""
-							alt="#{strings.new_m}" title="#{strings.new_m}" />
-					</f:facet>
-				</h:dataTable>
-			</h:form>
-
+			</h:form>			
 		</ui:define>
 	</ui:composition>
 </h:body>

@@ -7,6 +7,8 @@ import org.jboss.qa.perfrepo.model.Value;
 @Named
 public class ValueDAO extends DAO<Value, Long> {
 
-   // nothing to add
+    public Value getValue(Long id) {
+       return findWithDepth(id, "parameters");
+    }
 
 }

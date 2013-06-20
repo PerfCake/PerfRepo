@@ -1,132 +1,224 @@
 package org.jboss.qa.perf_repo.web;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.enterprise.context.Conversation;
-import javax.enterprise.context.RequestScoped;
-import javax.faces.model.DataModel;
-import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jboss.qa.perfrepo.dao.TestExecutionDAO;
+import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.TestExecution;
+import org.jboss.qa.perfrepo.model.TestExecutionParameter;
+import org.jboss.qa.perfrepo.model.TestExecutionTag;
+import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 @Named
-@RequestScoped
+@ViewScoped
 public class TestExecutionController extends ControllerBase {
 
  
    private static final long serialVersionUID = 3012075520261954430L;
 
    @Inject
-   private TestExecutionDAO dao;
+   private TestService testService;
 
-   @Inject
-   private TestService service;
-
-   @Inject
-   Conversation conversation;
-
-   private TestExecution bean = null;
-
-   private List<TestExecution> beanList = null;
-
-   private SortFilterDataModel<TestExecution> beanDataModel = null;
-
-   public TestExecution getBean() {
+   private TestExecution testExecution = null;
+   
+   private TestExecutionParameter testExecutionParameter = null;
+   
+   private TestExecutionTag testExecutionTag = null;
+   
+   private Value value = null;
+   
+   public TestExecution getTestExecution() {
       String id;
-      if (bean == null) {
+      if (testExecution == null) {
          if ((id = getRequestParam("testExecutionId")) != null) {
-            bean = dao.get(Long.valueOf(id));
+            testExecution = testService.getTestExecution(Long.valueOf(id));
          } else {
-            bean = new TestExecution();
+            //TODO: is it ok?
+            testExecution = new TestExecution();
          }
       }
-      return bean;
+      return testExecution;
+   }
+   
+   
+   public TestExecutionParameter getTestExecutionParameter() {    
+      return testExecutionParameter;
+   }
+   
+   public void setTestExecutionParameter(TestExecutionParameter tep) {
+      this.testExecutionParameter = tep;
+   }
+   
+   public void newTestExecutionParameter() {
+      this.testExecutionParameter = new TestExecutionParameter();
+   }
+   
+   public TestExecutionTag getTestExecutionTag() {
+      return testExecutionTag;
    }
 
-   public List<TestExecution> getBeanList() {
-      if (beanList == null) {
-         Map<String, Object> queryParams = new HashMap<String, Object>();
-         StringBuffer querySB = new StringBuffer();
-         boolean whereAppended = false;
-         querySB.append("SELECT x FROM TestExecution x");
-         String testIdN_1 = getRequestParam("testId");
-         if (testIdN_1 != null) {
-            querySB.append(" " + (whereAppended ? "AND" : "WHERE") + " x.test.id = :testId");
-            if (!whereAppended) {
-               whereAppended = true;
-            }
-            queryParams.put("testId", Long.valueOf(testIdN_1));
-         }
-
-         beanList = dao.findByQuery(querySB.toString(), queryParams);
-      }
-      return beanList;
+   public Value getValue() {
+      return value;
    }
 
-   public DataModel<TestExecution> getTableData() {
-      if (beanDataModel == null) {
-         beanDataModel = new SortFilterDataModel<TestExecution>(getBeanList());
-      }
-      return beanDataModel;
+
+   public void setValue(Value value) {
+      this.value = value;
    }
 
-   /*
-    * If generated bean does not have an attribute called 'name' it is likely that the select list
-    * component wouldn't be used in web application so this method can be deleted.
-    */
-   public List<SelectItem> getBeanSelectItems() {
-      List<SelectItem> list = new ArrayList<SelectItem>();
-      List<TestExecution> beanList = getBeanList();
-      for (TestExecution bean : beanList) {
-         list.add(new SelectItem(bean.getId(), bean.getName()));
-      }
-      return list;
-   }
 
+   public void setTestExecutionTag(TestExecutionTag testExecutionTag) {
+      this.testExecutionTag = testExecutionTag;
+   }
+   
+   public void newTestExecutionTag() {
+      this.testExecutionTag = new TestExecutionTag();
+   }
+   
    public String update() {
-      if (bean != null) {
+      if (testExecution != null) {
          try {
-            service.updateTestExecution(bean);
+            testService.updateTestExecution(testExecution);
          } catch (ServiceException e) {
-            // TODO: how to handle exceptions in web layer ?
+            //TODO: how to handle web-layer exceptions ?
             throw new RuntimeException(e);
          }
       }
-      // on successfuly updated go back to the entity list
-      return "TestExecutionList";
+      return "TestExecutionDetail";
+   }
+   
+   public List<TestExecutionParameter> getTestExecutionParameters() {
+
+         return testExecution.getSortedParameters();
+      
+   }
+   
+   public List<TestExecutionTag> getTestExecutionTags() {
+      List<TestExecutionTag> tegs = new ArrayList<TestExecutionTag>();
+      if (testExecution != null && testExecution.getTestExecutionTags() != null) {
+         tegs.addAll(testExecution.getTestExecutionTags());
+      } 
+      return tegs;
+   }
+   
+   public List<Value> getTestExecutionValues() {
+      List<Value> values = new ArrayList<Value>();
+      if (testExecution != null && testExecution.getValues() != null) {
+         values.addAll(testExecution.getValues());
+      } 
+      return values;
    }
 
-   public String create() {
-      if (bean != null) {
-         dao.create(bean);
-      }
-      // on successfuly created go back to the entity list
-      // return "TestExecutionList" + Constants.REDIRECT_URL;
-      return "TestExecutionList";
-   }
-
+ 
    public String delete() {
-      TestExecution objectToDelete = bean;
-      if (bean == null) {
+      TestExecution objectToDelete = testExecution;
+      if (testExecution == null) {
          objectToDelete = new TestExecution();
          objectToDelete.setId(new Long(getRequestParam("testExecutionId")));
       }
       try {
-         service.deleteTestExecution(objectToDelete);
+         testService.deleteTestExecution(objectToDelete);
       } catch (Exception e) {
          // TODO: how to handle web-layer exceptions ?
          throw new RuntimeException(e);
       }
-      // on successfuly created go back to the entity list
-      return "TestExecutionList";
+      return "Home";
+   }
+   
+   public void deleteTestExecutionParamenter(TestExecutionParameter param) {
+      if (param != null) {
+         try {
+            testService.deleteTestExecutionParameter(param);
+            testExecution.getParameters().remove(param);
+         } catch(Exception e) {
+            throw new RuntimeException(e);
+         }
+      }
+   }
+   
+   public void addTestExecutionParameter() {
+      if (testExecutionParameter != null && testExecution != null) {
+         try {            
+            TestExecutionParameter tep = testService.addTestExecutionParameter(testExecution, testExecutionParameter);
+            testExecution.getParameters().add(tep);
+            testExecutionParameter = null;
+         } catch(Exception e) {
+            throw new RuntimeException(e);
+         }
+      } else {
+         throw new RuntimeException("parameters are not set");
+      }
+   }
+   
+   public void updateTestExecutionParameter() {
+      if (testExecutionParameter != null) {
+         try {
+            testExecutionParameter.setTestExecution(testExecution);
+            testService.updateTestExecutionParameter(testExecutionParameter);
+         } catch(Exception e) {
+            throw new RuntimeException(e);
+         }
+      }
+   }
+   
+   public void addTestExecutionTag() {
+      if (testExecutionTag != null && testExecution != null) {
+         try {            
+            TestExecutionTag teg = testService.addTestExecutionTag(testExecution, testExecutionTag);
+            testExecution.getTestExecutionTags().add(teg);
+            testExecutionTag = null;
+         } catch(Exception e) {
+            throw new RuntimeException(e);
+         }
+      } else {
+         throw new RuntimeException("parameters are not set");
+      }
+   }
+   
+   
+   public void deleteTestExecutionTag(TestExecutionTag teg) {
+      if (teg != null) {
+         testService.deleteTestExecutionTag(teg);
+         testExecution.getTestExecutionTags().remove(teg);
+      }
+   }
+   
+   public void createValue() {
+      value = new Value();
+   }
+   
+   public void addValue() {
+      if (value != null && testExecution != null) {
+         Value v = testService.addValue(testExecution, value);
+         testExecution.getValues().add(v);
+         
+      }
+   }
+   
+   public void updateValue() {
+      if (value != null) {
+         testService.updateValue(value);         
+      }
+   }   
+   
+   public List<Metric> getTestMetric() {
+      if (testExecution != null) {
+         return testService.getTestMetrics(testExecution.getTest());
+      }
+      return null;
+   }
+   
+   public void deleteValue(Value value) {
+      if (value != null) {         
+         testService.deleteValue(value);
+         testExecution.getValues().remove(value);
+      }
    }
 
 }

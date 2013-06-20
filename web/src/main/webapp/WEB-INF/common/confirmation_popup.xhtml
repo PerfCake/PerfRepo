@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 
+  Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:perfrepo="http://richfaces.org/perfrepo">
+
+	<a4j:commandButton styleClass="#{buttonStyle}" value=" " onclick="#{rich:component(perfrepo:concat(confirmId,'confirmation'))}.show();return false" />
+	
+	<rich:popupPanel id="#{confirmId}confirmation" autosized="true" style="text-align:center;">
+		<f:facet name="header">Confirmation</f:facet>
+		<h:panelGrid style="font-align:center;">
+			<h:panelGrid columns="2">
+				<h:outputText value="#{message}"/>
+			</h:panelGrid>
+			<h:panelGroup>
+<!-- 				<rich:spacer height="20px" /> -->
+				<input type="button" value="OK"
+					onclick="#{rich:component(perfrepo:concat(confirmId,'confirmation'))}.hide(); confirmId(); return false;" />
+				<input type="button" value="Cancel"
+					onclick="#{rich:component(perfrepo:concat(confirmId,'confirmation'))}.hide();return false" />
+			</h:panelGroup>
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:component>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testExecution name="CR1" started="2013-06-04T14:13:00.000Z">
-	<test uid="soak_test" />
+<testExecution name="CR1" started="2013-06-04T14:13:00.000Z" testUid="soak_test">
 	<testExecutionParameters>
 		<testExecutionParameter name="THREAD" value="1"/>
 		<testExecutionParameter name="RESULT_SIZE" value="10"/>
@@ -219,6 +218,5 @@
 				<valueParameter name="TIME" paramValue="340" />
 			</valueParameters>
 		</value>
-
 	</values>
 </testExecution>

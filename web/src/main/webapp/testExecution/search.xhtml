@@ -57,9 +57,7 @@
 					</tbody>
 					<tfoot>
 						<tr>
-							<td class="table-footer" colspan="2"><h:button
-									styleClass="button-left-arrow" outcome="TestExecutionList"
-									value="" alt="#{strings.back}" title="#{strings.back}" /> 
+							<td class="table-footer" colspan="2">
 									<a4j:commandButton
 									action="#{searchController.search}"
 									value=" " styleClass="button-check" alt="Search Test Execution"
@@ -110,7 +108,7 @@
 						<f:facet name="header"></f:facet>
 						<a4j:commandButton styleClass="button-x"
 							action="#{testExecutionController.delete}" value=" "
-							alt="#{strings.delete}" title="#{strings.delete}" render="searchResult:searchResultTable" >
+							alt="#{strings.delete}" title="#{strings.delete}" render="searchResult:searchResultTable">
 							<f:param name="testExecutionId" value="#{item.id}" />							
 						</a4j:commandButton>
 					</h:column>

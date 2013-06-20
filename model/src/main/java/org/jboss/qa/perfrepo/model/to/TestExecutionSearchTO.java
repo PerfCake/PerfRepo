@@ -1,4 +1,4 @@
-package org.jboss.qa.perfrepo.model;
+package org.jboss.qa.perfrepo.model.to;
 
 import java.util.Date;
 import java.util.List;

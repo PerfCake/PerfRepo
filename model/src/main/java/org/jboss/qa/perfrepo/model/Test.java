@@ -45,6 +45,8 @@ import org.jboss.qa.perfrepo.model.builder.TestBuilder;
 @RequestScoped
 public class Test implements Serializable {
 
+   private static final long serialVersionUID = 2936849220074718535L;
+
    public static final String FIND_ALL = "Test.findAll";
 
    public static final String FIND_TEST_ID = "Test.findTestId";

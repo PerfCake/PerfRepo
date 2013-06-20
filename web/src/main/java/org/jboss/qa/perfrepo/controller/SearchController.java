@@ -9,7 +9,7 @@ import javax.inject.Named;
 
 import org.jboss.qa.perf_repo.web.ControllerBase;
 import org.jboss.qa.perfrepo.model.TestExecution;
-import org.jboss.qa.perfrepo.model.TestExecutionSearchTO;
+import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 

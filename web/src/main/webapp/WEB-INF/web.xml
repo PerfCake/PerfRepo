@@ -28,11 +28,15 @@
 		<param-name>javax.faces.PARTIAL_STATE_SAVING</param-name>
 		<param-value>true</param-value>
 	</context-param>
-<!-- 	<filter> -->
-<!-- 		<display-name>Ajax4jsf Filter</display-name> -->
-<!-- 		<filter-name>ajax4jsf</filter-name> -->
-<!-- 		<filter-class>org.ajax4jsf.Filter</filter-class> -->
-<!-- 	</filter> -->
+	<context-param>
+		<param-name>facelets.LIBRARIES</param-name>
+		<param-value>/WEB-INF/confirmation-taglib.xml</param-value>
+	</context-param>
+	<!-- <filter> -->
+	<!-- <display-name>Ajax4jsf Filter</display-name> -->
+	<!-- <filter-name>ajax4jsf</filter-name> -->
+	<!-- <filter-class>org.ajax4jsf.Filter</filter-class> -->
+	<!-- </filter> -->
 	<!-- <context-param> -->
 	<!-- <param-name>org.richfaces.skin</param-name> -->
 	<!-- <param-value>plain</param-value> -->

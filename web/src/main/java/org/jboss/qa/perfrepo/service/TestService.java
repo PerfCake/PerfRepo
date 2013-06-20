@@ -7,7 +7,12 @@ import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
-import org.jboss.qa.perfrepo.model.TestExecutionSearchTO;
+import org.jboss.qa.perfrepo.model.TestExecutionParameter;
+import org.jboss.qa.perfrepo.model.TestExecutionTag;
+import org.jboss.qa.perfrepo.model.Value;
+import org.jboss.qa.perfrepo.model.ValueParameter;
+import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
+import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 
 /**
  * 
@@ -30,12 +35,20 @@ public interface TestService {
    TestExecution createTestExecution(TestExecution testExecution) throws ServiceException;
 
    /**
-    * TODO: comment
+    * Returns list of TestExecutionss according to criteria defined by TestExecutionSearchTO
     * 
     * @param search
     * @return
     */
    List<TestExecution> searchTestExecutions(TestExecutionSearchTO search);
+   
+   /**
+    * Returns list of Tests according to criteria defined by TestSearchTO
+    * 
+    * @param search
+    * @return
+    */
+   List<Test> searchTest(TestSearchTO search);
 
    /**
     * TODO: comment
@@ -122,8 +135,121 @@ public interface TestService {
    Metric getMetric(Long id);
 
    List<Metric> getAllMetrics();
+   
+   /**
+    * Returns all metrics, which are defined on the Test
+    * @return
+    */
+   List<Metric> getTestMetrics(Test test);
 
    void deleteMetric(Metric metric);
+   
+   /**
+    * Removes metric from defined test. The method removes only relation between test and metric. The metric itself is not deleted.
+    * @param test
+    * @param metric
+    */
+   void deleteTestMetric(Test test, Metric metric);
 
    TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException;
+   
+   /**
+    * Adds TestExecutionParamter to existing TestExecution
+    * @param te TestExecution
+    * @param tep TestExecutionParameter to add
+    * @throws ServiceException
+    */
+   TestExecutionParameter addTestExecutionParameter(TestExecution te, TestExecutionParameter tep) throws ServiceException;
+   
+   /**
+    * Returns TestExecutionParameter by id
+    * @param id  TestExecutionParameter
+    * @return
+    */
+   TestExecutionParameter getTestExecutionParameter(Long id);
+   
+   /**
+    * Updates TestExecutionParameter
+    * @param tep TestExecutionParameter to update
+    * @return
+    */
+   TestExecutionParameter updateTestExecutionParameter(TestExecutionParameter tep);
+   
+   /**
+    * Removes TestExecutionParameter
+    * @param tep
+    * @return
+    */
+   void deleteTestExecutionParameter(TestExecutionParameter tep);
+   
+   
+   
+   /**
+    * Adds TestExecutionTag to existing TestExecution
+    * @param te TestExecution
+    * @param tep TestExecutionTag to add
+    * @throws ServiceException
+    */
+   TestExecutionTag addTestExecutionTag(TestExecution te, TestExecutionTag teg) throws ServiceException;
+
+   /**
+    * Removes TestExecutionParameter
+    * @param tep
+    * @return
+    */
+   void deleteTestExecutionTag(TestExecutionTag teg);
+   
+   
+   /**
+    * Creates Value Parameter to Value
+    * @param value
+    * @param vp
+    * @return
+    */
+   ValueParameter addValueParameter(Value value, ValueParameter vp);
+   
+   
+   /**
+    * Updates Value Parameter
+    * @param vp
+    * @return
+    */
+   ValueParameter updateValueParameter(ValueParameter vp);
+   
+   
+   /**
+    * Removes Value Parameter
+    * @param vp
+    */
+   void deleteValueParameter(ValueParameter vp);
+   
+   /**
+    * Return value according to id
+    * @param id
+    * @return
+    */
+   Value getValue(Long id);
+   
+   
+   /**
+    * Adds Value to Test Execution
+    * @param te
+    * @param value
+    * @return
+    */
+   Value addValue(TestExecution te, Value value);
+   
+   /**
+    * Updates Test Execution Value
+    * @param value
+    * @return
+    */
+   Value updateValue(Value value);   
+      
+   /**
+    * Removes value from TestExecution
+    * @param value
+    */
+   void deleteValue(Value value);
+   
 }

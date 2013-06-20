@@ -12,8 +12,8 @@ import javax.persistence.criteria.Root;
 import org.jboss.qa.perfrepo.model.Tag;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
-import org.jboss.qa.perfrepo.model.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
+import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 
 @Named
 public class TestExecutionDAO extends DAO<TestExecution, Long> {

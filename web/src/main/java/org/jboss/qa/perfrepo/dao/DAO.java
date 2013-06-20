@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -139,12 +138,4 @@ public abstract class DAO<T, PK extends Serializable> {
       }
       return result.get(0);
    }
-
-   public Long getOwnerId(PK id) throws Exception {
-      String query = (String) type.getDeclaredField("FIND_TEST_ID").get(String.class);
-      Query q = em.createNamedQuery(query);
-      q.setParameter("id", id);
-      return (Long) q.getSingleResult();
-   }
-
 }

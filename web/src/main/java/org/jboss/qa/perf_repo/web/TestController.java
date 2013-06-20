@@ -1,17 +1,17 @@
 package org.jboss.qa.perf_repo.web;
 
-import java.util.List;
-
-import javax.enterprise.context.RequestScoped;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 @Named
-@RequestScoped
+@ViewScoped
 public class TestController extends ControllerBase {
 
    private static final long serialVersionUID = 370202307562230671L;
@@ -20,10 +20,11 @@ public class TestController extends ControllerBase {
    TestService testService;
 
    private Test test = null;
-
-   private List<Test> testList = null;
-
-   public Test getTest() {
+   
+   private Metric metric = null;
+   
+   @PostConstruct
+   public void init() {
       String id;
       if (test == null) {
          if ((id = getRequestParam("testId")) != null) {
@@ -32,22 +33,48 @@ public class TestController extends ControllerBase {
             test = new Test();
          }
       }
-      return test;
    }
 
-   @Deprecated
-   public List<Test> getTestList() {
-      if (testList == null) {
-         testList = testService.findAllTests();
-      }
-      return testList;
+   public Test getTest() {      
+      return test;
+   }
+      
+   public Metric getMetric() {
+      return metric;
+   }
+
+   public void setMetric(Metric metric) {
+      this.metric = metric;
    }
 
    public String update() {
       if (test != null) {
          testService.updateTest(test);
       }
-      return "TestList";
+      return "TestDetail";
+   }
+   
+   public void createMetric() {
+      metric = new Metric();
+   }
+   
+   public void updateMetric() {
+      if (metric != null) {
+         testService.updateMetric(metric);
+      }
+   }
+   
+   public void addMetric() {
+      if (metric != null && test != null) {
+         testService.addMetric(test, metric);
+         //TODO:add to collection
+      }
+   }
+   
+   public void deleteMetric() {
+      if (metric != null && test!= null) {
+         testService.deleteTestMetric(test, metric);
+      }
    }
 
    public String create() {

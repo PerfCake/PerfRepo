@@ -6,127 +6,7 @@
   <navigation-case>
    <from-outcome>Home</from-outcome>
    <to-view-id>/index.xhtml</to-view-id>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestExecutionTagDetail</from-outcome>
-   <to-view-id>/testExecutionTag/detail.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestExecutionTagEdit</from-outcome>
-   <to-view-id>/testExecutionTag/edit.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestExecutionTagList</from-outcome>
-   <to-view-id>/testExecutionTag/list.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestExecutionTagNew</from-outcome>
-   <to-view-id>/testExecutionTag/new.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestMetricDetail</from-outcome>
-   <to-view-id>/testMetric/detail.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestMetricEdit</from-outcome>
-   <to-view-id>/testMetric/edit.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestMetricList</from-outcome>
-   <to-view-id>/testMetric/list.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestMetricNew</from-outcome>
-   <to-view-id>/testMetric/new.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TagDetail</from-outcome>
-   <to-view-id>/tag/detail.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TagEdit</from-outcome>
-   <to-view-id>/tag/edit.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TagList</from-outcome>
-   <to-view-id>/tag/list.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TagNew</from-outcome>
-   <to-view-id>/tag/new.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>ValueDetail</from-outcome>
-   <to-view-id>/value/detail.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>ValueEdit</from-outcome>
-   <to-view-id>/value/edit.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>ValueList</from-outcome>
-   <to-view-id>/value/list.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>ValueNew</from-outcome>
-   <to-view-id>/value/new.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>ValueParameterDetail</from-outcome>
-   <to-view-id>/valueParameter/detail.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>ValueParameterEdit</from-outcome>
-   <to-view-id>/valueParameter/edit.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>ValueParameterList</from-outcome>
-   <to-view-id>/valueParameter/list.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>ValueParameterNew</from-outcome>
-   <to-view-id>/valueParameter/new.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>MetricDetail</from-outcome>
-   <to-view-id>/metric/detail.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>MetricEdit</from-outcome>
-   <to-view-id>/metric/edit.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>MetricList</from-outcome>
-   <to-view-id>/metric/list.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>MetricNew</from-outcome>
-   <to-view-id>/metric/new.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
+  </navigation-case>  
   <navigation-case>
    <from-outcome>TestExecutionDetail</from-outcome>
    <to-view-id>/testExecution/detail.xhtml</to-view-id>
@@ -136,12 +16,7 @@
    <from-outcome>TestExecutionEdit</from-outcome>
    <to-view-id>/testExecution/edit.xhtml</to-view-id>
    <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestExecutionList</from-outcome>
-   <to-view-id>/testExecution/list.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
+  </navigation-case>  
   <navigation-case>
    <from-outcome>TestExecutionNew</from-outcome>
    <to-view-id>/testExecution/new.xhtml</to-view-id>
@@ -158,38 +33,13 @@
    <redirect/>
   </navigation-case>
   <navigation-case>
-   <from-outcome>TestList</from-outcome>
-   <to-view-id>/test/list.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
    <from-outcome>TestNew</from-outcome>
    <to-view-id>/test/new.xhtml</to-view-id>
    <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestExecutionParameterDetail</from-outcome>
-   <to-view-id>/testExecutionParameter/detail.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestExecutionParameterEdit</from-outcome>
-   <to-view-id>/testExecutionParameter/edit.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestExecutionParameterList</from-outcome>
-   <to-view-id>/testExecutionParameter/list.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestExecutionParameterNew</from-outcome>
-   <to-view-id>/testExecutionParameter/new.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
+  </navigation-case>  
   <navigation-case>
    <from-outcome>Search</from-outcome>
-   <to-view-id>/search/search.xhtml</to-view-id>
+   <to-view-id>/testExecution/search.xhtml</to-view-id>
    <redirect/>
   </navigation-case>
   <navigation-case>
@@ -197,7 +47,7 @@
    <to-view-id>/testExecution/teCompare.xhtml</to-view-id>
    <redirect/>
   </navigation-case>
-   <navigation-case>
+  <navigation-case>
    <from-outcome>SimpleReport</from-outcome>
    <to-view-id>/reports/simpleReport.xhtml</to-view-id>
    <redirect/>
