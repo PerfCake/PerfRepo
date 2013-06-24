@@ -204,10 +204,7 @@ public class TestServiceBean implements TestService {
       //store metrics
       if (test.getTestMetrics() != null && test.getTestMetrics().size() > 0) {
          for (TestMetric tm : test.getTestMetrics()) {
-            Metric metric = addMetric(test, tm.getMetric());
-            tm.setMetric(metric);
-            tm.setTest(createdTest);
-            testMetricDAO.create(tm);
+            addMetric(test, tm.getMetric());
          }
       }
       return createdTest;
@@ -296,14 +293,41 @@ public class TestServiceBean implements TestService {
    public Metric getMetric(Long id) {
       return metricDAO.get(id);
    }
+   
+   public List<Metric> getMetrics(String name, Test test) {
+      Test t = testDAO.get(test.getId());
+      return metricDAO.getMetricByNameAndGroup(name, t.getGroupId());
+   }
+   
+   public List<Metric> getAvailableMetrics(Test test) {
+      Test t = testDAO.get(test.getId());
+      List<Metric> result = metricDAO.getMetricByGroup(t.getGroupId());
+      result.removeAll(t.getSortedMetrics());
+      return result;
+   }
 
-   public Metric addMetric(Test test, Metric metric) {
-      //Test existingTest = testDAO.get(test.getId());
-      Metric m = metricDAO.findByName(metric.getName());
-      if (m == null) {
-         m = metricDAO.create(metric);
-      }
-      return m;
+   public TestMetric addMetric(Test test, Metric metric) {
+      Test existingTest = testDAO.get(test.getId());      
+      if (metric.getId() != null && !existingTest.getSortedMetrics().contains(metric)) {
+         return createTestMetric(existingTest, metric);
+      } else if (metric.getId() == null) {
+         List<Metric> metrics = metricDAO.getMetricByNameAndGroup(metric.getName(), test.getGroupId());
+         if (metrics != null && metrics.size() > 0) {
+            return createTestMetric(existingTest, metrics.get(0));
+         } else {
+            Metric m = metricDAO.create(metric);
+            return createTestMetric(existingTest, m);
+         }
+      }      
+      return null;
+   }
+   
+   private TestMetric createTestMetric(Test test, Metric metric) {
+      Metric existingMetric = metricDAO.get(metric.getId());
+      TestMetric tm = new TestMetric();
+      tm.setMetric(existingMetric);
+      tm.setTest(test);
+      return testMetricDAO.create(tm);
    }
 
    @Secure
@@ -326,9 +350,10 @@ public class TestServiceBean implements TestService {
       metricDAO.delete(m);
    }
    
-   public void deleteTestMetric(Test test, Metric metric) {
-      TestMetric tm = testMetricDAO.find(test, metric);
-      testMetricDAO.delete(tm);
+   public void deleteTestMetric(TestMetric tm) {
+      TestMetric existingTM = testMetricDAO.get(tm.getId());
+      testMetricDAO.delete(existingTM);
+      //TODO:check metric and delete
    }
 
    @Override

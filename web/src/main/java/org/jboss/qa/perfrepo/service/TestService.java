@@ -9,6 +9,7 @@ import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
+import org.jboss.qa.perfrepo.model.TestMetric;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
@@ -106,7 +107,7 @@ public interface TestService {
     * @param metric
     * @return
     */
-   Metric addMetric(Test test, Metric metric);
+   TestMetric addMetric(Test test, Metric metric);
 
    Metric updateMetric(Metric metric);
 
@@ -137,6 +138,22 @@ public interface TestService {
    List<Metric> getAllMetrics();
    
    /**
+    * Returns all metric by name prefix, which belong tests with defined group id 
+    * @param name
+    * @param test
+    * @return
+    */
+   List<Metric> getMetrics(String name, Test test);
+   
+   /**
+    * Returns metrics which belong tests with defined group id and are not defined on the defined test 
+    * @param name
+    * @param test
+    * @return
+    */
+   List<Metric> getAvailableMetrics(Test test);
+   
+   /**
     * Returns all metrics, which are defined on the Test
     * @return
     */
@@ -149,7 +166,7 @@ public interface TestService {
     * @param test
     * @param metric
     */
-   void deleteTestMetric(Test test, Metric metric);
+   void deleteTestMetric(TestMetric tm);
 
    TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException;
    

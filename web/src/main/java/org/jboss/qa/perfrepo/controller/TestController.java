@@ -1,11 +1,15 @@
 package org.jboss.qa.perfrepo.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.TestMetric;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
@@ -71,15 +75,28 @@ public class TestController extends ControllerBase {
    
    public void addMetric() {
       if (metric != null && test != null) {
-         testService.addMetric(test, metric);
-         //TODO:add to collection
+         TestMetric tm = testService.addMetric(test, metric);
+         test.getTestMetrics().add(tm);
       }
    }
    
-   public void deleteMetric() {
+   public void deleteTestMetric(TestMetric tm) {
       if (metric != null && test!= null) {
-         testService.deleteTestMetric(test, metric);
+         testService.deleteTestMetric(tm);
+         test.getTestMetrics().remove(tm);
       }
+   }
+   
+   public List<TestMetric> getMetricsList() {
+      List<TestMetric> tm = new ArrayList<TestMetric>();
+      if (test != null) {
+         tm.addAll(test.getTestMetrics());
+      }
+      return tm;
+   }
+   
+   public List<Metric> getAvailableMetricsByTest() {
+      return testService.getAvailableMetrics(test);
    }
 
    public String create() {
