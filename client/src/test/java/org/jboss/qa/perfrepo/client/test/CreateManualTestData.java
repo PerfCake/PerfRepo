@@ -50,6 +50,12 @@ public class CreateManualTestData {
       test.metric("jdg_lib_rg_writes_per_sec_mrd", "3", "Maximum Relative Difference in WRITES_PER_SEC over all slaves");
       test.metric("jdg_lib_rg_read_tx_overhead", "4", "Transaction overhead in read operations");
       test.metric("jdg_lib_rg_write_tx_overhead", "5", "Transaction overhead in write operations");
+      test.metric("jdg_lib_rg_reads_per_sec_read_only", "6", "Number of reads per second (READS_PER_SEC) Read-only");
+      test.metric("jdg_lib_rg_writes_per_sec_write_only", "7", "Number of writes per second (WRITES_PER_SEC) Write-only");
+      test.metric("jdg_lib_rg_reads_per_sec_mrd_read_only", "8", "Maximum Relative Difference in READS_PER_SEC over all slaves, Read-only");
+      test.metric("jdg_lib_rg_writes_per_sec_mrd_write_only", "9", "Maximum Relative Difference in WRITES_PER_SEC over all slaves, Write-only");
+      test.metric("jdg_lib_rg_read_tx_overhead_read_only", "10", "Transaction overhead in read operations, Read-only");
+      test.metric("jdg_lib_rg_write_tx_overhead_write_only", "11", "Transaction overhead in write operations, Write-only");
       return test.build();
    }
 
