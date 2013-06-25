@@ -16,6 +16,8 @@
 package org.jboss.qa.perfrepo.controller;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -23,6 +25,7 @@ import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.TestExecution;
+import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.Value;
@@ -34,20 +37,19 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 @ViewScoped
 public class TestExecutionController extends ControllerBase {
 
- 
    private static final long serialVersionUID = 3012075520261954430L;
 
    @Inject
    private TestService testService;
 
    private TestExecution testExecution = null;
-   
+
    private TestExecutionParameter testExecutionParameter = null;
-   
+
    private TestExecutionTag testExecutionTag = null;
-   
+
    private Value value = null;
-   
+
    public TestExecution getTestExecution() {
       String id;
       if (testExecution == null) {
@@ -60,20 +62,19 @@ public class TestExecutionController extends ControllerBase {
       }
       return testExecution;
    }
-   
-   
-   public TestExecutionParameter getTestExecutionParameter() {    
+
+   public TestExecutionParameter getTestExecutionParameter() {
       return testExecutionParameter;
    }
-   
+
    public void setTestExecutionParameter(TestExecutionParameter tep) {
       this.testExecutionParameter = tep;
    }
-   
+
    public void newTestExecutionParameter() {
       this.testExecutionParameter = new TestExecutionParameter();
    }
-   
+
    public TestExecutionTag getTestExecutionTag() {
       return testExecutionTag;
    }
@@ -82,20 +83,18 @@ public class TestExecutionController extends ControllerBase {
       return value;
    }
 
-
    public void setValue(Value value) {
       this.value = value;
    }
 
-
    public void setTestExecutionTag(TestExecutionTag testExecutionTag) {
       this.testExecutionTag = testExecutionTag;
    }
-   
+
    public void newTestExecutionTag() {
       this.testExecutionTag = new TestExecutionTag();
    }
-   
+
    public String update() {
       if (testExecution != null) {
          try {
@@ -107,30 +106,33 @@ public class TestExecutionController extends ControllerBase {
       }
       return "/testExecution/detail.xhtml?testExecutionId=";
    }
-   
+
    public List<TestExecutionParameter> getTestExecutionParameters() {
 
-         return testExecution.getSortedParameters();
-      
+      return testExecution.getSortedParameters();
+
    }
-   
+
    public List<TestExecutionTag> getTestExecutionTags() {
       List<TestExecutionTag> tegs = new ArrayList<TestExecutionTag>();
       if (testExecution != null && testExecution.getTestExecutionTags() != null) {
          tegs.addAll(testExecution.getTestExecutionTags());
-      } 
+      }
       return tegs;
    }
-   
+
    public List<Value> getTestExecutionValues() {
       List<Value> values = new ArrayList<Value>();
       if (testExecution != null && testExecution.getValues() != null) {
          values.addAll(testExecution.getValues());
-      } 
+      }
       return values;
    }
 
- 
+   public Collection<TestExecutionAttachment> getAttachments() {
+      return testExecution == null ? Collections.<TestExecutionAttachment> emptyList() : testExecution.getAttachments();
+   }
+
    public String delete() {
       TestExecution objectToDelete = testExecution;
       if (testExecution == null) {
@@ -145,92 +147,91 @@ public class TestExecutionController extends ControllerBase {
       }
       return "Home";
    }
-   
+
    public void deleteTestExecutionParamenter(TestExecutionParameter param) {
       if (param != null) {
          try {
             testService.deleteTestExecutionParameter(param);
             testExecution.getParameters().remove(param);
-         } catch(Exception e) {
+         } catch (Exception e) {
             throw new RuntimeException(e);
          }
       }
    }
-   
+
    public void addTestExecutionParameter() {
       if (testExecutionParameter != null && testExecution != null) {
-         try {            
+         try {
             TestExecutionParameter tep = testService.addTestExecutionParameter(testExecution, testExecutionParameter);
             testExecution.getParameters().add(tep);
             testExecutionParameter = null;
-         } catch(Exception e) {
+         } catch (Exception e) {
             throw new RuntimeException(e);
          }
       } else {
          throw new RuntimeException("parameters are not set");
       }
    }
-   
+
    public void updateTestExecutionParameter() {
       if (testExecutionParameter != null) {
          try {
             testExecutionParameter.setTestExecution(testExecution);
             testService.updateTestExecutionParameter(testExecutionParameter);
-         } catch(Exception e) {
+         } catch (Exception e) {
             throw new RuntimeException(e);
          }
       }
    }
-   
+
    public void addTestExecutionTag() {
       if (testExecutionTag != null && testExecution != null) {
-         try {            
+         try {
             TestExecutionTag teg = testService.addTestExecutionTag(testExecution, testExecutionTag);
             testExecution.getTestExecutionTags().add(teg);
             testExecutionTag = null;
-         } catch(Exception e) {
+         } catch (Exception e) {
             throw new RuntimeException(e);
          }
       } else {
          throw new RuntimeException("parameters are not set");
       }
    }
-   
-   
+
    public void deleteTestExecutionTag(TestExecutionTag teg) {
       if (teg != null) {
          testService.deleteTestExecutionTag(teg);
          testExecution.getTestExecutionTags().remove(teg);
       }
    }
-   
+
    public void createValue() {
       value = new Value();
    }
-   
+
    public void addValue() {
       if (value != null && testExecution != null) {
          Value v = testService.addValue(testExecution, value);
          testExecution.getValues().add(v);
-         
+
       }
    }
-   
+
    public void updateValue() {
       if (value != null) {
-         testService.updateValue(value);         
+         testService.updateValue(value);
       }
-   }   
-   
+   }
+
    public List<Metric> getTestMetric() {
       if (testExecution != null) {
          return testService.getTestMetrics(testExecution.getTest());
       }
       return null;
    }
-   
+
    public void deleteValue(Value value) {
-      if (value != null) {         
+      if (value != null) {
          testService.deleteValue(value);
          testExecution.getValues().remove(value);
       }

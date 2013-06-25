@@ -46,18 +46,15 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "metric")
-@NamedQueries({ 
-   @NamedQuery(name = Metric.FIND_TEST_ID, query = "SELECT test from TestMetric tm inner join tm.test test inner join tm.metric m where m= :entity"),
-   @NamedQuery(name = Metric.FIND_BY_NAME_GROUPID, query = "SELECT m from TestMetric tm inner join tm.metric m inner join tm.test test where test.groupId= :groupId and m.name= :name"),
-   @NamedQuery(name = Metric.FIND_BY_GROUPID, query = "SELECT m from TestMetric tm inner join tm.metric m inner join tm.test test where test.groupId= :groupId group by m.id")})
+@NamedQueries({
+      @NamedQuery(name = Metric.FIND_TEST_ID, query = "SELECT test from TestMetric tm inner join tm.test test inner join tm.metric m where m= :entity"),
+      @NamedQuery(name = Metric.FIND_BY_NAME_GROUPID, query = "SELECT m from TestMetric tm inner join tm.metric m inner join tm.test test where test.groupId= :groupId and m.name= :name"),
+      @NamedQuery(name = Metric.FIND_BY_GROUPID, query = "SELECT m from TestMetric tm inner join tm.metric m inner join tm.test test where test.groupId= :groupId group by m.id") })
 @XmlRootElement(name = "metric")
 @Named("metric")
 @RequestScoped
 public class Metric implements Serializable, Comparable<Metric> {
 
-   /**
-    * 
-    */
    private static final long serialVersionUID = -5234628391341278215L;
 
    public static final String FIND_TEST_ID = "Metric.findTestId";

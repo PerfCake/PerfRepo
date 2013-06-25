@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "tag")
 @Named("tag")
 @RequestScoped
-public class Tag implements Serializable, Comparable<Tag> {
+public class Tag implements Serializable, Comparable<Tag>, Cloneable {
 
    @Id
    @SequenceGenerator(name = "TAG_ID_GENERATOR", sequenceName = "TAG_SEQUENCE", allocationSize = 1)
@@ -91,6 +91,15 @@ public class Tag implements Serializable, Comparable<Tag> {
    @Override
    public int compareTo(Tag o) {
       return this.getName().compareTo(o.getName());
+   }
+
+   @Override
+   public Tag clone() {
+      try {
+         return (Tag) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException(e);
+      }
    }
 
 }

@@ -31,8 +31,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -75,21 +73,23 @@ public class TestExecutionTag implements Serializable {
       this.id = id;
    }
 
-   @XmlID
-   @XmlAttribute(name = "id")
-   public String getStringId() {
-      return id == null ? null : String.valueOf(id);
+   @XmlAttribute(name = "name")
+   public String getTagName() {
+      return tag == null ? null : String.valueOf(tag.getName());
    }
 
-   public void setStringId(String id) {
-      this.id = Long.valueOf(id);
+   public void setTagName(String name) {
+      if (tag == null) {
+         tag = new Tag();
+      }
+      tag.setName(name);
    }
 
    public void setTag(Tag tag) {
       this.tag = tag;
    }
 
-   @XmlElement(name = "tag")
+   @XmlTransient
    public Tag getTag() {
       return this.tag;
    }
@@ -101,6 +101,15 @@ public class TestExecutionTag implements Serializable {
    @XmlTransient
    public TestExecution getTestExecution() {
       return this.testExecution;
+   }
+
+   @Override
+   public TestExecutionTag clone() {
+      try {
+         return (TestExecutionTag) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException(e);
+      }
    }
 
 }

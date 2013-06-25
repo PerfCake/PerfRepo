@@ -70,8 +70,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       return findByCustomCriteria(criteria);
    }
 
-   public TestExecution getFullTestExecution(Long id) {
-      return findWithDepth(id, "parameters", "values.parameters", "testExecutionTags.tag");
-   }
+   //   public TestExecution getFullTestExecution(Long id) {
+   //      return findWithDepth(id, "parameters", "values.parameters", "testExecutionTags.tag");
+   //   }
 
 }

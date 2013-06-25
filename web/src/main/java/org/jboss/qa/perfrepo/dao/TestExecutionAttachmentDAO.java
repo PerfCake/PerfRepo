@@ -15,6 +15,10 @@
  */
 package org.jboss.qa.perfrepo.dao;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
+
 import javax.ejb.Stateless;
 import javax.inject.Named;
 
@@ -31,6 +35,10 @@ import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 @Stateless
 public class TestExecutionAttachmentDAO extends DAO<TestExecutionAttachment, Long> {
 
-   // nothing to add
+   public Collection<TestExecutionAttachment> findByExecution(Long testExecutionId) {
+      Map<String, Object> params = new TreeMap<>();
+      params.put("exec", testExecutionId);
+      return findByNamedQuery(TestExecutionAttachment.FIND_BY_EXECUTION, params);
+   }
 
 }

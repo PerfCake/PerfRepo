@@ -26,10 +26,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * 
@@ -40,7 +46,17 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "test_execution_attachment")
+@NamedQueries({ @NamedQuery(name = TestExecutionAttachment.FIND_BY_EXECUTION, query = "SELECT new TestExecutionAttachment(a.id, a.filename, a.mimetype) from TestExecutionAttachment a WHERE a.testExecution.id = :exec") })
+@XmlRootElement(name = "attachment")
 public class TestExecutionAttachment implements Serializable {
+   public static final String FIND_BY_EXECUTION = "TestExecutionAttachment.findByExecution";
+
+   public TestExecutionAttachment(Long id, String filename, String mimetype) {
+      super();
+      this.id = id;
+      this.filename = filename;
+      this.mimetype = mimetype;
+   }
 
    @Id
    @SequenceGenerator(name = "TEST_EXECUTION_ATTACHMENT_ID_GENERATOR", sequenceName = "TEST_EXECUTION_ATTACHMENT_SEQUENCE", allocationSize = 1)
@@ -71,6 +87,7 @@ public class TestExecutionAttachment implements Serializable {
       this.testExecution = new TestExecution();
    }
 
+   @XmlTransient
    public Long getId() {
       return id;
    }
@@ -79,6 +96,8 @@ public class TestExecutionAttachment implements Serializable {
       this.id = id;
    }
 
+   @XmlID
+   @XmlAttribute(name = "id")
    public String getStringId() {
       return id == null ? null : String.valueOf(id);
    }
@@ -95,6 +114,7 @@ public class TestExecutionAttachment implements Serializable {
       return this.testExecution;
    }
 
+   @XmlAttribute(name = "filename")
    public String getFilename() {
       return filename;
    }
@@ -103,6 +123,7 @@ public class TestExecutionAttachment implements Serializable {
       this.filename = filename;
    }
 
+   @XmlAttribute(name = "mimetype")
    public String getMimetype() {
       return mimetype;
    }
@@ -111,6 +132,7 @@ public class TestExecutionAttachment implements Serializable {
       this.mimetype = mimetype;
    }
 
+   @XmlTransient
    public byte[] getContent() {
       return content;
    }

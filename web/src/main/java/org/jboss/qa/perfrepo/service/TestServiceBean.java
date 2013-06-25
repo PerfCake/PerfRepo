@@ -165,13 +165,12 @@ public class TestServiceBean implements TestService {
    public List<TestExecution> getTestExecutions(Collection<Long> ids) {
       List<TestExecution> result = new ArrayList<TestExecution>();
       for (Long id : ids) {
-         TestExecution testExecution = testExecutionDAO.getFullTestExecution(id);
+         TestExecution testExecution = getTestExecution(id);
          result.add(testExecution);
       }
       return result;
    }
-   
-   
+
    public List<Test> searchTest(TestSearchTO search) {
       return testDAO.searchTests(search);
    }
@@ -308,12 +307,12 @@ public class TestServiceBean implements TestService {
    public Metric getMetric(Long id) {
       return metricDAO.get(id);
    }
-   
+
    public List<Metric> getMetrics(String name, Test test) {
       Test t = testDAO.get(test.getId());
       return metricDAO.getMetricByNameAndGroup(name, t.getGroupId());
    }
-   
+
    public List<Metric> getAvailableMetrics(Test test) {
       Test t = testDAO.get(test.getId());
       List<Metric> result = metricDAO.getMetricByGroup(t.getGroupId());
@@ -322,7 +321,7 @@ public class TestServiceBean implements TestService {
    }
 
    public TestMetric addMetric(Test test, Metric metric) {
-      Test existingTest = testDAO.get(test.getId());      
+      Test existingTest = testDAO.get(test.getId());
       if (metric.getId() != null && !existingTest.getSortedMetrics().contains(metric)) {
          return createTestMetric(existingTest, metric);
       } else if (metric.getId() == null) {
@@ -333,10 +332,10 @@ public class TestServiceBean implements TestService {
             Metric m = metricDAO.create(metric);
             return createTestMetric(existingTest, m);
          }
-      }      
+      }
       return null;
    }
-   
+
    private TestMetric createTestMetric(Test test, Metric metric) {
       Metric existingMetric = metricDAO.get(metric.getId());
       TestMetric tm = new TestMetric();
@@ -349,7 +348,7 @@ public class TestServiceBean implements TestService {
    public Metric updateMetric(Metric metric) {
       return metricDAO.update(metric);
    }
-   
+
    public List<Metric> getTestMetrics(Test test) {
       Test t = testDAO.get(test.getId());
       return t.getSortedMetrics();
@@ -364,7 +363,7 @@ public class TestServiceBean implements TestService {
       Metric m = metricDAO.get(metric.getId());
       metricDAO.delete(m);
    }
-   
+
    public void deleteTestMetric(TestMetric tm) {
       TestMetric existingTM = testMetricDAO.get(tm.getId());
       testMetricDAO.delete(existingTM);
@@ -373,12 +372,32 @@ public class TestServiceBean implements TestService {
 
    @Override
    public TestExecution getTestExecution(Long id) {
-      TestExecution testExecution = testExecutionDAO.getFullTestExecution(id);
-      // fetch lazy collections
-      testExecution.getParametersAsMap();
-      //testExecution.getValuesAsMap();
-      testExecution.getSortedTags();
-      return testExecution;
+      TestExecution testExecution = testExecutionDAO.get(id);
+      if (testExecution == null) {
+         return null;
+      }
+      TestExecution clone = testExecution.clone();
+      // lazy fetching (clone still contains, JPA-Managed collections)
+      // TODO: try alternative with findWithDepth and test performance
+      clone.getParametersAsMap();
+      clone.getSortedTags();
+      List<Value> cloneValues = new ArrayList<>();
+      for (Value v : clone.getValues()) {
+         Value cloneValue = v.clone();
+         cloneValues.add(cloneValue);
+         boolean emptyParams = true;
+         for (ValueParameter p : cloneValue.getParameters()) {
+            emptyParams = false;
+            p.getName();
+            p.getParamValue();
+         }
+         if (emptyParams) {
+            cloneValue.setParameters(null);
+         }
+      }
+      clone.setValues(cloneValues);
+      clone.setAttachments(testExecutionAttachmentDAO.findByExecution(id));
+      return clone;
    }
 
    @Override
@@ -421,27 +440,27 @@ public class TestServiceBean implements TestService {
       checkUserCanChangeTest(testExecution.getTest());
       return testExecutionDAO.update(testExecution);
    }
-   
+
    public TestExecutionParameter addTestExecutionParameter(TestExecution te, TestExecutionParameter tep) throws ServiceException {
       TestExecution freshTE = testExecutionDAO.get(te.getId());
       tep.setTestExecution(freshTE);
       return testExecutionParameterDAO.create(tep);
    }
-   
+
    public TestExecutionParameter getTestExecutionParameter(Long id) {
       return testExecutionParameterDAO.get(id);
    }
-   
+
    public TestExecutionParameter updateTestExecutionParameter(TestExecutionParameter tep) {
       tep.setTestExecution(testExecutionDAO.get(tep.getTestExecution().getId()));
       return testExecutionParameterDAO.update(tep);
    }
-   
+
    public void deleteTestExecutionParameter(TestExecutionParameter tep) {
       TestExecutionParameter tepRemove = testExecutionParameterDAO.get(tep.getId());
-      testExecutionParameterDAO.delete(tepRemove);      
-   }   
-   
+      testExecutionParameterDAO.delete(tepRemove);
+   }
+
    public TestExecutionTag addTestExecutionTag(TestExecution te, TestExecutionTag teg) throws ServiceException {
       TestExecution freshTE = testExecutionDAO.get(te.getId());
       Tag tag = tagDAO.findByName(teg.getTag().getName());
@@ -452,36 +471,32 @@ public class TestServiceBean implements TestService {
       teg.setTag(tag);
       return testExecutionTagDAO.create(teg);
    }
- 
+
    public void deleteTestExecutionTag(TestExecutionTag teg) {
       TestExecutionTag tegRemove = testExecutionTagDAO.get(teg.getId());
       testExecutionTagDAO.delete(tegRemove);
    }
-   
-   
+
    public ValueParameter addValueParameter(Value value, ValueParameter vp) {
       Value freshValue = valueDAO.get(value.getId());
       vp.setValue(freshValue);
       return valueParameterDAO.create(vp);
    }
-   
-   
+
    public ValueParameter updateValueParameter(ValueParameter vp) {
       vp.setValue(valueDAO.get(vp.getValue().getId()));
       return valueParameterDAO.update(vp);
    }
-   
-   
+
    public void deleteValueParameter(ValueParameter vp) {
       ValueParameter freshVP = valueParameterDAO.get(vp.getId());
       valueParameterDAO.delete(freshVP);
    }
-   
+
    public Value getValue(Long id) {
       return valueDAO.getValue(id);
    }
-   
-   
+
    public Value addValue(TestExecution te, Value value) {
       TestExecution freshTestExecution = testExecutionDAO.get(te.getId());
       Metric metric = metricDAO.get(value.getMetric().getId());
@@ -489,23 +504,19 @@ public class TestServiceBean implements TestService {
       value.setMetric(metric);
       return valueDAO.create(value);
    }
-   
+
    public Value updateValue(Value value) {
       TestExecution freshTestExecution = testExecutionDAO.get(value.getTestExecution().getId());
       value.setTestExecution(freshTestExecution);
       return valueDAO.update(value);
    }
-      
-   
-   
+
    public void deleteValue(Value value) {
       Value v = valueDAO.get(value.getId());
-      for (ValueParameter vp: v.getParameters()) {
+      for (ValueParameter vp : v.getParameters()) {
          valueParameterDAO.delete(vp);
-      }      
+      }
       valueDAO.delete(v);
    }
-   
-   
-   
+
 }

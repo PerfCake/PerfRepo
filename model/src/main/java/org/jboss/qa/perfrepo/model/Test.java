@@ -16,9 +16,11 @@
 package org.jboss.qa.perfrepo.model;
 
 import java.io.Serializable;
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -139,10 +141,67 @@ public class Test implements Serializable {
       this.testMetrics = testMetrics;
    }
 
-   @XmlElementWrapper(name = "testMetrics")
-   @XmlElement(name = "testMetric")
+   @XmlTransient
    public Collection<TestMetric> getTestMetrics() {
       return this.testMetrics;
+   }
+
+   @XmlElementWrapper(name = "metrics")
+   @XmlElement(name = "metric")
+   public Collection<Metric> getMetrics() {
+      return testMetrics == null ? null : new MetricCollection();
+   }
+   
+   public void setMetrics(Collection<Metric> metrics) {
+      testMetrics = new ArrayList<>();
+      getMetrics().addAll(metrics);
+   }
+
+   /**
+    * Hack to evade listing intermediate {@link TestMetric} objects in XML.
+    */
+   private class MetricCollection extends AbstractCollection<Metric> {
+
+      private class MetricIterator implements Iterator<Metric> {
+
+         private Iterator<TestMetric> iterator;
+
+         @Override
+         public boolean hasNext() {
+            return iterator.hasNext();
+         }
+
+         @Override
+         public Metric next() {
+            return iterator.next().getMetric();
+         }
+
+         @Override
+         public void remove() {
+            throw new UnsupportedOperationException();
+         }
+
+      }
+
+      @Override
+      public Iterator<Metric> iterator() {
+         MetricIterator i = new MetricIterator();
+         i.iterator = testMetrics.iterator();
+         return i;
+      }
+
+      @Override
+      public int size() {
+         return testMetrics.size();
+      }
+
+      @Override
+      public boolean add(Metric e) {
+         TestMetric tm = new TestMetric();
+         tm.setMetric(e);
+         return testMetrics.add(tm);
+      }
+
    }
 
    public void setUid(String uid) {

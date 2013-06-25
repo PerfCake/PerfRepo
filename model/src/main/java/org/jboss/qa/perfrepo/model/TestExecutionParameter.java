@@ -34,7 +34,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -44,7 +43,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "testExecutionParameter")
 @Named("testExecutionParameter")
 @RequestScoped
-public class TestExecutionParameter implements Serializable, Comparable<TestExecutionParameter> {
+public class TestExecutionParameter implements Serializable, Comparable<TestExecutionParameter>, Cloneable {
 
    public static final String FIND_ALL = "TestExecutionParameter.findAll";
 
@@ -88,16 +87,6 @@ public class TestExecutionParameter implements Serializable, Comparable<TestExec
       this.id = id;
    }
 
-   @XmlID
-   @XmlAttribute(name = "id")
-   public String getStringId() {
-      return id == null ? null : String.valueOf(id);
-   }
-
-   public void setStringId(String id) {
-      this.id = Long.valueOf(id);
-   }
-
    public void setName(String name) {
       this.name = name;
    }
@@ -128,6 +117,15 @@ public class TestExecutionParameter implements Serializable, Comparable<TestExec
    @Override
    public int compareTo(TestExecutionParameter o) {
       return this.getName().compareTo(o.getName());
+   }
+
+   @Override
+   public TestExecutionParameter clone() {
+      try {
+         return (TestExecutionParameter) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException(e);
+      }
    }
 
 }

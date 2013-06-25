@@ -34,7 +34,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -116,16 +115,6 @@ public class ValueParameter implements Serializable {
       this.id = id;
    }
 
-   @XmlID
-   @XmlAttribute(name = "id")
-   public String getStringId() {
-      return id == null ? null : String.valueOf(id);
-   }
-
-   public void setStringId(String id) {
-      this.id = Long.valueOf(id);
-   }
-
    public void setName(String name) {
       this.name = name;
    }
@@ -139,7 +128,7 @@ public class ValueParameter implements Serializable {
       this.paramValue = value;
    }
 
-   @XmlAttribute(name = "paramValue")
+   @XmlAttribute(name = "value")
    public String getParamValue() {
       return this.paramValue;
    }

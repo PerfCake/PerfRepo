@@ -37,7 +37,6 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -55,7 +54,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "value")
 @Named("value")
 @RequestScoped
-public class Value implements Serializable {
+public class Value implements Serializable, Cloneable {
 
    public static final String FIND_TEST_ID = "Value.findTestId";
 
@@ -96,21 +95,11 @@ public class Value implements Serializable {
       this.id = id;
    }
 
-   @XmlID
-   @XmlAttribute(name = "id")
-   public String getStringId() {
-      return id == null ? null : String.valueOf(id);
-   }
-
-   public void setStringId(String id) {
-      this.id = Long.valueOf(id);
-   }
-
    public void setMetric(Metric metric) {
       this.metric = metric;
    }
 
-   @XmlElement(name = "metric")
+   @XmlTransient
    public Metric getMetric() {
       return this.metric;
    }
@@ -128,7 +117,7 @@ public class Value implements Serializable {
       this.resultValue = resultValue;
    }
 
-   @XmlAttribute(name = "resultValue")
+   @XmlAttribute(name = "result")
    public Double getResultValue() {
       return this.resultValue;
    }
@@ -146,14 +135,43 @@ public class Value implements Serializable {
       this.parameters = valueParameters;
    }
 
-   @XmlElementWrapper(name = "valueParameters")
-   @XmlElement(name = "valueParameter")
+   @XmlElementWrapper(name = "parameters")
+   @XmlElement(name = "parameter")
    public Set<ValueParameter> getParameters() {
       return this.parameters;
    }
 
+   @XmlAttribute(name = "metricName")
    public String getMetricName() {
       return metric == null ? null : metric.getName();
+   }
+
+   public void setMetricName(String metricName) {
+      if (metric == null) {
+         metric = new Metric();
+      }
+      metric.setName(metricName);
+   }
+
+   @XmlAttribute(name = "metricComparator")
+   public String getMetricComparator() {
+      return metric == null ? null : metric.getComparator();
+   }
+
+   public void setMetricComparator(String metricComparator) {
+      if (metric == null) {
+         metric = new Metric();
+      }
+      metric.setComparator(metricComparator);
+   }
+
+   @Override
+   public Value clone() {
+      try {
+         return (Value) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException(e);
+      }
    }
 
 }

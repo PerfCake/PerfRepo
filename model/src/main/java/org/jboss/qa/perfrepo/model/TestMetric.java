@@ -30,18 +30,12 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "test_metric")
 @NamedQueries({
       @NamedQuery(name = TestMetric.FIND_TEST_ID, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm.id= :entity"),
       @NamedQuery(name = TestMetric.FIND_TEST_METRIC, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test and m.id= :metric") })
-@XmlRootElement(name = "testMetric")
 @Named("testMetric")
 @RequestScoped
 public class TestMetric implements Serializable {
@@ -67,7 +61,6 @@ public class TestMetric implements Serializable {
       this.test = new Test();
    }
 
-   @XmlTransient
    public Long getId() {
       return id;
    }
@@ -76,21 +69,10 @@ public class TestMetric implements Serializable {
       this.id = id;
    }
 
-   @XmlID
-   @XmlAttribute(name = "id")
-   public String getStringId() {
-      return id == null ? null : String.valueOf(id);
-   }
-
-   public void setStringId(String id) {
-      this.id = Long.valueOf(id);
-   }
-
    public void setMetric(Metric metric) {
       this.metric = metric;
    }
 
-   @XmlElement(name = "metric")
    public Metric getMetric() {
       return this.metric;
    }
@@ -99,7 +81,6 @@ public class TestMetric implements Serializable {
       this.test = test;
    }
 
-   @XmlTransient
    public Test getTest() {
       return this.test;
    }

@@ -21,10 +21,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
@@ -66,7 +64,7 @@ import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
 @XmlRootElement(name = "testExecution")
 @Named("testExecution")
 @RequestScoped
-public class TestExecution implements Serializable {
+public class TestExecution implements Serializable, Cloneable {
 
    private static final long serialVersionUID = -2956845045583534606L;
 
@@ -87,16 +85,16 @@ public class TestExecution implements Serializable {
    private Test test;
 
    @OneToMany(mappedBy = "testExecution")
-   private Set<TestExecutionParameter> parameters = new HashSet<TestExecutionParameter>();
+   private Collection<TestExecutionParameter> parameters;
 
    @OneToMany(mappedBy = "testExecution")
-   private Set<TestExecutionTag> testExecutionTags = new HashSet<TestExecutionTag>();
+   private Collection<TestExecutionTag> testExecutionTags;
 
    @OneToMany(mappedBy = "testExecution")
-   private Set<Value> values = new HashSet<Value>();
+   private Collection<Value> values;
 
    @OneToMany(mappedBy = "testExecution")
-   private Set<TestExecutionAttachment> attachments = new HashSet<TestExecutionAttachment>();
+   private Collection<TestExecutionAttachment> attachments;
 
    @Column(name = "started")
    private Date started;
@@ -171,27 +169,27 @@ public class TestExecution implements Serializable {
       test.setUid(uid);
    }
 
-   public void setParameters(Set<TestExecutionParameter> testExecutionParameters) {
+   public void setParameters(Collection<TestExecutionParameter> testExecutionParameters) {
       this.parameters = testExecutionParameters;
    }
 
-   @XmlElementWrapper(name = "testExecutionParameters")
-   @XmlElement(name = "testExecutionParameter")
+   @XmlElementWrapper(name = "parameters")
+   @XmlElement(name = "parameter")
    public Collection<TestExecutionParameter> getParameters() {
       return this.parameters;
    }
 
-   public void setTestExecutionTags(Set<TestExecutionTag> testExecutionTags) {
+   public void setTestExecutionTags(Collection<TestExecutionTag> testExecutionTags) {
       this.testExecutionTags = testExecutionTags;
    }
 
-   @XmlElementWrapper(name = "testExecutionTags")
-   @XmlElement(name = "testExecutionTag")
+   @XmlElementWrapper(name = "tags")
+   @XmlElement(name = "tag")
    public Collection<TestExecutionTag> getTestExecutionTags() {
       return this.testExecutionTags;
    }
 
-   public void setValues(Set<Value> values) {
+   public void setValues(Collection<Value> values) {
       this.values = values;
    }
 
@@ -210,12 +208,13 @@ public class TestExecution implements Serializable {
       this.started = started;
    }
 
-   @XmlTransient
+   @XmlElementWrapper(name = "attachments")
+   @XmlElement(name = "attachment")
    public Collection<TestExecutionAttachment> getAttachments() {
       return attachments;
    }
 
-   public void setAttachments(Set<TestExecutionAttachment> attachments) {
+   public void setAttachments(Collection<TestExecutionAttachment> attachments) {
       this.attachments = attachments;
    }
 
@@ -259,5 +258,14 @@ public class TestExecution implements Serializable {
 
    public static TestExecutionBuilder builder() {
       return new TestExecutionBuilder();
+   }
+
+   @Override
+   public TestExecution clone() {
+      try {
+         return (TestExecution) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException(e);
+      }
    }
 }
