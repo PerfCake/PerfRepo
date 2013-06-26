@@ -20,8 +20,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.TestExecution;
@@ -29,6 +31,7 @@ import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.Value;
+import org.jboss.qa.perfrepo.rest.TestExecutionREST;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
@@ -235,6 +238,18 @@ public class TestExecutionController extends ControllerBase {
          testService.deleteValue(value);
          testExecution.getValues().remove(value);
       }
+   }
+
+   /**
+    * Produce download link for an attachment. It will be an URL for the
+    * {@link TestExecutionREST#getAttachment(Long)} method.
+    * 
+    * @param attachment
+    * @return The download link.
+    */
+   public String getDownloadLink(TestExecutionAttachment attachment) {
+      HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+      return request.getContextPath() + "/rest/testExecution/attachment/" + attachment.getId();
    }
 
 }

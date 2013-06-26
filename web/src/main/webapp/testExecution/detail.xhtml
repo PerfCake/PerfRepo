@@ -259,7 +259,10 @@
 								<f:ajax render="attachmentTable" />
 							</a4j:commandLink>
 						</f:facet>
-						<h:outputText value="#{item.filename}" />
+						<h:outputLink
+							value="#{testExecutionController.getDownloadLink(item)}">
+							<h:outputText value="#{item.filename}" />
+						</h:outputLink>
 					</rich:column>
 
 					<rich:column sortable="true"
