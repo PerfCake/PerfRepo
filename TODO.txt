@@ -1,0 +1,12 @@
+Bugs in 0.0.1
+-------------
+
+- BUG: http://localhost:8080/repo/rest/test/all
+- BUG: edit test, fail SecurityException
+
+
+
+TODO
+----
+
+- database management scripts (PostgreSQL)
