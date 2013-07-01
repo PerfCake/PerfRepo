@@ -15,6 +15,8 @@
  */
 package org.jboss.qa.perfrepo.rest;
 
+import static org.jboss.qa.perfrepo.rest.TestREST.genericEntity;
+
 import java.lang.reflect.Method;
 
 import javax.enterprise.context.RequestScoped;
@@ -37,6 +39,7 @@ import javax.ws.rs.core.UriInfo;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 
 /**
  * 
@@ -75,8 +78,9 @@ public class TestExecutionREST {
    @Produces(MediaType.TEXT_XML)
    @Path("/all")
    @Logged
+   @Wrapped(element = "testExecutions")
    public Response all() {
-      return Response.ok(testService.findAllTestExecutions()).build();
+      return Response.ok(genericEntity(testService.findAllTestExecutions(), TestExecution.class)).build();
    }
 
    @POST()

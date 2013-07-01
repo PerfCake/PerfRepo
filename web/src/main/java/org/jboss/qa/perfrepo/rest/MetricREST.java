@@ -15,6 +15,8 @@
  */
 package org.jboss.qa.perfrepo.rest;
 
+import static org.jboss.qa.perfrepo.rest.TestREST.genericEntity;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -24,7 +26,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 
 @Path("/metric")
 @RequestScoped
@@ -45,8 +49,8 @@ public class MetricREST {
    @Produces(MediaType.TEXT_XML)
    @Path("/all")
    @Logged
+   @Wrapped(element = "metrics")
    public Response all() {
-      return Response.ok(testService.getAllMetrics()).build();
+      return Response.ok(genericEntity(testService.getAllMetrics(), Metric.class)).build();
    }
-
 }

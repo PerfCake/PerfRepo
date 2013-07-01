@@ -151,9 +151,9 @@ public class Test implements Serializable {
    public Collection<Metric> getMetrics() {
       return testMetrics == null ? null : new MetricCollection();
    }
-   
+
    public void setMetrics(Collection<Metric> metrics) {
-      testMetrics = new ArrayList<>();
+      testMetrics = new ArrayList<TestMetric>();
       getMetrics().addAll(metrics);
    }
 

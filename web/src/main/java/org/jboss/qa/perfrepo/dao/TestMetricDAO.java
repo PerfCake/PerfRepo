@@ -64,7 +64,7 @@ public class TestMetricDAO extends DAO<TestMetric, Long> {
     * @return
     */
    public TestMetric find(Test test, Metric metric) {
-      Map<String, Object> params = new TreeMap<>();
+      Map<String, Object> params = new TreeMap<String, Object>();
       params.put("test", test.getId());
       params.put("metric", metric.getId());
       List<TestMetric> list = findByNamedQuery(TestMetric.FIND_TEST_METRIC, params);

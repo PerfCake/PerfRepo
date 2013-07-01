@@ -246,9 +246,9 @@ public class TestExecution implements Serializable, Cloneable {
    @XmlTransient
    public Map<String, String> getParametersAsMap() {
       if (parameters == null || parameters.isEmpty()) {
-         return new HashMap<>(0);
+         return new HashMap<String, String>(0);
       } else {
-         Map<String, String> r = new HashMap<>();
+         Map<String, String> r = new HashMap<String, String>();
          for (TestExecutionParameter p : parameters) {
             r.put(p.getName(), p.getValue());
          }

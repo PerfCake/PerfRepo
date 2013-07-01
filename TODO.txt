@@ -10,3 +10,4 @@ TODO
 ----
 
 - database management scripts (PostgreSQL)
+- deletion of some objects might take long, show "please wait..." disable work for that time

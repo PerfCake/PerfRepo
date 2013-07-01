@@ -381,7 +381,7 @@ public class TestServiceBean implements TestService {
       // TODO: try alternative with findWithDepth and test performance
       clone.getParametersAsMap();
       clone.getSortedTags();
-      List<Value> cloneValues = new ArrayList<>();
+      List<Value> cloneValues = new ArrayList<Value>();
       for (Value v : clone.getValues()) {
          Value cloneValue = v.clone();
          cloneValues.add(cloneValue);

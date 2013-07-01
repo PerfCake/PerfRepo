@@ -179,7 +179,7 @@ public class PerfRepoClientManualTest {
     */
    private List<Value> getValuesHavingMetricAndParameter(TestExecution testExecution, String metric, String propName, String propValue) {
       Collection<Value> values = testExecution.getValues();
-      ArrayList<Value> result = new ArrayList<>();
+      ArrayList<Value> result = new ArrayList<Value>();
       if (values == null || values.isEmpty()) {
          return result;
       } else {

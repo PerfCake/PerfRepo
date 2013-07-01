@@ -17,7 +17,9 @@ package org.jboss.qa.perfrepo.client.test;
 
 import org.jboss.qa.perfrepo.client.PerfRepoClient;
 import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.builder.TestBuilder;
+import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -48,9 +50,12 @@ public class CreateManualTestData {
    }
 
    Test createJDGCSTest() {
-      return Test.builder().name("JDG client/server test").groupId(testUserRole).uid("jdg_cs_test").description("JDG Client/server test")
-            .metric("jdg_cs_avg_read_resp_time", "0", "Average Read response time").metric("jdg_cs_avg_write_resp_time", "1", "Average Write response time")
-            .metric("jdg_cs_requests_per_sec", "2", "Number of requests per second").build();
+      TestBuilder test = Test.builder().name("JDG client/server test");
+      test.groupId(testUserRole).uid("jdg_cs_test").description("JDG Client/server test");
+      test.metric("jdg_cs_avg_read_resp_time", "0", "Average Read response time");
+      test.metric("jdg_cs_avg_write_resp_time", "1", "Average Write response time");
+      test.metric("jdg_cs_requests_per_sec", "2", "Number of requests per second");
+      return test.build();
    }
 
    Test createJDGRGTest() {
@@ -74,28 +79,29 @@ public class CreateManualTestData {
       return test.build();
    }
 
-   //   private TestExecution createTestExecution(Long testId) {
-   //      TestExecution testExecution = new TestExecution();
-   //      Test idHolder = new Test();
-   //      idHolder.setId(testId);
-   //      testExecution.setTest(idHolder);
-   //      testExecution.setName("execution1");
-   //      testExecution.setStarted(new Date());
-   //      testExecution.addParameter("param1", "value1");
-   //      testExecution.addParameter("param2", "value2");
-   //      testExecution.addTag("tag1");
-   //      testExecution.addTag("tag2");
-   //      testExecution.addValue("metric1", 12.0d);
-   //      Value v2 = testExecution.addValue("metric2", null);
-   //      v2.addParameter("10", "20.0");
-   //      v2.addParameter("20", "40.0");
-   //      v2.addParameter("30", "60.0");
-   //      return testExecution;
-   //   }
+//   private TestExecution createTestExecution(Long testId) {
+//      TestExecutionBuilder exec = TestExecution.builder().name("JDG RadarGun test (dist_tx)");
+//      exec.
+//      Test idHolder = new Test();
+//      idHolder.setId(testId);
+//      testExecution.setTest(idHolder);
+//      testExecution.setName("execution1");
+//      testExecution.setStarted(new Date());
+//      testExecution.addParameter("param1", "value1");
+//      testExecution.addParameter("param2", "value2");
+//      testExecution.addTag("tag1");
+//      testExecution.addTag("tag2");
+//      testExecution.addValue("metric1", 12.0d);
+//      Value v2 = testExecution.addValue("metric2", null);
+//      v2.addParameter("10", "20.0");
+//      v2.addParameter("20", "40.0");
+//      v2.addParameter("30", "60.0");
+//      return testExecution;
+//   }
 
    @org.testng.annotations.Test
    public void testCreate() throws Exception {
-      Test test = createJDGRGTest();
+      Test test = createJDGCSTest();
       Long id = client.createTest(test);
       System.out.println("Created test: " + id);
    }

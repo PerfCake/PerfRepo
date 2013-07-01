@@ -16,6 +16,8 @@
 package org.jboss.qa.perfrepo.rest;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -27,13 +29,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 
 /**
  * REST interface for Test objects.
@@ -71,8 +77,9 @@ public class TestREST {
    @Produces(MediaType.TEXT_XML)
    @Path("/all")
    @Logged
+   @Wrapped(element = "tests")
    public Response all() {
-      return Response.ok(testService.findAllTests()).build();
+      return Response.ok(genericEntity(testService.findAllTests(), Test.class)).build();
    }
 
    @POST
@@ -109,8 +116,17 @@ public class TestREST {
    @Produces("text/xml")
    @Path("/{testId}/executions")
    @Logged
+   @Wrapped(element = "testExecutions")
    public Response executions(@PathParam("testId") Long testId) {
-      return Response.ok(testService.findExecutionsByTest(testId)).build();
+      return Response.ok(genericEntity(testService.findExecutionsByTest(testId), TestExecution.class)).build();
    }
 
+   // later should be moved to an util class
+   static <T> GenericEntity<Collection<T>> genericEntity(Collection<T> entity, Class<T> componentClass) {
+      ArrayList<T> collection = new ArrayList<T>(entity);
+      GenericEntity<Collection<T>> r = new GenericEntity<Collection<T>>(collection, collection.getClass());
+      Logger.getLogger(TestREST.class).info(
+            "Creating generid entity: class=" + r.getClass().getName() + ", rawType=" + r.getRawType().getName() + ", type=" + r.getType());
+      return r;
+   }
 }

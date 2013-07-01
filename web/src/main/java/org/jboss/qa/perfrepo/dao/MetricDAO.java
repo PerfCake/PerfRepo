@@ -44,7 +44,7 @@ public class MetricDAO extends DAO<Metric, Long> {
     * @return
     */
    public List<Metric> getMetricByNameAndGroup(String name, String groupId) {
-      Map<String, Object> params = new TreeMap<>();
+      Map<String, Object> params = new TreeMap<String, Object>();
       params.put("groupId", groupId);
       params.put("name", name);
       return findByNamedQuery(Metric.FIND_BY_NAME_GROUPID, params);
@@ -57,7 +57,7 @@ public class MetricDAO extends DAO<Metric, Long> {
     * @return
     */
    public List<Metric> getMetricByGroup(String groupId) {
-      Map<String, Object> params = new TreeMap<>();
+      Map<String, Object> params = new TreeMap<String, Object>();
       params.put("groupId", groupId);      
       return findByNamedQuery(Metric.FIND_BY_GROUPID, params);
    }

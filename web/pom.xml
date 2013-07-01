@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <parent>
       <groupId>org.jboss.qa</groupId>
@@ -11,11 +12,6 @@
    <packaging>war</packaging>
    <name>Performance Results Repository - Web</name>
    <description />
-
-   <properties>
-      <jboss.as.plugin.version>7.3.Final</jboss.as.plugin.version>
-      <war.plugin.version>2.1.1</war.plugin.version>
-   </properties>
 
    <dependencies>
       <dependency>
@@ -87,63 +83,96 @@
       <dependency>
          <groupId>commons-io</groupId>
          <artifactId>commons-io</artifactId>
-         <version>2.1</version>
+         <version>${commons.io.version}</version>
       </dependency>
       <dependency>
          <groupId>org.richfaces.core</groupId>
          <artifactId>richfaces-core-api</artifactId>
-         <version>4.3.2.Final</version>
+         <version>${richfaces.version}</version>
       </dependency>
       <dependency>
          <groupId>org.richfaces.core</groupId>
          <artifactId>richfaces-core-impl</artifactId>
-         <version>4.3.2.Final</version>
+         <version>${richfaces.version}</version>
       </dependency>
       <dependency>
          <groupId>org.richfaces.ui</groupId>
          <artifactId>richfaces-components-api</artifactId>
-         <version>4.3.2.Final</version>
+         <version>${richfaces.version}</version>
       </dependency>
       <dependency>
          <groupId>org.richfaces.ui</groupId>
          <artifactId>richfaces-components-ui</artifactId>
-         <version>4.3.2.Final</version>
+         <version>${richfaces.version}</version>
       </dependency>
       <dependency>
          <groupId>log4j</groupId>
          <artifactId>log4j</artifactId>
-         <version>1.2.16</version>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-jaxrs</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-jaxb-provider</artifactId>
+         <scope>provided</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>com.sun.xml.bind</groupId>
+               <artifactId>jaxb-impl</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>com.sun.xml.stream</groupId>
+               <artifactId>sjsxp</artifactId>
+            </exclusion>
+         </exclusions>
       </dependency>
    </dependencies>
 
    <build>
       <finalName>${project.artifactId}</finalName>
       <plugins>
+
          <plugin>
             <artifactId>maven-war-plugin</artifactId>
-            <version>${war.plugin.version}</version>
+            <version>${maven.war.plugin.version}</version>
             <configuration>
-               <!-- Java EE 6 doesn't require web.xml, Maven needs to catch 
-                  up! -->
                <failOnMissingWebXml>false</failOnMissingWebXml>
+               <archive>
+                  <manifestEntries>
+                     <Dependencies>org.jboss.resteasy.resteasy-jaxb-provider export services</Dependencies>
+                  </manifestEntries>
+               </archive>
             </configuration>
          </plugin>
-         <!-- The JBoss AS plugin deploys your war to a local JBoss AS container -->
-         <!-- To use, run: mvn package jboss-as:deploy -->
          <plugin>
             <groupId>org.jboss.as.plugins</groupId>
             <artifactId>jboss-as-maven-plugin</artifactId>
-            <version>${jboss.as.plugin.version}</version>
+            <version>${maven.jboss.as.plugin.version}</version>
          </plugin>
       </plugins>
+      <resources>
+         <resource>
+            <directory>src/main/resources/</directory>
+            <filtering>false</filtering>
+         </resource>
+         <resource>
+            <directory>src/main/resources/</directory>
+            <filtering>true</filtering>
+            <includes>
+               <include>META-INF/persistence.xml</include>
+            </includes>
+         </resource>
+      </resources>
    </build>
 
    <profiles>
       <profile>
-         <!-- The default profile skips all tests, though you can tune it 
-            to run just unit tests based on a custom pattern -->
-         <!-- Seperate profiles are provided for running all tests, including 
-            Arquillian tests that execute in the specified container -->
+         <!-- The default profile skips all tests, though you can tune it to run just unit tests based on a custom pattern -->
+         <!-- Seperate profiles are provided for running all tests, including Arquillian tests that execute in the specified 
+            container -->
          <id>default</id>
          <activation>
             <activeByDefault>true</activeByDefault>
@@ -152,7 +181,7 @@
             <plugins>
                <plugin>
                   <artifactId>maven-surefire-plugin</artifactId>
-                  <version>${surefire.plugin.version}</version>
+                  <version>${maven.surefire.plugin.version}</version>
                   <configuration>
                      <skip>true</skip>
                   </configuration>
@@ -162,19 +191,16 @@
       </profile>
 
       <profile>
-         <!-- When built in OpenShift the 'openshift' profile will be used 
-            when invoking mvn. -->
-         <!-- Use this profile for any OpenShift specific customization your 
-            app will need. -->
-         <!-- By default that is to put the resulting archive into the 'deployments' 
-            folder. -->
+         <!-- When built in OpenShift the 'openshift' profile will be used when invoking mvn. -->
+         <!-- Use this profile for any OpenShift specific customization your app will need. -->
+         <!-- By default that is to put the resulting archive into the 'deployments' folder. -->
          <!-- http://maven.apache.org/guides/mini/guide-building-for-different-environments.html -->
          <id>openshift</id>
          <build>
             <plugins>
                <plugin>
                   <artifactId>maven-war-plugin</artifactId>
-                  <version>${war.plugin.version}</version>
+                  <version>${maven.war.plugin.version}</version>
                   <configuration>
                      <outputDirectory>deployments</outputDirectory>
                      <warName>repo</warName>

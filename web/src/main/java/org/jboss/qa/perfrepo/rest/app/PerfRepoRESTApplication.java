@@ -21,7 +21,9 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-import org.jboss.qa.perfrepo.rest.*;
+import org.jboss.qa.perfrepo.rest.MetricREST;
+import org.jboss.qa.perfrepo.rest.TestExecutionREST;
+import org.jboss.qa.perfrepo.rest.TestREST;
 
 @ApplicationPath("/rest")
 public class PerfRepoRESTApplication extends Application {
