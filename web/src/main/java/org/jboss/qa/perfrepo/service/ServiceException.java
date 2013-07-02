@@ -15,12 +15,15 @@
  */
 package org.jboss.qa.perfrepo.service;
 
+import javax.ejb.ApplicationException;
+
 /**
  * Exception in service layer.
  * 
  * @author Michal Linhard (mlinhard@redhat.com)
  * 
  */
+@ApplicationException(rollback = true)
 public class ServiceException extends Exception {
 
    public ServiceException() {

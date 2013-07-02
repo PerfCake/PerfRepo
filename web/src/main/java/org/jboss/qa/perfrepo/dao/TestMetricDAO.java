@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.ejb.Stateless;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.Metric;
@@ -33,7 +32,6 @@ import org.jboss.qa.perfrepo.model.TestMetric;
  * @author Michal Linhard (mlinhard@redhat.com)
  */
 @Named
-@Stateless
 public class TestMetricDAO extends DAO<TestMetric, Long> {
 
    /**
