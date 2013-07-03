@@ -88,9 +88,7 @@ public class TestBuilder {
     * @return the {@link Test}
     */
    public Test build() {
-      Test ret = test;
-      test = new Test();
-      return ret;
+      return test.clone();
    }
 
    /**

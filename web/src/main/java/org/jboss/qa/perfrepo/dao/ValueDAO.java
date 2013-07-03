@@ -19,11 +19,18 @@ import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.Value;
 
+/**
+ * DAO for {@link Value}
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Named
 public class ValueDAO extends DAO<Value, Long> {
 
-    public Value getValue(Long id) {
-       return findWithDepth(id, "parameters");
-    }
+   public Value getValue(Long id) {
+      return findWithDepth(id, "parameters");
+   }
 
 }

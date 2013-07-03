@@ -105,7 +105,7 @@ public class TestREST {
    @Path("/{testId}/addMetric")
    @Consumes(MediaType.TEXT_XML)
    @Logged
-   public Response addMetric(@PathParam("testId") Long testId, Metric metric, @Context UriInfo uriInfo) {
+   public Response addMetric(@PathParam("testId") Long testId, Metric metric, @Context UriInfo uriInfo) throws Exception {
       Test test = new Test();
       test.setId(testId);
       Long id = testService.addMetric(test, metric).getId();

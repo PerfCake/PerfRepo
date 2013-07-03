@@ -30,6 +30,13 @@ import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 
+/**
+ * DAO for {@link TestExecution}
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Named
 public class TestExecutionDAO extends DAO<TestExecution, Long> {
 

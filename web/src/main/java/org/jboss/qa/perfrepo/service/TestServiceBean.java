@@ -131,20 +131,16 @@ public class TestServiceBean implements TestService {
       }
       // values
       if (testExecution.getValues() != null && !testExecution.getValues().isEmpty()) {
-         // TODO: Don't allow duplicit value for a metric
          for (Value value : testExecution.getValues()) {
             value.setTestExecution(storedTestExecution);
             if (value.getMetricName() == null) {
                throw serviceException("Metric name is mandatory");
             }
-            Metric metric = metricDAO.findByName(value.getMetricName());
-            if (metric == null) {
-               throw serviceException("Referring to a non-existent metric: \"%s\"", value.getMetricName());
+            TestMetric testMetric = testMetricDAO.find(test, value.getMetricName());
+            if (testMetric == null) {
+               throw serviceException("Test \"%s\" (%s) doesn't have metric \"%s\"", test.getName(), test.getId(), value.getMetricName());
             }
-            if (!testHasMetric(test, metric)) {
-               throw serviceException("Metric \"%s\" (%s) doesn't belong to test \"%s\" (%s)", metric.getName(), metric.getId(), test.getName(), test.getId());
-            }
-            value.setMetric(metric);
+            value.setMetric(testMetric.getMetric());
             valueDAO.create(value);
             if (value.getParameters() != null && value.getParameters().size() > 0) {
                for (ValueParameter vp : value.getParameters()) {
@@ -156,10 +152,6 @@ public class TestServiceBean implements TestService {
       }
       log.debug("Created new test execution " + storedTestExecution.getId());
       return storedTestExecution;
-   }
-
-   private boolean testHasMetric(Test test, Metric metric) {
-      return testMetricDAO.find(test, metric) != null;
    }
 
    public List<TestExecution> getTestExecutions(Collection<Long> ids) {
@@ -182,7 +174,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public Long addAttachment(TestExecutionAttachment attachment) throws ServiceException {
-      TestExecution testExecution = testExecutionDAO.get(attachment.getTestExecution().getId());
+      TestExecution testExecution = testExecutionDAO.find(attachment.getTestExecution().getId());
       if (testExecution == null) {
          throw serviceException("Trying to add attachment to non-existent test execution (id=%s)", attachment.getTestExecution().getId());
       }
@@ -194,7 +186,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public TestExecutionAttachment getAttachment(Long id) {
-      return testExecutionAttachmentDAO.get(id);
+      return testExecutionAttachmentDAO.find(id);
    }
 
    private SecurityException notInGroup(String userName, String groupId, String test, String testUid) {
@@ -210,9 +202,12 @@ public class TestServiceBean implements TestService {
    }
 
    @Override
-   public Test createTest(Test test) {
+   public Test createTest(Test test) throws ServiceException {
       if (!userInfo.isUserInRole(test.getGroupId())) {
          throw cantCreateTest(userInfo.getUserName(), test.getGroupId());
+      }
+      if (testDAO.findByUid(test.getUid()) != null) {
+         throw serviceException("Test with UID \"%s\" exists.", test.getUid());
       }
       Test createdTest = testDAO.create(test);
       //store metrics
@@ -224,7 +219,7 @@ public class TestServiceBean implements TestService {
       return createdTest;
    }
 
-   public Test getOrCreateTest(Test test) {
+   public Test getOrCreateTest(Test test) throws ServiceException {
       Test storedTest = testDAO.findByUid(test.getUid());
       if (storedTest == null) {
          storedTest = createTest(test);
@@ -233,10 +228,12 @@ public class TestServiceBean implements TestService {
    }
 
    public Test getTest(Long id) {
-      Test test = testDAO.get(id);
+      Test test = testDAO.find(id);
       Collection<TestMetric> tms = test.getTestMetrics();
       for (TestMetric tm : tms) {
          tm.getMetric();
+
+         // TODO: don't return test collections in metric objects cause we'd recurse
       }
       return test;
    }
@@ -277,7 +274,7 @@ public class TestServiceBean implements TestService {
    }
 
    public void deleteTestExecution(TestExecution testExecution) throws ServiceException {
-      TestExecution freshTestExecution = testExecutionDAO.get(testExecution.getId());
+      TestExecution freshTestExecution = testExecutionDAO.find(testExecution.getId());
       if (freshTestExecution == null) {
          throw serviceException("Test execution with id %s doesn't exist", testExecution.getId());
       }
@@ -305,39 +302,63 @@ public class TestServiceBean implements TestService {
    }
 
    public Metric getMetric(Long id) {
-      return metricDAO.get(id);
+      return metricDAO.find(id);
    }
 
    public List<Metric> getMetrics(String name, Test test) {
-      Test t = testDAO.get(test.getId());
+      Test t = testDAO.find(test.getId());
       return metricDAO.getMetricByNameAndGroup(name, t.getGroupId());
    }
 
    public List<Metric> getAvailableMetrics(Test test) {
-      Test t = testDAO.get(test.getId());
+      Test t = testDAO.find(test.getId());
       List<Metric> result = metricDAO.getMetricByGroup(t.getGroupId());
       result.removeAll(t.getSortedMetrics());
       return result;
    }
 
-   public TestMetric addMetric(Test test, Metric metric) {
-      Test existingTest = testDAO.get(test.getId());
-      if (metric.getId() != null && !existingTest.getSortedMetrics().contains(metric)) {
-         return createTestMetric(existingTest, metric);
-      } else if (metric.getId() == null) {
-         List<Metric> metrics = metricDAO.getMetricByNameAndGroup(metric.getName(), test.getGroupId());
-         if (metrics != null && metrics.size() > 0) {
-            return createTestMetric(existingTest, metrics.get(0));
-         } else {
-            Metric m = metricDAO.create(metric);
-            return createTestMetric(existingTest, m);
+   public TestMetric addMetric(Test test, Metric metric) throws ServiceException {
+      Test freshTest = checkUserCanChangeTest(test);
+      return addMetricInternal(freshTest, metric);
+   }
+
+   // works with fresh test loaded from database + checked access rights
+   private TestMetric addMetricInternal(Test test, Metric metric) throws ServiceException {
+      if (metric.getId() != null) {
+         // associating an existing metric with the test
+         Metric freshMetric = metricDAO.find(metric.getId());
+         if (freshMetric == null) {
+            throw serviceException("Metric %s doesn't exist anymore", metric.getId());
          }
+         for (Test testForMetric : freshMetric.getTests()) {
+            if (!testForMetric.getGroupId().equals(test.getGroupId())) {
+               throw serviceException("This metric can be shared only between tests with same group id");
+            }
+            if (testForMetric.getId().equals(test.getId())) {
+               throw serviceException("Metric %s (%s) is already associated with test %s", freshMetric.getId(), freshMetric.getName(), test.getUid());
+            }
+         }
+         return createTestMetric(test, freshMetric);
+      } else {
+         // creating a new metric object
+         if (metric.getName() == null) {
+            throw serviceException("Metric name is mandatory");
+         }
+         // metric name needs to be unique in the metric space of a certain groupId
+         // does it exist in a test with same group id (including the target test) ?
+         List<Metric> existingMetricsForGroup = metricDAO.getMetricByNameAndGroup(metric.getName(), test.getGroupId());
+         for (Metric existingMetric : existingMetricsForGroup) {
+            if (existingMetric.getName().equals(metric.getName())) {
+               throw serviceException("Test %s already contains metric %s", test.getUid(), metric.getName());
+            }
+         }
+         Metric freshMetric = metricDAO.create(metric);
+         return createTestMetric(test, freshMetric);
       }
-      return null;
    }
 
    private TestMetric createTestMetric(Test test, Metric metric) {
-      Metric existingMetric = metricDAO.get(metric.getId());
+      Metric existingMetric = metricDAO.find(metric.getId());
       TestMetric tm = new TestMetric();
       tm.setMetric(existingMetric);
       tm.setTest(test);
@@ -350,7 +371,7 @@ public class TestServiceBean implements TestService {
    }
 
    public List<Metric> getTestMetrics(Test test) {
-      Test t = testDAO.get(test.getId());
+      Test t = testDAO.find(test.getId());
       return t.getSortedMetrics();
    }
 
@@ -360,19 +381,19 @@ public class TestServiceBean implements TestService {
 
    @Secure
    public void deleteMetric(Metric metric) {
-      Metric m = metricDAO.get(metric.getId());
+      Metric m = metricDAO.find(metric.getId());
       metricDAO.delete(m);
    }
 
    public void deleteTestMetric(TestMetric tm) {
-      TestMetric existingTM = testMetricDAO.get(tm.getId());
+      TestMetric existingTM = testMetricDAO.find(tm.getId());
       testMetricDAO.delete(existingTM);
       //TODO:check metric and delete
    }
 
    @Override
    public TestExecution getTestExecution(Long id) {
-      TestExecution testExecution = testExecutionDAO.get(id);
+      TestExecution testExecution = testExecutionDAO.find(id);
       if (testExecution == null) {
          return null;
       }
@@ -417,7 +438,7 @@ public class TestServiceBean implements TestService {
       }
       Test freshTest = null;
       if (test.getId() != null) {
-         freshTest = testDAO.get(test.getId());
+         freshTest = testDAO.find(test.getId());
          if (freshTest == null) {
             throw serviceException("Test with id=%s, doesn't exist.", test.getId());
          }
@@ -442,27 +463,27 @@ public class TestServiceBean implements TestService {
    }
 
    public TestExecutionParameter addTestExecutionParameter(TestExecution te, TestExecutionParameter tep) throws ServiceException {
-      TestExecution freshTE = testExecutionDAO.get(te.getId());
+      TestExecution freshTE = testExecutionDAO.find(te.getId());
       tep.setTestExecution(freshTE);
       return testExecutionParameterDAO.create(tep);
    }
 
    public TestExecutionParameter getTestExecutionParameter(Long id) {
-      return testExecutionParameterDAO.get(id);
+      return testExecutionParameterDAO.find(id);
    }
 
    public TestExecutionParameter updateTestExecutionParameter(TestExecutionParameter tep) {
-      tep.setTestExecution(testExecutionDAO.get(tep.getTestExecution().getId()));
+      tep.setTestExecution(testExecutionDAO.find(tep.getTestExecution().getId()));
       return testExecutionParameterDAO.update(tep);
    }
 
    public void deleteTestExecutionParameter(TestExecutionParameter tep) {
-      TestExecutionParameter tepRemove = testExecutionParameterDAO.get(tep.getId());
+      TestExecutionParameter tepRemove = testExecutionParameterDAO.find(tep.getId());
       testExecutionParameterDAO.delete(tepRemove);
    }
 
    public TestExecutionTag addTestExecutionTag(TestExecution te, TestExecutionTag teg) throws ServiceException {
-      TestExecution freshTE = testExecutionDAO.get(te.getId());
+      TestExecution freshTE = testExecutionDAO.find(te.getId());
       Tag tag = tagDAO.findByName(teg.getTag().getName());
       if (tag == null) {
          tag = tagDAO.create(teg.getTag());
@@ -473,23 +494,23 @@ public class TestServiceBean implements TestService {
    }
 
    public void deleteTestExecutionTag(TestExecutionTag teg) {
-      TestExecutionTag tegRemove = testExecutionTagDAO.get(teg.getId());
+      TestExecutionTag tegRemove = testExecutionTagDAO.find(teg.getId());
       testExecutionTagDAO.delete(tegRemove);
    }
 
    public ValueParameter addValueParameter(Value value, ValueParameter vp) {
-      Value freshValue = valueDAO.get(value.getId());
+      Value freshValue = valueDAO.find(value.getId());
       vp.setValue(freshValue);
       return valueParameterDAO.create(vp);
    }
 
    public ValueParameter updateValueParameter(ValueParameter vp) {
-      vp.setValue(valueDAO.get(vp.getValue().getId()));
+      vp.setValue(valueDAO.find(vp.getValue().getId()));
       return valueParameterDAO.update(vp);
    }
 
    public void deleteValueParameter(ValueParameter vp) {
-      ValueParameter freshVP = valueParameterDAO.get(vp.getId());
+      ValueParameter freshVP = valueParameterDAO.find(vp.getId());
       valueParameterDAO.delete(freshVP);
    }
 
@@ -498,21 +519,21 @@ public class TestServiceBean implements TestService {
    }
 
    public Value addValue(TestExecution te, Value value) {
-      TestExecution freshTestExecution = testExecutionDAO.get(te.getId());
-      Metric metric = metricDAO.get(value.getMetric().getId());
+      TestExecution freshTestExecution = testExecutionDAO.find(te.getId());
+      Metric metric = metricDAO.find(value.getMetric().getId());
       value.setTestExecution(freshTestExecution);
       value.setMetric(metric);
       return valueDAO.create(value);
    }
 
    public Value updateValue(Value value) {
-      TestExecution freshTestExecution = testExecutionDAO.get(value.getTestExecution().getId());
+      TestExecution freshTestExecution = testExecutionDAO.find(value.getTestExecution().getId());
       value.setTestExecution(freshTestExecution);
       return valueDAO.update(value);
    }
 
    public void deleteValue(Value value) {
-      Value v = valueDAO.get(value.getId());
+      Value v = valueDAO.find(value.getId());
       for (ValueParameter vp : v.getParameters()) {
          valueParameterDAO.delete(vp);
       }

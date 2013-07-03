@@ -22,8 +22,10 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
+import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
@@ -32,54 +34,83 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 public class SearchController extends ControllerBase {
 
    private static final long serialVersionUID = 1L;
-   
+
+   private static final Logger log = Logger.getLogger(SearchController.class);
+
    @Inject
    private TestService testService;
-   
+
    private String tag;
-   
+
    private TestExecutionSearchTO bean = null;
-   
+
    private List<TestExecution> result;
-  
+
    @PostConstruct
    public void init() {
       if (bean == null) {
          bean = new TestExecutionSearchTO();
       }
       if (result == null) {
-         result= new ArrayList<TestExecution>();
+         result = new ArrayList<TestExecution>();
       }
    }
-   
-   public TestExecutionSearchTO getBean() {      
+
+   public TestExecutionSearchTO getBean() {
       return bean;
    }
-   
-   
+
    public String getTag() {
       return tag;
    }
 
-
    public void setTag(String tag) {
       this.tag = tag;
    }
-
 
    public String search() {
       result = testService.searchTestExecutions(bean);
       return null;
    }
 
+   public String delete() {
+      // TODO: learn error message handling and display
+      Long idToDelete = Long.valueOf(getRequestParam("idToDelete"));
+      if (idToDelete == null) {
+         log.error("Bad request, missing idToDelete");
+         return "Search";
+      } else {
+         TestExecution execToRemove = removeById(idToDelete);
+         if (execToRemove == null) {
+            log.error("Bad request, test execution " + idToDelete + " not found among current search results");
+            return "Search";
+         } else {
+            try {
+               testService.deleteTestExecution(execToRemove);
+               return null;
+            } catch (ServiceException e) {
+               return "Search";
+            }
+         }
+      }
+   }
+
+   private TestExecution removeById(Long id) {
+      for (TestExecution exec : result) {
+         if (exec.getId().equals(id)) {
+            result.remove(exec);
+            return exec;
+         }
+      }
+      return null;
+   }
 
    public List<TestExecution> getResult() {
       return result;
    }
 
-
    public void setResult(List<TestExecution> result) {
       this.result = result;
    }
-   
+
 }

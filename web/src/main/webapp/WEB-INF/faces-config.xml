@@ -1,70 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<faces-config version="2.1" xmlns="http://java.sun.com/xml/ns/javaee"
- xmlns:xi="http://www.w3.org/2001/XInclude"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_1.xsd">
- <navigation-rule>
-  <navigation-case>
-   <from-outcome>Home</from-outcome>
-   <to-view-id>/index.xhtml</to-view-id>
-  </navigation-case>  
-  <navigation-case>
-   <from-outcome>TestExecutionDetail</from-outcome>
-   <to-view-id>/testExecution/detail.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestExecutionEdit</from-outcome>
-   <to-view-id>/testExecution/edit.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>  
-  <navigation-case>
-   <from-outcome>TestExecutionNew</from-outcome>
-   <to-view-id>/testExecution/new.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestDetail</from-outcome>
-   <to-view-id>/test/detail.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestEdit</from-outcome>
-   <to-view-id>/test/edit.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestNew</from-outcome>
-   <to-view-id>/test/new.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>  
-  <navigation-case>
-   <from-outcome>Search</from-outcome>
-   <to-view-id>/testExecution/search.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>TestExecutionCompare</from-outcome>
-   <to-view-id>/testExecution/teCompare.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>SimpleReport</from-outcome>
-   <to-view-id>/reports/simpleReport.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
- </navigation-rule>
- <application>
-  <resource-bundle>
-   <base-name>lang.strings</base-name>
-   <var>strings</var>
-  </resource-bundle>
-  <resource-bundle>
-   <base-name>lang.entityStrings</base-name>
-   <var>entityStrings</var>
-  </resource-bundle>
-  <locale-config>
-   <default-locale>en</default-locale>
-   <supported-locale>cs</supported-locale>
-  </locale-config>
- </application>
+<faces-config version="2.1" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xi="http://www.w3.org/2001/XInclude"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_1.xsd">
+   <navigation-rule>
+      <navigation-case>
+         <from-outcome>Home</from-outcome>
+         <to-view-id>/index.xhtml</to-view-id>
+      </navigation-case>
+      <navigation-case>
+         <from-outcome>TestExecutionDetail</from-outcome>
+         <to-view-id>/testExecution/detail.xhtml</to-view-id>
+         <redirect />
+      </navigation-case>
+      <navigation-case>
+         <from-outcome>TestExecutionEdit</from-outcome>
+         <to-view-id>/testExecution/edit.xhtml</to-view-id>
+         <redirect />
+      </navigation-case>
+      <navigation-case>
+         <from-outcome>TestExecutionNew</from-outcome>
+         <to-view-id>/testExecution/new.xhtml</to-view-id>
+         <redirect />
+      </navigation-case>
+      <navigation-case>
+         <from-outcome>TestDetail</from-outcome>
+         <to-view-id>/test/detail.xhtml</to-view-id>
+         <redirect />
+      </navigation-case>
+      <navigation-case>
+         <from-outcome>TestEdit</from-outcome>
+         <to-view-id>/test/edit.xhtml</to-view-id>
+         <redirect />
+      </navigation-case>
+      <navigation-case>
+         <from-outcome>TestNew</from-outcome>
+         <to-view-id>/test/new.xhtml</to-view-id>
+         <redirect />
+      </navigation-case>
+      <navigation-case>
+         <from-outcome>Search</from-outcome>
+         <to-view-id>/testExecution/search.xhtml</to-view-id>
+         <redirect />
+      </navigation-case>
+      <navigation-case>
+         <from-outcome>TestExecutionCompare</from-outcome>
+         <to-view-id>/testExecution/teCompare.xhtml</to-view-id>
+         <redirect />
+      </navigation-case>
+      <navigation-case>
+         <from-outcome>SimpleReport</from-outcome>
+         <to-view-id>/reports/simpleReport.xhtml</to-view-id>
+         <redirect />
+      </navigation-case>
+   </navigation-rule>
+   <application>
+      <resource-bundle>
+         <base-name>lang.strings</base-name>
+         <var>strings</var>
+      </resource-bundle>
+      <resource-bundle>
+         <base-name>lang.entityStrings</base-name>
+         <var>entityStrings</var>
+      </resource-bundle>
+      <locale-config>
+         <default-locale>en</default-locale>
+         <supported-locale>cs</supported-locale>
+      </locale-config>
+   </application>
 </faces-config>

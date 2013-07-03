@@ -19,6 +19,13 @@ import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 
+/**
+ * DAO for {@link TestExecutionTag}
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Named
 public class TestExecutionTagDAO extends DAO<TestExecutionTag, Long> {
 

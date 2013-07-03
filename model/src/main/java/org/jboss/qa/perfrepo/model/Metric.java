@@ -16,7 +16,10 @@
 package org.jboss.qa.perfrepo.model;
 
 import java.io.Serializable;
+import java.util.AbstractCollection;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
@@ -34,9 +37,12 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import org.jboss.qa.perfrepo.model.builder.MetricBuilder;
 
 /**
  * Represents a test metric.
@@ -53,7 +59,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "metric")
 @Named("metric")
 @RequestScoped
-public class Metric implements Serializable, Comparable<Metric> {
+public class Metric implements Serializable, Comparable<Metric>, Cloneable {
 
    private static final long serialVersionUID = -5234628391341278215L;
 
@@ -88,6 +94,15 @@ public class Metric implements Serializable, Comparable<Metric> {
 
    public Metric() {
       super();
+   }
+
+   @Override
+   public Metric clone() {
+      try {
+         return (Metric) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException(e);
+      }
    }
 
    public Metric(String name, String comparator, String description) {
@@ -164,6 +179,68 @@ public class Metric implements Serializable, Comparable<Metric> {
    @Override
    public int compareTo(Metric o) {
       return this.getName().compareTo(o.getName());
+   }
+
+   /**
+    * Hack to evade listing intermediate {@link TestMetric} objects in XML.
+    */
+   private class TestCollection extends AbstractCollection<Test> {
+
+      private class TestIterator implements Iterator<Test> {
+
+         private Iterator<TestMetric> iterator;
+
+         @Override
+         public boolean hasNext() {
+            return iterator.hasNext();
+         }
+
+         @Override
+         public Test next() {
+            return iterator.next().getTest();
+         }
+
+         @Override
+         public void remove() {
+            throw new UnsupportedOperationException();
+         }
+
+      }
+
+      @Override
+      public Iterator<Test> iterator() {
+         TestIterator i = new TestIterator();
+         i.iterator = testMetrics.iterator();
+         return i;
+      }
+
+      @Override
+      public int size() {
+         return testMetrics.size();
+      }
+
+      @Override
+      public boolean add(Test e) {
+         TestMetric tm = new TestMetric();
+         tm.setTest(e);
+         return testMetrics.add(tm);
+      }
+
+   }
+
+   @XmlElementWrapper(name = "tests")
+   @XmlElement(name = "test")
+   public Collection<Test> getTests() {
+      return testMetrics == null ? null : new TestCollection();
+   }
+
+   public void setTests(Collection<Test> tests) {
+      testMetrics = new ArrayList<TestMetric>();
+      getTests().addAll(tests);
+   }
+
+   public static MetricBuilder builder() {
+      return new MetricBuilder(null, new Metric());
    }
 
 }

@@ -28,7 +28,7 @@ public class MetricBuilder {
    private TestBuilder parentBuilder;
    private Metric metric;
 
-   MetricBuilder(TestBuilder parentBuilder, Metric metric) {
+   public MetricBuilder(TestBuilder parentBuilder, Metric metric) {
       this.parentBuilder = parentBuilder;
       this.metric = metric;
    }
@@ -49,7 +49,17 @@ public class MetricBuilder {
    }
 
    public TestBuilder test() {
+      if (parentBuilder == null) {
+         throw new IllegalStateException("Parent builder not defined, this is a standalone metric. Call MetricBuilder.build()");
+      }
       return parentBuilder;
+   }
+
+   public Metric build() {
+      if (parentBuilder != null) {
+         throw new IllegalStateException("This metric can't be built as standalone object, call MetricBuilder.test()");
+      }
+      return metric.clone();
    }
 
 }

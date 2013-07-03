@@ -148,7 +148,7 @@ public class TestExecutionController extends ControllerBase {
          // TODO: how to handle web-layer exceptions ?
          throw new RuntimeException(e);
       }
-      return "Home";
+      return "Search";
    }
 
    public void deleteTestExecutionParamenter(TestExecutionParameter param) {

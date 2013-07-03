@@ -22,7 +22,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -40,7 +42,7 @@ import javax.persistence.criteria.Root;
  */
 public abstract class DAO<T, PK extends Serializable> {
 
-   @PersistenceContext
+   @PersistenceContext(unitName = "PerfRepoPU")
    private EntityManager em;
 
    private Class<T> type;
@@ -55,14 +57,25 @@ public abstract class DAO<T, PK extends Serializable> {
    }
 
    /**
-    * TODO: shouldn't be called find to be consistent with entity manager naming ?
     * 
     * Find an entity based on it's primary key
     * 
     * @param id Primary key
     * @return Entity
     */
-   public T get(final PK id) {
+   public T find(final PK id) {
+      return em.find(type, id);
+   }
+
+   /**
+    * 
+    * Find an entity based on it's primary key
+    * 
+    * @param id Primary key
+    * @param readonly Should return read only entity ?
+    * @return Entity
+    */
+   public T find(final PK id, boolean readonly) {
       return em.find(type, id);
    }
 
@@ -152,5 +165,9 @@ public abstract class DAO<T, PK extends Serializable> {
          return null;
       }
       return result.get(0);
+   }
+
+   protected Query createNamedQuery(String name) {
+      return em.createNamedQuery(name);
    }
 }

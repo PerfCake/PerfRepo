@@ -57,7 +57,7 @@ public interface TestService {
     * @return
     */
    List<TestExecution> searchTestExecutions(TestExecutionSearchTO search);
-   
+
    /**
     * Returns list of Tests according to criteria defined by TestSearchTO
     * 
@@ -98,8 +98,9 @@ public interface TestService {
     * 
     * @param test
     * @return
+    * @throws ServiceException
     */
-   Test createTest(Test test);
+   Test createTest(Test test) throws ServiceException;
 
    /**
     * Delete a test execution with all it's subobjects.
@@ -121,8 +122,9 @@ public interface TestService {
     * @param test
     * @param metric
     * @return
+    * @throws ServiceException
     */
-   TestMetric addMetric(Test test, Metric metric);
+   TestMetric addMetric(Test test, Metric metric) throws ServiceException;
 
    Metric updateMetric(Metric metric);
 
@@ -146,78 +148,87 @@ public interface TestService {
 
    List<Test> findAllTests();
 
-   Test getOrCreateTest(Test test);
+   Test getOrCreateTest(Test test) throws ServiceException;
 
    Metric getMetric(Long id);
 
    List<Metric> getAllMetrics();
-   
+
    /**
-    * Returns all metric by name prefix, which belong tests with defined group id 
+    * Returns all metric by name prefix, which belong tests with defined group id
+    * 
     * @param name
     * @param test
     * @return
     */
    List<Metric> getMetrics(String name, Test test);
-   
+
    /**
-    * Returns metrics which belong tests with defined group id and are not defined on the defined test 
+    * Returns metrics which belong tests with defined group id and are not defined on the defined
+    * test
+    * 
     * @param name
     * @param test
     * @return
     */
    List<Metric> getAvailableMetrics(Test test);
-   
+
    /**
     * Returns all metrics, which are defined on the Test
+    * 
     * @return
     */
    List<Metric> getTestMetrics(Test test);
 
    void deleteMetric(Metric metric);
-   
+
    /**
-    * Removes metric from defined test. The method removes only relation between test and metric. The metric itself is not deleted.
+    * Removes metric from defined test. The method removes only relation between test and metric.
+    * The metric itself is not deleted.
+    * 
     * @param test
     * @param metric
     */
    void deleteTestMetric(TestMetric tm);
 
    TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException;
-   
+
    /**
     * Adds TestExecutionParamter to existing TestExecution
+    * 
     * @param te TestExecution
     * @param tep TestExecutionParameter to add
     * @throws ServiceException
     */
    TestExecutionParameter addTestExecutionParameter(TestExecution te, TestExecutionParameter tep) throws ServiceException;
-   
+
    /**
     * Returns TestExecutionParameter by id
-    * @param id  TestExecutionParameter
+    * 
+    * @param id TestExecutionParameter
     * @return
     */
    TestExecutionParameter getTestExecutionParameter(Long id);
-   
+
    /**
     * Updates TestExecutionParameter
+    * 
     * @param tep TestExecutionParameter to update
     * @return
     */
    TestExecutionParameter updateTestExecutionParameter(TestExecutionParameter tep);
-   
+
    /**
     * Removes TestExecutionParameter
+    * 
     * @param tep
     * @return
     */
    void deleteTestExecutionParameter(TestExecutionParameter tep);
-   
-   
-   
+
    /**
     * Adds TestExecutionTag to existing TestExecution
+    * 
     * @param te TestExecution
     * @param tep TestExecutionTag to add
     * @throws ServiceException
@@ -226,62 +237,66 @@ public interface TestService {
 
    /**
     * Removes TestExecutionParameter
+    * 
     * @param tep
     * @return
     */
    void deleteTestExecutionTag(TestExecutionTag teg);
-   
-   
+
    /**
     * Creates Value Parameter to Value
+    * 
     * @param value
     * @param vp
     * @return
     */
    ValueParameter addValueParameter(Value value, ValueParameter vp);
-   
-   
+
    /**
     * Updates Value Parameter
+    * 
     * @param vp
     * @return
     */
    ValueParameter updateValueParameter(ValueParameter vp);
-   
-   
+
    /**
     * Removes Value Parameter
+    * 
     * @param vp
     */
    void deleteValueParameter(ValueParameter vp);
-   
+
    /**
     * Return value according to id
+    * 
     * @param id
     * @return
     */
    Value getValue(Long id);
-   
-   
+
    /**
     * Adds Value to Test Execution
+    * 
     * @param te
     * @param value
     * @return
     */
    Value addValue(TestExecution te, Value value);
-   
+
    /**
     * Updates Test Execution Value
+    * 
     * @param value
     * @return
     */
-   Value updateValue(Value value);   
-      
+   Value updateValue(Value value);
+
    /**
     * Removes value from TestExecution
+    * 
     * @param value
     */
    void deleteValue(Value value);
-   
+
 }

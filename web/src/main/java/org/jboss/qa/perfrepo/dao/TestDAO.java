@@ -15,20 +15,34 @@
  */
 package org.jboss.qa.perfrepo.dao;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Named;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 
+/**
+ * DAO for {@link Test}
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Named
 public class TestDAO extends DAO<Test, Long> {
+
+   private static final Logger log = Logger.getLogger(TestDAO.class);
+
+   private static final String FIND_TEST_ID = "FIND_TEST_ID";
 
    public Test findByUid(String uid) {
       List<Test> tests = findAllByProperty("uid", uid);
@@ -36,7 +50,7 @@ public class TestDAO extends DAO<Test, Long> {
          return tests.get(0);
       return null;
    }
-   
+
    public List<Test> searchTests(TestSearchTO search) {
       CriteriaQuery<Test> criteria = createCriteria();
       Root<Test> root = criteria.from(Test.class);
@@ -57,5 +71,23 @@ public class TestDAO extends DAO<Test, Long> {
       }
       return findByCustomCriteria(criteria);
    }
-   
+
+   public Test findTestForEntity(Object entity) {
+      try {
+         Field queryName = entity.getClass().getDeclaredField(FIND_TEST_ID);
+         if (queryName != null) {
+            String query = (String) queryName.get(String.class);
+            Query q = createNamedQuery(query);
+            q.setParameter("entity", entity);
+            return ((Test) q.getSingleResult());
+         }
+      } catch (IllegalAccessException e) {
+         log.error("Problem with reflection", e);
+      } catch (NoSuchFieldException e) {
+         log.error("Problem with reflection", e);
+      } catch (SecurityException e) {
+         log.error("Problem with reflection", e);
+      }
+      return null;
+   }
 }

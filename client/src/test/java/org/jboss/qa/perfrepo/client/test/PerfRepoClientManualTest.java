@@ -15,9 +15,9 @@
  */
 package org.jboss.qa.perfrepo.client.test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,8 +41,8 @@ import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 /**
  * Manually test {@link PerfRepoClient} with perfrepo running on localhost
@@ -53,11 +53,11 @@ import org.testng.annotations.BeforeClass;
 public class PerfRepoClientManualTest {
 
    private static final String ENCODING = "UTF-8";
-   private PerfRepoClient client;
-   private String testUserRole;
+   private static PerfRepoClient client;
+   private static String testUserRole;
 
    @BeforeClass
-   public void createClient() {
+   public static void createClient() {
       String host = System.getProperty("perfrepo.client.host", "localhost:8080");
       String auth = System.getProperty("perfrepo.client.auth", "cDpw");
       testUserRole = System.getProperty("perfrepo.client.role", "perfrepouser");
@@ -65,7 +65,7 @@ public class PerfRepoClientManualTest {
    }
 
    @AfterClass
-   public void destroyClient() {
+   public static void destroyClient() {
       client.shutdown();
       client = null;
       testUserRole = null;
@@ -73,7 +73,8 @@ public class PerfRepoClientManualTest {
 
    private Test createTest() {
       return Test.builder().name("test1").groupId(testUserRole).uid("testtestuid").description("this is a test test")
-            .metric("metric1", "0", "this is a test metric 1").metric("metric2", "1", "this is a test metric 2").metric("multimetric", "1", "this is a metric with multiple values").build();
+            .metric("metric1", "0", "this is a test metric 1").metric("metric2", "1", "this is a test metric 2")
+            .metric("multimetric", "1", "this is a metric with multiple values").build();
    }
 
    private TestExecution createTestExecutionWithParam(Long testId) {
@@ -108,7 +109,7 @@ public class PerfRepoClientManualTest {
       }
    }
 
-   @org.testng.annotations.Test
+   @org.junit.Test
    public void testCreateDeleteTest() throws Exception {
       Test test = createTest();
       Long id = client.createTest(test);
@@ -126,7 +127,7 @@ public class PerfRepoClientManualTest {
       client.deleteTest(id);
    }
 
-   @org.testng.annotations.Test
+   @org.junit.Test
    public void testCreateDeleteTestExecution() throws Exception {
       Test test = createTest();
       Long testId = client.createTest(test);
@@ -150,8 +151,8 @@ public class PerfRepoClientManualTest {
       assertEquals(tags.get(0), "tag1");
       assertEquals(tags.get(1), "tag2");
       assertEquals(testExecution2.getValues().size(), 2);
-      assertEquals(getFirstValueHavingMetricAndParameter(testExecution2, "metric1", null, null), 12.0);
-      assertEquals(getFirstValueHavingMetricAndParameter(testExecution2, "metric2", null, null), 8.0);
+      assertEquals((double) getFirstValueHavingMetricAndParameter(testExecution2, "metric1", null, null), 12.0);
+      assertEquals((double) getFirstValueHavingMetricAndParameter(testExecution2, "metric2", null, null), 8.0);
 
       Long testExecutionId2 = client.createTestExecution(createTestExecutionWithParam(testId));
       TestExecution testExecution3 = client.getTestExecution(testExecutionId2);
@@ -203,7 +204,7 @@ public class PerfRepoClientManualTest {
       }
    }
 
-   @org.testng.annotations.Test
+   @org.junit.Test
    public void testCreateDeleteAttachment() throws Exception {
       Test test = createTest();
       Long testId = client.createTest(test);

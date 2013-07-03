@@ -60,7 +60,7 @@ import org.jboss.qa.perfrepo.model.builder.TestBuilder;
 @XmlRootElement(name = "test")
 @Named("test")
 @RequestScoped
-public class Test implements Serializable {
+public class Test implements Serializable, Cloneable {
 
    private static final long serialVersionUID = 2936849220074718535L;
 
@@ -247,6 +247,15 @@ public class Test implements Serializable {
 
    public static TestBuilder builder() {
       return new TestBuilder();
+   }
+
+   @Override
+   public Test clone() {
+      try {
+         return (Test) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException(e);
+      }
    }
 
 }

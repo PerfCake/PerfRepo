@@ -39,9 +39,9 @@ public class TestController extends ControllerBase {
    TestService testService;
 
    private Test test = null;
-   
+
    private Metric metric = null;
-   
+
    @PostConstruct
    public void init() {
       String id;
@@ -54,14 +54,14 @@ public class TestController extends ControllerBase {
       }
    }
 
-   public Test getTest() {      
+   public Test getTest() {
       return test;
    }
-   
+
    public void setTest(Test test) {
       this.test = test;
    }
-      
+
    public Metric getMetric() {
       return metric;
    }
@@ -77,31 +77,36 @@ public class TestController extends ControllerBase {
       }
       return null;
    }
-   
+
    public void createMetric() {
       metric = new Metric();
    }
-   
+
    public void updateMetric() {
       if (metric != null) {
          testService.updateMetric(metric);
       }
    }
-   
+
    public void addMetric() {
       if (metric != null && test != null) {
-         TestMetric tm = testService.addMetric(test, metric);
+         TestMetric tm;
+         try {
+            tm = testService.addMetric(test, metric);
+         } catch (ServiceException e) {
+            throw new RuntimeException(e);
+         }
          test.getTestMetrics().add(tm);
       }
    }
-   
+
    public void deleteTestMetric(TestMetric tm) {
-      if (metric != null && test!= null) {
+      if (metric != null && test != null) {
          testService.deleteTestMetric(tm);
          test.getTestMetrics().remove(tm);
       }
    }
-   
+
    public List<TestMetric> getMetricsList() {
       List<TestMetric> tm = new ArrayList<TestMetric>();
       if (test != null) {
@@ -109,14 +114,19 @@ public class TestController extends ControllerBase {
       }
       return tm;
    }
-   
+
    public List<Metric> getAvailableMetricsByTest() {
       return testService.getAvailableMetrics(test);
    }
 
    public String create() {
       if (test != null) {
-         testService.createTest(test);
+         try {
+            testService.createTest(test);
+         } catch (ServiceException e) {
+            throw new RuntimeException(e);
+         }
+
       }
       return "TestList";
    }

@@ -201,9 +201,7 @@ public class TestExecutionBuilder {
     * @return the {@link TestExecution}
     */
    public TestExecution build() {
-      TestExecution r = testExecution;
-      testExecution = new TestExecution();
-      return r;
+      return testExecution.clone();
    }
 
 }

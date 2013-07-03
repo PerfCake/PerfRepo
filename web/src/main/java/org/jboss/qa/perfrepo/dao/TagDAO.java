@@ -21,6 +21,13 @@ import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.Tag;
 
+/**
+ * DAO for {@link Tag}
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Named
 public class TagDAO extends DAO<Tag, Long> {
 

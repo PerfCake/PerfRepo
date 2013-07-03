@@ -55,7 +55,30 @@ public class TestMetricDAO extends DAO<TestMetric, Long> {
    }
 
    /**
-    * Find {@link TestMetric} intermediate table object for given test and metric.
+    * Find {@link TestMetric} intermediate table object for given test and metric. Metric is
+    * searched for by name.
+    * 
+    * @param test
+    * @param metricName
+    * @return
+    */
+   public TestMetric find(Test test, String metricName) {
+      Map<String, Object> params = new TreeMap<String, Object>();
+      params.put("test", test.getId());
+      params.put("metricName", metricName);
+      List<TestMetric> list = findByNamedQuery(TestMetric.FIND_TEST_METRIC_BY_NAME, params);
+      if (list == null || list.isEmpty()) {
+         return null;
+      } else if (list.size() == 1) {
+         return list.get(0);
+      } else {
+         throw new IllegalStateException("Can't have two metrics with same name for same test_id");
+      }
+   }
+
+   /**
+    * Find {@link TestMetric} intermediate table object for given test and metric. Metric is
+    * searched for by id.
     * 
     * @param test
     * @param metric

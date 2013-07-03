@@ -19,6 +19,13 @@ import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.ValueParameter;
 
+/**
+ * DAO for {@link ValueParameter}
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Named
 public class ValueParameterDAO extends DAO<ValueParameter, Long> {
 
