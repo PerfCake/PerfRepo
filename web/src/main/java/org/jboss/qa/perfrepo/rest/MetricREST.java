@@ -15,7 +15,8 @@
  */
 package org.jboss.qa.perfrepo.rest;
 
-import static org.jboss.qa.perfrepo.rest.TestREST.genericEntity;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -23,6 +24,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -42,7 +44,7 @@ public class MetricREST {
    @Path("/{metricId}")
    @Logged
    public Response get(@PathParam("metricId") Long metricId) {
-      return Response.ok(testService.getMetric(metricId)).build();
+      return Response.ok(testService.getFullMetric(metricId)).build();
    }
 
    @GET
@@ -51,6 +53,7 @@ public class MetricREST {
    @Logged
    @Wrapped(element = "metrics")
    public Response all() {
-      return Response.ok(genericEntity(testService.getAllMetrics(), Metric.class)).build();
+      return Response.ok(new GenericEntity<List<Metric>>(new ArrayList<Metric>(testService.getAllFullMetrics())) {
+      }).build();
    }
 }

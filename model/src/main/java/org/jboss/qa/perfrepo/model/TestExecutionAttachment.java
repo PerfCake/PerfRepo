@@ -48,7 +48,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "test_execution_attachment")
 @NamedQueries({ @NamedQuery(name = TestExecutionAttachment.FIND_BY_EXECUTION, query = "SELECT new TestExecutionAttachment(a.id, a.filename, a.mimetype) from TestExecutionAttachment a WHERE a.testExecution.id = :exec") })
 @XmlRootElement(name = "attachment")
-public class TestExecutionAttachment implements Serializable {
+public class TestExecutionAttachment implements Serializable, CloneableEntity<TestExecutionAttachment> {
    public static final String FIND_BY_EXECUTION = "TestExecutionAttachment.findByExecution";
 
    public TestExecutionAttachment(Long id, String filename, String mimetype) {
@@ -139,6 +139,15 @@ public class TestExecutionAttachment implements Serializable {
 
    public void setContent(byte[] content) {
       this.content = content;
+   }
+
+   @Override
+   public TestExecutionAttachment clone() {
+      try {
+         return (TestExecutionAttachment) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException(e);
+      }
    }
 
 }

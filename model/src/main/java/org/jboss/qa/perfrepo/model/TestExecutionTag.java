@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "testExecutionTag")
 @Named("testExecutionTag")
 @RequestScoped
-public class TestExecutionTag implements Serializable {
+public class TestExecutionTag implements Serializable, CloneableEntity<TestExecutionTag> {
 
    public static final String FIND_TEST_ID = "TestExecutionTag.findTestId";
 

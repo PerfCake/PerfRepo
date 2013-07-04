@@ -52,7 +52,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "valueParameter")
 @Named("valueParameter")
 @RequestScoped
-public class ValueParameter implements Serializable {
+public class ValueParameter implements Serializable, CloneableEntity<ValueParameter> {
 
    public static final String FIND_ALL = "ValueParameter.findAll";
 
@@ -131,5 +131,14 @@ public class ValueParameter implements Serializable {
    @XmlAttribute(name = "value")
    public String getParamValue() {
       return this.paramValue;
+   }
+
+   @Override
+   public ValueParameter clone() {
+      try {
+         return (ValueParameter) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException(e);
+      }
    }
 }

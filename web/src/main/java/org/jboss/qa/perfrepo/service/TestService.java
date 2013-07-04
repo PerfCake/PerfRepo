@@ -110,9 +110,15 @@ public interface TestService {
     */
    void deleteTestExecution(TestExecution testExecution) throws ServiceException;
 
-   TestExecution getTestExecution(Long id);
+   /**
+    * Get {@link TestExecution} with all details.
+    * 
+    * @param id
+    * @return
+    */
+   TestExecution getFullTestExecution(Long id);
 
-   List<TestExecution> findAllTestExecutions();
+   List<TestExecution> getAllFullTestExecutions();
 
    List<TestExecution> findExecutionsByTest(Long testId);
 
@@ -134,7 +140,7 @@ public interface TestService {
     * @param testId Test id
     * @return Test
     */
-   Test getTest(Long testId);
+   Test getFullTest(Long testId);
 
    /**
     * Delete a test with all it's sub-objects. Use with caution!
@@ -146,13 +152,19 @@ public interface TestService {
 
    Test updateTest(Test test);
 
-   List<Test> findAllTests();
+   List<Test> getAllFullTests();
 
    Test getOrCreateTest(Test test) throws ServiceException;
 
-   Metric getMetric(Long id);
+   /**
+    * Get metric with all associated tests (without details).
+    * 
+    * @param id
+    * @return
+    */
+   Metric getFullMetric(Long id);
 
-   List<Metric> getAllMetrics();
+   List<Metric> getAllFullMetrics();
 
    /**
     * Returns all metric by name prefix, which belong tests with defined group id

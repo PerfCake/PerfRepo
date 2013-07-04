@@ -15,9 +15,9 @@
  */
 package org.jboss.qa.perfrepo.rest;
 
-import static org.jboss.qa.perfrepo.rest.TestREST.genericEntity;
-
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -30,6 +30,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -71,7 +72,7 @@ public class TestExecutionREST {
    @Path("/{testExecutionId}")
    @Logged
    public Response get(@PathParam("testExecutionId") Long testExecutionId) {
-      return Response.ok(testService.getTestExecution(testExecutionId)).build();
+      return Response.ok(testService.getFullTestExecution(testExecutionId)).build();
    }
 
    @GET
@@ -80,7 +81,8 @@ public class TestExecutionREST {
    @Logged
    @Wrapped(element = "testExecutions")
    public Response all() {
-      return Response.ok(genericEntity(testService.findAllTestExecutions(), TestExecution.class)).build();
+      return Response.ok(new GenericEntity<List<TestExecution>>(new ArrayList<TestExecution>(testService.getAllFullTestExecutions())) {
+      }).build();
    }
 
    @POST()

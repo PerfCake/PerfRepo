@@ -54,7 +54,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "value")
 @Named("value")
 @RequestScoped
-public class Value implements Serializable, Cloneable {
+public class Value implements Serializable, CloneableEntity<Value> {
 
    public static final String FIND_TEST_ID = "Value.findTestId";
 

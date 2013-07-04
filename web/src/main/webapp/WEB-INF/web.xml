@@ -31,19 +31,6 @@
       <param-name>facelets.LIBRARIES</param-name>
       <param-value>/WEB-INF/confirmation-taglib.xml</param-value>
    </context-param>
-   <!-- <filter> -->
-   <!-- <display-name>Ajax4jsf Filter</display-name> -->
-   <!-- <filter-name>ajax4jsf</filter-name> -->
-   <!-- <filter-class>org.ajax4jsf.Filter</filter-class> -->
-   <!-- </filter> -->
-   <!-- <context-param> -->
-   <!-- <param-name>org.richfaces.skin</param-name> -->
-   <!-- <param-value>plain</param-value> -->
-   <!-- </context-param> -->
-   <!-- <context-param> -->
-   <!-- <param-name>org.richfaces.enableControlSkinning</param-name> -->
-   <!-- <param-value>false</param-value> -->
-   <!-- </context-param> -->
    <listener>
       <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
    </listener>
@@ -75,7 +62,7 @@
    </context-param>
    <!-- Security -->
    <security-constraint>
-      <display-name>PerfRepoSecurityRealm</display-name>
+      <display-name>${security.realm.name}</display-name>
       <web-resource-collection>
          <web-resource-name>repo</web-resource-name>
          <description />
@@ -89,7 +76,7 @@
    </security-constraint>
    <login-config>
       <auth-method>BASIC</auth-method>
-      <realm-name>PerfRepoSecurityRealm</realm-name>
+      <realm-name>${security.realm.name}</realm-name>
    </login-config>
    <security-role>
       <description />

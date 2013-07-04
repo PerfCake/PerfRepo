@@ -66,7 +66,7 @@ public class TestServiceBeanTest {
 
    @After
    public void removeTests() throws Exception {
-      for (final Test test : testService.findAllTests()) {
+      for (final Test test : testService.getAllFullTests()) {
          LoginContext loginContext = JBossLoginContextFactory.createLoginContext(test.getGroupId(), test.getGroupId());
          loginContext.login();
          try {
@@ -121,12 +121,12 @@ public class TestServiceBeanTest {
       asUser(testUserRole, new Callable<Void>() {
          @Override
          public Void call() throws Exception {
-            assert testService.findAllTests().isEmpty();
+            assert testService.getAllFullTests().isEmpty();
             Test createdTest = testService.createTest(test("test1").description("this is a test test").metric("metric1", "0", "this is a test metric 1")
                   .metric("metric2", "1", "this is a test metric 2").metric("multimetric", "1", "this is a metric with multiple values").build());
-            assert testService.findAllTests().contains(createdTest);
+            assert testService.getAllFullTests().contains(createdTest);
             testService.deleteTest(createdTest);
-            assert testService.findAllTests().isEmpty();
+            assert testService.getAllFullTests().isEmpty();
             return null;
          }
       });
@@ -137,7 +137,7 @@ public class TestServiceBeanTest {
       asUser("testuser", new Callable<Void>() {
          @Override
          public Void call() throws Exception {
-            assert testService.findAllTests().isEmpty();
+            assert testService.getAllFullTests().isEmpty();
             try {
                testService.createTest(Test.builder().name("test1").groupId("unknowngroup").uid("test1").description("this is a test test")
                      .metric("metric1", "desc").metric("metric2").build());
@@ -145,7 +145,7 @@ public class TestServiceBeanTest {
             } catch (EJBException e) {
                assert e.getCause() instanceof SecurityException;
             }
-            assert testService.findAllTests().isEmpty();
+            assert testService.getAllFullTests().isEmpty();
             return null;
          }
       });
@@ -156,7 +156,7 @@ public class TestServiceBeanTest {
       asUser(testUserRole, new Callable<Void>() {
          @Override
          public Void call() throws Exception {
-            assert testService.findAllTests().isEmpty();
+            assert testService.getAllFullTests().isEmpty();
             testService.createTest(test("test1").build());
             try {
                testService.createTest(test("test1").build());
@@ -164,7 +164,7 @@ public class TestServiceBeanTest {
             } catch (ServiceException e) {
                // ok
             }
-            assert testService.findAllTests().size() == 1;
+            assert testService.getAllFullTests().size() == 1;
             return null;
          }
       });
@@ -175,10 +175,10 @@ public class TestServiceBeanTest {
       asUser(testUserRole, new Callable<Void>() {
          @Override
          public Void call() throws Exception {
-            assert testService.findAllTests().isEmpty();
+            assert testService.getAllFullTests().isEmpty();
             Test test = testService.createTest(test("test1").metric("metric1", "desc").metric("metric2", "desc").build());
             testService.addMetric(test, Metric.builder().name("metric3").description("metric 3").build());
-            assert testService.findAllTests().size() == 1;
+            assert testService.getAllFullTests().size() == 1;
             return null;
          }
       });
@@ -189,7 +189,7 @@ public class TestServiceBeanTest {
       asUser(testUserRole, new Callable<Void>() {
          @Override
          public Void call() throws Exception {
-            assert testService.findAllTests().isEmpty();
+            assert testService.getAllFullTests().isEmpty();
             Test createdTest = testService.createTest(test("test1").metric("A", "desc").build());
             try {
                testService.addMetric(createdTest, Metric.builder().name("A").description("desc").build());
@@ -197,7 +197,7 @@ public class TestServiceBeanTest {
             } catch (ServiceException e) {
                // ok
             }
-            assert testService.findAllTests().size() == 1;
+            assert testService.getAllFullTests().size() == 1;
             return null;
          }
       });
@@ -208,7 +208,7 @@ public class TestServiceBeanTest {
       asUser(testUserRole, new Callable<Void>() {
          @Override
          public Void call() throws Exception {
-            assert testService.findAllTests().isEmpty();
+            assert testService.getAllFullTests().isEmpty();
             testService.createTest(test("test1").metric("A", "desc").build());
             try {
                testService.createTest(test("test2").metric("A", "desc").build());
@@ -216,7 +216,7 @@ public class TestServiceBeanTest {
             } catch (ServiceException e) {
                // ok
             }
-            assert testService.findAllTests().size() == 1;
+            assert testService.getAllFullTests().size() == 1;
             return null;
          }
       });
@@ -227,7 +227,7 @@ public class TestServiceBeanTest {
       asUser(testUserRole, new Callable<Void>() {
          @Override
          public Void call() throws Exception {
-            assert testService.findAllTests().isEmpty();
+            assert testService.getAllFullTests().isEmpty();
             testService.createTest(test("test1").metric("A", "desc").build());
             Test test2 = testService.createTest(test("test2").metric("B", "desc").build());
             try {
@@ -236,7 +236,7 @@ public class TestServiceBeanTest {
             } catch (ServiceException e) {
                // ok
             }
-            assert testService.findAllTests().size() == 1;
+            assert testService.getAllFullTests().size() == 1;
             return null;
          }
       });

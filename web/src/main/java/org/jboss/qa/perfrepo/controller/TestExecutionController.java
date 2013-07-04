@@ -57,7 +57,7 @@ public class TestExecutionController extends ControllerBase {
       String id;
       if (testExecution == null) {
          if ((id = getRequestParam("testExecutionId")) != null) {
-            testExecution = testService.getTestExecution(Long.valueOf(id));
+            testExecution = testService.getFullTestExecution(Long.valueOf(id));
          } else {
             //TODO: is it ok?
             testExecution = new TestExecution();

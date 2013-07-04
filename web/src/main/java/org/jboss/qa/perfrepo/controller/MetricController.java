@@ -41,7 +41,7 @@ public class MetricController extends ControllerBase {
       String id = null;
       if (metric == null) {
          if ((id = getRequestParam("metricId")) != null) {
-            metric = testService.getMetric(Long.valueOf(id));
+            metric = testService.getFullMetric(Long.valueOf(id));
          } else {
             metric = new Metric();
          }
@@ -51,7 +51,7 @@ public class MetricController extends ControllerBase {
 
    public List<Metric> getMetricList() {
       if (metricList == null) {
-         metricList = testService.getAllMetrics();
+         metricList = testService.getAllFullMetrics();
       }
       return metricList;
    }

@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "tag")
 @Named("tag")
 @RequestScoped
-public class Tag implements Serializable, Comparable<Tag>, Cloneable {
+public class Tag implements Serializable, Comparable<Tag>, CloneableEntity<Tag> {
 
    @Id
    @SequenceGenerator(name = "TAG_ID_GENERATOR", sequenceName = "TAG_SEQUENCE", allocationSize = 1)

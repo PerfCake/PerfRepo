@@ -55,11 +55,11 @@ import org.jboss.qa.perfrepo.model.builder.MetricBuilder;
 @NamedQueries({
       @NamedQuery(name = Metric.FIND_TEST_ID, query = "SELECT test from TestMetric tm inner join tm.test test inner join tm.metric m where m= :entity"),
       @NamedQuery(name = Metric.FIND_BY_NAME_GROUPID, query = "SELECT m from TestMetric tm inner join tm.metric m inner join tm.test test where test.groupId= :groupId and m.name= :name"),
-      @NamedQuery(name = Metric.FIND_BY_GROUPID, query = "SELECT m from TestMetric tm inner join tm.metric m inner join tm.test test where test.groupId= :groupId group by m.id") })
+      @NamedQuery(name = Metric.FIND_BY_GROUPID, query = "SELECT m from Metric m, TestMetric tm, Test t WHERE t.groupId= :groupId AND tm.test.id = t.id AND tm.metric.id = m.id") })
 @XmlRootElement(name = "metric")
 @Named("metric")
 @RequestScoped
-public class Metric implements Serializable, Comparable<Metric>, Cloneable {
+public class Metric implements Serializable, Comparable<Metric>, CloneableEntity<Metric> {
 
    private static final long serialVersionUID = -5234628391341278215L;
 

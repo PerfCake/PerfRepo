@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -31,6 +30,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.FetchParent;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
+
+import org.jboss.qa.perfrepo.model.CloneableEntity;
 
 /**
  * Common ancestor for DAO objects
@@ -68,15 +69,17 @@ public abstract class DAO<T, PK extends Serializable> {
    }
 
    /**
+    * Find an entity and return an unmanaged read-only version - this will be unmanaged only on the
+    * root level, the collections will still be lazy-loadable ones.
     * 
-    * Find an entity based on it's primary key
-    * 
-    * @param id Primary key
-    * @param readonly Should return read only entity ?
-    * @return Entity
+    * @param id
+    * @return
     */
-   public T find(final PK id, boolean readonly) {
-      return em.find(type, id);
+   @SuppressWarnings("unchecked")
+   public T findReadOnly(final PK id) {
+      // TODO: maybe produce some hint for JPA layer
+      T obj = em.find(type, id);
+      return obj == null ? null : ((CloneableEntity<T>) obj).clone();
    }
 
    public List<T> findAll() {

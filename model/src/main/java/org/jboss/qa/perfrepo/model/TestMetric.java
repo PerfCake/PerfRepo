@@ -39,7 +39,7 @@ import javax.persistence.Table;
       @NamedQuery(name = TestMetric.FIND_TEST_METRIC_BY_NAME, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test AND m.name= :metricName") })
 @Named("testMetric")
 @RequestScoped
-public class TestMetric implements Serializable {
+public class TestMetric implements Serializable, CloneableEntity<TestMetric> {
 
    public static final String FIND_TEST_ID = "TestMetric.findTestId";
    public static final String FIND_TEST_METRIC = "TestMetric.findTestMetric";
@@ -87,4 +87,12 @@ public class TestMetric implements Serializable {
       return this.test;
    }
 
+   @Override
+   public TestMetric clone() {
+      try {
+         return (TestMetric) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException(e);
+      }
+   }
 }

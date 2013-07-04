@@ -64,7 +64,7 @@ import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
 @XmlRootElement(name = "testExecution")
 @Named("testExecution")
 @RequestScoped
-public class TestExecution implements Serializable, Cloneable {
+public class TestExecution implements Serializable, CloneableEntity<TestExecution> {
 
    private static final long serialVersionUID = -2956845045583534606L;
 

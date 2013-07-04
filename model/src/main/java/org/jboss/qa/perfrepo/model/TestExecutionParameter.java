@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "testExecutionParameter")
 @Named("testExecutionParameter")
 @RequestScoped
-public class TestExecutionParameter implements Serializable, Comparable<TestExecutionParameter>, Cloneable {
+public class TestExecutionParameter implements Serializable, Comparable<TestExecutionParameter>, CloneableEntity<TestExecutionParameter> {
 
    public static final String FIND_ALL = "TestExecutionParameter.findAll";
 

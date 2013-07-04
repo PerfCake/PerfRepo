@@ -157,7 +157,7 @@ public class TestServiceBean implements TestService {
    public List<TestExecution> getTestExecutions(Collection<Long> ids) {
       List<TestExecution> result = new ArrayList<TestExecution>();
       for (Long id : ids) {
-         TestExecution testExecution = getTestExecution(id);
+         TestExecution testExecution = getFullTestExecution(id);
          result.add(testExecution);
       }
       return result;
@@ -227,19 +227,32 @@ public class TestServiceBean implements TestService {
       return storedTest;
    }
 
-   public Test getTest(Long id) {
-      Test test = testDAO.find(id);
+   public Test getFullTest(Long id) {
+      Test test = testDAO.findReadOnly(id);
+      if (test == null) {
+         return null;
+      }
+      // TODO: return by named query, with optimized fetching
       Collection<TestMetric> tms = test.getTestMetrics();
-      for (TestMetric tm : tms) {
-         tm.getMetric();
-
-         // TODO: don't return test collections in metric objects cause we'd recurse
+      if (tms != null) {
+         List<Metric> metrics = new ArrayList<Metric>();
+         for (TestMetric tm : tms) {
+            Metric metric = tm.getMetric().clone();
+            metric.setTestMetrics(null); // we don't need to infinitely recurse
+            metrics.add(metric);
+         }
+         test.setMetrics(metrics);
       }
       return test;
    }
 
-   public List<Test> findAllTests() {
-      return testDAO.findAll();
+   public List<Test> getAllFullTests() {
+      List<Test> r = testDAO.findAll();
+      List<Test> rcopy = new ArrayList<Test>(r.size());
+      for (Test t : r) {
+         rcopy.add(getFullTest(t.getId()));
+      }
+      return rcopy;
    }
 
    @Secure
@@ -301,8 +314,24 @@ public class TestServiceBean implements TestService {
       testExecutionDAO.delete(freshTestExecution);
    }
 
-   public Metric getMetric(Long id) {
-      return metricDAO.find(id);
+   @Override
+   public Metric getFullMetric(Long id) {
+      Metric metric = metricDAO.findReadOnly(id);
+      if (metric == null) {
+         return null;
+      }
+      // TODO: read by named query with join fetches
+      Collection<TestMetric> testMetrics = metric.getTestMetrics();
+      List<Test> tests = new ArrayList<Test>();
+      if (testMetrics != null) {
+         for (TestMetric testMetric : testMetrics) {
+            Test test = testMetric.getTest().clone();
+            test.setTestMetrics(null);
+            tests.add(test);
+         }
+      }
+      metric.setTests(tests);
+      return metric;
    }
 
    public List<Metric> getMetrics(String name, Test test) {
@@ -375,8 +404,13 @@ public class TestServiceBean implements TestService {
       return t.getSortedMetrics();
    }
 
-   public List<Metric> getAllMetrics() {
-      return metricDAO.getMetrics();
+   public List<Metric> getAllFullMetrics() {
+      List<Metric> r = metricDAO.getMetrics();
+      List<Metric> rcopy = new ArrayList<Metric>(r.size());
+      for (Metric m : r) {
+         rcopy.add(getFullMetric(m.getId()));
+      }
+      return rcopy;
    }
 
    @Secure
@@ -392,18 +426,17 @@ public class TestServiceBean implements TestService {
    }
 
    @Override
-   public TestExecution getTestExecution(Long id) {
-      TestExecution testExecution = testExecutionDAO.find(id);
+   public TestExecution getFullTestExecution(Long id) {
+      TestExecution testExecution = testExecutionDAO.findReadOnly(id);
       if (testExecution == null) {
          return null;
       }
-      TestExecution clone = testExecution.clone();
       // lazy fetching (clone still contains, JPA-Managed collections)
       // TODO: try alternative with findWithDepth and test performance
-      clone.getParametersAsMap();
-      clone.getSortedTags();
+      testExecution.getParametersAsMap();
+      testExecution.getSortedTags();
       List<Value> cloneValues = new ArrayList<Value>();
-      for (Value v : clone.getValues()) {
+      for (Value v : testExecution.getValues()) {
          Value cloneValue = v.clone();
          cloneValues.add(cloneValue);
          boolean emptyParams = true;
@@ -416,14 +449,19 @@ public class TestServiceBean implements TestService {
             cloneValue.setParameters(null);
          }
       }
-      clone.setValues(cloneValues);
-      clone.setAttachments(testExecutionAttachmentDAO.findByExecution(id));
-      return clone;
+      testExecution.setValues(cloneValues);
+      testExecution.setAttachments(testExecutionAttachmentDAO.findByExecution(id));
+      return testExecution;
    }
 
    @Override
-   public List<TestExecution> findAllTestExecutions() {
-      return testExecutionDAO.findAll();
+   public List<TestExecution> getAllFullTestExecutions() {
+      List<TestExecution> r = testExecutionDAO.findAll();
+      List<TestExecution> rcopy = new ArrayList<TestExecution>(r.size());
+      for (TestExecution exec : r) {
+         rcopy.add(getFullTestExecution(exec.getId()));
+      }
+      return rcopy;
    }
 
    @Override

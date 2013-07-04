@@ -47,7 +47,7 @@ public class TestController extends ControllerBase {
       String id;
       if (test == null) {
          if ((id = getRequestParam("testId")) != null) {
-            test = testService.getTest(Long.valueOf(id));
+            test = testService.getFullTest(Long.valueOf(id));
          } else {
             test = new Test();
          }

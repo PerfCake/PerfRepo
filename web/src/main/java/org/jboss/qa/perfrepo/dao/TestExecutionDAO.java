@@ -73,7 +73,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          Join<TestExecution, Test> testRoot = root.join("test");
          criteria.where(cb.equal(testRoot.get("uid"), search.getTestUID()));
       }
-      criteria.groupBy(root.get("id"));
+      // this isn't very ellegant, but Postgres 8.4 doesn't allow GROUP BY only with id
+      // this feature is allowed only since Postgres 9.1+
+      criteria.groupBy(root.get("test"), root.get("id"), root.get("name"), root.get("started"));
       return findByCustomCriteria(criteria);
    }
 
