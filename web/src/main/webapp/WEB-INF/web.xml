@@ -43,19 +43,20 @@
    <servlet-mapping>
       <servlet-name>Faces Servlet</servlet-name>
       <url-pattern>*.xhtml</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>Faces Servlet</servlet-name>
       <url-pattern>*.jsf</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>Faces Servlet</servlet-name>
       <url-pattern>*.faces</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>Faces Servlet</servlet-name>
       <url-pattern>/faces/*</url-pattern>
    </servlet-mapping>
+   <filter>
+      <filter-name>UrlRewriteFilter</filter-name>
+      <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+   </filter>
+   <filter-mapping>
+      <filter-name>UrlRewriteFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+   </filter-mapping>
    <context-param>
       <param-name>javax.face.PROJECT_STAGE</param-name>
       <param-value>Development</param-value>

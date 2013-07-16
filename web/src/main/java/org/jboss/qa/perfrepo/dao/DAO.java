@@ -17,8 +17,10 @@ package org.jboss.qa.perfrepo.dao;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
@@ -41,7 +43,7 @@ import org.jboss.qa.perfrepo.model.CloneableEntity;
  * @param <T> entity type
  * @param <PK> primary key type
  */
-public abstract class DAO<T, PK extends Serializable> {
+public abstract class DAO<T extends CloneableEntity<T>, PK extends Serializable> {
 
    @PersistenceContext(unitName = "PerfRepoPU")
    private EntityManager em;
@@ -75,11 +77,10 @@ public abstract class DAO<T, PK extends Serializable> {
     * @param id
     * @return
     */
-   @SuppressWarnings("unchecked")
    public T findReadOnly(final PK id) {
       // TODO: maybe produce some hint for JPA layer
       T obj = em.find(type, id);
-      return obj == null ? null : ((CloneableEntity<T>) obj).clone();
+      return obj == null ? null : obj.clone();
    }
 
    public List<T> findAll() {
@@ -87,6 +88,21 @@ public abstract class DAO<T, PK extends Serializable> {
       Root<T> root = criteria.from(type);
       criteria.select(root);
       return em.createQuery(criteria).getResultList();
+   }
+
+   public List<T> findAllReadOnly() {
+      CriteriaQuery<T> criteria = createCriteria();
+      Root<T> root = criteria.from(type);
+      criteria.select(root);
+      List<T> result1 = em.createQuery(criteria).getResultList();
+      if (result1.isEmpty()) {
+         return result1;
+      }
+      List<T> result2 = new ArrayList<T>(result1.size());
+      for (T item : result1) {
+         result2.add(item.clone());
+      }
+      return result2;
    }
 
    public List<T> findAllByProperty(final String propertyName, final Object value) {
@@ -139,6 +155,37 @@ public abstract class DAO<T, PK extends Serializable> {
       return tq.getResultList();
    }
 
+   /**
+    * 
+    * @param queryName
+    * @param clones Return clones of root objects returned by this query.
+    * @param params
+    * @return
+    */
+   public List<T> findByNamedQuery(String queryName, boolean clones, Object... params) {
+      Map<String, Object> queryParams = new TreeMap<String, Object>();
+      if (params.length % 2 != 0) {
+         throw new IllegalArgumentException("even number of params needed");
+      }
+      for (int i = 0; i < params.length; i += 2) {
+         queryParams.put((String) params[i], params[i + 1]);
+      }
+      TypedQuery<T> tq = em.createNamedQuery(queryName, type);
+      for (Entry<String, Object> entry : queryParams.entrySet()) {
+         tq.setParameter(entry.getKey(), entry.getValue());
+      }
+      List<T> result1 = tq.getResultList();
+      if (!clones || result1.isEmpty()) {
+         return result1;
+      } else {
+         List<T> resultClone = new ArrayList<T>(result1.size());
+         for (T item : result1) {
+            resultClone.add(item.clone());
+         }
+         return resultClone;
+      }
+   }
+
    protected CriteriaQuery<T> createCriteria() {
       return em.getCriteriaBuilder().createQuery(type);
    }
@@ -172,5 +219,9 @@ public abstract class DAO<T, PK extends Serializable> {
 
    protected Query createNamedQuery(String name) {
       return em.createNamedQuery(name);
+   }
+
+   protected <QueryType> TypedQuery<QueryType> createNamedQuery(String name, Class<QueryType> clazz) {
+      return em.createNamedQuery(name, clazz);
    }
 }

@@ -39,7 +39,9 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "test_execution_parameter")
-@NamedQueries({ @NamedQuery(name = TestExecutionParameter.FIND_TEST_ID, query = "SELECT test from Test test inner join test.testExecutions te inner join te.parameters tep where tep.id = :entity") })
+@NamedQueries({
+      @NamedQuery(name = TestExecutionParameter.FIND_TEST_ID, query = "SELECT test from Test test inner join test.testExecutions te inner join te.parameters tep where tep.id = :entity"),
+      @NamedQuery(name = TestExecutionParameter.FIND_BY_TEST_ID, query = "SELECT DISTINCT p.name FROM TestExecutionParameter p, TestExecution e WHERE p.testExecution.id = e.id AND e.test.id = :testId") })
 @XmlRootElement(name = "testExecutionParameter")
 @Named("testExecutionParameter")
 @RequestScoped
@@ -48,6 +50,7 @@ public class TestExecutionParameter implements Serializable, Comparable<TestExec
    public static final String FIND_ALL = "TestExecutionParameter.findAll";
 
    public static final String FIND_TEST_ID = "TestExecutionParameter.findTestId";
+   public static final String FIND_BY_TEST_ID = "TestExecutionParameter.findByTestId";
 
    @Id
    @SequenceGenerator(name = "TEST_EXECUTION_PARAMETER_ID_GENERATOR", sequenceName = "TEST_EXECUTION_PARAMETER_SEQUENCE", allocationSize = 1)

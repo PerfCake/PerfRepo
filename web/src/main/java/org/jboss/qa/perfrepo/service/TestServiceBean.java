@@ -578,4 +578,15 @@ public class TestServiceBean implements TestService {
       valueDAO.delete(v);
    }
 
+   public List<Test> getAllSelectionTests() {
+      return testDAO.findAllReadOnly();
+   }
+
+   public List<Metric> getAllSelectionMetrics(Long testId) {
+      return metricDAO.getMetricByTest(testId);
+   }
+
+   public List<String> getAllSelectionExecutionParams(Long testId) {
+      return testExecutionParameterDAO.getAllSelectionExecutionParams(testId);
+   }
 }

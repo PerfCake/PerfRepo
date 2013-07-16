@@ -311,4 +311,23 @@ public interface TestService {
     */
    void deleteValue(Value value);
 
+   /**
+    * 
+    * @return All tests (no sub-objects) for usage in comboboxes.
+    */
+   List<Test> getAllSelectionTests();
+
+   /**
+    * 
+    * @param testId
+    * @return All metrics (no sub-objects) for a test for usage in comboboxes.
+    */
+   List<Metric> getAllSelectionMetrics(Long testId);
+
+   /**
+    * 
+    * @param testId
+    * @return All distinct test execution parameter names for a test.
+    */
+   List<String> getAllSelectionExecutionParams(Long testId);
 }

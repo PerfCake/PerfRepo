@@ -15,7 +15,10 @@
  */
 package org.jboss.qa.perfrepo.dao;
 
+import java.util.List;
+
 import javax.inject.Named;
+import javax.persistence.TypedQuery;
 
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 
@@ -29,6 +32,10 @@ import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 @Named
 public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long> {
 
-   // nothing to add
+   public List<String> getAllSelectionExecutionParams(Long testId) {
+      TypedQuery<String> q = createNamedQuery(TestExecutionParameter.FIND_BY_TEST_ID, String.class);
+      q.setParameter("testId", testId);
+      return q.getResultList();
+   }
 
 }
