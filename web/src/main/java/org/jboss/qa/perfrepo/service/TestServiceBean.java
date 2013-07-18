@@ -50,6 +50,9 @@ import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.TestMetric;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.SortType;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 import org.jboss.qa.perfrepo.security.Secure;
@@ -68,6 +71,8 @@ import org.jboss.qa.perfrepo.security.UserInfo;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class TestServiceBean implements TestService {
+
+   private static final int MAX_PROBLEMATIC_DATAPOINTS = 10;
 
    private static final Logger log = Logger.getLogger(TestService.class);
 
@@ -578,15 +583,110 @@ public class TestServiceBean implements TestService {
       valueDAO.delete(v);
    }
 
-   public List<Test> getAllSelectionTests() {
+   protected List<Test> getAllSelectionTests() {
       return testDAO.findAllReadOnly();
    }
 
-   public List<Metric> getAllSelectionMetrics(Long testId) {
+   protected List<Metric> getAllSelectionMetrics(Long testId) {
       return metricDAO.getMetricByTest(testId);
    }
 
-   public List<String> getAllSelectionExecutionParams(Long testId) {
+   protected List<String> getAllSelectionExecutionParams(Long testId) {
       return testExecutionParameterDAO.getAllSelectionExecutionParams(testId);
+   }
+
+   public MetricReportTO.Response computeMetricReport(MetricReportTO.Request request) {
+      MetricReportTO.Response response = new MetricReportTO.Response();
+      if (request.getTestUid() == null) {
+         // no test is chosen - pick a test
+         response.setSelectionTests(getAllSelectionTests());
+         return response;
+      } else {
+         Test freshTest = testDAO.findByUid(request.getTestUid());
+         if (freshTest == null) {
+            // test uid supplied but doesn't exist - pick another test
+            response.setSelectionTests(getAllSelectionTests());
+            return response;
+         } else {
+            freshTest = freshTest.clone();
+            response.setSelectedTest(freshTest);
+            if (request.getMetricName() == null) {
+               response.setSelectionMetric(getAllSelectionMetrics(freshTest.getId()));
+            } else {
+               TestMetric testMetric = testMetricDAO.find(freshTest, request.getMetricName());
+               if (testMetric == null) {
+                  response.setSelectionMetric(getAllSelectionMetrics(freshTest.getId()));
+               } else {
+                  response.setSelectedMetric(testMetric.getMetric().clone());
+               }
+            }
+            if (request.getParamName() == null) {
+               response.setSelectionParam(getAllSelectionExecutionParams(freshTest.getId()));
+            } else if (testExecutionParameterDAO.hasTestParam(freshTest.getId(), request.getParamName())) {
+               response.setSelectedParam(request.getParamName());
+            } else {
+               response.setSelectionParam(getAllSelectionExecutionParams(freshTest.getId()));
+            }
+            if (response.getSelectedMetric() == null || response.getSelectedParam() == null) {
+               return response;
+            } else {
+               List<DataPoint> datapoints = testExecutionDAO
+                     .searchValues(freshTest.getId(), request.getMetricName(), request.getParamName(), request.getTags());
+               List<DataPoint> problematicDatapoints = new ArrayList<DataPoint>();
+               if (SortType.NUMBER.equals(request.getSortType())) {
+                  for (DataPoint dp : datapoints) {
+                     try {
+                        dp.param = Long.valueOf((String) dp.param);
+                     } catch (NumberFormatException e) {
+                        dp.value = DataPoint.CONVERSION;
+                        problematicDatapoints.add(dp);
+                        if (problematicDatapoints.size() >= MAX_PROBLEMATIC_DATAPOINTS) {
+                           break;
+                        }
+                     }
+                  }
+                  if (!problematicDatapoints.isEmpty()) {
+                     response.setProblematicDatapoints(problematicDatapoints);
+                     return response;
+                  } else {
+                     // re-sort as numbers
+                     Collections.sort(datapoints);
+                  }
+               }
+               // the datapoints are sorted (either by long or string value)
+               // let's find out whether the given test execution parameter was unique between executions
+               for (int i = 1; i < datapoints.size(); i++) {
+                  DataPoint dp = datapoints.get(i);
+                  DataPoint dpPrev = datapoints.get(i - 1);
+                  if (dpPrev.param.equals(dp.param)) {
+                     if (!problematicDatapoints.isEmpty() && problematicDatapoints.get(problematicDatapoints.size() - 1) != dpPrev) {
+                        dpPrev.value = DataPoint.CONFLICT;
+                        problematicDatapoints.add(dpPrev);
+                     }
+                     dp.value = DataPoint.CONFLICT;
+                     problematicDatapoints.add(dp);
+                     if (problematicDatapoints.size() >= MAX_PROBLEMATIC_DATAPOINTS) {
+                        break;
+                     }
+                  }
+               }
+               if (!problematicDatapoints.isEmpty()) {
+                  response.setProblematicDatapoints(problematicDatapoints);
+                  return response;
+               }
+               if (datapoints.size() > request.getLimitSize()) {
+                  // return only last limitSize points
+                  List<DataPoint> datapointsTail = new ArrayList<DataPoint>();
+                  for (int i = datapoints.size() - request.getLimitSize(); i < datapoints.size(); i++) {
+                     datapointsTail.add(datapoints.get(i));
+                  }
+                  response.setDatapoints(datapointsTail);
+               } else {
+                  response.setDatapoints(datapoints);
+               }
+               return response;
+            }
+         }
+      }
    }
 }

@@ -113,7 +113,7 @@ public abstract class DAO<T extends CloneableEntity<T>, PK extends Serializable>
       return em.createQuery(criteria).getResultList();
    }
 
-   public List<T> findByCustomCriteria(final CriteriaQuery<T> criteria) {
+   public <T1> List<T1> findByCustomCriteria(final CriteriaQuery<T1> criteria) {
       return em.createQuery(criteria).getResultList();
    }
 
@@ -137,6 +137,10 @@ public abstract class DAO<T extends CloneableEntity<T>, PK extends Serializable>
    public void delete(final T entity) {
       em.remove(entity);
       em.flush();
+   }
+
+   protected <T1> TypedQuery<T1> query(CriteriaQuery<T1> criteria) {
+      return em.createQuery(criteria);
    }
 
    public List<T> findByQuery(String query, Map<String, Object> queryParams) {
@@ -190,8 +194,8 @@ public abstract class DAO<T extends CloneableEntity<T>, PK extends Serializable>
       return em.getCriteriaBuilder().createQuery(type);
    }
 
-   protected EntityManager getEntityManager() {
-      return em;
+   protected CriteriaBuilder criteriaBuilder() {
+      return em.getCriteriaBuilder();
    }
 
    public T findWithDepth(Object id, String... fetchRelations) {

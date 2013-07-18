@@ -1,11 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:c="http://java.sun.com/jstl/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:rich="http://richfaces.org/rich"
-	xmlns:a4j="http://richfaces.org/a4j"
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:jsflot="http://www.jsflot.org/taglib/jsflot">
 <h:body>
 
@@ -14,69 +9,83 @@
 		<f:viewParam name="p" value="#{metricReportBean.parameterName}" />
 		<f:viewParam name="m" value="#{metricReportBean.metricName}" />
 		<f:viewParam name="tags" value="#{metricReportBean.tags}" />
+		<f:event type="preRenderView" listener="#{metricReportBean.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/commonLayoutCharting.xhtml">
 		<ui:define name="title">Metric values</ui:define>
 		<ui:define name="content">
-			<h1>Metric values</h1>
-
-			<h:form>
+			<h1>Metric report</h1>
+			<h2>Parameters</h2>
+			<table id="params">
+				<tr>
+					<td><h:outputText value="#{entityStrings.Test_uid}" /></td>
+					<td><h:selectOneMenu value="#{metricReportBean.selectedTest}" rendered="#{!metricReportBean.testUidDisabled}">
+							<f:selectItems styleClass="input-text" value="#{metricReportBean.selectionTests}" var="item" itemLabel="#{item.uid}" itemValue="#{item.id}" />
+						</h:selectOneMenu> <h:outputText value="#{metricReportBean.selectedTest.uid}" rendered="#{metricReportBean.testUidDisabled}" /></td>
+				</tr>
+				<tr>
+					<td><h:outputText value="#{entityStrings.Metric_metricName}" /></td>
+					<td><h:selectOneMenu value="#{metricReportBean.selectedMetric}" rendered="#{!metricReportBean.metricDisabled}">
+							<f:selectItems styleClass="input-text" value="#{metricReportBean.selectionMetrics}" var="item" itemLabel="#{item.name}" itemValue="#{item.id}" />
+						</h:selectOneMenu> <h:outputText value="#{metricReportBean.selectedMetric.name}" rendered="#{metricReportBean.metricDisabled}" /></td>
+				</tr>
+				<tr>
+					<td><h:outputText value="#{entityStrings.TestExecutionParameter_paramName}" /></td>
+					<td><h:selectOneMenu value="#{metricReportBean.selectedParam}" rendered="#{!metricReportBean.execParameterDisabled}">
+							<f:selectItems styleClass="input-text" value="#{metricReportBean.selectionParams}" var="item" itemLabel="#{item}" itemValue="#{item}" />
+						</h:selectOneMenu> <h:outputText value="#{metricReportBean.selectedParam}" rendered="#{metricReportBean.execParameterDisabled}" /></td>
+				</tr>
+				<tr>
+					<td><h:outputText value="#{strings.Tags}" /></td>
+					<td><h:inputText styleClass="input-text" value="#{metricReportBean.tags}" /></td>
+				</tr>
+			</table>
+			<h:form id="chartForm" rendered="#{metricReportBean.chartVisible}">
 				<script type="text/javascript">
             $.noConflict();
             </script>
-				<p>
-					<h:selectOneMenu value="#{metricReportBean.selectedTestId}">
-						<f:selectItems styleClass="input-text"
-							value="#{metricReportBean.selectionTests}" var="item"
-							itemLabel="#{item.uid}" itemValue="#{item.id}" />
-					</h:selectOneMenu>
-				</p>
-				<p>
-					<h:selectOneMenu value="#{metricReportBean.selectedMetricId}"
-						disabled="#{metricReportBean.selectionMetricsDisabled}">
-						<f:selectItems styleClass="input-text"
-							value="#{metricReportBean.selectionMetrics}" var="item"
-							itemLabel="#{item.name}" itemValue="#{item.id}" />
-					</h:selectOneMenu>
-				</p>
-				<p>
-					<h:selectOneMenu value="#{metricReportBean.selectedParameterName}"
-						disabled="#{metricReportBean.selectionParametersDisabled}">
-						<f:selectItems styleClass="input-text"
-							value="#{metricReportBean.selectionParameters}" var="item"
-							itemLabel="#{item}" itemValue="#{item}" />
-					</h:selectOneMenu>
-				</p>
-				<p>
-					<h:inputText styleClass="input-text"
-						value="#{metricReportBean.tags}" />
-				</p>
-				<h:panelGroup id="chart">
-					<jsflot:flotChart id="valueTimeChart" value="#{chartSeriesData}"
-						height="#{metricReportBean.chartData.height}"
-						width="#{metricReportBean.chartData.width}"
-						mode="#{metricReportBean.chartData.mode}"
-						timeFormat="#{metricReportBean.chartData.timeFormat}"
-						title="#{metricReportBean.chartData.title}"
-						subtitle="#{metricReportBean.chartData.subtitle}"
-						chartType="#{metricReportBean.chartData.chartType}">
+
+				<h:panelGroup id="chartPanel">
+					<h2>Chart</h2>
+					<jsflot:flotChart id="metricChart" value="#{chartSeriesData}" height="#{metricReportBean.chartRendererData.height}"
+						width="#{metricReportBean.chartRendererData.width}" mode="#{metricReportBean.chartRendererData.mode}"
+						timeFormat="#{metricReportBean.chartRendererData.timeFormat}" title="#{metricReportBean.chartRendererData.title}"
+						subtitle="#{metricReportBean.chartRendererData.subtitle}" chartType="#{metricReportBean.chartRendererData.chartType}">
 					</jsflot:flotChart>
 				</h:panelGroup>
-				<h:panelGroup id="deb">
-					<p>
-						<h:outputText value="Test UID: #{metricReportBean.testUid}" />
-					</p>
-					<p>
-						<h:outputText value="Metric name: #{metricReportBean.metricName}" />
-					</p>
-					<p>
-						<h:outputText
-							value="Execution parameter name: #{metricReportBean.parameterName}" />
-					</p>
-					<p>
-						<h:outputText value="Tags: #{metricReportBean.tags}" />
-					</p>
-				</h:panelGroup>
+			</h:form>
+
+			<h:form id="problemPointsForm" rendered="#{metricReportBean.problematicDataPointsVisible}">
+				<h2>Problematic data points</h2>
+				<rich:dataTable id="problemPointsTable" styleClass="table" rowClasses="table-row"
+					columnClasses="common-column,common-column,common-column,common-column,button-column" headerClass="table-header" footerClass="table-footer"
+					value="#{metricReportBean.problematicDatapoints}" var="item" cellspacing="0" cellpadding="0">
+
+
+					<rich:column sortable="true" sortOrder="#{metricReportBean.sortsOrders['paramValue']}" sortBy="#{item}">
+						<f:facet name="header">
+							<a4j:commandLink value="#{strings.ProblematicPoints_ParameterValue}" render="problemPointsTable" action="#{metricReportBean.sort()}">
+								<f:param name="sortProperty" value="paramValue" />
+								<f:ajax render="problemPointsTable" />
+							</a4j:commandLink>
+						</f:facet>
+						<h:outputText value="#{item.param}" />
+					</rich:column>
+
+					<rich:column sortable="true" sortOrder="#{metricReportBean.sortsOrders['execId']}" sortBy="#{item}">
+						<f:facet name="header">
+							<a4j:commandLink value="#{strings.ProblematicPoints_TestExecutionId}" render="problemPointsTable" action="#{metricReportBean.sort()}">
+								<f:param name="sortProperty" value="execId" />
+								<f:ajax render="problemPointsTable" />
+							</a4j:commandLink>
+						</f:facet>
+						<h:link outcome="TestExecutionDetail">
+							<h:outputText value="#{item.execId}" />
+							<f:param name="testExecutionId" value="#{item.execId}" />
+						</h:link>
+					</rich:column>
+
+				</rich:dataTable>
 			</h:form>
 		</ui:define>
 	</ui:composition>

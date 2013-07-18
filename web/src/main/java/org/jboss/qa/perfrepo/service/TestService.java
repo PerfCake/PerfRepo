@@ -27,6 +27,7 @@ import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.TestMetric;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 
@@ -312,22 +313,10 @@ public interface TestService {
    void deleteValue(Value value);
 
    /**
+    * Computes metric report.
     * 
-    * @return All tests (no sub-objects) for usage in comboboxes.
+    * @param request
+    * @return response TO
     */
-   List<Test> getAllSelectionTests();
-
-   /**
-    * 
-    * @param testId
-    * @return All metrics (no sub-objects) for a test for usage in comboboxes.
-    */
-   List<Metric> getAllSelectionMetrics(Long testId);
-
-   /**
-    * 
-    * @param testId
-    * @return All distinct test execution parameter names for a test.
-    */
-   List<String> getAllSelectionExecutionParams(Long testId);
+   MetricReportTO.Response computeMetricReport(MetricReportTO.Request request);
 }

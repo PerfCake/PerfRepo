@@ -19,7 +19,13 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
+import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 
 /**
@@ -38,4 +44,22 @@ public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long>
       return q.getResultList();
    }
 
+   public boolean hasTestParam(Long testId, String paramName) {
+      CriteriaBuilder cb = criteriaBuilder();
+      CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
+
+      Root<TestExecutionParameter> rParam = criteria.from(TestExecutionParameter.class);
+      Join<TestExecutionParameter, Test> rTest = rParam.join("testExecution").join("test");
+
+      Predicate pFixedTest = cb.equal(rTest.get("id"), cb.parameter(Long.class, "testId"));
+      Predicate pFixedName = cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName"));
+
+      criteria.where(cb.and(pFixedTest, pFixedName));
+      criteria.select(cb.count(rParam.get("id")));
+
+      TypedQuery<Long> query = query(criteria);
+      query.setParameter("testId", testId);
+      query.setParameter("paramName", paramName);
+      return query.getSingleResult() != 0l;
+   }
 }

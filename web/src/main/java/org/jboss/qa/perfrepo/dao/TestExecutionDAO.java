@@ -19,15 +19,21 @@ import java.util.Date;
 import java.util.List;
 
 import javax.inject.Named;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Tag;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
+import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
+import org.jboss.qa.perfrepo.model.Value;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 
 /**
@@ -50,7 +56,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       CriteriaQuery<TestExecution> criteria = createCriteria();
       Root<TestExecution> root = criteria.from(TestExecution.class);
       criteria.select(root);
-      CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+      CriteriaBuilder cb = criteriaBuilder();
 
       if (search.getStartedFrom() != null) {
          criteria.where(cb.greaterThanOrEqualTo(root.<Date> get("started"), search.getStartedFrom()));
@@ -79,8 +85,56 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       return findByCustomCriteria(criteria);
    }
 
-   //   public TestExecution getFullTestExecution(Long id) {
-   //      return findWithDepth(id, "parameters", "values.parameters", "testExecutionTags.tag");
-   //   }
+   /**
+    * 
+    * @param request
+    * @return All
+    */
+   public List<DataPoint> searchValues(Long testId, String metricName, String paramName, List<String> tagList) {
+      boolean useTags = tagList != null && !tagList.isEmpty();
+      CriteriaBuilder cb = criteriaBuilder();
+      CriteriaQuery<DataPoint> criteria = cb.createQuery(DataPoint.class);
+      // test executions
+      Root<TestExecution> rExec = criteria.from(TestExecution.class);
+      // test joined via test exec.
+      Join<TestExecution, Test> rTest_Exec = rExec.join("test");
+      // test execution parameters
+      Join<TestExecution, TestExecutionParameter> rParam = rExec.join("parameters");
+      // values
+      Join<TestExecution, Value> rValue = rExec.join("values");
+      // metrics
+      Join<Value, Metric> rMetric = rValue.join("metric");
+      // test joined via metric
+      Join<Metric, Test> rTest_Metric = rMetric.join("testMetrics").join("test");
+      // tag
+      Join<TestExecution, Tag> rTag = null;
+      Predicate pTagNameInFixedList = cb.and(); // default for this predicate is true
+      if (useTags) {
+         rTag = rExec.join("testExecutionTags").join("tag");
+         pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
+      }
 
+      Predicate pMetricNameFixed = cb.equal(rMetric.get("name"), cb.parameter(String.class, "metricName"));
+      Predicate pParameterNameFixed = cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName"));
+      Predicate pTestFixed = cb.equal(rTest_Exec.get("id"), cb.parameter(Long.class, "testId"));
+      Predicate pMetricFromSameTest = cb.equal(rTest_Metric.get("id"), rTest_Exec.get("id"));
+
+      criteria.where(cb.and(pMetricNameFixed, pParameterNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
+      criteria.select(cb.construct(DataPoint.class, rParam.get("value"), rValue.get("resultValue"), rExec.get("id")));
+      criteria.groupBy(rParam.get("value"), rValue.get("resultValue"), rExec.get("id"));
+      if (useTags) {
+         criteria.having(cb.ge(cb.count(rTag.get("id")), cb.parameter(Integer.class, "tagListSize")));
+      }
+      criteria.having(cb.equal(cb.count(rValue.get("id")), cb.literal(1))); // only single valued test executions
+      criteria.orderBy(cb.asc(rParam.get("value")));
+      TypedQuery<DataPoint> query = query(criteria);
+      query.setParameter("testId", testId);
+      query.setParameter("metricName", metricName);
+      query.setParameter("paramName", paramName);
+      if (useTags) {
+         query.setParameter("tagList", tagList);
+         query.setParameter("tagListSize", tagList.size());
+      }
+      return query.getResultList();
+   }
 }

@@ -15,21 +15,25 @@
  */
 package org.jboss.qa.perfrepo.controller.reports;
 
+import java.util.Arrays;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.ControllerBase;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.Request;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.Response;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.SortType;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 import org.jsflot.components.FlotChartRendererData;
 import org.jsflot.xydata.XYDataList;
-import org.jsflot.xydata.XYDataPoint;
 import org.jsflot.xydata.XYDataSetCollection;
 
 /**
@@ -49,7 +53,7 @@ public class MetricReportController extends ControllerBase {
    private static final String CHART_MODE = "Time";
    private static final String CHART_WIDTH_IN_PIXELS = "625";
 
-   //private static final Logger log = Logger.getLogger(MetricTimelineController.class);
+   private static final Logger log = Logger.getLogger(MetricReportController.class);
 
    @Inject
    private TestService testService;
@@ -58,122 +62,31 @@ public class MetricReportController extends ControllerBase {
    private String metricName;
    private String testUid;
    private String parameterName;
+   private SortType sortType;
 
-   private XYDataList dataList = new XYDataList();
-   private FlotChartRendererData chartData = new FlotChartRendererData();
+   private XYDataSetCollection chartData;
+   private FlotChartRendererData chartRendererData;
 
-   private List<Metric> selectionMetrics;
-   private List<Test> selectionTests;
-   private List<String> selectionParameters;
-   private Long selectedMetricId;
-   private Long selectedTestId;
-   private String selectedParameterName;
+   private Response report;
 
-   /*
-    * testUID -> choose tests from all tests for users groupid
-    * 
-    * by GET url parameter a nonexistent UID can be passed
-    * 
-    * metric -> choose from all metrics for given test reset when testUID changes
-    * 
-    * parameter -> choos from all test execution parameters bound to given test
+   @PostConstruct
+   protected void init() {
+      chartRendererData = new FlotChartRendererData();
+      chartRendererData.setMode(CHART_MODE);
+      chartRendererData.setWidth(CHART_WIDTH_IN_PIXELS);
+   }
+
+   /**
+    * called on preRenderView
     */
-
-   public List<Test> getSelectionTests() {
-      if (selectionTests == null) {
-         selectionTests = testService.getAllSelectionTests();
-      }
-      return selectionTests;
+   public void preRender() {
+      log.info("preRenderView event: testUid=" + testUid + ", metricName=" + metricName + ", parameterName=" + parameterName);
+      report = testService.computeMetricReport(new Request(testUid, metricName, parameterName, parseTags(tags), sortType));
+      chartData = recomputeChartData(report.getDatapoints());
    }
 
-   public Long getSelectedTestId() {
-      if (selectedTestId == null) {
-         List<Test> tests = getSelectionTests();
-         for (Test test : tests) {
-            if (test.getUid().equals(testUid)) {
-               selectedTestId = test.getId();
-               return selectedTestId;
-            }
-         }
-      }
-      return null;
-   }
-
-   public void setSelectedTestId(Long id) {
-      selectedTestId = null;
-      testUid = null;
-      selectionMetrics = null;
-      selectionParameters = null;
-      selectedParameterName = null;
-      selectedMetricId = null;
-      List<Test> tests = getSelectionTests();
-      for (Test test : tests) {
-         if (test.getId().equals(id)) {
-            testUid = test.getUid();
-            selectedTestId = id;
-            break;
-         }
-      }
-   }
-
-   public boolean isSelectionMetricsDisabled() {
-      return selectionMetrics == null;
-   }
-
-   public List<Metric> getSelectionMetrics() {
-      if (selectionMetrics == null) {
-         Long testId = getSelectedTestId();
-         if (testId != null) {
-            selectionMetrics = testService.getAllSelectionMetrics(testId);
-         }
-      }
-      return selectionMetrics;
-   }
-
-   public Long getSelectedMetricId() {
-      if (selectedMetricId == null) {
-         List<Metric> metrics = getSelectionMetrics();
-         if (metrics != null && metricName != null) {
-            for (Metric metric : metrics) {
-               if (metric.getName().equals(metricName)) {
-                  selectedMetricId = metric.getId();
-               }
-            }
-         }
-
-      }
-      return selectedMetricId;
-   }
-
-   public void setSelectedMetricId(Long selectedMetricId) {
-      this.selectedMetricId = selectedMetricId;
-   }
-
-   public List<String> getSelectionParameters() {
-      if (selectionParameters == null) {
-         Long testId = getSelectedTestId();
-         if (testId != null) {
-            selectionParameters = testService.getAllSelectionExecutionParams(testId);
-         }
-      }
-      return selectionParameters;
-   }
-
-   public String getSelectedParameterName() {
-      if (selectedParameterName == null) {
-         if (parameterName != null && selectionParameters != null && selectionParameters.contains(parameterName)) {
-            selectedParameterName = parameterName;
-         }
-      }
-      return selectedParameterName;
-   }
-
-   public void setSelectedParameterName(String selectedParameterName) {
-      this.selectedParameterName = selectedParameterName;
-   }
-
-   public boolean isSelectionParametersDisabled() {
-      return selectionParameters == null;
+   private List<String> parseTags(String tags) {
+      return tags == null ? null : Arrays.asList(tags.split(" "));
    }
 
    public String getTags() {
@@ -208,72 +121,87 @@ public class MetricReportController extends ControllerBase {
       this.parameterName = parameterName;
    }
 
-   // if testId is null - choose test
-   // if testId not null and metric null -> choose metric
-   // if testId != null and metric != null ->
-   /**
-    * Constructor, which is called when JSFlot component is initialized. Gets the data from the
-    * cache, full or partial dependent on the parameter from request and fills the corresponding
-    * collections for further processing.
-    */
-   private void generateSeriesData() {
-      chartData.setMode(CHART_MODE);
-      chartData.setWidth(CHART_WIDTH_IN_PIXELS);
-      dataList.setLabel(metricName);
+   public String getSortType() {
+      return sortType.toString();
    }
 
-   /**
-    * Returns chart series. They are 4 - user counts, sent notifications count, subscription and
-    * cancellation counts.
-    * 
-    * @return the chart series.
-    */
-   @Produces
-   @RequestScoped
-   @Named("chartSeriesData")
-   public XYDataSetCollection getChartSeries() {
-      generateSeriesData();
-
-      XYDataSetCollection collection = new XYDataSetCollection();
-
-      collection.addDataList(getChartDataList(dataList));
-
-      return collection;
+   public void setSortType(String sortType) {
+      this.sortType = SortType.valueOf(sortType);
    }
 
-   private XYDataList getChartDataList(XYDataList seriesDataList) {
-      XYDataList currentSeries1DataList = new XYDataList();
-
-      for (int i = 0; i < seriesDataList.size(); i++) {
-         XYDataPoint p1 = new XYDataPoint(seriesDataList.get(i).getX(), seriesDataList.get(i).getY());
-
-         currentSeries1DataList.addDataPoint(p1);
-      }
-      //Copy over the meta data for each series to the current viewed-series
-      currentSeries1DataList.setLabel(seriesDataList.getLabel());
-      currentSeries1DataList.setFillLines(seriesDataList.isFillLines());
-      currentSeries1DataList.setMarkerPosition(seriesDataList.getMarkerPosition());
-      currentSeries1DataList.setMarkers(seriesDataList.isMarkers());
-      currentSeries1DataList.setShowDataPoints(seriesDataList.isShowDataPoints());
-      currentSeries1DataList.setShowLines(seriesDataList.isShowLines());
-
-      return currentSeries1DataList;
+   ///////////////// UI FIELD: test UID
+   public boolean isTestUidDisabled() {
+      return report.getSelectedTest() != null;
    }
 
-   public XYDataList getDataList() {
-      return dataList;
+   public List<Test> getSelectionTests() {
+      return report.getSelectionTests();
    }
 
-   public void setDataList(XYDataList dataList) {
-      this.dataList = dataList;
+   public Test getSelectedTest() {
+      return report.getSelectedTest();
    }
 
-   public FlotChartRendererData getChartData() {
+   ///////////////// UI FIELD: metric
+   public boolean isMetricDisabled() {
+      return report.getSelectedMetric() != null;
+   }
+
+   public List<Metric> getSelectionMetrics() {
+      return report.getSelectionMetrics();
+   }
+
+   public Metric getSelectedMetric() {
+      return report.getSelectedMetric();
+   }
+
+   ///////////////// UI FIELD: test execution parameter
+   public boolean isExecParameterDisabled() {
+      return report.getSelectedParam() != null;
+   }
+
+   public List<String> getSelectionParams() {
+      return report.getSelectionParams();
+   }
+
+   public String getSelectedParam() {
+      return report.getSelectedParam();
+   }
+
+   ///////////////// UI AREA: chart
+   public boolean isChartVisible() {
+      return chartData != null;
+   }
+
+   public XYDataSetCollection getChartData() {
       return chartData;
    }
 
-   public void setChartData(FlotChartRendererData chartData) {
-      this.chartData = chartData;
+   private XYDataSetCollection recomputeChartData(List<DataPoint> datapoints) {
+      if (datapoints == null) {
+         return null;
+      }
+      XYDataList series = new XYDataList();
+      series.setLabel(metricName);
+      for (DataPoint dp : datapoints) {
+         series.addDataPoint((Long) dp.param, (Double) dp.value);
+      }
+      XYDataSetCollection collection = new XYDataSetCollection();
+      collection.addDataList(series);
+      return collection;
+   }
+
+   public FlotChartRendererData getChartRendererData() {
+      return chartRendererData;
+   }
+
+   ///////////////// UI AREA: problematic data points
+   public boolean isProblematicDataPointsVisible() {
+      return report.getProblematicDatapoints() != null;
+   }
+
+   public List<DataPoint> getProblematicDatapoints() {
+      return report.getProblematicDatapoints();
    }
 
 }

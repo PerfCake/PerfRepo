@@ -55,7 +55,7 @@ public class TestDAO extends DAO<Test, Long> {
       CriteriaQuery<Test> criteria = createCriteria();
       Root<Test> root = criteria.from(Test.class);
       criteria.select(root);
-      CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+      CriteriaBuilder cb = criteriaBuilder();
       List<Predicate> predicates = new ArrayList<Predicate>();
       if (search.getName() != null && !"".equals(search.getName())) {
          predicates.add(cb.equal(root.get("name"), search.getName()));
