@@ -15,6 +15,7 @@
  */
 package org.jboss.qa.perfrepo.controller.reports;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,10 +51,9 @@ import org.jsflot.xydata.XYDataSetCollection;
 public class MetricReportController extends ControllerBase {
 
    private static final long serialVersionUID = 1L;
-   private static final String CHART_MODE = "Time";
-   private static final String CHART_WIDTH_IN_PIXELS = "625";
 
    private static final Logger log = Logger.getLogger(MetricReportController.class);
+   private static final DecimalFormat FMT = new DecimalFormat("##.####");
 
    @Inject
    private TestService testService;
@@ -65,15 +65,15 @@ public class MetricReportController extends ControllerBase {
    private SortType sortType = SortType.NUMBER;
 
    private XYDataSetCollection chartData;
-   private FlotChartRendererData chartRendererData;
+   private FlotChartRendererData chart;
+   private Double minValue = null;
+   private Double maxValue = null;
 
    private Response report;
 
    @PostConstruct
    protected void init() {
-      chartRendererData = new FlotChartRendererData();
-      chartRendererData.setMode(CHART_MODE);
-      chartRendererData.setWidth(CHART_WIDTH_IN_PIXELS);
+      chart = new FlotChartRendererData();
    }
 
    /**
@@ -178,21 +178,36 @@ public class MetricReportController extends ControllerBase {
    }
 
    private XYDataSetCollection recomputeChartData(List<DataPoint> datapoints) {
-      if (datapoints == null) {
+      if (datapoints == null || datapoints.isEmpty()) {
          return null;
       }
       XYDataList series = new XYDataList();
       series.setLabel(metricName);
+      minValue = Double.MAX_VALUE;
+      maxValue = Double.MIN_VALUE;
       for (DataPoint dp : datapoints) {
-         series.addDataPoint((Long) dp.param, (Double) dp.value);
+         series.addDataPoint((Long) dp.param, dp.value);
+         if (dp.value > maxValue) {
+            maxValue = dp.value;
+         }
+         if (dp.value < minValue) {
+            minValue = dp.value;
+         }
       }
       XYDataSetCollection collection = new XYDataSetCollection();
       collection.addDataList(series);
+      double range = maxValue - minValue;
+      chart.setYaxisMaxValue(maxValue + 0.1d * range);
+      double yaxisMinValue = minValue - 0.1d * range;
+      if (minValue >= 0d && yaxisMinValue < 0) {
+         yaxisMinValue = 0d; // don't get below zero if min value isn't negative
+      }
+      chart.setYaxisMinValue(yaxisMinValue);
       return collection;
    }
 
-   public FlotChartRendererData getChartRendererData() {
-      return chartRendererData;
+   public FlotChartRendererData getChart() {
+      return chart;
    }
 
    ///////////////// UI AREA: problematic data points
@@ -202,6 +217,19 @@ public class MetricReportController extends ControllerBase {
 
    public List<DataPoint> getProblematicDatapoints() {
       return report.getProblematicDatapoints();
+   }
+
+   ///////////////// UI AREA: statistics
+   public String getMinValue() {
+      return minValue == null ? "N/A" : FMT.format(minValue);
+   }
+
+   public String getMaxValue() {
+      return maxValue == null ? "N/A" : FMT.format(maxValue);
+   }
+
+   public String getRange() {
+      return minValue == null || maxValue == null ? "N/A" : FMT.format(maxValue - minValue);
    }
 
 }

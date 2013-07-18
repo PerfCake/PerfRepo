@@ -47,13 +47,28 @@
 
 				<h:panelGroup id="chartPanel">
 					<h2>Chart</h2>
-					<jsflot:flotChart id="metricChart" value="#{metricReportBean.chartData}" height="#{metricReportBean.chartRendererData.height}"
-						width="#{metricReportBean.chartRendererData.width}" mode="#{metricReportBean.chartRendererData.mode}"
-						timeFormat="#{metricReportBean.chartRendererData.timeFormat}" title="#{metricReportBean.chartRendererData.title}"
-						subtitle="#{metricReportBean.chartRendererData.subtitle}" chartType="#{metricReportBean.chartRendererData.chartType}">
+					<jsflot:flotChart id="metricChart" value="#{metricReportBean.chartData}" height="320" width="640" mode="Series" title="#{strings.metricReport_chartTitle}"
+						chartType="line" showTooltip="true" yaxisMinValue="#{metricReportBean.chart.yaxisMinValue}" yaxisMaxValue="#{metricReportBean.chart.yaxisMaxValue}"
+						showXaxisLabels="true" tooltipFollowMouse="true">
 					</jsflot:flotChart>
 				</h:panelGroup>
 			</h:form>
+
+			<h2>Statistics</h2>
+			<table id="stats">
+				<tr>
+					<td><h:outputText value="#{strings.metricReport_minValue}" /></td>
+					<td><h:outputText value="#{metricReportBean.minValue}" /></td>
+				</tr>
+				<tr>
+					<td><h:outputText value="#{strings.metricReport_maxValue}" /></td>
+					<td><h:outputText value="#{metricReportBean.maxValue}" /></td>
+				</tr>
+				<tr>
+					<td><h:outputText value="#{strings.metricReport_range}" /></td>
+					<td><h:outputText value="#{metricReportBean.range}" /></td>
+				</tr>
+			</table>
 
 			<h:form id="problemPointsForm" rendered="#{metricReportBean.problematicDataPointsVisible}">
 				<h2>Problematic data points</h2>
