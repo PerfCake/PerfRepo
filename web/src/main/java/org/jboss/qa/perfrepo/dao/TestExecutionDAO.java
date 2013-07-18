@@ -109,31 +109,32 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       // tag
       Join<TestExecution, Tag> rTag = null;
       Predicate pTagNameInFixedList = cb.and(); // default for this predicate is true
+      Predicate pHavingAllTagsPresent = cb.and();
       if (useTags) {
          rTag = rExec.join("testExecutionTags").join("tag");
          pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
+         pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
       }
 
       Predicate pMetricNameFixed = cb.equal(rMetric.get("name"), cb.parameter(String.class, "metricName"));
       Predicate pParameterNameFixed = cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName"));
       Predicate pTestFixed = cb.equal(rTest_Exec.get("id"), cb.parameter(Long.class, "testId"));
       Predicate pMetricFromSameTest = cb.equal(rTest_Metric.get("id"), rTest_Exec.get("id"));
+      Predicate pHavingExactlyOneValue = cb.equal(cb.count(rValue.get("id")), cb.literal(1)); // only single valued test executions
 
       criteria.where(cb.and(pMetricNameFixed, pParameterNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
       criteria.select(cb.construct(DataPoint.class, rParam.get("value"), rValue.get("resultValue"), rExec.get("id")));
       criteria.groupBy(rParam.get("value"), rValue.get("resultValue"), rExec.get("id"));
-      if (useTags) {
-         criteria.having(cb.ge(cb.count(rTag.get("id")), cb.parameter(Integer.class, "tagListSize")));
-      }
-      criteria.having(cb.equal(cb.count(rValue.get("id")), cb.literal(1))); // only single valued test executions
+      criteria.having(cb.and(pHavingExactlyOneValue, pHavingAllTagsPresent));
       criteria.orderBy(cb.asc(rParam.get("value")));
+
       TypedQuery<DataPoint> query = query(criteria);
       query.setParameter("testId", testId);
       query.setParameter("metricName", metricName);
       query.setParameter("paramName", paramName);
       if (useTags) {
          query.setParameter("tagList", tagList);
-         query.setParameter("tagListSize", tagList.size());
+         query.setParameter("tagListSize", new Long(tagList.size()));
       }
       return query.getResultList();
    }

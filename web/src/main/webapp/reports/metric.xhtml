@@ -47,7 +47,7 @@
 
 				<h:panelGroup id="chartPanel">
 					<h2>Chart</h2>
-					<jsflot:flotChart id="metricChart" value="#{chartSeriesData}" height="#{metricReportBean.chartRendererData.height}"
+					<jsflot:flotChart id="metricChart" value="#{metricReportBean.chartData}" height="#{metricReportBean.chartRendererData.height}"
 						width="#{metricReportBean.chartRendererData.width}" mode="#{metricReportBean.chartRendererData.mode}"
 						timeFormat="#{metricReportBean.chartRendererData.timeFormat}" title="#{metricReportBean.chartRendererData.title}"
 						subtitle="#{metricReportBean.chartRendererData.subtitle}" chartType="#{metricReportBean.chartRendererData.chartType}">

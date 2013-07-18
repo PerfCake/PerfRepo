@@ -62,7 +62,7 @@ public class MetricReportController extends ControllerBase {
    private String metricName;
    private String testUid;
    private String parameterName;
-   private SortType sortType;
+   private SortType sortType = SortType.NUMBER;
 
    private XYDataSetCollection chartData;
    private FlotChartRendererData chartRendererData;

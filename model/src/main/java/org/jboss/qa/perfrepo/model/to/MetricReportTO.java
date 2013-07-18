@@ -26,7 +26,7 @@ public class MetricReportTO {
       private String metricName;
       private String paramName;
       private List<String> tags;
-      private SortType sortType;
+      private SortType sortType = SortType.NUMBER;
       private int limitSize = DEFAULT_SIZE_LIMIT;
 
       public Request(String testUid, String metricName, String paramName, List<String> tags, SortType sortType) {
