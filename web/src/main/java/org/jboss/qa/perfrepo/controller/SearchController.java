@@ -22,7 +22,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.service.ServiceException;
@@ -35,7 +34,7 @@ public class SearchController extends ControllerBase {
 
    private static final long serialVersionUID = 1L;
 
-   private static final Logger log = Logger.getLogger(SearchController.class);
+   //private static final Logger log = Logger.getLogger(SearchController.class);
 
    @Inject
    private TestService testService;
@@ -74,25 +73,23 @@ public class SearchController extends ControllerBase {
    }
 
    public String delete() {
-      // TODO: learn error message handling and display
       Long idToDelete = Long.valueOf(getRequestParam("idToDelete"));
       if (idToDelete == null) {
-         log.error("Bad request, missing idToDelete");
-         return "Search";
+         throw new IllegalStateException("Bad request, missing idToDelete");
       } else {
          TestExecution execToRemove = removeById(idToDelete);
          if (execToRemove == null) {
-            log.error("Bad request, test execution " + idToDelete + " not found among current search results");
-            return "Search";
+            throw new IllegalStateException("Bad request, missing idToDelete");
          } else {
             try {
                testService.deleteTestExecution(execToRemove);
-               return null;
+               addMessage(INFO, "page.execSearch.execSucessfullyDeleted", execToRemove.getName());
             } catch (ServiceException e) {
-               return "Search";
+               addMessageFor(e);
             }
          }
       }
+      return null;
    }
 
    private TestExecution removeById(Long id) {

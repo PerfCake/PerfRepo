@@ -15,14 +15,21 @@
  */
 package org.jboss.qa.perfrepo.controller;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
+import org.jboss.qa.perfrepo.service.ServiceException;
 import org.richfaces.component.SortOrder;
 
 /**
@@ -35,22 +42,34 @@ import org.richfaces.component.SortOrder;
 public class ControllerBase implements Serializable {
 
    private static final long serialVersionUID = -1616863465068425778L;
-   
-   private Map<String, SortOrder> sortsOrders = new HashMap<String, SortOrder>();
-   
-   
-   private static final String SORT_PROPERTY_PARAMETER = "sortProperty";
-   
-   private boolean multipleSorting = false;
-   
-   private List<String> sortPriorities = new ArrayList<String>();
 
-   public Map<String, String> getRequestParams() {
-      return FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+   private Map<String, SortOrder> sortsOrders = new HashMap<String, SortOrder>();
+
+   private static final String SORT_PROPERTY_PARAMETER = "sortProperty";
+   public static final String SESSION_MESSAGES_KEY = "sessionMessages";
+
+   protected static final Severity ERROR = FacesMessage.SEVERITY_ERROR;
+   protected static final Severity INFO = FacesMessage.SEVERITY_INFO;
+
+   private boolean multipleSorting = false;
+
+   private List<String> sortPriorities = new ArrayList<String>();
+   private ResourceBundle bundle;
+
+   protected ExternalContext externalContext() {
+      return FacesContext.getCurrentInstance().getExternalContext();
    }
 
-   public String getRequestParam(String name) {
+   public Map<String, String> getRequestParams() {
+      return externalContext().getRequestParameterMap();
+   }
+
+   protected String getRequestParam(String name) {
       return getRequestParams().get(name);
+   }
+
+   protected Long getRequestParamLong(String name) {
+      return new Long(getRequestParams().get(name));
    }
 
    public String getRequestParam(String name, String _default) {
@@ -61,7 +80,7 @@ public class ControllerBase implements Serializable {
          return ret;
       }
    }
-   
+
    public Map<String, SortOrder> getSortsOrders() {
       return sortsOrders;
    }
@@ -87,22 +106,105 @@ public class ControllerBase implements Serializable {
    }
 
    public void sort() {
-      String property = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
-          .get(SORT_PROPERTY_PARAMETER);
+      String property = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(SORT_PROPERTY_PARAMETER);
       if (property != null) {
-          SortOrder currentPropertySortOrder = sortsOrders.get(property);
-          if (multipleSorting) {
-              if (!sortPriorities.contains(property)) {
-                  sortPriorities.add(property);
-              }
-          } else {
-              sortsOrders.clear();
-          }
-          if (currentPropertySortOrder == null || currentPropertySortOrder.equals(SortOrder.descending)) {
-              sortsOrders.put(property, SortOrder.ascending);
-          } else {
-              sortsOrders.put(property, SortOrder.descending);
-          }
+         SortOrder currentPropertySortOrder = sortsOrders.get(property);
+         if (multipleSorting) {
+            if (!sortPriorities.contains(property)) {
+               sortPriorities.add(property);
+            }
+         } else {
+            sortsOrders.clear();
+         }
+         if (currentPropertySortOrder == null || currentPropertySortOrder.equals(SortOrder.descending)) {
+            sortsOrders.put(property, SortOrder.ascending);
+         } else {
+            sortsOrders.put(property, SortOrder.descending);
+         }
       }
-  }
+   }
+
+   protected void addSessionMessage(Severity severity, String msg) {
+      addSessionMessage(new FacesMessage(severity, msg, msg));
+   }
+
+   protected void addSessionMessage(FacesMessage facesMessage) {
+      Map<String, Object> sm = externalContext().getSessionMap();
+      @SuppressWarnings("unchecked")
+      List<FacesMessage> sessionMsgs = (List<FacesMessage>) sm.get(SESSION_MESSAGES_KEY);
+      if (sessionMsgs == null) {
+         sessionMsgs = new ArrayList<FacesMessage>();
+         sm.put(SESSION_MESSAGES_KEY, sessionMsgs);
+      }
+      sessionMsgs.add(facesMessage);
+   }
+
+   protected void reloadSessionMessages() {
+      Map<String, Object> sm = externalContext().getSessionMap();
+      @SuppressWarnings("unchecked")
+      List<FacesMessage> sessionMsgs = (List<FacesMessage>) sm.get(SESSION_MESSAGES_KEY);
+      if (sessionMsgs != null) {
+         for (FacesMessage msg : sessionMsgs) {
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+         }
+      }
+      sm.remove(SESSION_MESSAGES_KEY);
+   }
+
+   protected void redirectWithMessage(String relPath, Severity severity, String msgKey, Object... params) {
+      FacesContext fc = FacesContext.getCurrentInstance();
+      String message = getBundleString(msgKey, params);
+      addSessionMessage(severity, message);
+      try {
+         externalContext().redirect(externalContext().getRequestContextPath() + relPath);
+      } catch (IOException e) {
+         throw new RuntimeException("Error while redirecting", e);
+      }
+      fc.renderResponse();
+   }
+
+   protected void redirect(String relPath) {
+      FacesContext fc = FacesContext.getCurrentInstance();
+      try {
+         externalContext().redirect(externalContext().getRequestContextPath() + relPath);
+      } catch (IOException e) {
+         throw new RuntimeException("Error while redirecting", e);
+      }
+      fc.renderResponse();
+   }
+
+   private String getBundleString(String key, Object... params) {
+      if (bundle == null) {
+         bundle = ResourceBundle.getBundle("lang.strings");
+      }
+      if (bundle == null) {
+         return "??? " + key + " ???";
+      } else {
+         String str = bundle.getString(key);
+         if (str == null) {
+            return "??? " + key + " ???";
+         } else {
+            return MessageFormat.format(str, params);
+         }
+      }
+   }
+
+   protected void addMessage(Severity severity, String msgKey, Object... params) {
+      FacesContext fc = FacesContext.getCurrentInstance();
+      String message = getBundleString(msgKey, params);
+      fc.addMessage(null, new FacesMessage(severity, message, message));
+   }
+
+   protected void addMessageFor(ServiceException e) {
+      FacesContext.getCurrentInstance().addMessage(null, getServiceExceptionMessage(e));
+   }
+
+   protected void addSessionMessageFor(ServiceException e) {
+      addSessionMessage(getServiceExceptionMessage(e));
+   }
+
+   protected FacesMessage getServiceExceptionMessage(ServiceException exception) {
+      String msg = getBundleString("serviceException." + exception.getCode(), exception.getParams());
+      return new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg);
+   }
 }

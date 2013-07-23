@@ -15,7 +15,6 @@
  */
 package org.jboss.qa.perfrepo.controller.reports;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,10 +24,10 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jboss.qa.perfrepo.controller.ControllerBase;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
@@ -36,11 +35,10 @@ import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
-import org.richfaces.component.SortOrder;
 
 @Named
 @RequestScoped
-public class SimpleReportController implements Serializable {
+public class SimpleReportController extends ControllerBase {
 
    private static final long serialVersionUID = 1L;
 
@@ -48,7 +46,7 @@ public class SimpleReportController implements Serializable {
    private TestService testExecutionService;
 
    @Inject
-   private TEComparatorSession teComparator; 
+   private TEComparatorSession teComparator;
 
    private List<Map<String, Object>> valueRows;
    private List<String> valueColumns;
@@ -56,24 +54,11 @@ public class SimpleReportController implements Serializable {
    private List<TestExecution> testExecutions = null;
 
    private Set<String> valueParameterNames = null;
-   
-   
+
    private List<Map<String, Object>> teParamRows;
    private List<String> teParamColumns;
-   
-   private Map<String, SortOrder> sortsOrders;
-   private List<String> sortPriorities;
 
    private Map<String, Value> valueParameters = null;
-  
-   private boolean multipleSorting = false;
-   
-   private static final String SORT_PROPERTY_PARAMETER = "sortProperty";
-
-   public Map<String, String> getRequestParams() {
-      Map<String, String> map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-      return map;
-   }
 
    public String getRequestParam(String name) {
       return getRequestParams().get(name);
@@ -81,26 +66,24 @@ public class SimpleReportController implements Serializable {
 
    @PostConstruct
    public void initSecond() {
-      sortsOrders = new HashMap<String, SortOrder>();
-      sortPriorities = new ArrayList<String>();
-      
-      testExecutions = testExecutionService.getTestExecutions(teComparator.getTestExecutions());      
-      
+
+      testExecutions = testExecutionService.getTestExecutions(teComparator.getTestExecutions());
+
       valueParameters = new HashMap<String, Value>();
       valueParameterNames = new HashSet<String>();
       valueRows = new ArrayList<Map<String, Object>>();
-      valueColumns = new ArrayList<String>();    
-      
+      valueColumns = new ArrayList<String>();
+
       teParamColumns = new ArrayList<String>();
       teParamRows = new ArrayList<Map<String, Object>>();
-      
+
       //columns.add("ValueParameters");
       // preprocess
-      
+
       teParamColumns.add("TestExecution");
       for (TestExecution te : testExecutions) {
          Map<String, Object> teParamRow = new HashMap<String, Object>();
-         teParamRow.put("TestExecution", te.getName());               
+         teParamRow.put("TestExecution", te.getName());
          if (te.getParameters() != null && te.getParameters().size() > 0) {
             for (TestExecutionParameter tep : te.getParameters()) {
                if (!teParamColumns.contains(tep.getName())) {
@@ -127,14 +110,14 @@ public class SimpleReportController implements Serializable {
          }
          if (!valueColumns.contains("Metric"))
             valueColumns.add("Metric");
-         valueColumns.add(te.getName());   
+         valueColumns.add(te.getName());
          teParamRows.add(teParamRow);
       }
 
       // values:
       for (String vpn : valueParameterNames) {
          Map<String, Object> row = new HashMap<String, Object>();
-         for (TestExecution te : testExecutions) {     
+         for (TestExecution te : testExecutions) {
             Value value = valueParameters.get(te.getId() + vpn);
             //TODO:parsing??
             String[] params = vpn.split(";");
@@ -147,33 +130,13 @@ public class SimpleReportController implements Serializable {
             if (value != null && value.getMetric() != null) {
                row.put("Metric", value.getMetric().getName());
             }
-            row.put(te.getName(), value != null ? value.getResultValue() : null);            
+            row.put(te.getName(), value != null ? value.getResultValue() : null);
          }
          valueRows.add(row);
       }
       System.out.println();
    }
-   
-   
-   public void sort() {
-      String property = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
-          .get(SORT_PROPERTY_PARAMETER);
-      if (property != null) {
-          SortOrder currentPropertySortOrder = sortsOrders.get(property);
-          if (multipleSorting) {
-              if (!sortPriorities.contains(property)) {
-                  sortPriorities.add(property);
-              }
-          } else {
-              sortsOrders.clear();
-          }
-          if (currentPropertySortOrder == null || currentPropertySortOrder.equals(SortOrder.descending)) {
-              sortsOrders.put(property, SortOrder.ascending);
-          } else {
-              sortsOrders.put(property, SortOrder.descending);
-          }
-      }
-  }
+
    public List<TestExecution> getTestExecutions() {
       return testExecutions;
    }
@@ -186,12 +149,10 @@ public class SimpleReportController implements Serializable {
       return tag.toString().substring(0, tag.length() - 1);
    }
 
-
    public Set<String> getValueParameterNames() {
       return valueParameterNames;
    }
 
-   
    public List<Map<String, Object>> getValueRows() {
       return valueRows;
    }
@@ -203,19 +164,11 @@ public class SimpleReportController implements Serializable {
    public List<String> getValueColumns() {
       return valueColumns;
    }
-   
-   public List<String> getSortPriorities() {
-      return sortPriorities;
-  }
-
-  public Map<String, SortOrder> getSortsOrders() {
-      return sortsOrders;
-  }
 
    public void setValueColumns(List<String> columns) {
       this.valueColumns = columns;
    }
-   
+
    public List<Map<String, Object>> getTeParamRows() {
       return teParamRows;
    }
@@ -232,12 +185,4 @@ public class SimpleReportController implements Serializable {
       this.teParamColumns = teParamColumns;
    }
 
-   public String getRequestParam(String name, String _default) {
-      String ret = getRequestParam(name);
-      if (ret == null) {
-         return _default;
-      } else {
-         return ret;
-      }
-   }
 }

@@ -30,6 +30,7 @@ import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
+import org.jboss.qa.perfrepo.service.ServiceException.Codes;
 
 /**
  * 
@@ -38,7 +39,7 @@ import org.jboss.qa.perfrepo.model.to.TestSearchTO;
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
  */
-public interface TestService {
+public interface TestService extends Codes {
 
    /**
     * Stores a new test execution.
@@ -133,7 +134,15 @@ public interface TestService {
     */
    TestMetric addMetric(Test test, Metric metric) throws ServiceException;
 
-   Metric updateMetric(Metric metric);
+   /**
+    * Update metric.
+    * 
+    * @param test
+    * @param metric
+    * @return Updated metric
+    * @throws ServiceException
+    */
+   Metric updateMetric(Test test, Metric metric) throws ServiceException;
 
    /**
     * Get test with all metrics but without executions.
@@ -193,7 +202,14 @@ public interface TestService {
     */
    List<Metric> getTestMetrics(Test test);
 
-   void deleteMetric(Metric metric);
+   /**
+    * Delete metric from the test.
+    * 
+    * @param test
+    * @param metric
+    * @throws ServiceException
+    */
+   void deleteMetric(Test test, Metric metric) throws ServiceException;
 
    /**
     * Removes metric from defined test. The method removes only relation between test and metric.

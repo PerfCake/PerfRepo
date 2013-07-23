@@ -1,0 +1,29 @@
+
+<rich:popupPanel id="dialogMetricEdit" modal="true" autosized="true" resizeable="false" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<f:facet name="header">
+		<h:outputText value="Edit metric" />
+	</f:facet>
+	<h:form id="dialogMetricEditForm">
+		<table class="proptable">
+			<tr>
+				<td class="label">#{entityStrings.Metric_name}</td>
+				<td><h:inputText styleClass="input-text" value="#{testController.metricDetails.metric.name}" /></td>
+			</tr>
+			<tr>
+				<td class="label">#{entityStrings.Metric_comparator}</td>
+				<td><h:inputText styleClass="input-text" value="#{testController.metricDetails.metric.comparator}" /></td>
+			</tr>
+			<tr>
+				<td class="label">#{entityStrings.Metric_description}</td>
+				<td><rich:editor value="#{testController.metricDetails.metric.description}" toolbar="basic" /></td>
+			</tr>
+		</table>
+
+		<a4j:commandButton action="#{testController.metricDetails.unsetMetric}" oncomplete="#{rich:component('dialogMetricEdit')}.hide()" value="#{strings.cancel}"
+			alt="#{strings.cancel}" title="#{strings.cancel}" />
+
+		<h:commandButton action="#{testController.metricDetails.updateMetric}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}" />
+	</h:form>
+</rich:popupPanel>

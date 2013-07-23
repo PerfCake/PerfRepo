@@ -1,97 +1,71 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:a4j="http://richfaces.org/a4j"
-	xmlns:rich="http://richfaces.org/rich"
-	xmlns:perfrepo="http://richfaces.org/perfrepo">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
 <h:body>
-	<ui:composition template="/layout/commonLayout.xhtml">
-		<ui:define name="title">#{strings.edit} Test -</ui:define>
-		<ui:define name="content">			
-			<h1>Test</h1>
-			<h2>#{testController.test.name}</h2>
-			<ui:include src="/metric/new_popup.xhtml" />
-			<ui:include src="/metric/edit_popup.xhtml" />
-			<h:form>
-				<table class="table">
-					<thead>
-						<tr>
-							<td colspan="2" class="table-header">#{strings.properties}</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr class="table-row">
-							<td><label>ID</label></td>
-							<td><label>#{testController.test.id}</label></td>
-						</tr>
-						<tr class="table-row">
-							<td><label>#{entityStrings.Test_name}</label></td>
-							<td><label>#{testController.test.name}</label></td>
-						</tr>
-						<tr class="table-row">
-							<td><label>#{entityStrings.Test_uid}</label></td>
-							<td><label>#{testController.test.uid}</label></td>
-						</tr>
-						<tr class="table-row">
-							<td><label>#{entityStrings.Test_groupid}</label></td>
-							<td><label>#{testController.test.groupId}</label></td>
-						</tr>
-						<tr class="table-row">
-							<td><label>#{entityStrings.Test_description}</label></td>
-							<td><label>#{testController.test.description}</label></td>
-						</tr>
+	<f:metadata>
+		<f:viewParam name="testId" value="#{testController.testId}" />
+		<f:event type="preRenderView" listener="#{testController.preRender}" />
+	</f:metadata>
+	<ui:composition template="/layout/template.xhtml">
+		<ui:define name="title">#{strings['page.test.title.details']}</ui:define>
+		<ui:define name="content">
+			<c:set target="#{testController}" property="editMode" value="#{false}" />
+			<c:set target="#{testController}" property="createMode" value="#{false}" />
+			<h:panelGroup id="messagesPanel">
+				<h:messages errorClass="errorMessage" infoClass="infoMessage" fatalClass="errorMessage" />
+			</h:panelGroup>
+			<div class="test_title">
+				<h2>#{testController.test.name}</h2>
+				<a href="/repo/test/#{testController.testId}/edit"><input class="button-edit" type="button" alt="#{strings.edit}" title="#{strings.edit}" /></a>
+			</div>
+			<ui:include src="/test/metric_add.xhtml" />
+			<ui:include src="/test/metric_edit.xhtml" />
+			<table class="proptable">
+				<tr>
+					<td class="label">ID</td>
+					<td><label>#{testController.test.id}</label></td>
+				</tr>
+				<tr>
+					<td class="label">#{entityStrings.Test_uid}</td>
+					<td>#{testController.test.uid}</td>
+				</tr>
+				<tr>
+					<td class="label">#{entityStrings.Test_groupid}</td>
+					<td>#{testController.test.groupId}</td>
+				</tr>
+			</table>
 
-					</tbody>
-					<tfoot>
-						<tr>
-							<td class="table-footer" colspan="2">									
-								<h:button
-									styleClass="button-edit" outcome="TestEdit" value=""
-									alt="#{strings.back}" title="#{strings.back}">
-									<f:param name="testId" value="#{testController.test.id}" />
-								</h:button>		
-							</td>
-						</tr>
-					</tfoot>
-				</table>
-			</h:form>
+			<h2>Description</h2>
+			<div class="description">
+				<h:outputText escape="false" value="#{testController.test.description}" />
+			</div>
 
-			<h2>TestMetric</h2>
+			<h2>Metrics</h2>
 
-			<h:form id="testMetricList">				
-				<h:dataTable styleClass="table" rowClasses="table-row"
-					columnClasses="common-column,common-column,common-column,button-column,button-column"
-					headerClass="table-header" footerClass="table-footer"
-					value="#{testController.metricsList}" var="item" cellspacing="0"
-					cellpadding="0">
-					<h:column>
-						<f:facet name="header">ID            
-						</f:facet>
-						<h:outputText value="#{item.metric.id}" />
-					</h:column>
-					<h:column>
-						<f:facet name="header">#{entityStrings.Metric_name}</f:facet>
-						<h:outputText value="#{item.metric.name}" />
-					</h:column>
-					<h:column>
-						<f:facet name="header">#{entityStrings.Metric_description}</f:facet>
-						<h:outputText value="#{item.metric.description}" />
-					</h:column>					
-					<h:column>
-						<f:facet name="header"></f:facet>
-						<a4j:commandButton styleClass="button-edit" render="testMetricEditPopupForm"  action="#{testController.setMetric(item.metric)}" oncomplete="#{rich:component('testMetricEditPopup')}.show();"
-							value=" " alt="#{strings.edit}" title="#{strings.edit}" />						
-					</h:column>
-					<h:column>
-						<f:facet name="header">
-							<a4j:commandButton styleClass="button-plus" render=":testMetricNewPopupForm1 :testMetricNewPopupForm2"  action="#{testController.createMetric()}" oncomplete="#{rich:component('testMetricNewPopup')}.show();"
-							value=" " alt="#{strings.new_m}" title="#{strings.new_m}" />
-						</f:facet>
-						<a4j:commandButton styleClass="button-x" value=" " onclick="if (!confirm('Are you sure you want to delete metric (#{item.metric.name})?') ) { return false;}; return true;" action="#{testController.deleteTestMetric(item)}" render="testMetricList" />
-					</h:column>
-				</h:dataTable>
+			<h:form id="metricList">
+				<ui:repeat value="#{testController.metricsList}" varStatus="status" var="item">
+					<div class="metric">
+						<div class="metric_title">
+							#{item.name}
+							<div class="metric_commands">
+								<a4j:commandButton styleClass="button-minus" value=" " alt="#{strings.delete}" title="#{strings.delete}"
+									onclick="if (!confirm('Are you sure you want to delete metric (#{item.name})?') ) { return false;}; return true;"
+									action="#{testController.metricDetails.deleteMetric(item)}" render="metricList :messagesPanel" />
+
+								<a4j:commandButton styleClass="button-edit" render="dialogMetricEditForm" action="#{testController.metricDetails.setMetricForUpdate(item)}"
+									oncomplete="#{rich:component('dialogMetricEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}" />
+							</div>
+						</div>
+						<div class="metric_desc">
+							<h:outputText escape="false" value="#{item.description}" />
+						</div>
+
+					</div>
+				</ui:repeat>
+				<a4j:commandButton styleClass="button-plus" render=":dialogMetricAddAssignForm :dialogMetricAddCreateForm"
+					action="#{testController.metricDetails.setEmptyMetric}" oncomplete="#{rich:component('dialogMetricAdd')}.show();" value=" "
+					alt="#{strings['page.test.buAddMetric']}" title="#{strings['page.test.buAddMetric']}" />
 			</h:form>
 
 		</ui:define>

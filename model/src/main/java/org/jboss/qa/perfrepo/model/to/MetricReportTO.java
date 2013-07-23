@@ -16,32 +16,33 @@ import org.jboss.qa.perfrepo.model.Test;
 public class MetricReportTO {
 
    /**
-    * Request
+    * Chart series specification.
     */
-   public static class Request implements Serializable {
-
-      public static final int DEFAULT_SIZE_LIMIT = 100;
-
-      private String testUid;
+   public static class SeriesRequest implements Serializable {
+      private String name;
       private String metricName;
-      private String paramName;
       private List<String> tags;
-      private SortType sortType = SortType.NUMBER;
-      private int limitSize = DEFAULT_SIZE_LIMIT;
 
-      public Request(String testUid, String metricName, String paramName, List<String> tags, SortType sortType) {
-         this.testUid = testUid;
+      public SeriesRequest(String name, String metricName, List<String> tags) {
+         this.name = name;
          this.metricName = metricName;
-         this.paramName = paramName;
          this.tags = tags;
-         this.sortType = sortType;
       }
 
-      public Request(String testUid, String metricName, String paramName, SortType sortType) {
-         this.testUid = testUid;
+      public String getName() {
+         return name;
+      }
+
+      public void setName(String name) {
+         this.name = name;
+      }
+
+      public String getMetricName() {
+         return metricName;
+      }
+
+      public void setMetricName(String metricName) {
          this.metricName = metricName;
-         this.paramName = paramName;
-         this.sortType = sortType;
       }
 
       public void addTag(String tag) {
@@ -51,20 +52,81 @@ public class MetricReportTO {
          tags.add(tag);
       }
 
+      public List<String> getTags() {
+         return tags;
+      }
+   }
+
+   public static class SeriesResponse implements Serializable {
+      private String name;
+      private Metric selectedMetric;
+      private List<DataPoint> datapoints;
+
+      public SeriesResponse(String name, Metric selectedMetric, List<DataPoint> datapoints) {
+         super();
+         this.name = name;
+         this.selectedMetric = selectedMetric;
+         this.datapoints = datapoints;
+      }
+
+      public String getName() {
+         return name;
+      }
+
+      public void setName(String name) {
+         this.name = name;
+      }
+
+      public Metric getSelectedMetric() {
+         return selectedMetric;
+      }
+
+      public void setSelectedMetric(Metric selectedMetric) {
+         this.selectedMetric = selectedMetric;
+      }
+
+      public List<DataPoint> getDatapoints() {
+         return datapoints;
+      }
+
+      public void setDatapoints(List<DataPoint> datapoints) {
+         this.datapoints = datapoints;
+      }
+
+   }
+
+   /**
+    * Request
+    */
+   public static class Request implements Serializable {
+
+      public static final int DEFAULT_SIZE_LIMIT = 100;
+
+      private String testUid;
+      private String paramName;
+      private List<SeriesRequest> seriesSpecs;
+      private SortType sortType = SortType.NUMBER;
+      private int limitSize = DEFAULT_SIZE_LIMIT;
+
+      public Request(String testUid, String paramName, List<SeriesRequest> seriesSpecs, SortType sortType) {
+         this.testUid = testUid;
+         this.paramName = paramName;
+         this.seriesSpecs = seriesSpecs;
+         this.sortType = sortType;
+      }
+
+      public Request(String testUid, String paramName, SortType sortType) {
+         this.testUid = testUid;
+         this.paramName = paramName;
+         this.sortType = sortType;
+      }
+
       public String getTestUid() {
          return testUid;
       }
 
-      public String getMetricName() {
-         return metricName;
-      }
-
       public String getParamName() {
          return paramName;
-      }
-
-      public List<String> getTags() {
-         return tags;
       }
 
       public SortType getSortType() {
@@ -79,6 +141,16 @@ public class MetricReportTO {
          this.limitSize = limitSize;
       }
 
+      public List<? extends SeriesRequest> getSeriesSpecs() {
+         return seriesSpecs;
+      }
+
+      public void addSeries(SeriesRequest series) {
+         if (seriesSpecs == null) {
+            seriesSpecs = new ArrayList<MetricReportTO.SeriesRequest>();
+         }
+         seriesSpecs.add(series);
+      }
    }
 
    /**
@@ -88,14 +160,14 @@ public class MetricReportTO {
    public static class Response implements Serializable {
 
       private List<Test> selectionTests;
-      private List<Metric> selectionMetric;
       private List<String> selectionParam;
-      private List<DataPoint> datapoints;
-      private List<DataPoint> problematicDatapoints;
+      private List<Metric> selectionMetrics;
 
       private Test selectedTest;
-      private Metric selectedMetric;
       private String selectedParam;
+
+      private List<SeriesResponse> series;
+      private SeriesResponse problematicSeries;
 
       public List<Test> getSelectionTests() {
          return selectionTests;
@@ -105,12 +177,8 @@ public class MetricReportTO {
          this.selectionTests = selectionTests;
       }
 
-      public List<Metric> getSelectionMetrics() {
-         return selectionMetric;
-      }
-
-      public void setSelectionMetric(List<Metric> selectionMetric) {
-         this.selectionMetric = selectionMetric;
+      public void setSelectionMetrics(List<Metric> selectionMetric) {
+         this.selectionMetrics = selectionMetric;
       }
 
       public List<String> getSelectionParams() {
@@ -121,22 +189,6 @@ public class MetricReportTO {
          this.selectionParam = selectionParam;
       }
 
-      public List<DataPoint> getDatapoints() {
-         return datapoints;
-      }
-
-      public void setDatapoints(List<DataPoint> datapoints) {
-         this.datapoints = datapoints;
-      }
-
-      public List<DataPoint> getProblematicDatapoints() {
-         return problematicDatapoints;
-      }
-
-      public void setProblematicDatapoints(List<DataPoint> problematicDatapoints) {
-         this.problematicDatapoints = problematicDatapoints;
-      }
-
       public Test getSelectedTest() {
          return selectedTest;
       }
@@ -145,20 +197,43 @@ public class MetricReportTO {
          this.selectedTest = selectedTest;
       }
 
-      public Metric getSelectedMetric() {
-         return selectedMetric;
-      }
-
-      public void setSelectedMetric(Metric selectedMetric) {
-         this.selectedMetric = selectedMetric;
-      }
-
       public String getSelectedParam() {
          return selectedParam;
       }
 
       public void setSelectedParam(String selectedParam) {
          this.selectedParam = selectedParam;
+      }
+
+      public List<SeriesResponse> getSeries() {
+         return series;
+      }
+
+      public void setSeries(List<SeriesResponse> series) {
+         this.series = series;
+      }
+
+      public SeriesResponse getProblematicSeries() {
+         return problematicSeries;
+      }
+
+      public void setProblematicSeries(SeriesResponse problematicSeries) {
+         this.problematicSeries = problematicSeries;
+      }
+
+      public List<String> getSelectionParam() {
+         return selectionParam;
+      }
+
+      public List<Metric> getSelectionMetrics() {
+         return selectionMetrics;
+      }
+
+      public void addSeries(SeriesResponse series) {
+         if (this.series == null) {
+            this.series = new ArrayList<SeriesResponse>();
+         }
+         this.series.add(series);
       }
 
    }
@@ -196,6 +271,21 @@ public class MetricReportTO {
 
       public Long getExecId() {
          return execId;
+      }
+
+      public String getProblemType() {
+         if (CONFLICT.equals(value)) {
+            return "Conflict";
+         } else if (CONVERSION.equals(value)) {
+            return "Conversion";
+         } else {
+            return "N/A";
+         }
+      }
+
+      public String toString() {
+         String problem = getProblemType();
+         return "(" + param + ", " + ("N/A".equals(problem) ? value : "Problem: " + problem) + ", " + execId + ")";
       }
    }
 

@@ -1,63 +1,49 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:a4j="http://richfaces.org/a4j"
-	xmlns:rich="http://richfaces.org/rich"
-	xmlns:perfrepo="http://richfaces.org/perfrepo">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
 <h:body>
-	<ui:composition template="/layout/commonLayout.xhtml">
-		<ui:define name="title">#{strings.edit} Test -</ui:define>
+	<f:metadata>
+		<f:viewParam name="testId" value="#{testController.testId}" />
+		<f:viewParam name="createMode" value="#{testController.createMode}" />
+		<f:event type="preRenderView" listener="#{testController.preRender}" />
+	</f:metadata>
+	<ui:composition template="/layout/template.xhtml">
+		<ui:define name="title">#{testController.createMode ? strings['page.test.title.create'] : strings['page.test.title.edit'] }</ui:define>
 		<ui:define name="content">
-			<h1>Test</h1>
-			<h2>#{testController.test.name}</h2>
+			<c:set target="#{testController}" property="editMode" value="#{true}" />
+			<h1>#{testController.createMode ? strings['page.test.title.create'] : strings['page.test.title.edit'] }</h1>
+			<h:messages errorClass="errorMessage" infoClass="infoMessage" fatalClass="errorMessage" />
 			<h:form>
-				<table class="table">
-					<thead>
+				<table class="proptable">
+					<h:panelGroup rendered="#{!testController.createMode}">
 						<tr>
-							<td colspan="2" class="table-header">#{strings.properties}</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr class="table-row">
-							<td><label>ID</label></td>
+							<td class="label">ID</td>
 							<td><label>#{testController.test.id}</label></td>
 						</tr>
-						<tr class="table-row">
-							<td><label>#{entityStrings.Test_name}</label></td>
-							<td><h:inputText styleClass="input-text"
-									value="#{testController.test.name}" /></td>
-						</tr>
-						<tr class="table-row">
-							<td><label>#{entityStrings.Test_uid}</label></td>
-							<td><h:inputText styleClass="input-text"
-									value="#{testController.test.uid}" /></td>
-						</tr>
-						
-						<tr class="table-row">
-							<td><label>#{entityStrings.Test_description}</label></td>
-							<td><h:inputText styleClass="input-text"
-									value="#{testController.test.description}" /></td>
-						</tr>
-
-					</tbody>
-					<tfoot>
-						<tr>
-							<td class="table-footer" colspan="2"><h:button
-									styleClass="button-left-arrow" outcome="TestDetail" value=""
-									alt="#{strings.back}" title="#{strings.back}">
-									<f:param name="testId" value="#{testController.test.id}" />
-								</h:button> 
-								<h:commandButton
-									styleClass="button-check" action="#{testController.update}"
-									value=" " alt="#{strings.save}" title="#{strings.save}">
-									<f:param name="testId" value="#{testController.test.id}"/>
-								</h:commandButton>
-							</td>
-						</tr>
-					</tfoot>
+					</h:panelGroup>
+					<tr>
+						<td class="label">#{entityStrings.Test_name}</td>
+						<td><h:inputText styleClass="input-text" value="#{testController.test.name}" /></td>
+					</tr>
+					<tr>
+						<td class="label">#{entityStrings.Test_uid}</td>
+						<td><h:inputText styleClass="input-text" value="#{testController.test.uid}" /></td>
+					</tr>
+					<tr>
+						<td class="label">#{entityStrings.Test_groupid}</td>
+						<td><h:inputText styleClass="input-text" value="#{testController.test.groupId}" /></td>
+					</tr>
 				</table>
+
+				<h2>#{entityStrings.Test_description}</h2>
+				<rich:editor value="#{testController.test.description}" toolbar="basic" />
+				<div class="commandbuttons">
+					<h:commandButton action="#{testController.update}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}"
+						rendered="#{!testController.createMode}" />
+					<h:commandButton action="#{testController.create}" value="#{strings['page.test.buCreate']}" alt="#{strings['page.test.buCreate']}"
+						title="#{strings['page.test.buCreate']}" rendered="#{testController.createMode}" />
+				</div>
 			</h:form>
 		</ui:define>
 	</ui:composition>

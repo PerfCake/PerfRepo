@@ -2,60 +2,10 @@
 <PROCESS model-entity="JSFProcess">
  <PROCESS-ITEM NAME="rules:" SHAPE="32,17,0,0" model-entity="JSFProcessGroup">
   <PROCESS-ITEM ID="rules::0" NAME="item" model-entity="JSFProcessItem">
-   <PROCESS-ITEM-OUTPUT ID="Home::#index.xhtml" NAME="output"
-    PATH="/index.xhtml" TARGET="rules:#index.xhtml" TITLE="Home" model-entity="JSFProcessItemOutput"/>
-   <PROCESS-ITEM-OUTPUT
-    ID="TestExecutionDetail::#testExecution#detail.xhtml"
-    NAME="output25" PATH="/testExecution/detail.xhtml"
-    TARGET="rules:#testExecution#detail.xhtml"
-    TITLE="TestExecutionDetail" model-entity="JSFProcessItemOutput"/>
-   <PROCESS-ITEM-OUTPUT
-    ID="TestExecutionEdit::#testExecution#edit.xhtml" NAME="output26"
-    PATH="/testExecution/edit.xhtml"
-    TARGET="rules:#testExecution#edit.xhtml" TITLE="TestExecutionEdit" model-entity="JSFProcessItemOutput"/>
-   <PROCESS-ITEM-OUTPUT ID="TestExecutionNew::#testExecution#new.xhtml"
-    NAME="output28" PATH="/testExecution/new.xhtml"
-    TARGET="rules:#testExecution#new.xhtml" TITLE="TestExecutionNew" model-entity="JSFProcessItemOutput"/>
-   <PROCESS-ITEM-OUTPUT ID="TestDetail::#test#detail.xhtml"
-    NAME="output29" PATH="/test/detail.xhtml"
-    TARGET="rules:#test#detail.xhtml" TITLE="TestDetail" model-entity="JSFProcessItemOutput"/>
-   <PROCESS-ITEM-OUTPUT ID="TestEdit::#test#edit.xhtml" NAME="output30"
-    PATH="/test/edit.xhtml" TARGET="rules:#test#edit.xhtml"
-    TITLE="TestEdit" model-entity="JSFProcessItemOutput"/>
-   <PROCESS-ITEM-OUTPUT ID="TestNew::#test#new.xhtml" NAME="output32"
-    PATH="/test/new.xhtml" TARGET="rules:#test#new.xhtml"
-    TITLE="TestNew" model-entity="JSFProcessItemOutput"/>
-   <PROCESS-ITEM-OUTPUT ID="Search::#testExecution#search.xhtml"
-    NAME="output1" PATH="/testExecution/search.xhtml"
-    TARGET="rules:#testExecution#search.xhtml" TITLE="Search" model-entity="JSFProcessItemOutput"/>
-   <PROCESS-ITEM-OUTPUT
-    ID="TestExecutionCompare::#testExecution#teCompare.xhtml"
-    NAME="output38" PATH="/testExecution/teCompare.xhtml"
-    TARGET="rules:#testExecution#teCompare.xhtml"
-    TITLE="TestExecutionCompare" model-entity="JSFProcessItemOutput"/>
-   <PROCESS-ITEM-OUTPUT ID="SimpleReport::#reports#simpleReport.xhtml"
-    NAME="output39" PATH="/reports/simpleReport.xhtml"
-    TARGET="rules:#reports#simpleReport.xhtml" TITLE="SimpleReport" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="HomeRedirect::#index.xhtml" NAME="output"
+    PATH="/index.xhtml" TARGET="rules:#index.xhtml" TITLE="HomeRedirect" model-entity="JSFProcessItemOutput"/>
   </PROCESS-ITEM>
  </PROCESS-ITEM>
- <PROCESS-ITEM NAME="rules:#testExecution#detail.xhtml"
-  PATH="/testExecution/detail.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
- <PROCESS-ITEM NAME="rules:#test#new.xhtml" PATH="/test/new.xhtml"
-  SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
- <PROCESS-ITEM NAME="rules:#testExecution#edit.xhtml"
-  PATH="/testExecution/edit.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
- <PROCESS-ITEM NAME="rules:#test#detail.xhtml" PATH="/test/detail.xhtml"
-  SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
- <PROCESS-ITEM NAME="rules:#test#edit.xhtml" PATH="/test/edit.xhtml"
-  SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
- <PROCESS-ITEM NAME="rules:#testExecution#new.xhtml"
-  PATH="/testExecution/new.xhtml" SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
  <PROCESS-ITEM NAME="rules:#index.xhtml" PATH="/index.xhtml"
-  SHAPE="304,881,0,0" model-entity="JSFProcessGroup"/>
- <PROCESS-ITEM NAME="rules:#testExecution#teCompare.xhtml"
-  PATH="/testExecution/teCompare.xhtml" SHAPE="304,1329,0,0" model-entity="JSFProcessGroup"/>
- <PROCESS-ITEM NAME="rules:#reports#simpleReport.xhtml"
-  PATH="/reports/simpleReport.xhtml" SHAPE="304,1361,0,0" model-entity="JSFProcessGroup"/>
- <PROCESS-ITEM NAME="rules:#testExecution#search.xhtml"
-  PATH="/testExecution/search.xhtml" SHAPE="304,625,0,0" model-entity="JSFProcessGroup"/>
+  SHAPE="240,33,0,0" model-entity="JSFProcessGroup"/>
 </PROCESS>

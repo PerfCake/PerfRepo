@@ -15,6 +15,7 @@
  */
 package org.jboss.qa.perfrepo.controller;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,12 +26,14 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.Value;
+import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.rest.TestExecutionREST;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
@@ -41,7 +44,7 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 public class TestExecutionController extends ControllerBase {
 
    private static final long serialVersionUID = 3012075520261954430L;
-
+   private static final Logger log = Logger.getLogger(TestExecutionController.class);
    @Inject
    private TestService testService;
 
@@ -53,16 +56,75 @@ public class TestExecutionController extends ControllerBase {
 
    private Value value = null;
 
-   public TestExecution getTestExecution() {
-      String id;
-      if (testExecution == null) {
-         if ((id = getRequestParam("testExecutionId")) != null) {
-            testExecution = testService.getFullTestExecution(Long.valueOf(id));
+   private List<ValueInfo> values = null;
+
+   private boolean editMode;
+   private boolean createMode;
+   private Long testExecutionId;
+
+   public Long getTestExecutionId() {
+      return testExecutionId;
+   }
+
+   public void setTestExecutionId(Long testExecutionId) {
+      this.testExecutionId = testExecutionId;
+   }
+
+   public boolean isEditMode() {
+      return editMode;
+   }
+
+   public void setEditMode(boolean editMode) {
+      this.editMode = editMode;
+   }
+
+   public boolean isCreateMode() {
+      return createMode;
+   }
+
+   public void setCreateMode(boolean createMode) {
+      this.createMode = createMode;
+   }
+
+   public void preRender() {
+      reloadSessionMessages();
+      if (testExecutionId == null) {
+         if (!createMode) {
+            log.error("No test ID supplied");
+            redirectWithMessage("/", ERROR, "page.test.errorNoTestId");
          } else {
-            //TODO: is it ok?
-            testExecution = new TestExecution();
+            if (testExecution == null) {
+               testExecution = new TestExecution();
+            }
+         }
+      } else {
+         if (testExecution == null) {
+            testExecution = testService.getFullTestExecution(testExecutionId);
+            if (testExecution == null) {
+               log.error("Can't find test execution with id " + testExecutionId);
+               redirectWithMessage("/", ERROR, "page.test.errorTestNotFound", testExecutionId);
+            } else {
+               values = computeValues();
+            }
          }
       }
+   }
+
+   private List<ValueInfo> computeValues() {
+      List<ValueInfo> r = new ArrayList<TestExecutionController.ValueInfo>();
+      for (Value v : testExecution.getValues()) {
+         if (v.getParameters() == null || v.getParameters().isEmpty()) {
+            r.add(new ValueInfo(v, null));
+         } else {
+            for (ValueParameter vp : v.getParameters()) {
+               r.add(new ValueInfo(v, vp));
+            }
+         }
+      }
+      return r;
+   }
+
+   public TestExecution getTestExecution() {
       return testExecution;
    }
 
@@ -122,14 +184,6 @@ public class TestExecutionController extends ControllerBase {
          tegs.addAll(testExecution.getTestExecutionTags());
       }
       return tegs;
-   }
-
-   public List<Value> getTestExecutionValues() {
-      List<Value> values = new ArrayList<Value>();
-      if (testExecution != null && testExecution.getValues() != null) {
-         values.addAll(testExecution.getValues());
-      }
-      return values;
    }
 
    public Collection<TestExecutionAttachment> getAttachments() {
@@ -250,6 +304,38 @@ public class TestExecutionController extends ControllerBase {
    public String getDownloadLink(TestExecutionAttachment attachment) {
       HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
       return request.getContextPath() + "/rest/testExecution/attachment/" + attachment.getId();
+   }
+
+   public List<ValueInfo> getValues() {
+      return values;
+   }
+
+   public static class ValueInfo {
+      private static final DecimalFormat FMT = new DecimalFormat("##.000");
+      private Value value;
+      private ValueParameter param;
+
+      public ValueInfo(Value value, ValueParameter param) {
+         this.value = value;
+         this.param = param;
+      }
+
+      public String getMetricName() {
+         return value.getMetricName();
+      }
+
+      public String getMetricValue() {
+         return FMT.format(value.getResultValue());
+      }
+
+      public String getParamName() {
+         return param == null ? "N/A" : param.getName();
+      }
+
+      public String getParamValue() {
+         return param == null ? "N/A" : param.getParamValue();
+      }
+
    }
 
 }

@@ -16,40 +16,66 @@
 package org.jboss.qa.perfrepo.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import javax.ejb.EJBException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.model.TestMetric;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
+/**
+ * Backing bean for editing and displaying details of {@link Test}.
+ * 
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Named
 @ViewScoped
 public class TestController extends ControllerBase {
 
    private static final long serialVersionUID = 370202307562230671L;
+   private static final Logger log = Logger.getLogger(TestController.class);
+
+   private boolean editMode;
+   private boolean createMode;
+   private Long testId;
 
    @Inject
-   TestService testService;
+   private TestService testService;
 
    private Test test = null;
+   private MetricDetails metricDetails = new MetricDetails();
 
-   private Metric metric = null;
-
-   @PostConstruct
-   public void init() {
-      String id;
-      if (test == null) {
-         if ((id = getRequestParam("testId")) != null) {
-            test = testService.getFullTest(Long.valueOf(id));
+   /**
+    * called on preRenderView
+    */
+   public void preRender() throws Exception {
+      reloadSessionMessages();
+      if (testId == null) {
+         if (!createMode) {
+            log.error("No test ID supplied");
+            redirectWithMessage("/", ERROR, "page.test.errorNoTestId");
          } else {
-            test = new Test();
+            if (test == null) {
+               test = new Test();
+            }
+         }
+      } else {
+         if (test == null) {
+            test = testService.getFullTest(testId);
+            if (test == null) {
+               log.error("Can't find test with id " + testId);
+               redirectWithMessage("/", ERROR, "page.test.errorTestNotFound", testId);
+            } else {
+               metricDetails.selectionAssignedMetrics = testService.getAvailableMetrics(test);
+            }
          }
       }
    }
@@ -62,88 +88,172 @@ public class TestController extends ControllerBase {
       this.test = test;
    }
 
-   public Metric getMetric() {
-      return metric;
-   }
-
-   public void setMetric(Metric metric) {
-      this.metric = metric;
-   }
-
    public String update() {
+      if (test == null) {
+         throw new IllegalStateException("test is null");
+      }
+      testService.updateTest(test);
+      redirectWithMessage("/test/" + testId, INFO, "page.test.updatedSuccessfully");
+      return null;
+   }
+
+   public List<Metric> getMetricsList() {
+      List<Metric> mlist = new ArrayList<Metric>();
       if (test != null) {
-         testService.updateTest(test);
-         return "/test/detail.xhtml?testId=";
+         mlist.addAll(test.getMetrics());
+      }
+      Collections.sort(mlist);
+      return mlist;
+   }
+
+   public String create() {
+      if (test == null) {
+         throw new IllegalStateException("test is null");
+      }
+      try {
+         Test createdTest = testService.createTest(test);
+         redirectWithMessage("/test/" + createdTest.getId(), INFO, "page.test.createdSuccesfully", createdTest.getId());
+      } catch (ServiceException e) {
+         addMessageFor(e);
+      } catch (SecurityException e) {
+         addMessage(ERROR, "page.test.errorSecurityException", e.getMessage());
+      } catch (EJBException e) {
+         if (e.getCause() != null && e.getCause().getClass() == SecurityException.class) {
+            addMessage(ERROR, "page.test.errorSecurityException", e.getCause().getMessage());
+         } else {
+            throw e;
+         }
       }
       return null;
    }
 
-   public void createMetric() {
-      metric = new Metric();
+   public Long getTestId() {
+      return testId;
    }
 
-   public void updateMetric() {
-      if (metric != null) {
-         testService.updateMetric(metric);
+   public void setTestId(Long testId) {
+      this.testId = testId;
+   }
+
+   public boolean isEditMode() {
+      return editMode;
+   }
+
+   public void setEditMode(boolean editMode) {
+      this.editMode = editMode;
+   }
+
+   public boolean isCreateMode() {
+      return createMode;
+   }
+
+   public void setCreateMode(boolean createMode) {
+      this.createMode = createMode;
+   }
+
+   public MetricDetails getMetricDetails() {
+      return metricDetails;
+   }
+
+   public class MetricDetails {
+      private boolean createMode;
+      private Metric metric;
+      private Long selectedAssignedMetricId;
+      private List<Metric> selectionAssignedMetrics;
+
+      public Metric getMetric() {
+         return metric;
       }
-   }
 
-   public void addMetric() {
-      if (metric != null && test != null) {
-         TestMetric tm;
-         try {
-            tm = testService.addMetric(test, metric);
-         } catch (ServiceException e) {
-            throw new RuntimeException(e);
+      public void setMetricForUpdate(Metric metric) {
+         this.metric = metric;
+      }
+
+      public void setEmptyMetric() {
+         this.metric = new Metric();
+      }
+
+      public void unsetMetric() {
+         this.metric = null;
+      }
+
+      public boolean isCreateMode() {
+         return createMode;
+      }
+
+      public void setCreateMode(boolean createMode) {
+         this.createMode = createMode;
+      }
+
+      public List<Metric> getSelectionAssignedMetrics() {
+         return selectionAssignedMetrics;
+      }
+
+      public boolean isSelectionMetricVisible() {
+         return selectionAssignedMetrics != null && !selectionAssignedMetrics.isEmpty();
+      }
+
+      public Long getSelectedAssignedMetricId() {
+         return selectedAssignedMetricId;
+      }
+
+      public void setSelectedAssignedMetricId(Long selectedAssignedMetricId) {
+         this.selectedAssignedMetricId = selectedAssignedMetricId;
+      }
+
+      public void addAssignedMetric() {
+         if (selectedAssignedMetricId == null || selectionAssignedMetrics == null) {
+            redirectWithMessage("/test/" + testId, ERROR, "page.test.errorNoAssignedMetric");
+         } else {
+            Metric selectedAssignedMetric = null;
+            for (Metric m : selectionAssignedMetrics) {
+               if (selectedAssignedMetricId.equals(m.getId())) {
+                  selectedAssignedMetric = m;
+                  break;
+               }
+            }
+            if (selectedAssignedMetric == null) {
+               redirectWithMessage("/test/" + testId, ERROR, "page.test.errorNoAssignedMetric");
+               return;
+            }
+            try {
+               testService.addMetric(test, selectedAssignedMetric);
+               redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyAssigned", selectedAssignedMetric.getName());
+            } catch (ServiceException e) {
+               addSessionMessageFor(e);
+               redirect("/test/" + testId);
+            }
          }
-         test.getTestMetrics().add(tm);
       }
-   }
 
-   public void deleteTestMetric(TestMetric tm) {
-      if (metric != null && test != null) {
-         testService.deleteTestMetric(tm);
-         test.getTestMetrics().remove(tm);
-      }
-   }
-
-   public List<TestMetric> getMetricsList() {
-      List<TestMetric> tm = new ArrayList<TestMetric>();
-      if (test != null) {
-         tm.addAll(test.getTestMetrics());
-      }
-      return tm;
-   }
-
-   public List<Metric> getAvailableMetricsByTest() {
-      return testService.getAvailableMetrics(test);
-   }
-
-   public String create() {
-      if (test != null) {
+      public void createMetric() {
          try {
-            testService.createTest(test);
+            testService.addMetric(test, metric);
+            redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyCreated", metric.getName());
          } catch (ServiceException e) {
-            throw new RuntimeException(e);
+            addSessionMessageFor(e);
+            redirect("/test/" + testId);
          }
-
       }
-      return "TestList";
+
+      public void updateMetric() {
+         try {
+            testService.updateMetric(test, metric);
+            redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyUpdated", metric.getName());
+         } catch (ServiceException e) {
+            addSessionMessageFor(e);
+            redirect("/test/" + testId);
+         }
+      }
+
+      public void deleteMetric(Metric metricToDelete) {
+         try {
+            testService.deleteMetric(test, metricToDelete);
+            redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyDeleted", metricToDelete.getName());
+         } catch (ServiceException e) {
+            addSessionMessageFor(e);
+            redirect("/test/" + testId);
+         }
+      }
    }
-
-   public String delete() {
-      Test testToDelete = test;
-      if (test == null) {
-         testToDelete = new Test();
-         testToDelete.setId(new Long(getRequestParam("testId")));
-      }
-      try {
-         testService.deleteTest(testToDelete);
-      } catch (ServiceException e) {
-         // TODO: how to handle exceptions in web layer?
-         throw new RuntimeException(e);
-      }
-      return "TestList";
-   }
-
 }

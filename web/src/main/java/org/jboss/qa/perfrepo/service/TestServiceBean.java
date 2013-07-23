@@ -52,6 +52,8 @@ import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesRequest;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesResponse;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SortType;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
@@ -139,11 +141,11 @@ public class TestServiceBean implements TestService {
          for (Value value : testExecution.getValues()) {
             value.setTestExecution(storedTestExecution);
             if (value.getMetricName() == null) {
-               throw serviceException("Metric name is mandatory");
+               throw new IllegalArgumentException("Metric name is mandatory");
             }
             TestMetric testMetric = testMetricDAO.find(test, value.getMetricName());
             if (testMetric == null) {
-               throw serviceException("Test \"%s\" (%s) doesn't have metric \"%s\"", test.getName(), test.getId(), value.getMetricName());
+               throw serviceException(METRIC_NOT_IN_TEST, "Test \"%s\" (%s) doesn't have metric \"%s\"", test.getName(), test.getId(), value.getMetricName());
             }
             value.setMetric(testMetric.getMetric());
             valueDAO.create(value);
@@ -181,7 +183,8 @@ public class TestServiceBean implements TestService {
    public Long addAttachment(TestExecutionAttachment attachment) throws ServiceException {
       TestExecution testExecution = testExecutionDAO.find(attachment.getTestExecution().getId());
       if (testExecution == null) {
-         throw serviceException("Trying to add attachment to non-existent test execution (id=%s)", attachment.getTestExecution().getId());
+         throw serviceException(TEST_EXECUTION_NOT_FOUND, "Trying to add attachment to non-existent test execution (id=%s)", attachment.getTestExecution()
+               .getId());
       }
       checkUserCanChangeTest(testExecution.getTest());
       attachment.setTestExecution(testExecution);
@@ -202,8 +205,8 @@ public class TestServiceBean implements TestService {
       return new SecurityException(String.format("User %s is not in group %s. Can't create test with group id that you're not member of.", userName, groupId));
    }
 
-   private ServiceException serviceException(String msg, Object... args) {
-      return new ServiceException(String.format(msg, args));
+   private ServiceException serviceException(int code, String msg, Object... args) {
+      return new ServiceException(code, args, String.format(msg, args));
    }
 
    @Override
@@ -212,7 +215,7 @@ public class TestServiceBean implements TestService {
          throw cantCreateTest(userInfo.getUserName(), test.getGroupId());
       }
       if (testDAO.findByUid(test.getUid()) != null) {
-         throw serviceException("Test with UID \"%s\" exists.", test.getUid());
+         throw serviceException(TEST_UID_EXISTS, "Test with UID \"%s\" exists.", test.getUid());
       }
       Test createdTest = testDAO.create(test);
       //store metrics
@@ -294,7 +297,7 @@ public class TestServiceBean implements TestService {
    public void deleteTestExecution(TestExecution testExecution) throws ServiceException {
       TestExecution freshTestExecution = testExecutionDAO.find(testExecution.getId());
       if (freshTestExecution == null) {
-         throw serviceException("Test execution with id %s doesn't exist", testExecution.getId());
+         throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution with id %s doesn't exist", testExecution.getId());
       }
       checkUserCanChangeTest(freshTestExecution.getTest());
       for (TestExecutionParameter testExecutionParameter : freshTestExecution.getParameters()) {
@@ -362,28 +365,28 @@ public class TestServiceBean implements TestService {
          // associating an existing metric with the test
          Metric freshMetric = metricDAO.find(metric.getId());
          if (freshMetric == null) {
-            throw serviceException("Metric %s doesn't exist anymore", metric.getId());
+            throw serviceException(METRIC_NOT_FOUND, "Metric %s doesn't exist anymore", metric.getId());
          }
          for (Test testForMetric : freshMetric.getTests()) {
             if (!testForMetric.getGroupId().equals(test.getGroupId())) {
-               throw serviceException("This metric can be shared only between tests with same group id");
+               throw serviceException(METRIC_SHARING_ONLY_IN_GROUP, "Metric can be shared only between tests with same group id");
             }
             if (testForMetric.getId().equals(test.getId())) {
-               throw serviceException("Metric %s (%s) is already associated with test %s", freshMetric.getId(), freshMetric.getName(), test.getUid());
+               throw serviceException(METRIC_EXISTS, "Test %s already contains metric %s", test.getUid(), freshMetric.getName());
             }
          }
          return createTestMetric(test, freshMetric);
       } else {
          // creating a new metric object
          if (metric.getName() == null) {
-            throw serviceException("Metric name is mandatory");
+            throw new IllegalArgumentException("Metric name is mandatory");
          }
          // metric name needs to be unique in the metric space of a certain groupId
          // does it exist in a test with same group id (including the target test) ?
          List<Metric> existingMetricsForGroup = metricDAO.getMetricByNameAndGroup(metric.getName(), test.getGroupId());
          for (Metric existingMetric : existingMetricsForGroup) {
             if (existingMetric.getName().equals(metric.getName())) {
-               throw serviceException("Test %s already contains metric %s", test.getUid(), metric.getName());
+               throw serviceException(METRIC_EXISTS, "Test %s already contains metric %s", test.getUid(), metric.getName());
             }
          }
          Metric freshMetric = metricDAO.create(metric);
@@ -399,8 +402,12 @@ public class TestServiceBean implements TestService {
       return testMetricDAO.create(tm);
    }
 
-   @Secure
-   public Metric updateMetric(Metric metric) {
+   public Metric updateMetric(Test test, Metric metric) throws ServiceException {
+      Test freshTest = checkUserCanChangeTest(test);
+      TestMetric freshTestMetric = testMetricDAO.find(freshTest, metric);
+      if (freshTestMetric == null) {
+         throw serviceException(METRIC_NOT_IN_TEST, "Test \"%s\" (%s) doesn't have metric \"%s\"", freshTest.getName(), freshTest.getId(), metric.getName());
+      }
       return metricDAO.update(metric);
    }
 
@@ -418,10 +425,23 @@ public class TestServiceBean implements TestService {
       return rcopy;
    }
 
-   @Secure
-   public void deleteMetric(Metric metric) {
-      Metric m = metricDAO.find(metric.getId());
-      metricDAO.delete(m);
+   public void deleteMetric(Test test, Metric metric) throws ServiceException {
+      Test freshTest = checkUserCanChangeTest(test);
+      if (freshTest == null) {
+         throw serviceException(TEST_NOT_FOUND, "Test with id=%s, doesn't exist.", test.getId());
+      }
+      TestMetric freshTestMetric = testMetricDAO.find(freshTest, metric.getName());
+      Metric freshMetric = freshTestMetric.getMetric();
+      if (freshMetric.getTestMetrics().size() == 1) {
+         if (!freshMetric.getValues().isEmpty()) {
+            throw serviceException(METRIC_HAS_VALUES, "Can't delete metric %s, some values still refer to it", freshMetric.getName());
+         } else {
+            testMetricDAO.delete(freshTestMetric);
+            metricDAO.delete(freshMetric);
+         }
+      } else {
+         testMetricDAO.delete(freshTestMetric);
+      }
    }
 
    public void deleteTestMetric(TestMetric tm) {
@@ -483,15 +503,15 @@ public class TestServiceBean implements TestService {
       if (test.getId() != null) {
          freshTest = testDAO.find(test.getId());
          if (freshTest == null) {
-            throw serviceException("Test with id=%s, doesn't exist.", test.getId());
+            throw serviceException(TEST_NOT_FOUND, "Test with id=%s, doesn't exist.", test.getId());
          }
       } else if (test.getUid() != null) {
          freshTest = testDAO.findByUid(test.getUid());
          if (freshTest == null) {
-            throw serviceException("Test with uid=%s, doesn't exist.", test.getUid());
+            throw serviceException(TEST_UID_NOT_FOUND, "Test with uid=%s, doesn't exist.", test.getUid());
          }
       } else {
-         throw serviceException("Can't find test, id or uid needs to be supplied");
+         throw new IllegalArgumentException("Can't find test, id or uid needs to be supplied");
       }
       // user can only insert test executions for tests pertaining to his group
       if (!userInfo.isUserInRole(freshTest.getGroupId())) {
@@ -610,28 +630,35 @@ public class TestServiceBean implements TestService {
          } else {
             freshTest = freshTest.clone();
             response.setSelectedTest(freshTest);
-            if (request.getMetricName() == null) {
-               response.setSelectionMetric(getAllSelectionMetrics(freshTest.getId()));
-            } else {
-               TestMetric testMetric = testMetricDAO.find(freshTest, request.getMetricName());
-               if (testMetric == null) {
-                  response.setSelectionMetric(getAllSelectionMetrics(freshTest.getId()));
-               } else {
-                  response.setSelectedMetric(testMetric.getMetric().clone());
-               }
-            }
-            if (request.getParamName() == null) {
+            if (request.getParamName() == null || !testExecutionParameterDAO.hasTestParam(freshTest.getId(), request.getParamName())) {
                response.setSelectionParam(getAllSelectionExecutionParams(freshTest.getId()));
-            } else if (testExecutionParameterDAO.hasTestParam(freshTest.getId(), request.getParamName())) {
-               response.setSelectedParam(request.getParamName());
-            } else {
-               response.setSelectionParam(getAllSelectionExecutionParams(freshTest.getId()));
-            }
-            if (response.getSelectedMetric() == null || response.getSelectedParam() == null) {
+               Collections.sort(response.getSelectionParams());
                return response;
-            } else {
-               List<DataPoint> datapoints = testExecutionDAO
-                     .searchValues(freshTest.getId(), request.getMetricName(), request.getParamName(), request.getTags());
+            }
+            response.setSelectedParam(request.getParamName());
+            if (request.getSeriesSpecs() == null || request.getSeriesSpecs().isEmpty()) {
+               response.setSelectionMetrics(getAllSelectionMetrics(freshTest.getId()));
+               return response;
+            }
+            // selection metrics will be needed in series selectors even on success
+            response.setSelectionMetrics(getAllSelectionMetrics(freshTest.getId()));
+            for (SeriesRequest seriesRequest : request.getSeriesSpecs()) {
+               if (seriesRequest.getName() == null) {
+                  throw new IllegalArgumentException("series has null name");
+               }
+               if (seriesRequest.getMetricName() == null) {
+                  return response;
+               }
+               TestMetric testMetric = testMetricDAO.find(freshTest, seriesRequest.getMetricName());
+               if (testMetric == null) {
+                  return response;
+               }
+               List<DataPoint> datapoints = testExecutionDAO.searchValues(freshTest.getId(), seriesRequest.getMetricName(), request.getParamName(),
+                     seriesRequest.getTags());
+               if (datapoints.isEmpty()) {
+                  return response;
+               }
+               SeriesResponse seriesResponse = new SeriesResponse(seriesRequest.getName(), testMetric.getMetric().clone(), null);
                List<DataPoint> problematicDatapoints = new ArrayList<DataPoint>();
                if (SortType.NUMBER.equals(request.getSortType())) {
                   for (DataPoint dp : datapoints) {
@@ -646,7 +673,9 @@ public class TestServiceBean implements TestService {
                      }
                   }
                   if (!problematicDatapoints.isEmpty()) {
-                     response.setProblematicDatapoints(problematicDatapoints);
+                     response.setSeries(null);
+                     seriesResponse.setDatapoints(problematicDatapoints);
+                     response.setProblematicSeries(seriesResponse);
                      return response;
                   } else {
                      // re-sort as numbers
@@ -671,7 +700,9 @@ public class TestServiceBean implements TestService {
                   }
                }
                if (!problematicDatapoints.isEmpty()) {
-                  response.setProblematicDatapoints(problematicDatapoints);
+                  response.setSeries(null);
+                  seriesResponse.setDatapoints(problematicDatapoints);
+                  response.setProblematicSeries(seriesResponse);
                   return response;
                }
                if (datapoints.size() > request.getLimitSize()) {
@@ -680,12 +711,14 @@ public class TestServiceBean implements TestService {
                   for (int i = datapoints.size() - request.getLimitSize(); i < datapoints.size(); i++) {
                      datapointsTail.add(datapoints.get(i));
                   }
-                  response.setDatapoints(datapointsTail);
+                  seriesResponse.setDatapoints(datapointsTail);
                } else {
-                  response.setDatapoints(datapoints);
+                  seriesResponse.setDatapoints(datapoints);
                }
-               return response;
+               response.addSeries(seriesResponse);
             }
+
+            return response;
          }
       }
    }

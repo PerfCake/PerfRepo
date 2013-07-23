@@ -26,20 +26,32 @@ import javax.ejb.ApplicationException;
 @ApplicationException(rollback = true)
 public class ServiceException extends Exception {
 
-   public ServiceException() {
-      super();
+   public interface Codes {
+      static final int TEST_UID_EXISTS = 100;
+      static final int TEST_EXECUTION_NOT_FOUND = 200;
+      static final int METRIC_NOT_IN_TEST = 300;
+      static final int METRIC_NOT_FOUND = 400;
+      static final int METRIC_SHARING_ONLY_IN_GROUP = 500;
+      static final int METRIC_EXISTS = 600;
+      static final int TEST_NOT_FOUND = 700;
+      static final int TEST_UID_NOT_FOUND = 800;
+      static final int METRIC_HAS_VALUES = 900;
    }
 
-   public ServiceException(String message, Throwable cause) {
-      super(message, cause);
-   }
+   private int code;
+   private Object[] params;
 
-   public ServiceException(String message) {
+   public ServiceException(int code, Object[] params, String message) {
       super(message);
+      this.code = code;
+      this.params = params;
    }
 
-   public ServiceException(Throwable cause) {
-      super(cause);
+   public Object[] getParams() {
+      return params;
    }
 
+   public int getCode() {
+      return code;
+   }
 }

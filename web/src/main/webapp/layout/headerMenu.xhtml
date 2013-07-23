@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html">
+<body>
+	<ui:composition>
+		<div id="htitle">
+			<table>
+				<tr>
+					<td><img src="#{request.contextPath}/resources/images/perfrepo-ico-16.png" height="16px" width="16px" /></td>
+					<td>
+						<h1>Performance Results Repository</h1>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="hlinks">
+			<a href="#{facesContext.externalContext.requestContextPath}">#{strings.menuHome}</a> | <a
+				href="#{facesContext.externalContext.requestContextPath}/test/search">#{strings.menuTests}</a> | <a
+				href="#{facesContext.externalContext.requestContextPath}/exec/search">#{strings.menuExecs}</a> | <a
+				href="#{facesContext.externalContext.requestContextPath}/reports">#{strings.menuReports}</a>
+			<h:panelGroup id="compareMenuItem1">
+				<h:panelGroup id="compareMenuItem" rendered="#{teComparatorSession.isAnyToCompare()}">
+				| <a href="/repo/reports/simple">Compare executions #{teComparatorSession.testExecutions.size()}</a>
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+	</ui:composition>
+</body>
+</html>

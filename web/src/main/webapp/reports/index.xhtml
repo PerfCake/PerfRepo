@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 <h:body>
-	<f:metadata>
-		<f:event type="preRenderView" listener="#{homeController.preRender}" />
-	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
-		<ui:define name="title">#{strings['page.index.title']}</ui:define>
+		<ui:define name="title">Reports -</ui:define>
 		<ui:define name="content">
-			<h:messages errorClass="errorMessage" infoClass="infoMessage" fatalClass="errorMessage" />
+			<ul>
+				<li><a href="/repo/reports/simple">#{strings['page.reportIndex.simple']}</a></li>
+				<li><a href="/repo/reports/metric">#{strings['page.reportIndex.metricHistory']}</a></li>
+			</ul>
 		</ui:define>
 	</ui:composition>
 </h:body>

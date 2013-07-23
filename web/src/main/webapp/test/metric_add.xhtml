@@ -1,0 +1,49 @@
+
+<rich:popupPanel id="dialogMetricAdd" modal="true" autosized="true" resizeable="false" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich" xmlns:c="http://java.sun.com/jsp/jstl/core">
+	<f:facet name="header">
+		<h:outputText value="Add metric" />
+	</f:facet>
+	<c:set target="#{testController.metricDetails}" property="createMode" value="#{false}" />
+	<rich:tabPanel switchType="client">
+		<rich:tab header="Assign existing metric" rendered="#{testController.metricDetails.selectionMetricVisible}">
+			<h:form id="dialogMetricAddAssignForm">
+				<table class="proptable">
+					<tr>
+						<td class="label"><label>Select Metric</label></td>
+						<td><h:selectOneMenu value="#{testController.metricDetails.selectedAssignedMetricId}">
+								<f:selectItems value="#{testController.metricDetails.selectionAssignedMetrics}" var="item" itemLabel="#{item.name}" itemValue="#{item.id}" />
+							</h:selectOneMenu></td>
+					</tr>
+				</table>
+				<a4j:commandButton action="#{testController.metricDetails.unsetMetric}" oncomplete="#{rich:component('dialogMetricAdd')}.hide()" value="#{strings.cancel}"
+					alt="#{strings.cancel}" title="#{strings.cancel}" />
+				<h:commandButton action="#{testController.metricDetails.addAssignedMetric}" value="#{strings['page.test.buAddMetric']}"
+					alt="#{strings['page.test.buAddMetric']}" title="#{strings['page.test.buAddMetric']}" />
+			</h:form>
+		</rich:tab>
+		<rich:tab header="Create metric">
+			<h:form id="dialogMetricAddCreateForm">
+				<table class="proptable">
+					<tr>
+						<td class="label">#{entityStrings.Metric_name}</td>
+						<td><h:inputText styleClass="input-text" value="#{testController.metricDetails.metric.name}" /></td>
+					</tr>
+					<tr>
+						<td class="label">#{entityStrings.Metric_comparator}</td>
+						<td><h:inputText styleClass="input-text" value="#{testController.metricDetails.metric.comparator}" /></td>
+					</tr>
+					<tr>
+						<td class="label">#{entityStrings.Metric_description}</td>
+						<td><rich:editor value="#{testController.metricDetails.metric.description}" toolbar="basic" /></td>
+					</tr>
+				</table>
+				<a4j:commandButton action="#{testController.metricDetails.unsetMetric}" oncomplete="#{rich:component('dialogMetricAdd')}.hide()" value="#{strings.cancel}"
+					alt="#{strings.cancel}" title="#{strings.cancel}" />
+				<h:commandButton action="#{testController.metricDetails.createMetric}" value="#{strings['page.test.buCreateMetric']}"
+					alt="#{strings['page.test.buCreateMetric']}" title="#{strings['page.test.buCreateMetric']}" />
+			</h:form>
+		</rich:tab>
+	</rich:tabPanel>
+</rich:popupPanel>

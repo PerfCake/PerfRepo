@@ -4,17 +4,96 @@
 
 <urlrewrite>
 
-   <!-- then forward to appropriate page without changing displayed URL -->
    <rule>
-      <!-- /reports/metric/{testId}/{metricName}/{paramName} -->
-      <from>^/reports/metric/([\w_]+)/([\w_]+)/([\w_.]+)$</from>
-      <to type="forward" last="true">/reports/metric.jsf?t=$1&amp;m=$2&amp;p=$3</to>
+      <!-- /test/{testId} -->
+      <from>^/test/([\d]+)$</from>
+      <to type="forward" last="true">/test/detail.jsf?testId=$1</to>
+      <set name="formActionURL">/test/$1</set>
    </rule>
-   
-      <rule>
-      <!-- /reports/metric/{testId}/{metricName}/{paramName} -->
-      <from>^/blah$</from>
+
+   <rule>
+      <from>^/test/search$</from>
+      <to type="forward" last="true">/test/search.jsf</to>
+   </rule>
+
+   <rule>
+      <from>^/test$</from>
+      <to type="forward" last="true">/test/search.jsf</to>
+   </rule>
+
+   <rule>
+      <from>^/test/new$</from>
+      <to type="forward" last="true">/test/edit.jsf?createMode=true</to>
+      <set name="formActionURL">/test/new</set>
+   </rule>
+
+   <rule>
+      <!-- /test/{testId}/edit -->
+      <from>^/test/([\d]+)/edit$</from>
+      <to type="forward" last="true">/test/edit.jsf?testId=$1</to>
+      <set name="formActionURL">/test/$1/edit</set>
+   </rule>
+
+   <rule>
+      <!-- /exec/{testExecutionId} -->
+      <from>^/exec/([\d]+)$</from>
+      <to type="forward" last="true">/testExecution/detail.jsf?testExecutionId=$1</to>
+   </rule>
+
+   <rule>
+      <from>^/exec/search$</from>
+      <to type="forward" last="true">/testExecution/search.jsf</to>
+   </rule>
+
+   <rule>
+      <from>^/exec$</from>
+      <to type="forward" last="true">/testExecution/search.jsf</to>
+   </rule>
+
+   <rule>
+      <from>^/exec/new$</from>
+      <to type="forward" last="true">/testExecution/new.jsf</to>
+      <set name="formActionURL">/exec/new</set>
+   </rule>
+
+   <rule>
+      <!-- /exec/{testExecutionId}/edit -->
+      <from>^/exec/([\d]+)/edit$</from>
+      <to type="forward" last="true">/testExecution/edit.jsf?testExecutionId=$1</to>
+      <set name="formActionURL">/exec/$1/edit</set>
+   </rule>
+
+   <rule>
+      <from>^/reports$</from>
+      <to type="forward" last="true">/reports/index.jsf</to>
+   </rule>
+
+   <rule>
+      <!-- /reports/metric -->
+      <from>^/reports/metric$</from>
       <to type="forward" last="true">/reports/metric.jsf</to>
+      <set name="formActionURL">/reports/metric</set>
    </rule>
+
+   <rule>
+      <!-- /reports/metric/{testId} -->
+      <from>^/reports/metric/([\w_]+)$</from>
+      <to type="forward" last="true">/reports/metric.jsf?t=$1</to>
+      <set name="formActionURL">/reports/metric/$1</set>
+   </rule>
+
+   <rule>
+      <!-- /reports/metric/{testId}/{paramName} -->
+      <from>^/reports/metric/([\w_]+)/([\w_.]+)$</from>
+      <to type="forward" last="true">/reports/metric.jsf?t=$1&amp;p=$2</to>
+      <set name="formActionURL">/reports/metric/$1/$2</set>
+   </rule>
+
+   <rule>
+      <from>^/reports/simple$</from>
+      <to type="forward" last="true">/reports/simpleReport.jsf</to>
+      <set name="formActionURL">/reports/simple</set>
+   </rule>
+
 
 </urlrewrite>

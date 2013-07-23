@@ -16,6 +16,7 @@
 package org.jboss.qa.perfrepo.security;
 
 import java.security.Principal;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
@@ -42,5 +43,10 @@ public class UserInfo {
 
    public boolean isUserInRole(String guid) {
       return sessionContext.isCallerInRole(guid);
+   }
+
+   public List<String> getRoles() {
+      //return sessionContext.getCallerIdentity().
+      return null;
    }
 }
