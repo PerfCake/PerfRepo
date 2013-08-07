@@ -44,9 +44,9 @@ public class TestExecutionCompareController extends ControllerBase {
 
    @Inject
    private TestService testService;
-   
+
    @Inject
-   private TEComparatorSession teComparator;   
+   private TEComparatorSession teComparator;
 
    private Map<String, SortOrder> sortsOrders;
    private List<String> sortPriorities;
@@ -55,10 +55,10 @@ public class TestExecutionCompareController extends ControllerBase {
 
    private static final String SORT_PROPERTY_PARAMETER = "sortProperty";
 
-  @PostConstruct
+   @PostConstruct
    public void init() {
       sortsOrders = new HashMap<String, SortOrder>();
-      sortPriorities = new ArrayList<String>();    
+      sortPriorities = new ArrayList<String>();
    }
 
    public void sort() {
@@ -82,10 +82,10 @@ public class TestExecutionCompareController extends ControllerBase {
 
    public List<TestExecution> getTestExecutions() {
       if (teComparator.getTestExecutions() != null && teComparator.getTestExecutions().size() > 0) {
-         return testService.getTestExecutions(teComparator.getTestExecutions());
+         return testService.getFullTestExecutions(new ArrayList<Long>(teComparator.getTestExecutions()));
       }
       return new ArrayList<TestExecution>();
-      
+
    }
 
    public List<String> getSortPriorities() {

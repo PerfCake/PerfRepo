@@ -161,11 +161,19 @@ public class TestServiceBean implements TestService {
       return storedTestExecution;
    }
 
-   public List<TestExecution> getTestExecutions(Collection<Long> ids) {
+   public List<TestExecution> getFullTestExecutions(List<Long> ids) {
       List<TestExecution> result = new ArrayList<TestExecution>();
       for (Long id : ids) {
          TestExecution testExecution = getFullTestExecution(id);
          result.add(testExecution);
+      }
+      return result;
+   }
+
+   public List<Test> getFullTests(List<Long> ids) {
+      List<Test> result = new ArrayList<Test>();
+      for (Long id : ids) {
+         result.add(getFullTest(id));
       }
       return result;
    }

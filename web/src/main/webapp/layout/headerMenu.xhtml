@@ -20,7 +20,7 @@
 				href="#{facesContext.externalContext.requestContextPath}/reports">#{strings.menuReports}</a>
 			<h:panelGroup id="compareMenuItem1">
 				<h:panelGroup id="compareMenuItem" rendered="#{teComparatorSession.isAnyToCompare()}">
-				| <a href="/repo/reports/simple">Compare executions #{teComparatorSession.testExecutions.size()}</a>
+				| <a href="/repo/reports/compareExecutions">Compare executions #{teComparatorSession.testExecutions.size()}</a>
 				</h:panelGroup>
 			</h:panelGroup>
 		</div>

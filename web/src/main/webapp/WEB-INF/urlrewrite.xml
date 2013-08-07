@@ -95,5 +95,10 @@
       <set name="formActionURL">/reports/simple</set>
    </rule>
 
+   <rule>
+      <from>^/reports/compareExecutions$</from>
+      <to type="forward" last="true">/reports/compareExecutions.jsf</to>
+      <set name="formActionURL">/reports/compareExecutions</set>
+   </rule>
 
 </urlrewrite>

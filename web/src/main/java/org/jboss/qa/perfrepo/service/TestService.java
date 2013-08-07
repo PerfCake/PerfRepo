@@ -15,7 +15,6 @@
  */
 package org.jboss.qa.perfrepo.service;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.jboss.qa.perfrepo.model.Metric;
@@ -69,12 +68,20 @@ public interface TestService extends Codes {
    List<Test> searchTest(TestSearchTO search);
 
    /**
-    * TODO: comment
+    * Get list of full test executions.
     * 
     * @param ids
     * @return
     */
-   List<TestExecution> getTestExecutions(Collection<Long> ids);
+   List<TestExecution> getFullTestExecutions(List<Long> ids);
+
+   /**
+    * Get list of full tests.
+    * 
+    * @param ids
+    * @return
+    */
+   List<Test> getFullTests(List<Long> ids);
 
    /**
     * Add attachment to the test execution. The {@link TestExecution} object referred by attachment
