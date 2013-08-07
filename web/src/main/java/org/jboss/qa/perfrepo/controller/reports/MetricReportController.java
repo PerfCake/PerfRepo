@@ -19,8 +19,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
+import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -36,6 +39,7 @@ import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesResponse;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SortType;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
+import org.jsflot.components.FlotChartClickedEvent;
 import org.jsflot.components.FlotChartRendererData;
 import org.jsflot.xydata.XYDataList;
 import org.jsflot.xydata.XYDataPoint;
@@ -58,6 +62,7 @@ public class MetricReportController extends ControllerBase {
 
    private static final Logger log = Logger.getLogger(MetricReportController.class);
    private static final DecimalFormat FMT = new DecimalFormat("##.####");
+   private static final Pattern DPPATTERN = Pattern.compile("Exec ID\\: (\\d+)");
 
    @Inject
    private TestService testService;
@@ -69,7 +74,7 @@ public class MetricReportController extends ControllerBase {
    private Double minValue = null;
    private Double maxValue = null;
    private DataPoint selectedDataPoint;
-   private DataPoint baselineDataPoint;
+   //private DataPoint baselineDataPoint;
 
    private Long selectedTestId;
    private String selectedParam;
@@ -79,8 +84,10 @@ public class MetricReportController extends ControllerBase {
 
    public static class SeriesRequestExt extends SeriesRequest {
 
-      public SeriesRequestExt(String name, String metricName, List<String> tags) {
+      public SeriesRequestExt(String name, String metricName, List<String> tags, Long selectedMetricId, String selectedTags) {
          super(name, metricName, tags);
+         this.selectedMetricId = selectedMetricId;
+         this.selectedTags = selectedTags;
       }
 
       private transient Long selectedMetricId;
@@ -102,16 +109,121 @@ public class MetricReportController extends ControllerBase {
          this.selectedTags = selectedTags;
       }
 
+      @Override
+      public String toString() {
+         return super.toString() + "(metricId=" + selectedMetricId + ", selectedTags=" + selectedTags + ")";
+      }
+
    }
 
    @PostConstruct
    protected void init() {
       chart = new FlotChartRendererData();
+      String reportQuery = getRequestParam("q");
+      if (reportQuery == null) {
+         generateRequestFromSingleParamSet();
+      } else {
+         generateRequestFromReportLinkParam(reportQuery);
+      }
+   }
+
+   private void generateRequestFromSingleParamSet() {
       seriesSpecs = new ArrayList<SeriesRequest>();
       if (seriesSpecs.isEmpty()) {
-         seriesSpecs.add(new SeriesRequestExt("1", getRequestParam("m"), parseTags(getRequestParam("tags"))));
+         String tagStr = getRequestParam("tags");
+         seriesSpecs.add(new SeriesRequestExt("1", getRequestParam("m"), parseTags(tagStr), null, tagStr));
       }
       updateReport(new Request(getRequestParam("t"), getRequestParam("p"), (List<SeriesRequest>) seriesSpecs, sortType));
+      updateSeriesSpecsFromReport();
+   }
+
+   private Long findMetricId(String metricName) {
+      if (metricName == null) {
+         return null;
+      }
+      if (report.getSelectionMetrics() == null) {
+         return null;
+      }
+      for (Metric m : report.getSelectionMetrics()) {
+         if (metricName.equals(m.getName())) {
+            return m.getId();
+         }
+      }
+      return null;
+   }
+
+   /**
+    * Parse a special metric report request url param /repo/report/metric?q=1+1+1+....
+    * 
+    * @param reportLinkParam raw value of the q param
+    * @return report request
+    */
+   private void generateRequestFromReportLinkParam(String reportQuery) {
+      String[] tokens = reportQuery.split("\\|");
+      try {
+         if (tokens.length < 5 || (tokens.length - 2) % 3 != 0) {
+            throw new Exception("query too short");
+         }
+         String testQuery = tokens[0];
+         String paramQuery = tokens[1];
+         seriesSpecs = new ArrayList<SeriesRequest>();
+         int numSeries = (tokens.length - 2) / 3;
+         for (int i = 0; i < numSeries; i++) {
+            String seriesLabel = tokens[2 + i * 3];
+            String seriesMetricName = tokens[3 + i * 3];
+            String seriesTags = tokens[4 + i * 3];
+            seriesSpecs.add(new SeriesRequestExt(seriesLabel, seriesMetricName, parseTags(seriesTags), null, seriesTags));
+         }
+         updateReport(new Request(testQuery, paramQuery, seriesSpecs, sortType));
+         updateSeriesSpecsFromReport();
+      } catch (Exception e) {
+         addMessage(ERROR, "page.metricreport.errorParsingReportQuery");
+         log.error("Error while parsing report url", e);
+      }
+   }
+
+   private void updateSeriesSpecsFromReport() {
+      for (SeriesRequest s : seriesSpecs) {
+         SeriesRequestExt s1 = (SeriesRequestExt) s;
+         s1.setSelectedMetricId(findMetricId(s.getMetricName()));
+      }
+   }
+
+   private void updateSeriesSpecsFromView() {
+      for (SeriesRequest s : seriesSpecs) {
+         SeriesRequestExt s1 = (SeriesRequestExt) s;
+         s1.setMetricName(findSelectedMetricName(s1.getSelectedMetricId()));
+         s1.setTags(parseTags(s1.getSelectedTags()));
+      }
+   }
+
+   public String getLinkToReport() {
+      String reportQuery = generateReportQuery();
+      return "/repo/reports/metric" + (reportQuery == null ? "" : "?q=" + reportQuery);
+   }
+
+   private String generateReportQuery() {
+      if (report == null || report.getSelectedTest() == null || report.getSelectedParam() == null || seriesSpecs == null || seriesSpecs.isEmpty()) {
+         return null;
+      }
+      StringBuffer s = new StringBuffer();
+      s.append(report.getSelectedTest().getUid());
+      s.append("|");
+      s.append(report.getSelectedParam());
+      for (SeriesRequest sreq : seriesSpecs) {
+         SeriesRequestExt sreq1 = (SeriesRequestExt) sreq;
+         if (sreq.getName() == null || sreq.getName().isEmpty() || sreq.getMetricName() == null || sreq.getMetricName().isEmpty()) {
+            return null;
+         }
+         s.append("|");
+         s.append(sreq.getName());
+         s.append("|");
+         s.append(sreq.getMetricName());
+         s.append("|");
+         s.append(sreq1.getSelectedTags());
+      }
+      String result = s.toString().trim();
+      return result.endsWith("|") ? result + " |" : result;
    }
 
    /**
@@ -166,12 +278,64 @@ public class MetricReportController extends ControllerBase {
       } else if (!isExecParamDisabled()) {
          redirect("/reports/metric/" + report.getSelectedTest().getUid() + "/" + selectedParam);
       } else {
+         updateSeriesSpecsFromView();
+         Request request = new Request(report.getSelectedTest().getUid(), report.getSelectedParam(), seriesSpecs, sortType);
+         updateReport(request);
+      }
+   }
+
+   public void addSeries() {
+      // test uid was selected
+      if (!isTestUidDisabled()) {
+         String uid = findSelectedTestUID(selectedTestId);
+         if (uid == null) {
+            throw new IllegalStateException("couldn't find test with id " + selectedTestId);
+         }
+         redirect("/reports/metric/" + uid);
+      } else if (!isExecParamDisabled()) {
+         redirect("/reports/metric/" + report.getSelectedTest().getUid() + "/" + selectedParam);
+      } else {
+         seriesSpecs.add(new SeriesRequestExt(Integer.toString(seriesSpecs.size() + 1), null, null, null, null));
+      }
+   }
+
+   public void removeSeries(SeriesRequest seriesToRemove) {
+      // test uid was selected
+      if (!isTestUidDisabled()) {
+         String uid = findSelectedTestUID(selectedTestId);
+         if (uid == null) {
+            throw new IllegalStateException("couldn't find test with id " + selectedTestId);
+         }
+         redirect("/reports/metric/" + uid);
+      } else if (!isExecParamDisabled()) {
+         redirect("/reports/metric/" + report.getSelectedTest().getUid() + "/" + selectedParam);
+      } else {
+         seriesSpecs.remove(seriesToRemove);
          Request request = new Request(report.getSelectedTest().getUid(), report.getSelectedParam(), sortType);
          for (SeriesRequest r : seriesSpecs) {
             SeriesRequestExt rExt = (SeriesRequestExt) r;
             request.addSeries(new SeriesRequest(rExt.getName(), findSelectedMetricName(rExt.getSelectedMetricId()), parseTags(rExt.getSelectedTags())));
          }
          updateReport(request);
+      }
+   }
+
+   public void chartActionListener(ActionEvent event) {
+      if (event instanceof FlotChartClickedEvent) {
+         FlotChartClickedEvent flotEvent = (FlotChartClickedEvent) event;
+         selectDataPoint(flotEvent.getClickedDataPoint());
+      }
+   }
+
+   private void selectDataPoint(XYDataPoint dp) {
+      selectedDataPoint = new DataPoint(dp.getX().doubleValue(), dp.getY().doubleValue(), null);
+      Matcher m = DPPATTERN.matcher(dp.getPointLabel());
+      if (m.matches()) {
+         try {
+            selectedDataPoint.execId = Long.valueOf(m.group(1));
+         } catch (Exception e) {
+            log.error("Error while obtaining datapoint", e);
+         }
       }
    }
 
@@ -193,15 +357,15 @@ public class MetricReportController extends ControllerBase {
 
    ///////////////// UI FIELD: test UID
    public boolean isTestUidDisabled() {
-      return report.getSelectedTest() != null;
+      return report != null && report.getSelectedTest() != null;
    }
 
    public List<Test> getSelectionTests() {
-      return report.getSelectionTests();
+      return report == null ? null : report.getSelectionTests();
    }
 
    public Test getSelectedTest() {
-      return report.getSelectedTest();
+      return report == null ? null : report.getSelectedTest();
    }
 
    public Long getSelectedTestId() {
@@ -214,7 +378,7 @@ public class MetricReportController extends ControllerBase {
 
    ///////////////// UI FIELD: test execution parameter
    public List<String> getSelectionParams() {
-      return report.getSelectionParams();
+      return report == null ? null : report.getSelectionParams();
    }
 
    public String getSelectedParam() {
@@ -222,7 +386,7 @@ public class MetricReportController extends ControllerBase {
    }
 
    public String getReportSelectedParam() {
-      return report.getSelectedParam();
+      return report == null ? null : report.getSelectedParam();
    }
 
    public void setSelectedParam(String selectedParam) {
@@ -230,12 +394,12 @@ public class MetricReportController extends ControllerBase {
    }
 
    public boolean isExecParamDisabled() {
-      return report.getSelectedParam() != null;
+      return report != null && report.getSelectedParam() != null;
    }
 
    ///// the series table
    public List<Metric> getSelectionMetrics() {
-      return report.getSelectionMetrics();
+      return report == null ? null : report.getSelectionMetrics();
    }
 
    ///////////////// UI AREA: chart
@@ -284,11 +448,11 @@ public class MetricReportController extends ControllerBase {
 
    ///////////////// UI AREA: problematic data points
    public boolean isProblematicDataPointsVisible() {
-      return report.getProblematicSeries() != null;
+      return report != null && report.getProblematicSeries() != null;
    }
 
    public List<DataPoint> getProblematicDatapoints() {
-      return report.getProblematicSeries().getDatapoints();
+      return report == null ? null : report.getProblematicSeries().getDatapoints();
    }
 
    ///////////////// UI AREA: statistics
@@ -314,7 +478,11 @@ public class MetricReportController extends ControllerBase {
    }
 
    public String getDataPointExecId() {
-      return selectedDataPoint == null ? "N/A" : selectedDataPoint.execId.toString();
+      return selectedDataPoint == null || selectedDataPoint.execId == null ? "N/A" : selectedDataPoint.execId.toString();
+   }
+
+   public Long getDataPointExecIdLong() {
+      return selectedDataPoint == null ? null : selectedDataPoint.execId;
    }
 
 }

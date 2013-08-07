@@ -18,8 +18,8 @@
 				<h:messages errorClass="errorMessage" infoClass="infoMessage" fatalClass="errorMessage" />
 			</h:panelGroup>
 			<h1>Metric report</h1>
-
-			<h:form id="paramForm">
+			<a href="#{metricReportBean.linkToReport}">Permanent link to report</a>
+			<h:form id="reportForm">
 				<h2>Basic parameters</h2>
 				<table class="proptable">
 					<tr>
@@ -54,100 +54,112 @@
 							<f:facet name="header">Tags</f:facet>
 							<h:inputText value="#{item.selectedTags}" />
 						</rich:column>
+						<rich:column>
+							<f:facet name="header"></f:facet>
+							<h:commandButton action="#{metricReportBean.removeSeries(item)}" value="Remove" alt="Remove" title="Remove" />
+						</rich:column>
 					</rich:dataTable>
 				</h:panelGroup>
 
 				<h:commandButton action="#{metricReportBean.redraw}" value="Submit" alt="Submit" title="Submit" />
-			</h:form>
+				<h:commandButton action="#{metricReportBean.addSeries}" value="Add series" alt="Add series" title="Add series"
+					rendered="#{metricReportBean.testUidDisabled and metricReportBean.execParamDisabled}" />
 
-			<h:form id="chartForm" rendered="#{metricReportBean.chartVisible}">
-				<script type="text/javascript">
+				<h:panelGroup id="chartPanel" rendered="#{metricReportBean.chartVisible}">
+					<script type="text/javascript">
             $.noConflict();
-            </script>
-
-				<h:panelGroup id="chartPanel">
+         </script>
 					<h2>
 						<h:outputText value="#{strings.metricReport_chart}" />
 					</h2>
 					<jsflot:flotChart id="metricChart" value="#{metricReportBean.chartData}" height="320" width="640" mode="Series" title="#{strings.metricReport_chartTitle}"
 						chartType="line" showTooltip="true" yaxisMinValue="#{metricReportBean.chart.yaxisMinValue}" yaxisMaxValue="#{metricReportBean.chart.yaxisMaxValue}"
-						showXaxisLabels="true" tooltipFollowMouse="true" chartClickable="true">
+						showXaxisLabels="true" tooltipFollowMouse="true" chartClickable="true" actionListener="#{metricReportBean.chartActionListener}" reRender="dataPointPanel">
 					</jsflot:flotChart>
 				</h:panelGroup>
-			</h:form>
 
-			<h2>
-				<h:outputText value="#{strings.metricReport_stats}" />
-			</h2>
-			<table id="stats">
-				<tr>
-					<td><h:outputText value="#{strings.metricReport_minValue}" /></td>
-					<td><h:outputText value="#{metricReportBean.minValue}" /></td>
-				</tr>
-				<tr>
-					<td><h:outputText value="#{strings.metricReport_maxValue}" /></td>
-					<td><h:outputText value="#{metricReportBean.maxValue}" /></td>
-				</tr>
-				<tr>
-					<td><h:outputText value="#{strings.metricReport_range}" /></td>
-					<td><h:outputText value="#{metricReportBean.range}" /></td>
-				</tr>
-			</table>
+				<h2>
+					<h:outputText value="#{strings.metricReport_stats}" />
+				</h2>
+				<table id="stats">
+					<tr>
+						<td><h:outputText value="#{strings.metricReport_minValue}" /></td>
+						<td><h:outputText value="#{metricReportBean.minValue}" /></td>
+					</tr>
+					<tr>
+						<td><h:outputText value="#{strings.metricReport_maxValue}" /></td>
+						<td><h:outputText value="#{metricReportBean.maxValue}" /></td>
+					</tr>
+					<tr>
+						<td><h:outputText value="#{strings.metricReport_range}" /></td>
+						<td><h:outputText value="#{metricReportBean.range}" /></td>
+					</tr>
+				</table>
 
-			<h2>
-				<h:outputText value="#{strings.metricReport_dataPoint}" />
-			</h2>
-			<table id="dataPoint">
-				<tr>
-					<td><h:outputText value="#{metricReportBean.selectedParam}" /></td>
-					<td><h:outputText value="#{metricReportBean.minValue}" /></td>
-				</tr>
-				<tr>
-					<td><h:outputText value="#{strings.metricReport_maxValue}" /></td>
-					<td><h:outputText value="#{metricReportBean.maxValue}" /></td>
-				</tr>
-				<tr>
-					<td><h:outputText value="#{strings.metricReport_range}" /></td>
-					<td><h:outputText value="#{metricReportBean.range}" /></td>
-				</tr>
-			</table>
+				<h2>
+					<h:outputText value="#{strings.metricReport_dataPoint}" />
+				</h2>
+				<h:panelGroup id="dataPointPanel">
+					<table id="dataPointTable">
+						<tr>
+							<td><h:outputText value="#{metricReportBean.reportSelectedParam}" /></td>
+							<td><h:outputText value="#{metricReportBean.dataPointParam}" /></td>
+						</tr>
+						<tr>
+							<td><h:outputText value="Metric value" /></td>
+							<td><h:outputText value="#{metricReportBean.dataPointValue}" /></td>
+						</tr>
+						<tr>
+							<td><h:outputText value="Exec ID" /></td>
+							<td class="dpcmp"><h:outputText value="N/A" rendered="#{metricReportBean.dataPointExecId == 'N/A'}" /> <h:panelGroup
+									rendered="#{metricReportBean.dataPointExecId != 'N/A'}">
+									<a href="/repo/exec/#{metricReportBean.dataPointExecId}">#{metricReportBean.dataPointExecId}</a>
+                           <!-- TODO: if this could be ajax button that would be great -->   
+									<h:commandButton styleClass="button-edit" render=":compareMenuItem1" value=" " alt="Add to comparison" title="Add to comparison"
+										action="#{teComparatorSession.add(metricReportBean.dataPointExecIdLong)}" />
+								</h:panelGroup></td>
+						</tr>
+					</table>
 
-			<h:form id="problemPointsForm" rendered="#{metricReportBean.problematicDataPointsVisible}">
-				<h2>Problematic data points</h2>
-				<rich:dataTable id="problemPointsTable" value="#{metricReportBean.problematicDatapoints}" var="item">
+				</h:panelGroup>
+
+				<h:panelGroup id="problemPointsPanel" rendered="#{metricReportBean.problematicDataPointsVisible}">
+					<h2>Problematic data points</h2>
+					<rich:dataTable id="problemPointsTable" value="#{metricReportBean.problematicDatapoints}" var="item">
 
 
-					<rich:column sortable="true" sortOrder="#{metricReportBean.sortsOrders['paramValue']}" sortBy="#{item.param}">
-						<f:facet name="header">
-							<a4j:commandLink value="#{strings.ProblematicPoints_ParameterValue}" render="problemPointsTable" action="#{metricReportBean.sort()}">
-								<f:param name="sortProperty" value="paramValue" />
-								<f:ajax render="problemPointsTable" />
-							</a4j:commandLink>
-						</f:facet>
-						<h:outputText value="#{item.param}" />
-					</rich:column>
+						<rich:column sortable="true" sortOrder="#{metricReportBean.sortsOrders['paramValue']}" sortBy="#{item.param}">
+							<f:facet name="header">
+								<a4j:commandLink value="#{strings.ProblematicPoints_ParameterValue}" render="problemPointsTable" action="#{metricReportBean.sort()}">
+									<f:param name="sortProperty" value="paramValue" />
+									<f:ajax render="problemPointsTable" />
+								</a4j:commandLink>
+							</f:facet>
+							<h:outputText value="#{item.param}" />
+						</rich:column>
 
-					<rich:column sortable="true" sortOrder="#{metricReportBean.sortsOrders['execId']}" sortBy="#{item.execId}">
-						<f:facet name="header">
-							<a4j:commandLink value="#{strings.ProblematicPoints_TestExecutionId}" render="problemPointsTable" action="#{metricReportBean.sort()}">
-								<f:param name="sortProperty" value="execId" />
-								<f:ajax render="problemPointsTable" />
-							</a4j:commandLink>
-						</f:facet>
-						<a href="/repo/exec/#{item.execId}">#{item.execId}</a>
-					</rich:column>
+						<rich:column sortable="true" sortOrder="#{metricReportBean.sortsOrders['execId']}" sortBy="#{item.execId}">
+							<f:facet name="header">
+								<a4j:commandLink value="#{strings.ProblematicPoints_TestExecutionId}" render="problemPointsTable" action="#{metricReportBean.sort()}">
+									<f:param name="sortProperty" value="execId" />
+									<f:ajax render="problemPointsTable" />
+								</a4j:commandLink>
+							</f:facet>
+							<a href="/repo/exec/#{item.execId}">#{item.execId}</a>
+						</rich:column>
 
-					<rich:column sortable="true" sortOrder="#{metricReportBean.sortsOrders['problemType']}" sortBy="#{item.problemType}">
-						<f:facet name="header">
-							<a4j:commandLink value="Problem type" render="problemPointsTable" action="#{metricReportBean.sort()}">
-								<f:param name="sortProperty" value="problemType" />
-								<f:ajax render="problemPointsTable" />
-							</a4j:commandLink>
-						</f:facet>
+						<rich:column sortable="true" sortOrder="#{metricReportBean.sortsOrders['problemType']}" sortBy="#{item.problemType}">
+							<f:facet name="header">
+								<a4j:commandLink value="Problem type" render="problemPointsTable" action="#{metricReportBean.sort()}">
+									<f:param name="sortProperty" value="problemType" />
+									<f:ajax render="problemPointsTable" />
+								</a4j:commandLink>
+							</f:facet>
 						#{item.problemType}
 					</rich:column>
 
-				</rich:dataTable>
+					</rich:dataTable>
+				</h:panelGroup>
 			</h:form>
 		</ui:define>
 	</ui:composition>

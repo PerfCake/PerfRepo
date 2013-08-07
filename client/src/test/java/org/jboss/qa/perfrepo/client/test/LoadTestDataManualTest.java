@@ -69,6 +69,15 @@ public class LoadTestDataManualTest {
       return test.build();
    }
 
+   Test createStressTestC() {
+      TestBuilder test = Test.builder().name("Stress test C");
+      test.groupId(testUserRole).uid("stress_test_c").description("Stress test for testing purposes. This one has more values per execution");
+      test.metric("throughput1", "0", "Throughput (ops/sec)");
+      test.metric("throughput2", "0", "Throughput (ops/sec)");
+      test.metric("throughput3", "0", "Throughput (ops/sec)");
+      return test.build();
+   }
+
    private TestExecution createStressTestExecA(Long testId, int execNumber, String tag, Double valThroughput, Double valRespTime) {
       TestExecutionBuilder exec = TestExecution.builder().testId(testId).name("Execution " + execNumber).started(new Date());
       exec.parameter("exec.number", "" + execNumber);
@@ -76,6 +85,17 @@ public class LoadTestDataManualTest {
       exec.tag(tag);
       exec.value("max_throughput", valThroughput, "Client load", "100");
       exec.value("avg_response_time", valRespTime, "Client load", "100");
+      return exec.build();
+   }
+
+   private TestExecution createStressTestExecC(Long testId, int execNumber, String tag, Double t1, Double t2, Double t3) {
+      TestExecutionBuilder exec = TestExecution.builder().testId(testId).name("Execution " + execNumber).started(new Date());
+      exec.parameter("exec.number", "" + execNumber);
+      exec.tag("stress");
+      exec.tag(tag);
+      exec.value("throughput1", t1);
+      exec.value("throughput2", t2);
+      exec.value("throughput3", t3);
       return exec.build();
    }
 
@@ -119,6 +139,17 @@ public class LoadTestDataManualTest {
       }
       for (int i = 0; i < 5; i++) {
          TestExecution exec = createStressTestExecB(testId, i, "branch2x", random);
+         Long execId = client.createTestExecution(exec);
+         log.info("Created execution: " + execId);
+      }
+
+      test = createStressTestC();
+      testId = client.createTest(test);
+      log.info("Created test: " + testId);
+      // we can have test executions of the same test for different product branches, this will be discriminated by a tag
+      for (int i = 0; i < 10; i++) {
+         TestExecution exec = createStressTestExecC(testId, i, "branch5x", 10000d + random.nextDouble() * 20000d, 10000d + random.nextDouble() * 20000d,
+               10000d + random.nextDouble() * 20000d);
          Long execId = client.createTestExecution(exec);
          log.info("Created execution: " + execId);
       }

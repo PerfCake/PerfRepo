@@ -191,6 +191,13 @@ table.tetable_values {
 	width: 800px;
 }
 
+td.dpcmp input {
+   margin-left: 20px;
+}
+td.dpcmp input:hover {
+   margin-left: 20px;
+}
+
 input.button-plus {
 	display: inline-block;
 	height: 20px;

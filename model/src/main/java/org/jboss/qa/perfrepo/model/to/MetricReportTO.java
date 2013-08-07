@@ -55,6 +55,15 @@ public class MetricReportTO {
       public List<String> getTags() {
          return tags;
       }
+
+      public void setTags(List<String> tags) {
+         this.tags = tags;
+      }
+
+      @Override
+      public String toString() {
+         return "(" + name + "|" + metricName + "|" + tags + ")";
+      }
    }
 
    public static class SeriesResponse implements Serializable {
