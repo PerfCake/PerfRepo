@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:jsflot="http://www.jsflot.org/taglib/jsflot">
 <h:body>
 	<f:metadata>
 		<f:event type="preRenderComponent" listener="#{compareExecutionsController.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
-		<ui:define name="title">TestExecution List -</ui:define>
+		<ui:define name="head">
+			<jsflot:resources />
+		</ui:define>
+		<ui:define name="title">Compare test executions</ui:define>
 		<ui:define name="content">
 			<h1>Compare Test Executions</h1>
 			<h:form>
@@ -66,7 +70,9 @@
 						</h:commandLink>
 					</rich:column>
 				</rich:dataTable>
+			</h:form>
 
+			<h:form>
 				<h2>Test execution values</h2>
 				<table class="rf-dt tetable_values">
 					<thead class="rf-dt-thd">
@@ -80,7 +86,8 @@
 					<tbody class="rf-dt-b">
 						<ui:repeat value="#{compareExecutionsController.metrics}" var="metric">
 							<tr class="rf-dt-r rf-dt-fst-r">
-								<td class="rf-dt-c">#{metric.name}</td>
+								<td class="rf-dt-c"><h:commandLink value="#{metric.name}" action="#{compareExecutionsController.createChart(metric.id, false)}"
+										title="Compute chart" /></td>
 								<ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
 									<td class="rf-dt-c #{compareExecutionsController.isBaseline(exec.id) ? 'compare_exec_baseline' : '' }">#{compareExecutionsController.getMetricValue(exec.id,
 										metric.id)}</td>
@@ -104,7 +111,8 @@
 						<tbody class="rf-dt-b">
 							<ui:repeat value="#{compareExecutionsController.metrics}" var="metric">
 								<tr class="rf-dt-r rf-dt-fst-r">
-									<td class="rf-dt-c">#{metric.name}</td>
+									<td class="rf-dt-c"><h:commandLink value="#{metric.name}" action="#{compareExecutionsController.createChart(metric.id, true)}"
+											title="Compute chart" /></td>
 									<ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
 										<td class="rf-dt-c #{compareExecutionsController.isBaseline(exec.id) ? 'compare_exec_baseline' : '' }">#{compareExecutionsController.getMetricValueBaselineCompared(exec.id,
 											metric.id)}</td>
@@ -115,6 +123,21 @@
 					</table>
 				</h:panelGroup>
 			</h:form>
+
+			<h:panelGroup id="chartPanelContainer">
+				<h:panelGroup id="chartPanel" rendered="#{compareExecutionsController.chart != null}">
+					<h:form>
+						<script type="text/javascript">
+            $.noConflict();
+         </script>
+						<jsflot:flotChart id="execComparisonChart" value="#{compareExecutionsController.chartData}" height="320" width="640" mode="Series"
+							title="Compare test executions" chartType="bar" showTooltip="true" yaxisMinValue="#{compareExecutionsController.chart.yaxisMinValue}"
+							yaxisMaxValue="#{compareExecutionsController.chart.yaxisMaxValue}" showXaxisLabels="false" showLines="false">
+						</jsflot:flotChart>
+					</h:form>
+				</h:panelGroup>
+			</h:panelGroup>
+
 		</ui:define>
 	</ui:composition>
 </h:body>

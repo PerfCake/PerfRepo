@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -35,12 +33,13 @@ import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
+import org.jsflot.components.FlotChartRendererData;
+import org.jsflot.xydata.XYDataList;
+import org.jsflot.xydata.XYDataPoint;
+import org.jsflot.xydata.XYDataSetCollection;
 
 /**
  * Simple comparison of test execution values.
- * 
- * TODO: - select a baseline - table with percentage diff from baseline - chart selected metric
- * comparison with barchart
  * 
  * @author Michal Linhard (mlinhard@redhat.com)
  * 
@@ -63,6 +62,8 @@ public class CompareExecutionsController extends ControllerBase {
    private List<TestExecution> testExecutions = null;
    private Test test = null;
    private TestExecution baselineExecution = null;
+   private XYDataSetCollection chartData;
+   private FlotChartRendererData chart;
 
    public Test getTest() {
       return test;
@@ -78,6 +79,8 @@ public class CompareExecutionsController extends ControllerBase {
          throw new IllegalStateException("Can't find execution " + execId);
       }
       baselineExecution = baselineExec1;
+      chart = null;
+      chartData = null;
    }
 
    public void removeFromComparison(Long execId) {
@@ -89,10 +92,60 @@ public class CompareExecutionsController extends ControllerBase {
       if (execToRemove != null && testExecutions != null) {
          testExecutions.remove(execToRemove);
       }
+      chart = null;
+      chartData = null;
    }
 
    public boolean isBaseline(Long execId) {
       return baselineExecution != null && baselineExecution.getId().equals(execId);
+   }
+
+   public void createChart(Long metricId, boolean percents) {
+      Metric metric = findMetric(metricId);
+      if (metric == null) {
+         log.error("Couldn't find metric " + metricId);
+         return;
+      }
+      if (testExecutions == null || testExecutions.isEmpty()) {
+         return;
+      }
+      chart = new FlotChartRendererData();
+      chartData = new XYDataSetCollection();
+      double minValue = Double.MAX_VALUE;
+      double maxValue = Double.MIN_VALUE;
+      XYDataList series = new XYDataList();
+      series.setLabel(metric.getName() + (percents ? " % diff" : ""));
+      int i = 0;
+      for (TestExecution te : testExecutions) {
+         Double value = percents ? getMetricValueBaselineComparedNum(te.getId(), metricId) : getMetricValueNum(te.getId(), metricId);
+         if (value != null) {
+            XYDataPoint dp = new XYDataPoint(new Double(i), value, te.getName());
+            series.addDataPoint(dp);
+            if (value > maxValue) {
+               maxValue = value;
+            }
+            if (value < minValue) {
+               minValue = value;
+            }
+         }
+         i++;
+      }
+      chartData.addDataList(series);
+      double range = maxValue - minValue;
+      chart.setYaxisMaxValue(maxValue + 0.1d * range);
+      double yaxisMinValue = minValue - 0.1d * range;
+      if (minValue >= 0d && yaxisMinValue < 0) {
+         yaxisMinValue = 0d; // don't get below zero if min value isn't negative
+      }
+      chart.setYaxisMinValue(yaxisMinValue);
+   }
+
+   public FlotChartRendererData getChart() {
+      return chart;
+   }
+
+   public XYDataSetCollection getChartData() {
+      return chartData;
    }
 
    private TestExecution findTestExecution(Long execId) {
@@ -109,39 +162,44 @@ public class CompareExecutionsController extends ControllerBase {
    }
 
    public String getMetricValue(Long execId, Long metricId) {
+      Double num = getMetricValueNum(execId, metricId);
+      return num == null ? "N/A" : FMT.format(num);
+   }
+
+   private Double getMetricValueNum(Long execId, Long metricId) {
       TestExecution exec = findTestExecution(execId);
       if (exec == null) {
-         return "N/A";
+         return null;
       } else {
          Value v = findValue(exec, metricId);
-         if (v == null) {
-            return "N/A";
-         } else {
-            return FMT.format(v.getResultValue());
-         }
+         return v == null ? null : v.getResultValue();
       }
    }
 
    public String getMetricValueBaselineCompared(Long execId, Long metricId) {
+      Double num = getMetricValueBaselineComparedNum(execId, metricId);
+      return num == null ? "N/A" : (num < 0d ? "" : "+") + FMT_PERCENT.format(num) + " %";
+   }
+
+   private Double getMetricValueBaselineComparedNum(Long execId, Long metricId) {
       if (baselineExecution == null) {
-         return "N/A";
+         return null;
       }
       TestExecution exec = findTestExecution(execId);
       if (exec == null) {
-         return "N/A";
+         return null;
       } else {
          Value v = findValue(exec, metricId);
          if (v == null) {
-            return "N/A";
+            return null;
          } else {
             Value vBase = findValue(baselineExecution, metricId);
             if (vBase == null) {
-               return "N/A";
+               return null;
             } else {
                double dv = v.getResultValue();
                double dvbase = vBase.getResultValue();
-               double inc = ((dv - dvbase) / dvbase) * 100d;
-               return (inc < 0d ? "" : "+") + FMT_PERCENT.format(inc) + " %";
+               return ((dv - dvbase) / dvbase) * 100d;
             }
          }
       }
@@ -151,6 +209,18 @@ public class CompareExecutionsController extends ControllerBase {
       for (Value v : exec.getValues()) {
          if (v.getMetric().getId().equals(metricId)) {
             return v;
+         }
+      }
+      return null;
+   }
+
+   private Metric findMetric(Long metricId) {
+      if (test == null) {
+         return null;
+      }
+      for (Metric m : test.getMetrics()) {
+         if (m.getId().equals(metricId)) {
+            return m;
          }
       }
       return null;
@@ -173,7 +243,6 @@ public class CompareExecutionsController extends ControllerBase {
     * called on preRenderView
     */
    public void preRender() {
-      log.info("PRERENDER");
       reloadSessionMessages();
       if (testExecutions == null) {
          List<Long> execIdList = new ArrayList<Long>(teComparator.getTestExecutions());
@@ -190,11 +259,6 @@ public class CompareExecutionsController extends ControllerBase {
          }
          test = service.getFullTest(testId);
       }
-   }
-
-   @PostConstruct
-   public void init() {
-      log.info("INIT phase " + FacesContext.getCurrentInstance().getCurrentPhaseId());
    }
 
    public List<Metric> getMetrics() {
