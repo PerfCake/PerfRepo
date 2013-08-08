@@ -21,10 +21,11 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.ControllerBase;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
@@ -33,6 +34,7 @@ import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
+import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 /**
  * Simple comparison of test execution values.
@@ -44,11 +46,14 @@ import org.jboss.qa.perfrepo.session.TEComparatorSession;
  * 
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class CompareExecutionsController extends ControllerBase {
 
+   private static Logger log = Logger.getLogger(CompareExecutionsController.class);
+
    private static final long serialVersionUID = 1L;
-   private static final DecimalFormat FMT = new DecimalFormat("##.####");
+   private static final DecimalFormat FMT = new DecimalFormat("##.0000");
+   private static final DecimalFormat FMT_PERCENT = new DecimalFormat("0.00");
    @Inject
    private TestService service;
 
@@ -57,9 +62,37 @@ public class CompareExecutionsController extends ControllerBase {
 
    private List<TestExecution> testExecutions = null;
    private Test test = null;
+   private TestExecution baselineExecution = null;
 
    public Test getTest() {
       return test;
+   }
+
+   public TestExecution getBaselineExecution() {
+      return baselineExecution;
+   }
+
+   public void setAsBaseline(Long execId) {
+      TestExecution baselineExec1 = findTestExecution(execId);
+      if (baselineExec1 == null) {
+         throw new IllegalStateException("Can't find execution " + execId);
+      }
+      baselineExecution = baselineExec1;
+   }
+
+   public void removeFromComparison(Long execId) {
+      teComparator.remove(execId);
+      TestExecution execToRemove = findTestExecution(execId);
+      if (baselineExecution == execToRemove) {
+         baselineExecution = null;
+      }
+      if (execToRemove != null && testExecutions != null) {
+         testExecutions.remove(execToRemove);
+      }
+   }
+
+   public boolean isBaseline(Long execId) {
+      return baselineExecution != null && baselineExecution.getId().equals(execId);
    }
 
    private TestExecution findTestExecution(Long execId) {
@@ -78,13 +111,38 @@ public class CompareExecutionsController extends ControllerBase {
    public String getMetricValue(Long execId, Long metricId) {
       TestExecution exec = findTestExecution(execId);
       if (exec == null) {
-         return null;
+         return "N/A";
       } else {
          Value v = findValue(exec, metricId);
          if (v == null) {
             return "N/A";
          } else {
             return FMT.format(v.getResultValue());
+         }
+      }
+   }
+
+   public String getMetricValueBaselineCompared(Long execId, Long metricId) {
+      if (baselineExecution == null) {
+         return "N/A";
+      }
+      TestExecution exec = findTestExecution(execId);
+      if (exec == null) {
+         return "N/A";
+      } else {
+         Value v = findValue(exec, metricId);
+         if (v == null) {
+            return "N/A";
+         } else {
+            Value vBase = findValue(baselineExecution, metricId);
+            if (vBase == null) {
+               return "N/A";
+            } else {
+               double dv = v.getResultValue();
+               double dvbase = vBase.getResultValue();
+               double inc = ((dv - dvbase) / dvbase) * 100d;
+               return (inc < 0d ? "" : "+") + FMT_PERCENT.format(inc) + " %";
+            }
          }
       }
    }
@@ -115,24 +173,28 @@ public class CompareExecutionsController extends ControllerBase {
     * called on preRenderView
     */
    public void preRender() {
+      log.info("PRERENDER");
       reloadSessionMessages();
+      if (testExecutions == null) {
+         List<Long> execIdList = new ArrayList<Long>(teComparator.getTestExecutions());
+         if (execIdList.isEmpty()) {
+            addMessage(INFO, "page.compareExecs.nothingToCompare");
+            return;
+         }
+         Collections.sort(execIdList);
+         testExecutions = service.getFullTestExecutions(execIdList);
+         Long testId = checkCommonTestId(testExecutions);
+         if (testId == null) {
+            addMessage(ERROR, "page.compareExecs.errorDifferentTests");
+            return;
+         }
+         test = service.getFullTest(testId);
+      }
    }
 
    @PostConstruct
    public void init() {
-      List<Long> execIdList = new ArrayList<Long>(teComparator.getTestExecutions());
-      if (execIdList.isEmpty()) {
-         addMessage(INFO, "page.compareExecs.nothingToCompare");
-         return;
-      }
-      Collections.sort(execIdList);
-      testExecutions = service.getFullTestExecutions(execIdList);
-      Long testId = checkCommonTestId(testExecutions);
-      if (testId == null) {
-         addMessage(ERROR, "page.compareExecs.errorDifferentTests");
-         return;
-      }
-      test = service.getFullTest(testId);
+      log.info("INIT phase " + FacesContext.getCurrentInstance().getCurrentPhaseId());
    }
 
    public List<Metric> getMetrics() {

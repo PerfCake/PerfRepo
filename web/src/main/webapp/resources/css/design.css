@@ -6184,3 +6184,12 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
 	background: none !important;
 	border: 0 !important;
 }
+
+.compare_exec_baseline {
+   background: #FFF58A;	
+}
+
+.tetable_values td {
+   text-align: right;
+}
+
