@@ -13,51 +13,57 @@
 			<c:set target="#{testController}" property="editMode" value="#{false}" />
 			<c:set target="#{testController}" property="createMode" value="#{false}" />
 			<h:panelGroup id="messagesPanel">
-				<h:messages errorClass="errorMessage" infoClass="infoMessage" fatalClass="errorMessage" />
+				<h:messages errorClass="alert alert-error" infoClass="alert alert-success" fatalClass="alert alert-error" warnClass="alert alert-info" />
 			</h:panelGroup>
-			<div class="test_title">
-				<a href="/repo/test/#{testController.testId}/edit"><input class="button-edit" type="button" alt="#{strings.edit}" title="#{strings.edit}" /></a>
-			</div>
 			<ui:include src="/test/metric_add.xhtml" />
 			<ui:include src="/test/metric_edit.xhtml" />
-			
+
 			<div class="well">
-			<fieldset>
-					<legend>Test Detail</legend>
-					<h:outputLabel class="detail-label">ID</h:outputLabel><div class="detail-value">#{testController.test.id}</div>
-					<h:outputLabel class="detail-label">#{entityStrings.Test_name}</h:outputLabel><div class="detail-value">#{testController.test.name}</div>
-					<h:outputLabel class="detail-label">#{entityStrings.Test_uid}</h:outputLabel><div class="detail-value">#{testController.test.uid}</div>
-					<h:outputLabel class="detail-label">#{entityStrings.Test_groupid}</h:outputLabel><div class="detail-value">#{testController.test.groupId}</div>
-					<h:outputLabel class="detail-label">Description</h:outputLabel><div class="detail-value">#{testController.test.description}</div>			
-			</fieldset>	
-			</div>	
-			
+				<fieldset>
+					<legend>
+						#{testController.test.name} <a href="/repo/test/#{testController.testId}/edit"><i class="icon-edit" title="#{strings.edit}" /></a>
+					</legend>
+					<h:outputLabel class="detail-label">ID</h:outputLabel>
+					<div class="detail-value">#{testController.test.id}</div>
+					<h:outputLabel class="detail-label">#{entityStrings.Test_uid}</h:outputLabel>
+					<div class="detail-value">#{testController.test.uid}</div>
+					<h:outputLabel class="detail-label">#{entityStrings.Test_groupid}</h:outputLabel>
+					<div class="detail-value">#{testController.test.groupId}</div>
+					<h:outputLabel class="detail-label">Description</h:outputLabel>
+					<div class="detail-value">
+						<h:outputText value="#{testController.test.description}" escape="false" />
+					</div>
+				</fieldset>
+			</div>
+
 
 			<h3>Metrics</h3>
 
 			<h:form id="metricList">
+				<p>
+					<a4j:commandLink styleClass="btn btn-primary btn-small" render=":dialogMetricAddAssignForm :dialogMetricAddCreateForm"
+						action="#{testController.metricDetails.setEmptyMetric}" oncomplete="#{rich:component('dialogMetricAdd')}.show();"
+						alt="#{strings['page.test.buAddMetric']}" title="#{strings['page.test.buAddMetric']}">
+						<i class="icon-plus"></i> #{strings['page.test.buAddMetric']}
+            </a4j:commandLink>
+				</p>
 				<ui:repeat value="#{testController.metricsList}" varStatus="status" var="item">
-					<div class="metric">
-						<div class="metric_title">
-							#{item.name}
-							<div class="metric_commands">
-								<a4j:commandButton styleClass="button-minus" value=" " alt="#{strings.delete}" title="#{strings.delete}"
-									onclick="if (!confirm('Are you sure you want to delete metric (#{item.name})?') ) { return false;}; return true;"
-									action="#{testController.metricDetails.deleteMetric(item)}" render="metricList :messagesPanel" />
+					<h4>#{item.name}</h4>
+					<h:outputText escape="false" value="#{item.description}" />
+					<div class="btn-group">
+						<a4j:commandLink styleClass="btn btn-primary btn-small" alt="#{strings.delete}" title="#{strings.delete}"
+							onclick="if (!confirm('Are you sure you want to delete metric (#{item.name})?') ) { return false;}; return true;"
+							action="#{testController.metricDetails.deleteMetric(item)}" render="metricList :messagesPanel">
+							<i class="icon-trash"></i> Delete
+								</a4j:commandLink>
 
-								<a4j:commandButton styleClass="button-edit" render="dialogMetricEditForm" action="#{testController.metricDetails.setMetricForUpdate(item)}"
-									oncomplete="#{rich:component('dialogMetricEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}" />
-							</div>
-						</div>
-						<div class="metric_desc">
-							<h:outputText escape="false" value="#{item.description}" />
-						</div>
-
+						<a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogMetricEditForm" action="#{testController.metricDetails.setMetricForUpdate(item)}"
+							oncomplete="#{rich:component('dialogMetricEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
+							<i class="icon-edit"></i> Edit
+								</a4j:commandLink>
 					</div>
 				</ui:repeat>
-				<a4j:commandButton styleClass="button-plus" render=":dialogMetricAddAssignForm :dialogMetricAddCreateForm"
-					action="#{testController.metricDetails.setEmptyMetric}" oncomplete="#{rich:component('dialogMetricAdd')}.show();" value=" "
-					alt="#{strings['page.test.buAddMetric']}" title="#{strings['page.test.buAddMetric']}" />
+
 			</h:form>
 
 		</ui:define>

@@ -3,20 +3,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:c="http://java.sun.com/jstl/core">
 <h:head>
-	<h:outputStylesheet name="design.css" library="css" />	
+	<h:outputStylesheet name="design.css" library="css" />
+	<h:outputStylesheet name="font-awesome.min.css" library="css" />
+	<link href="#{request.contextPath}/resources/images/perfrepo.ico" rel="shortcut icon"></link>
 	<title><ui:insert name="title"></ui:insert></title>
 	<ui:insert name="head"></ui:insert>
 </h:head>
 <h:body>
 	<div class="topbar">
-	<div id="header">
+		<div id="header">
 			<ui:include src="/layout/headerMenu.xhtml" />
 		</div>
 	</div>
 	<div class="container">
-<!-- 		<div id="header"> -->
-<!-- 			<ui:include src="/layout/headerMenu.xhtml" /> -->
-<!-- 		</div> -->
+
 		<div id="content">
 			<ui:insert name="content"></ui:insert>
 		</div>
