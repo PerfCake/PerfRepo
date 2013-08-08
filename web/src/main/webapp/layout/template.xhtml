@@ -16,7 +16,9 @@
 		</div>
 	</div>
 	<div class="container">
-
+		<h:panelGroup id="messagesPanel">
+			<h:messages errorClass="alert alert-error" infoClass="alert alert-success" fatalClass="alert alert-error" warnClass="alert alert-info" />
+		</h:panelGroup>
 		<div id="content">
 			<ui:insert name="content"></ui:insert>
 		</div>

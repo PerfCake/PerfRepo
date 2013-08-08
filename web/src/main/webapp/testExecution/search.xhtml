@@ -6,49 +6,41 @@
 	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="title">Search Test Execution</ui:define>
 		<ui:define name="content">
-			<h:panelGroup id="messagesPanel">
-				<h:messages errorClass="alert alert-block" infoClass="alert alert-info" fatalClass="alert alert-error" />
-			</h:panelGroup>
 			<h:form class="form-horizontal well">
 				<fieldset>
 					<legend>Search Test Execution</legend>
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testName">Test Name</h:outputLabel>
 						<div class="controls">
-							<h:inputText type="text" class="input-xlarge" id="testName"
-								value="#{searchController.bean.testName}" />
+							<h:inputText type="text" class="input-xlarge" id="testName" value="#{searchController.bean.testName}" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testUID">Test UID</h:outputLabel>
 						<div class="controls">
-							<h:inputText class="input-xlarge" id="testUID"
-								value="#{searchController.bean.testUID}" />
+							<h:inputText class="input-xlarge" id="testUID" value="#{searchController.bean.testUID}" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testStartedFrom">Test started from</h:outputLabel>
 						<div class="controls">
-							<rich:calendar value="#{searchController.bean.startedFrom}"
-								datePattern="yyyy-MM-dd HH:mm" id="testStartedFrom" />
+							<rich:calendar value="#{searchController.bean.startedFrom}" datePattern="yyyy-MM-dd HH:mm" id="testStartedFrom" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testStartedTo">Test started to</h:outputLabel>
 						<div class="controls">
-							<rich:calendar value="#{searchController.bean.startedTo}"
-								datePattern="yyyy-MM-dd HH:mm" id="testStartedTo" />
+							<rich:calendar value="#{searchController.bean.startedTo}" datePattern="yyyy-MM-dd HH:mm" id="testStartedTo" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="tags">Tags</h:outputLabel>
 						<div class="controls">
-							<h:inputText class="input-xlarge" id="tags"
-								value="#{searchController.bean.tags}" />
+							<h:inputText class="input-xlarge" id="tags" value="#{searchController.bean.tags}" />
 						</div>
 					</div>
 				</fieldset>
@@ -57,12 +49,9 @@
 
 
 				<div class="form-actions">
-					<a4j:commandButton action="#{searchController.search}"
-						value="Search" styleClass="btn btn-primary"
-						alt="Search Test Execution" title="Search Test Execution"
-						render="searchResult:searchResultTable">
-						<f:param name="testExecutionSearchTO"
-							value="#{searchController.bean}" />
+					<a4j:commandButton action="#{searchController.search}" value="Search" styleClass="btn btn-primary" alt="Search Test Execution"
+						title="Search Test Execution" render="searchResult:searchResultTable">
+						<f:param name="testExecutionSearchTO" value="#{searchController.bean}" />
 					</a4j:commandButton>
 				</div>
 			</h:form>
@@ -98,14 +87,17 @@
 					</rich:column>
 					<rich:column>
 						<f:facet name="header"></f:facet>
-						
-						
-						<a4j:commandButton styleClass="btn btn-inverse btn-small" action="#{searchController.delete}" value="Delete" alt="#{strings.delete}" title="#{strings.delete}"
+
+
+						<a4j:commandLink styleClass="btn btn-primary btn-small" action="#{searchController.delete}" alt="#{strings.delete}" title="#{strings.delete}"
 							render="@form :messagesPanel">
-							<f:param name="idToDelete" value="#{item.id}" />							 
-						</a4j:commandButton>
-						<a4j:commandButton styleClass="btn btn-inverse btn-small" render=":compareMenuItem1" value="Add to comparison" alt="Add to comparison" title="Add to comparison"
-							action="#{teComparatorSession.add(item.id)}" />
+							<f:param name="idToDelete" value="#{item.id}" />
+							<i class="icon-trash"></i>
+						</a4j:commandLink>
+						<a4j:commandLink styleClass="btn btn-primary btn-small" render=":compareMenuItem" lt="Add to comparison" title="Add to comparison"
+							action="#{teComparatorSession.add(item.id)}">
+							<i class="icon-plus"></i>
+						</a4j:commandLink>
 					</rich:column>
 				</rich:dataTable>
 			</h:form>

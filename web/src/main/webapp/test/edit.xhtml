@@ -13,7 +13,6 @@
 		<ui:define name="content">
 			<c:set target="#{testController}" property="editMode" value="#{true}" />
 			<h1>#{testController.createMode ? strings['page.test.title.create'] : strings['page.test.title.edit'] }</h1>
-			<h:messages errorClass="errorMessage" infoClass="infoMessage" fatalClass="errorMessage" />
 			<h:form>
 				<table class="proptable">
 					<h:panelGroup rendered="#{!testController.createMode}">

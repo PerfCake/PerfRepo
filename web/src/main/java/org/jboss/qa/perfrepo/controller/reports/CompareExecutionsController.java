@@ -37,10 +37,8 @@ import org.jboss.qa.perfrepo.session.TEComparatorSession;
 /**
  * Simple comparison of test execution values.
  * 
- * TODO: 
- *  - select a baseline
- *  - table with percentage diff from baseline
- *  - chart selected metric comparison with barchart 
+ * TODO: - select a baseline - table with percentage diff from baseline - chart selected metric
+ * comparison with barchart
  * 
  * @author Michal Linhard (mlinhard@redhat.com)
  * 
@@ -60,8 +58,8 @@ public class CompareExecutionsController extends ControllerBase {
    private List<TestExecution> testExecutions = null;
    private Test test = null;
 
-   public String getRequestParam(String name) {
-      return getRequestParams().get(name);
+   public Test getTest() {
+      return test;
    }
 
    private TestExecution findTestExecution(Long execId) {

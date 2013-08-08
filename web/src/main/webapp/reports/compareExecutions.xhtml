@@ -8,12 +8,11 @@
 	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="title">TestExecution List -</ui:define>
 		<ui:define name="content">
-			<h:panelGroup id="messagesPanel">
-				<h:messages errorClass="errorMessage" infoClass="infoMessage" fatalClass="errorMessage" />
-			</h:panelGroup>
 			<h1>Compare Test Executions</h1>
 			<h:form>
-
+				<p>
+					Executions for test <a href="/repo/test/#{compareExecutionsController.test.id}">#{compareExecutionsController.test.name}</a>
+				</p>
 				<h2>Test executions</h2>
 				<rich:dataTable id="teTable" value="#{compareExecutionsController.testExecutions}" var="te" styleClass="tetable">
 					<rich:column sortable="true" sortOrder="#{compareExecutionsController.sortsOrders['id']}" sortBy="#{te.id}" width="100px">
@@ -36,16 +35,6 @@
 						<h:outputText value="#{te.name}" />
 					</rich:column>
 
-					<rich:column sortable="true" sortOrder="#{compareExecutionsController.sortsOrders['testName']}" sortBy="#{te.test.name}" width="200px">
-						<f:facet name="header">
-							<a4j:commandLink value="Test Name" render="teTable" action="#{compareExecutionsController.sort()}">
-								<f:param name="sortProperty" value="testName" />
-								<f:ajax render="teTable" />
-							</a4j:commandLink>
-						</f:facet>
-						<h:outputText value="#{te.test.name}" />
-					</rich:column>
-
 					<rich:column sortable="true" sortOrder="#{compareExecutionsController.sortsOrders['started']}" sortBy="#{te.started}" width="200px">
 						<f:facet name="header">
 							<a4j:commandLink value="Test Execution Date" render="teTable" action="#{compareExecutionsController.sort()}">
@@ -60,6 +49,15 @@
 							Tags
 						</f:facet>
 						<h:outputText value="#{compareExecutionsController.getTags(te)}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header"></f:facet>
+						<a4j:commandButton action="#{compareExecutionsController.setAsBaseline}" value=" " styleClass="button-plus" alt="Set as baseline" title="Set as baseline"
+							render="teTable">
+						</a4j:commandButton>
+						<a4j:commandButton action="#{compareExecutionsController.removeFromComparison}" value=" " styleClass="button-minus" alt="Remove from comparison"
+							title="Remove from comparison" render="teTable">
+						</a4j:commandButton>
 					</rich:column>
 				</rich:dataTable>
 

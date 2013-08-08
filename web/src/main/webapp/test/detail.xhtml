@@ -12,9 +12,6 @@
 		<ui:define name="content">
 			<c:set target="#{testController}" property="editMode" value="#{false}" />
 			<c:set target="#{testController}" property="createMode" value="#{false}" />
-			<h:panelGroup id="messagesPanel">
-				<h:messages errorClass="alert alert-error" infoClass="alert alert-success" fatalClass="alert alert-error" warnClass="alert alert-info" />
-			</h:panelGroup>
 			<ui:include src="/test/metric_add.xhtml" />
 			<ui:include src="/test/metric_edit.xhtml" />
 

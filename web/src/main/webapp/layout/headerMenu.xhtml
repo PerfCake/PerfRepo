@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:h="http://java.sun.com/jsf/html">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html">
 <body>
 	<ui:composition>
 		<div class="navbar">
@@ -11,22 +9,25 @@
 					<a class="brand" href="#">PerfRepo</a>
 					<div class="nav-collapse">
 						<ul class="nav">
-							<li class="active"><a
-								href="#{facesContext.externalContext.requestContextPath}">#{strings.menuHome}</a></li>
+							<li><a href="#{facesContext.externalContext.requestContextPath}">#{strings.menuHome}</a></li>
 							<li><a href="#{facesContext.externalContext.requestContextPath}/test/search">#{strings.menuTests}</a></li>
 							<li><a href="#{facesContext.externalContext.requestContextPath}/exec/search">#{strings.menuExecs}</a></li>
 							<li><a href="#{facesContext.externalContext.requestContextPath}/reports">#{strings.menuReports}</a></li>
 						</ul>
-						<ul class="nav pull-right">
-							<li><h:panelGroup id="compareMenuItem"
-									rendered="#{teComparatorSession.isAnyToCompare()}">
-									<a href="/repo/reports/simple">Compare executions
-										#{teComparatorSession.testExecutions.size()}</a>
-								</h:panelGroup></li>
-							<li class="divider-vertical"></li>
-							<li><a
-								href="#{facesContext.externalContext.requestContextPath}">Logout</a></li>
-						</ul>
+						<h:panelGroup id="compareMenuItem">
+							<h:panelGroup id="compareMenuItemCompare" rendered="#{teComparatorSession.isAnyToCompare()}">
+								<ul class="nav pull-right">
+									<li><a href="/repo/reports/compareExecutions">Compare executions #{teComparatorSession.testExecutions.size()}</a></li>
+									<li class="divider-vertical"></li>
+									<li><a href="#{facesContext.externalContext.requestContextPath}">Logout</a></li>
+								</ul>
+							</h:panelGroup>
+							<h:panelGroup id="compareMenuItemNoCompare" rendered="#{!teComparatorSession.isAnyToCompare()}">
+								<ul class="nav pull-right">
+									<li><a href="#{facesContext.externalContext.requestContextPath}">Logout</a></li>
+								</ul>
+							</h:panelGroup>
+						</h:panelGroup>
 					</div>
 					<!-- /.nav-collapse -->
 				</div>

@@ -1,113 +1,79 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:rich="http://richfaces.org/rich"
-	xmlns:a4j="http://richfaces.org/a4j">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
 <h:body>
 	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="title">#{strings['page.testSearch.title']}</ui:define>
 		<ui:define name="content">
-			<h:panelGroup id="messagesPanel">
-				<h:messages errorClass="errorMessage" infoClass="infoMessage"
-					fatalClass="errorMessage" />
-			</h:panelGroup>
-
-
-
 			<h:form class="form-horizontal well">
 				<fieldset>
 					<legend>#{strings['page.testSearch.searchTitle']}</legend>
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testName">#{strings['page.testSearch.prop.testname']}</h:outputLabel>
 						<div class="controls">
-							<h:inputText type="text" class="input-xlarge" id="testName"
-								value="#{testSearchController.search.name}" />
+							<h:inputText type="text" class="input-xlarge" id="testName" value="#{testSearchController.search.name}" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testUID">#{strings['page.testSearch.prop.testuid']}</h:outputLabel>
 						<div class="controls">
-							<h:inputText class="input-xlarge" id="testUID"
-								value="#{testSearchController.search.uid}" />
+							<h:inputText class="input-xlarge" id="testUID" value="#{testSearchController.search.uid}" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="groupId">#{strings['page.testSearch.prop.groupid']}</h:outputLabel>
 						<div class="controls">
-							<h:inputText class="input-xlarge" id="groupId"
-								value="#{testSearchController.search.groupId}" />
+							<h:inputText class="input-xlarge" id="groupId" value="#{testSearchController.search.groupId}" />
 						</div>
 					</div>
 
 				</fieldset>
 
 				<div class="form-actions">
-					<a4j:commandButton action="#{testSearchController.search}"
-						value="#{strings['page.testSearch.buSearch']}"
-						styleClass="btn btn-primary" alt="Search Test Execution"
-						title="Search Test Execution"
-						render="searchResult:searchResultTable">
-						<f:param name="testSearchTO"
-							value="#{testSearchController.search}" />
+					<a4j:commandButton action="#{testSearchController.search}" value="#{strings['page.testSearch.buSearch']}" styleClass="btn btn-primary"
+						alt="Search Test Execution" title="Search Test Execution" render="searchResult:searchResultTable">
+						<f:param name="testSearchTO" value="#{testSearchController.search}" />
 					</a4j:commandButton>
 				</div>
 			</h:form>
 
-
+			<a href="/repo/test/new" class="btn btn-primary" title="#{strings['page.testSearch.buCreateNewTest']}"><i class="icon-plus" />
+				#{strings['page.testSearch.buCreateNewTest']}</a>
 
 			<h:form id="searchResult">
-				<rich:dataTable id="searchResultTable" styleClass="table table-bordered table-striped table-hover"
-					value="#{testSearchController.result}" var="item">
-					<rich:column sortable="true"
-						sortOrder="#{testExecutionController.sortsOrders['id']}"
-						sortBy="#{item.id}">
+				<rich:dataTable id="searchResultTable" styleClass="table table-bordered table-striped table-hover" value="#{testSearchController.result}" var="item">
+					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['id']}" sortBy="#{item.id}">
 						<f:facet name="header">
-							<a4j:commandLink value="#{entityStrings.Test_id}"
-								render="searchResultTable"
-								action="#{testSearchController.sort()}">
+							<a4j:commandLink value="#{entityStrings.Test_id}" render="searchResultTable" action="#{testSearchController.sort()}">
 								<f:param name="sortProperty" value="id" />
 								<f:ajax render="searchResultTable" />
 							</a4j:commandLink>
 						</f:facet>
 						<h:outputText value="#{item.id}" />
 					</rich:column>
-					<rich:column sortable="true"
-						sortOrder="#{testExecutionController.sortsOrders['name']}"
-						sortBy="#{item.name}">
+					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['name']}" sortBy="#{item.name}">
 						<f:facet name="header">
-							<a4j:commandLink value="#{entityStrings.Test_name}"
-								render="searchResultTable"
-								action="#{testSearchController.sort()}">
+							<a4j:commandLink value="#{entityStrings.Test_name}" render="searchResultTable" action="#{testSearchController.sort()}">
 								<f:param name="sortProperty" value="name" />
 								<f:ajax render="searchResultTable" />
 							</a4j:commandLink>
 						</f:facet>
 						<a href="/repo/test/#{item.id}">#{item.name}</a>
 					</rich:column>
-					<rich:column sortable="true"
-						sortOrder="#{testExecutionController.sortsOrders['uid']}"
-						sortBy="#{item.uid}">
+					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['uid']}" sortBy="#{item.uid}">
 						<f:facet name="header">
-							<a4j:commandLink value="#{entityStrings.Test_uid}"
-								render="searchResultTable"
-								action="#{testSearchController.sort()}">
+							<a4j:commandLink value="#{entityStrings.Test_uid}" render="searchResultTable" action="#{testSearchController.sort()}">
 								<f:param name="sortProperty" value="uid" />
 								<f:ajax render="searchResultTable" />
 							</a4j:commandLink>
 						</f:facet>
 						<h:outputText value="#{item.uid}" />
 					</rich:column>
-					<rich:column sortable="true"
-						sortOrder="#{testExecutionController.sortsOrders['groupId']}"
-						sortBy="#{item.groupId}">
+					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['groupId']}" sortBy="#{item.groupId}">
 						<f:facet name="header">
-							<a4j:commandLink value="#{entityStrings.Test_groupid}"
-								render="searchResultTable"
-								action="#{testSearchController.sort()}">
+							<a4j:commandLink value="#{entityStrings.Test_groupid}" render="searchResultTable" action="#{testSearchController.sort()}">
 								<f:param name="sortProperty" value="groupid" />
 								<f:ajax render="searchResultTable" />
 							</a4j:commandLink>
@@ -116,17 +82,14 @@
 					</rich:column>
 					<rich:column>
 						<f:facet name="header"></f:facet>
-						<a4j:commandButton styleClass="button-minus"
-							action="#{testSearchController.delete}" value=" "
-							alt="#{strings.delete}" title="#{strings.delete}" render="@form">
+						<a4j:commandLink styleClass="btn btn-primary btn-small" action="#{testSearchController.delete}" alt="#{strings.delete}" title="#{strings.delete}"
+							render="@form :messagesPanel">
 							<f:param name="idToDelete" value="#{item.id}" />
-						</a4j:commandButton>
+							<i class="icon-trash"></i>
+						</a4j:commandLink>
 					</rich:column>
 				</rich:dataTable>
 
-				<a href="/repo/test/new"><input class="button-plus"
-					type="button" alt="#{strings['page.testSearch.buCreateNewTest']}"
-					title="#{strings['page.testSearch.buCreateNewTest']}" /></a>
 			</h:form>
 		</ui:define>
 	</ui:composition>
