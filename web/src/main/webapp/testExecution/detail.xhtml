@@ -15,35 +15,26 @@
 			<h:panelGroup id="messagesPanel">
 				<h:messages errorClass="errorMessage" infoClass="infoMessage" fatalClass="errorMessage" />
 			</h:panelGroup>
-			<h1>Test Execution #{testExecutionController.testExecution.name}</h1>
 			<ui:include src="/testExecutionParameter/new_popup.xhtml" />
 			<ui:include src="/testExecutionParameter/edit_popup.xhtml" />
 			<ui:include src="/testExecutionTag/new_popup.xhtml" />
 			<ui:include src="/value/new_popup.xhtml" />
 			<ui:include src="/value/edit_popup.xhtml" />
+			<div class="well">
+			<fieldset>
+					<legend>Test Execution Detail</legend>
+					<h:outputLabel class="detail-label">ID</h:outputLabel><div class="detail-value">#{testExecutionController.testExecution.id}</div>
+					<h:outputLabel class="detail-label">#{entityStrings.TestExecution_name}</h:outputLabel><div class="detail-value">#{testExecutionController.testExecution.name}</div>
+					<h:outputLabel class="detail-label">#{entityStrings.TestExecution_test}</h:outputLabel><div class="detail-value"><a href="/repo/test/#{testExecutionController.testExecution.test.id}">#{testExecutionController.testExecution.test.name}</a></div>
+					<h:outputLabel class="detail-label">Owner</h:outputLabel><div class="detail-value">#{testExecutionController.testExecution.test.groupId}</div>					
+			</fieldset>	
+			</div>		
 			<h:form>
-				<table class="proptable">
-					<tr>
-						<td class="label">ID</td>
-						<td>#{testExecutionController.testExecution.id}</td>
-					</tr>
-					<tr>
-						<td class="label">#{entityStrings.TestExecution_test}</td>
-						<td><a href="/repo/test/#{testExecutionController.testExecution.test.id}">#{testExecutionController.testExecution.test.name}</a></td>
-					</tr>
-				</table>
-			</h:form>
-
-			<h2>Tags</h2>
-			<div class="tags">
-				<ui:repeat value="#{testExecutionController.testExecution.sortedTags}" varStatus="status" var="item">
-					<span class="tag">#{item}</span>
-				</ui:repeat>
-			</div>
-
-			<h2>Values</h2>
+			<rich:tabPanel switchType="ajax">
+		
+		<rich:tab header="Values" id="tabValues">
 			<h:form id="testExecutionValueList">
-				<rich:dataTable id="testExecutionValueTable" value="#{testExecutionController.values}" var="item" columnClasses="n,numvalcolumn,n,n,n">
+				<rich:dataTable id="testExecutionValueTable" value="#{testExecutionController.values}" var="item" columnClasses="n,numvalcolumn,n,n,n" styleClass="table table-bordered table-striped table-hover">
 					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['metric_name']}" sortBy="#{item.metricName}">
 						<f:facet name="header">
 							<a4j:commandLink value="#{entityStrings.Value_metric}" render="testExecutionValueTable" action="#{testExecutionController.sort()}">
@@ -93,38 +84,10 @@
 					</h:column>
 				</rich:dataTable>
 			</h:form>
-			<h2>Attachments</h2>
-
-			<h:form id="attachmentList">
-				<rich:dataTable id="attachmentTable" styleClass="table" rowClasses="table-row" columnClasses="common-column,common-column,common-column,button-column"
-					headerClass="table-header" footerClass="table-footer" value="#{testExecutionController.attachments}" var="item" cellspacing="0" cellpadding="0">
-					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['attachment_filename']}" sortBy="#{item.filename}">
-						<f:facet name="header">
-							<a4j:commandLink value="#{entityStrings.TestExecutionAttachment_filename}" render="attachmentTable" action="#{testExecutionController.sort()}">
-								<f:param name="sortProperty" value="attachment_name" />
-								<f:ajax render="attachmentTable" />
-							</a4j:commandLink>
-						</f:facet>
-						<h:outputLink value="#{testExecutionController.getDownloadLink(item)}">
-							<h:outputText value="#{item.filename}" />
-						</h:outputLink>
-					</rich:column>
-
-					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['attachment_mimetype']}" sortBy="#{item.mimetype}">
-						<f:facet name="header">
-							<a4j:commandLink value="#{entityStrings.TestExecutionAttachment_mimetype}" render="attachmentTable" action="#{testExecutionController.sort()}">
-								<f:param name="sortProperty" value="resultValue" />
-								<f:ajax render="attachmentTable" />
-							</a4j:commandLink>
-						</f:facet>
-						<h:outputText value="#{item.mimetype}" />
-					</rich:column>
-
-				</rich:dataTable>
-			</h:form>
-			<h2>Parameters</h2>
+		</rich:tab>
+		<rich:tab header="Parameters" id="tabParameters">
 			<h:form id="testExecutionParameterList">
-				<rich:dataTable id="testExecutionParameterTable" value="#{testExecutionController.testExecutionParameters}" var="item">
+				<rich:dataTable id="testExecutionParameterTable" value="#{testExecutionController.testExecutionParameters}" var="item" styleClass="table table-bordered table-striped table-hover">
 					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['name']}" sortBy="#{item.name}">
 						<f:facet name="header">
 							<a4j:commandLink value="#{entityStrings.TestExecutionParameter_name}" render="testExecutionParameterTable" action="#{testExecutionController.sort()}">
@@ -159,7 +122,46 @@
 				<a4j:commandButton styleClass="button-plus" render="testExecutionParameterNewPopupForm" action="#{testExecutionController.newTestExecutionParameter()}"
 					oncomplete="#{rich:component('testExecutionParameterNewPopup')}.show();" value=" " alt="#{strings.new_m}" title="#{strings.new_m}" />
 			</h:form>
+		</rich:tab>
+		<rich:tab header="Tags" id="tabTags">
+			<div class="tags">
+				<ui:repeat value="#{testExecutionController.testExecution.sortedTags}" varStatus="status" var="item">
+					<span class="tag">#{item}</span>
+				</ui:repeat>
+			</div>
+		</rich:tab>
+		<rich:tab header="Attachments" id="tabAttachments">
+			<h:form id="attachmentList">
+				<rich:dataTable id="attachmentTable" styleClass="table table-bordered table-striped table-hover" rowClasses="table-row" columnClasses="common-column,common-column,common-column,button-column"
+					headerClass="table-header" footerClass="table-footer" value="#{testExecutionController.attachments}" var="item" cellspacing="0" cellpadding="0">
+					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['attachment_filename']}" sortBy="#{item.filename}">
+						<f:facet name="header">
+							<a4j:commandLink value="#{entityStrings.TestExecutionAttachment_filename}" render="attachmentTable" action="#{testExecutionController.sort()}">
+								<f:param name="sortProperty" value="attachment_name" />
+								<f:ajax render="attachmentTable" />
+							</a4j:commandLink>
+						</f:facet>
+						<h:outputLink value="#{testExecutionController.getDownloadLink(item)}">
+							<h:outputText value="#{item.filename}" />
+						</h:outputLink>
+					</rich:column>
 
+					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['attachment_mimetype']}" sortBy="#{item.mimetype}">
+						<f:facet name="header">
+							<a4j:commandLink value="#{entityStrings.TestExecutionAttachment_mimetype}" render="attachmentTable" action="#{testExecutionController.sort()}">
+								<f:param name="sortProperty" value="resultValue" />
+								<f:ajax render="attachmentTable" />
+							</a4j:commandLink>
+						</f:facet>
+						<h:outputText value="#{item.mimetype}" />
+					</rich:column>
+
+				</rich:dataTable>
+			</h:form>
+		</rich:tab>
+	</rich:tabPanel>
+	</h:form>	
+	
 		</ui:define>
 	</ui:composition>
 </h:body>

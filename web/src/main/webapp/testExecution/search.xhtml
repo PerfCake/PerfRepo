@@ -6,42 +6,69 @@
 	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="title">Search Test Execution</ui:define>
 		<ui:define name="content">
-			<h1>Search Test Execution</h1>
 			<h:panelGroup id="messagesPanel">
-				<h:messages errorClass="errorMessage" infoClass="infoMessage" fatalClass="errorMessage" />
+				<h:messages errorClass="alert alert-block" infoClass="alert alert-info" fatalClass="alert alert-error" />
 			</h:panelGroup>
-			<h:form>
-				<table class="searchprops">
-					<tr>
-						<td class="label">Test Name</td>
-						<td><h:inputText value="#{searchController.bean.testName}" /></td>
-					</tr>
-					<tr>
-						<td class="label">Test UID</td>
-						<td><h:inputText value="#{searchController.bean.testUID}" /></td>
-					</tr>
-					<tr>
-						<td class="label">Test started from</td>
-						<td><rich:calendar value="#{searchController.bean.startedFrom}" datePattern="yyyy-MM-dd HH:mm" /></td>
-					</tr>
-					<tr>
-						<td class="label">Test started to</td>
-						<td><rich:calendar value="#{searchController.bean.startedTo}" datePattern="yyyy-MM-dd HH:mm" /></td>
-					</tr>
-					<tr>
-						<td class="label">Tags (tags separated by ';')</td>
-						<td><h:inputText value="#{searchController.bean.tags}" /></td>
-					</tr>
+			<h:form class="form-horizontal well">
+				<fieldset>
+					<legend>Search Test Execution</legend>
+					<div class="control-group">
+						<h:outputLabel class="control-label" for="testName">Test Name</h:outputLabel>
+						<div class="controls">
+							<h:inputText type="text" class="input-xlarge" id="testName"
+								value="#{searchController.bean.testName}" />
+						</div>
+					</div>
 
-				</table>
-				<a4j:commandButton action="#{searchController.search}" value="Search" styleClass="button-check" alt="Search Test Execution" title="Search Test Execution"
-					render="searchResult:searchResultTable">
-					<f:param name="testExecutionSearchTO" value="#{searchController.bean}" />
-				</a4j:commandButton>
+					<div class="control-group">
+						<h:outputLabel class="control-label" for="testUID">Test UID</h:outputLabel>
+						<div class="controls">
+							<h:inputText class="input-xlarge" id="testUID"
+								value="#{searchController.bean.testUID}" />
+						</div>
+					</div>
+
+					<div class="control-group">
+						<h:outputLabel class="control-label" for="testStartedFrom">Test started from</h:outputLabel>
+						<div class="controls">
+							<rich:calendar value="#{searchController.bean.startedFrom}"
+								datePattern="yyyy-MM-dd HH:mm" id="testStartedFrom" />
+						</div>
+					</div>
+
+					<div class="control-group">
+						<h:outputLabel class="control-label" for="testStartedTo">Test started to</h:outputLabel>
+						<div class="controls">
+							<rich:calendar value="#{searchController.bean.startedTo}"
+								datePattern="yyyy-MM-dd HH:mm" id="testStartedTo" />
+						</div>
+					</div>
+
+					<div class="control-group">
+						<h:outputLabel class="control-label" for="tags">Tags</h:outputLabel>
+						<div class="controls">
+							<h:inputText class="input-xlarge" id="tags"
+								value="#{searchController.bean.tags}" />
+						</div>
+					</div>
+				</fieldset>
+
+
+
+
+				<div class="form-actions">
+					<a4j:commandButton action="#{searchController.search}"
+						value="Search" styleClass="btn btn-primary"
+						alt="Search Test Execution" title="Search Test Execution"
+						render="searchResult:searchResultTable">
+						<f:param name="testExecutionSearchTO"
+							value="#{searchController.bean}" />
+					</a4j:commandButton>
+				</div>
 			</h:form>
 
 			<h:form id="searchResult">
-				<rich:dataTable id="searchResultTable" styleClass="searchresults" value="#{searchController.result}" var="item">
+				<rich:dataTable id="searchResultTable" styleClass="table table-bordered table-striped table-hover" value="#{searchController.result}" var="item">
 					<rich:column sortable="true" sortOrder="#{searchController.sortsOrders['name']}" sortBy="#{item.name}">
 						<f:facet name="header">
 							<a4j:commandLink value="#{entityStrings.Test_id}" render="searchResultTable" action="#{searchController.sort()}">
@@ -71,11 +98,13 @@
 					</rich:column>
 					<rich:column>
 						<f:facet name="header"></f:facet>
-						<a4j:commandButton styleClass="button-minus" action="#{searchController.delete}" value=" " alt="#{strings.delete}" title="#{strings.delete}"
+						
+						
+						<a4j:commandButton styleClass="btn btn-inverse btn-small" action="#{searchController.delete}" value="Delete" alt="#{strings.delete}" title="#{strings.delete}"
 							render="@form :messagesPanel">
-							<f:param name="idToDelete" value="#{item.id}" />
+							<f:param name="idToDelete" value="#{item.id}" />							 
 						</a4j:commandButton>
-						<a4j:commandButton styleClass="button-edit" render=":compareMenuItem1" value=" " alt="Add to comparison" title="Add to comparison"
+						<a4j:commandButton styleClass="btn btn-inverse btn-small" render=":compareMenuItem1" value="Add to comparison" alt="Add to comparison" title="Add to comparison"
 							action="#{teComparatorSession.add(item.id)}" />
 					</rich:column>
 				</rich:dataTable>

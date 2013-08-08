@@ -1,29 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html">
 <body>
 	<ui:composition>
-		<div id="htitle">
-			<table>
-				<tr>
-					<td><img src="#{request.contextPath}/resources/images/perfrepo-ico-16.png" height="16px" width="16px" /></td>
-					<td>
-						<h1>Performance Results Repository</h1>
-					</td>
-				</tr>
-			</table>
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="container" style="width: 940px;">
+					<a class="brand" href="#">PerfRepo</a>
+					<div class="nav-collapse">
+						<ul class="nav">
+							<li class="active"><a
+								href="#{facesContext.externalContext.requestContextPath}">#{strings.menuHome}</a></li>
+							<li><a href="#{facesContext.externalContext.requestContextPath}/test/search">#{strings.menuTests}</a></li>
+							<li><a href="#{facesContext.externalContext.requestContextPath}/exec/search">#{strings.menuExecs}</a></li>
+							<li><a href="#{facesContext.externalContext.requestContextPath}/reports">#{strings.menuReports}</a></li>
+						</ul>
+						<ul class="nav pull-right">
+							<li><h:panelGroup id="compareMenuItem"
+									rendered="#{teComparatorSession.isAnyToCompare()}">
+									<a href="/repo/reports/simple">Compare executions
+										#{teComparatorSession.testExecutions.size()}</a>
+								</h:panelGroup></li>
+							<li class="divider-vertical"></li>
+							<li><a
+								href="#{facesContext.externalContext.requestContextPath}">Logout</a></li>
+						</ul>
+					</div>
+					<!-- /.nav-collapse -->
+				</div>
+			</div>
+			<!-- /navbar-inner -->
 		</div>
-		<div id="hlinks">
-			<a href="#{facesContext.externalContext.requestContextPath}">#{strings.menuHome}</a> | <a
-				href="#{facesContext.externalContext.requestContextPath}/test/search">#{strings.menuTests}</a> | <a
-				href="#{facesContext.externalContext.requestContextPath}/exec/search">#{strings.menuExecs}</a> | <a
-				href="#{facesContext.externalContext.requestContextPath}/reports">#{strings.menuReports}</a>
-			<h:panelGroup id="compareMenuItem1">
-				<h:panelGroup id="compareMenuItem" rendered="#{teComparatorSession.isAnyToCompare()}">
-				| <a href="/repo/reports/compareExecutions">Compare executions #{teComparatorSession.testExecutions.size()}</a>
-				</h:panelGroup>
-			</h:panelGroup>
-		</div>
+		<!-- /navbar -->
 	</ui:composition>
 </body>
 </html>

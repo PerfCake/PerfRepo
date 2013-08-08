@@ -16,32 +16,24 @@
 				<h:messages errorClass="errorMessage" infoClass="infoMessage" fatalClass="errorMessage" />
 			</h:panelGroup>
 			<div class="test_title">
-				<h2>#{testController.test.name}</h2>
 				<a href="/repo/test/#{testController.testId}/edit"><input class="button-edit" type="button" alt="#{strings.edit}" title="#{strings.edit}" /></a>
 			</div>
 			<ui:include src="/test/metric_add.xhtml" />
 			<ui:include src="/test/metric_edit.xhtml" />
-			<table class="proptable">
-				<tr>
-					<td class="label">ID</td>
-					<td><label>#{testController.test.id}</label></td>
-				</tr>
-				<tr>
-					<td class="label">#{entityStrings.Test_uid}</td>
-					<td>#{testController.test.uid}</td>
-				</tr>
-				<tr>
-					<td class="label">#{entityStrings.Test_groupid}</td>
-					<td>#{testController.test.groupId}</td>
-				</tr>
-			</table>
+			
+			<div class="well">
+			<fieldset>
+					<legend>Test Detail</legend>
+					<h:outputLabel class="detail-label">ID</h:outputLabel><div class="detail-value">#{testController.test.id}</div>
+					<h:outputLabel class="detail-label">#{entityStrings.Test_name}</h:outputLabel><div class="detail-value">#{testController.test.name}</div>
+					<h:outputLabel class="detail-label">#{entityStrings.Test_uid}</h:outputLabel><div class="detail-value">#{testController.test.uid}</div>
+					<h:outputLabel class="detail-label">#{entityStrings.Test_groupid}</h:outputLabel><div class="detail-value">#{testController.test.groupId}</div>
+					<h:outputLabel class="detail-label">Description</h:outputLabel><div class="detail-value">#{testController.test.description}</div>			
+			</fieldset>	
+			</div>	
+			
 
-			<h2>Description</h2>
-			<div class="description">
-				<h:outputText escape="false" value="#{testController.test.description}" />
-			</div>
-
-			<h2>Metrics</h2>
+			<h3>Metrics</h3>
 
 			<h:form id="metricList">
 				<ui:repeat value="#{testController.metricsList}" varStatus="status" var="item">
