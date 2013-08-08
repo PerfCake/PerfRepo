@@ -31,6 +31,12 @@
 					</div>
 					<h:outputLabel class="detail-label">Owner</h:outputLabel>
 					<div class="detail-value">#{testExecutionController.testExecution.test.groupId}</div>
+					<h:outputLabel class="detail-label">Tags</h:outputLabel>
+					<div class="detail-value">
+						<ui:repeat value="#{testExecutionController.testExecution.sortedTags}" varStatus="status" var="item">
+							<span class="badge badge-success">#{item}</span>
+						</ui:repeat>
+					</div>
 				</fieldset>
 			</div>
 			<h:form>
@@ -129,13 +135,6 @@
 								oncomplete="#{rich:component('testExecutionParameterNewPopup')}.show();" value=" " alt="#{strings.new_m}" title="#{strings.new_m}" />
 						</h:form>
 					</rich:tab>
-					<rich:tab header="Tags" id="tabTags">
-						<div class="tags">
-							<ui:repeat value="#{testExecutionController.testExecution.sortedTags}" varStatus="status" var="item">
-								<span class="tag">#{item}</span>
-							</ui:repeat>
-						</div>
-					</rich:tab>
 					<rich:tab header="Attachments" id="tabAttachments">
 						<h:form id="attachmentList">
 							<rich:dataTable id="attachmentTable" styleClass="table table-bordered table-striped table-hover" rowClasses="table-row"
@@ -152,7 +151,6 @@
 										<h:outputText value="#{item.filename}" />
 									</h:outputLink>
 								</rich:column>
-
 								<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['attachment_mimetype']}" sortBy="#{item.mimetype}">
 									<f:facet name="header">
 										<a4j:commandLink value="#{entityStrings.TestExecutionAttachment_mimetype}" render="attachmentTable" action="#{testExecutionController.sort()}">
