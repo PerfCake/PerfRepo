@@ -6081,6 +6081,7 @@ i[class^="icon-"] {
 .rf-dt {
 	border-collapse: separate !important;
 	border-width: none !important;
+	width: 800px;
 }
 
 .rf-tab-hdr-tabline-vis.rf-tab-hdr-tabline-top {   
@@ -6191,5 +6192,21 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
 
 .tetable_values td {
    text-align: right;
+}
+
+.tetable_params {
+	font-size: 0.8em;
+	width: 940px;
+}
+.tetable_params td {
+	padding: 2px;
+}
+
+.tetable_params td.paramname {
+	text-align: left;
+}
+
+.tetable_params tr.neq {
+   background: #FFE0E4;
 }
 

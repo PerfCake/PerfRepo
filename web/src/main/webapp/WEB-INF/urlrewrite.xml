@@ -64,6 +64,13 @@
    </rule>
 
    <rule>
+      <!-- /param/{paramId} -->
+      <from>^/param/([\d]+)$</from>
+      <to type="forward" last="true">/testExecutionParameter/show.jsf?paramId=$1</to>
+      <set name="formActionURL">/param/$1</set>
+   </rule>
+
+   <rule>
       <from>^/reports$</from>
       <to type="forward" last="true">/reports/index.jsf</to>
    </rule>
@@ -96,9 +103,15 @@
    </rule>
 
    <rule>
-      <from>^/reports/compareExecutions$</from>
+      <from>^/reports/compare/exec$</from>
       <to type="forward" last="true">/reports/compareExecutions.jsf</to>
-      <set name="formActionURL">/reports/compareExecutions</set>
+      <set name="formActionURL">/reports/compare/exec</set>
+   </rule>
+
+   <rule>
+      <from>^/reports/compare/param$</from>
+      <to type="forward" last="true">/reports/compareParameters.jsf</to>
+      <set name="formActionURL">/reports/compare/param</set>
    </rule>
 
 </urlrewrite>

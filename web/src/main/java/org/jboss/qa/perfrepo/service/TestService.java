@@ -342,4 +342,12 @@ public interface TestService extends Codes {
     * @return response TO
     */
    MetricReportTO.Response computeMetricReport(MetricReportTO.Request request);
+
+   /**
+    * Get parameter and test execution.
+    * 
+    * @param paramId
+    * @return
+    */
+   TestExecutionParameter getFullParameter(Long paramId);
 }

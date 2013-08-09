@@ -256,6 +256,18 @@ public class TestExecution implements Serializable, CloneableEntity<TestExecutio
       }
    }
 
+   public TestExecutionParameter findParameter(String name) {
+      if (parameters == null || parameters.isEmpty()) {
+         return null;
+      }
+      for (TestExecutionParameter param : parameters) {
+         if (name.equals(param.getName())) {
+            return param;
+         }
+      }
+      return null;
+   }
+
    public static TestExecutionBuilder builder() {
       return new TestExecutionBuilder();
    }

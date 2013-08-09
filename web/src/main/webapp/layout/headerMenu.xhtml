@@ -17,7 +17,7 @@
 						<h:panelGroup id="compareMenuItem">
 							<h:panelGroup id="compareMenuItemCompare" rendered="#{teComparatorSession.isAnyToCompare()}">
 								<ul class="nav pull-right">
-									<li><a href="/repo/reports/compareExecutions">Compare executions #{teComparatorSession.testExecutions.size()}</a></li>
+									<li><a href="/repo/reports/compare/exec">Compare executions #{teComparatorSession.execIds.size()}</a></li>
 									<li class="divider-vertical"></li>
 									<li><a href="#{facesContext.externalContext.requestContextPath}">Logout</a></li>
 								</ul>

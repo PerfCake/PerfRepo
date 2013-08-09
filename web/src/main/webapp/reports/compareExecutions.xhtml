@@ -17,6 +17,9 @@
 				<p>
 					Executions for test <a href="/repo/test/#{compareExecutionsController.test.id}">#{compareExecutionsController.test.name}</a>
 				</p>
+				<p>
+					<a class="btn btn-primary" href="/repo/reports/compare/param">Compare parameters</a>
+				</p>
 				<h2>Test executions</h2>
 				<rich:dataTable id="teTable" value="#{compareExecutionsController.testExecutions}" var="te" styleClass="tetable">
 

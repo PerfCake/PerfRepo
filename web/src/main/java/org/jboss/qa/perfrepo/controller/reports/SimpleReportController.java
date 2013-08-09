@@ -67,7 +67,7 @@ public class SimpleReportController extends ControllerBase {
    @PostConstruct
    public void initSecond() {
 
-      testExecutions = testExecutionService.getFullTestExecutions(new ArrayList<Long>(teComparator.getTestExecutions()));
+      testExecutions = testExecutionService.getFullTestExecutions(new ArrayList<Long>(teComparator.getExecIds()));
 
       valueParameters = new HashMap<String, Value>();
       valueParameterNames = new HashSet<String>();

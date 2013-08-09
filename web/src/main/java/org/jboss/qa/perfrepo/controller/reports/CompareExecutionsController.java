@@ -245,13 +245,18 @@ public class CompareExecutionsController extends ControllerBase {
    public void preRender() {
       reloadSessionMessages();
       if (testExecutions == null) {
-         List<Long> execIdList = new ArrayList<Long>(teComparator.getTestExecutions());
+         List<Long> execIdList = new ArrayList<Long>(teComparator.getExecIds());
          if (execIdList.isEmpty()) {
             addMessage(INFO, "page.compareExecs.nothingToCompare");
             return;
          }
          Collections.sort(execIdList);
          testExecutions = service.getFullTestExecutions(execIdList);
+         // update teComparator, some of the executions might not exist anymore
+         teComparator.clear();
+         for (TestExecution te : testExecutions) {
+            teComparator.add(te.getId());
+         }
          Long testId = checkCommonTestId(testExecutions);
          if (testId == null) {
             addMessage(ERROR, "page.compareExecs.errorDifferentTests");

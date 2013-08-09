@@ -81,8 +81,8 @@ public class TestExecutionCompareController extends ControllerBase {
    }
 
    public List<TestExecution> getTestExecutions() {
-      if (teComparator.getTestExecutions() != null && teComparator.getTestExecutions().size() > 0) {
-         return testService.getFullTestExecutions(new ArrayList<Long>(teComparator.getTestExecutions()));
+      if (teComparator.getExecIds() != null && teComparator.getExecIds().size() > 0) {
+         return testService.getFullTestExecutions(new ArrayList<Long>(teComparator.getExecIds()));
       }
       return new ArrayList<TestExecution>();
 

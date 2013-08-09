@@ -3,12 +3,13 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 <h:body>
 	<ui:composition template="/layout/template.xhtml">
-		<ui:define name="title">Reports -</ui:define>
+		<ui:define name="title">Reports</ui:define>
 		<ui:define name="content">
 			<ul>
 				<li><a href="/repo/reports/simple">#{strings['page.reportIndex.simple']}</a></li>
 				<li><a href="/repo/reports/metric">#{strings['page.reportIndex.metricHistory']}</a></li>
-				<li><a href="/repo/reports/compareExecutions">#{strings['page.reportIndex.compareExecutions']}</a></li>
+				<li><a href="/repo/reports/compare/exec">#{strings['page.reportIndex.compareExecutions']}</a></li>
+				<li><a href="/repo/reports/compare/param">#{strings['page.reportIndex.compareParameters']}</a></li>
 			</ul>
 		</ui:define>
 	</ui:composition>

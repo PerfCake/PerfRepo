@@ -165,7 +165,9 @@ public class TestServiceBean implements TestService {
       List<TestExecution> result = new ArrayList<TestExecution>();
       for (Long id : ids) {
          TestExecution testExecution = getFullTestExecution(id);
-         result.add(testExecution);
+         if (testExecution != null) {
+            result.add(testExecution);
+         }
       }
       return result;
    }
@@ -729,5 +731,16 @@ public class TestServiceBean implements TestService {
             return response;
          }
       }
+   }
+
+   @Override
+   public TestExecutionParameter getFullParameter(Long paramId) {
+      TestExecutionParameter p = testExecutionParameterDAO.find(paramId);
+      if (p == null) {
+         return null;
+      }
+      TestExecutionParameter pclone = p.clone();
+      pclone.setTestExecution(p.getTestExecution().clone());
+      return pclone;
    }
 }
