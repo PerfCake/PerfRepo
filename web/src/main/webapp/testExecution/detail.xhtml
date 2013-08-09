@@ -40,8 +40,7 @@
 				</fieldset>
 			</div>
 			<h:form>
-				<rich:tabPanel switchType="ajax">
-
+				<rich:tabPanel switchType="client">
 					<rich:tab header="Values" id="tabValues">
 						<h:form id="testExecutionValueList">
 							<rich:dataTable id="testExecutionValueTable" value="#{testExecutionController.values}" var="item" columnClasses="n,numvalcolumn,n,n,n"
@@ -84,14 +83,20 @@
 								</rich:column>
 								<h:column headerClass="button-header">
 									<f:facet name="header">
-										<a4j:commandButton styleClass="button-plus" render="testExecutionValueNewPopupForm" action="#{testExecutionController.createValue()}"
-											oncomplete="#{rich:component('testExecutionValueNewPopup')}.show();" value=" " alt="#{strings.new_m}" title="#{strings.new_m}" />
+										<a4j:commandLink styleClass="btn btn-success btn-small" render="testExecutionValueNewPopupForm" action="#{testExecutionController.createValue()}"
+											oncomplete="#{rich:component('testExecutionValueNewPopup')}.show();" value="" alt="#{strings.new_m}" title="#{strings.new_m}">
+											<i class="icon-plus"/>
+										</a4j:commandLink>
 									</f:facet>
-									<a4j:commandButton styleClass="button-edit" render="testExecutionValueEditPopupForm" action="#{testExecutionController.setValue(item)}"
-										oncomplete="#{rich:component('testExecutionValueEditPopup')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}" />
-									<a4j:commandButton styleClass="button-minus" value=" " alt="#{strings.delete}" title="#{strings.delete}"
+									<a4j:commandLink styleClass="btn btn-success btn-small" render="testExecutionValueEditPopupForm" action="#{testExecutionController.setValue(item)}"
+										oncomplete="#{rich:component('testExecutionValueEditPopup')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
+										<i class="icon-edit"/>
+									</a4j:commandLink>
+									<a4j:commandLink styleClass="btn btn-success btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
 										onclick="if (!confirm('Are you sure you want to delete value #{item.metricValue} for metric #{item.metricName}?') ) { return false;}; return true;"
-										action="#{testExecutionController.deleteValue(item)}" render="testExecutionValueList" />
+										action="#{testExecutionController.deleteValue(item)}" render="testExecutionValueList">
+										<i class="icon-remove"/>
+									</a4j:commandLink>
 								</h:column>
 							</rich:dataTable>
 						</h:form>
@@ -118,21 +123,24 @@
 									</f:facet>
 									<h:outputText value="#{item.value}" />
 								</rich:column>
-								<rich:column>
-									<f:facet name="header"></f:facet>
-									<a4j:commandButton styleClass="button-edit" render="testExecutionParameterEditPopupForm"
-										action="#{testExecutionController.setTestExecutionParameter(item)}" oncomplete="#{rich:component('testExecutionParameterEditPopup')}.show();"
-										value=" " alt="#{strings.edit}" title="#{strings.edit}" />
-								</rich:column>
-								<rich:column>
-									<f:facet name="header"></f:facet>
-									<a4j:commandButton styleClass="button-minus" value=" " alt="#{strings.delete}" title="#{strings.delete}"
+								<h:column headerClass="button-header">
+									<f:facet name="header">
+										<a4j:commandLink styleClass="btn btn-success btn-small" render="testExecutionParameterNewPopupForm" action="#{testExecutionController.newTestExecutionParameter()}"
+								oncomplete="#{rich:component('testExecutionParameterNewPopup')}.show();" value=" " alt="#{strings.new_m}" title="#{strings.new_m}">
+											<i class="icon-plus"/>
+										</a4j:commandLink>
+									</f:facet>
+									<a4j:commandLink styleClass="btn btn-success btn-small" render="testExecutionValueEditPopupForm" action="#{testExecutionController.setTestExecutionParameter(item)}" oncomplete="#{rich:component('testExecutionParameterEditPopup')}.show();"
+										value=" " alt="#{strings.edit}" title="#{strings.edit}">
+										<i class="icon-edit"/>
+									</a4j:commandLink>
+									<a4j:commandLink styleClass="btn btn-success btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
 										onclick="if (!confirm('Are you sure you want to delete test execution parameter (#{item.name})?') ) { return false;}; return true;"
-										action="#{testExecutionController.deleteTestExecutionParamenter(item)}" render="testExecutionParameterList :messagesPanel" />
-								</rich:column>
+										action="#{testExecutionController.deleteTestExecutionParamenter(item)}" render="testExecutionParameterList :messagesPanel">
+										<i class="icon-remove"/>
+									</a4j:commandLink>
+								</h:column>
 							</rich:dataTable>
-							<a4j:commandButton styleClass="button-plus" render="testExecutionParameterNewPopupForm" action="#{testExecutionController.newTestExecutionParameter()}"
-								oncomplete="#{rich:component('testExecutionParameterNewPopup')}.show();" value=" " alt="#{strings.new_m}" title="#{strings.new_m}" />
 						</h:form>
 					</rich:tab>
 					<rich:tab header="Attachments" id="tabAttachments">
