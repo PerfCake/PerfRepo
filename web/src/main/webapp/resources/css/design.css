@@ -6210,3 +6210,11 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
    background: #FFE0E4;
 }
 
+.table-striped tbody>tr.neq:nth-child(odd)>td,.table-striped tbody>tr.neq:nth-child(odd)>th
+   {
+   background-color: #F2D3D7;
+}
+
+.table-hover tbody tr:hover>td,.table-hover tbody tr:hover>th {
+   background-color: #FFF58A;
+}

@@ -8,7 +8,7 @@
 		<f:event type="preRenderView" listener="#{testExecutionController.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
-		<ui:define name="title">#{strings.details} TestExecution -</ui:define>
+		<ui:define name="title">Test execution</ui:define>
 		<ui:define name="content">
 			<c:set target="#{testExecutionController}" property="editMode" value="#{false}" />
 			<c:set target="#{testExecutionController}" property="createMode" value="#{false}" />
@@ -39,72 +39,57 @@
 					</div>
 				</fieldset>
 			</div>
-			<h:form>
+			<h:form id="tabForm">
 				<rich:tabPanel switchType="client">
 					<rich:tab header="Values" id="tabValues">
-						<h:form id="testExecutionValueList">
-							<rich:dataTable id="testExecutionValueTable" value="#{testExecutionController.values}" var="item" columnClasses="n,numvalcolumn,n,n,n"
+						<h:form id="valueForm">
+							<rich:dataTable id="primaryValueTable" value="#{testExecutionController.values}" var="item" columnClasses="n,numvalcolumn"
 								styleClass="table table-bordered table-striped table-hover">
 								<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['metric_name']}" sortBy="#{item.metricName}">
 									<f:facet name="header">
-										<a4j:commandLink value="#{entityStrings.Value_metric}" render="testExecutionValueTable" action="#{testExecutionController.sort()}">
+										<a4j:commandLink value="#{entityStrings.Value_metric}" render="primaryValueTable" action="#{testExecutionController.sort()}">
 											<f:param name="sortProperty" value="metric_name" />
-											<f:ajax render="testExecutionValueTable" />
+											<f:ajax render="primaryValueTable" />
 										</a4j:commandLink>
 									</f:facet>
 									<h:outputText value="#{item.metricName}" />
 								</rich:column>
-								<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['resultValue']}" sortBy="#{item.metricValue}">
-									<f:facet name="header">
-										<a4j:commandLink value="#{entityStrings.Value_resultValue}" render="testExecutionValueTable" action="#{testExecutionController.sort()}">
-											<f:param name="sortProperty" value="resultValue" />
-											<f:ajax render="testExecutionValueTable" />
-										</a4j:commandLink>
+								<rich:column>
+									<f:facet name="header">Value
 									</f:facet>
-									<h:outputText value="#{item.metricValue}" />
-								</rich:column>
-								<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['paramName']}" sortBy="#{item.paramName}">
-									<f:facet name="header">
-										<a4j:commandLink value="Parameter name" render="testExecutionValueTable" action="#{testExecutionController.sort()}">
-											<f:param name="sortProperty" value="paramName" />
-											<f:ajax render="testExecutionValueTable" />
-										</a4j:commandLink>
-									</f:facet>
-									<h:outputText value="#{item.paramName}" />
-								</rich:column>
-								<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['paramValue']}" sortBy="#{item.paramValue}">
-									<f:facet name="header">
-										<a4j:commandLink value="Parameter value" render="testExecutionValueTable" action="#{testExecutionController.sort()}">
-											<f:param name="sortProperty" value="paramValue" />
-											<f:ajax render="testExecutionValueTable" />
-										</a4j:commandLink>
-									</f:facet>
-									<h:outputText value="#{item.paramValue}" />
-								</rich:column>
-								<h:column headerClass="button-header">
-									<f:facet name="header">
-										<a4j:commandLink styleClass="btn btn-success btn-small" render="testExecutionValueNewPopupForm" action="#{testExecutionController.createValue()}"
-											oncomplete="#{rich:component('testExecutionValueNewPopup')}.show();" value="" alt="#{strings.new_m}" title="#{strings.new_m}">
-											<i class="icon-plus"/>
-										</a4j:commandLink>
-									</f:facet>
-									<a4j:commandLink styleClass="btn btn-success btn-small" render="testExecutionValueEditPopupForm" action="#{testExecutionController.setValue(item)}"
-										oncomplete="#{rich:component('testExecutionValueEditPopup')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
-										<i class="icon-edit"/>
+									<h:outputText value="#{item.formattedSimpleValue}" rendered="#{!item.isMultiValue()}" />
+									<a4j:commandLink value="Multi-value" render="@form" action="#{testExecutionController.showMultiValue(item)}" rendered="#{item.isMultiValue()}">
+										<f:ajax render="@form" />
 									</a4j:commandLink>
-									<a4j:commandLink styleClass="btn btn-success btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
-										onclick="if (!confirm('Are you sure you want to delete value #{item.metricValue} for metric #{item.metricName}?') ) { return false;}; return true;"
-										action="#{testExecutionController.deleteValue(item)}" render="testExecutionValueList">
-										<i class="icon-remove"/>
-									</a4j:commandLink>
-								</h:column>
+								</rich:column>
 							</rich:dataTable>
+							<h:panelGroup id="multiValue" rendered="#{testExecutionController.selectedMultiValueList != null}">
+								<h:selectOneMenu value="#{testExecutionController.selectedMultiValueParamSelection}">
+									<f:selectItems styleClass="input-text" value="#{testExecutionController.selectedMultiValueParamSelectionList}" var="item" itemLabel="#{item}"
+										itemValue="#{item}" />
+									<f:ajax listener="#{testExecutionController.updateParamSelection}" render="@form" />
+								</h:selectOneMenu>
+								<rich:dataTable id="multiValueTable" value="#{testExecutionController.selectedMultiValueList}" var="item" columnClasses="numvalcolumn,numvalcolumn"
+									styleClass="table table-bordered table-striped table-hover">
+									<rich:column>
+										<f:facet name="header">#{testExecutionController.selectedMultiValueParamSelection}</f:facet>
+										<h:outputText value="#{item.paramValue}" />
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">Value</f:facet>
+										<h:outputText value="#{item.formattedValue}" />
+									</rich:column>
+								</rich:dataTable>
+								<a4j:mediaOutput element="img" expires="#{now}" cacheable="#{false}" createContent="#{jfreechart.generate}" mimeType="image/png"
+									value="#{testExecutionController.chartData}" />
+							</h:panelGroup>
 						</h:form>
+
 					</rich:tab>
 					<rich:tab header="Parameters" id="tabParameters">
 						<h:form id="testExecutionParameterList">
 							<rich:dataTable id="testExecutionParameterTable" value="#{testExecutionController.testExecutionParameters}" var="item"
-								styleClass="table table-bordered table-striped table-hover">
+								styleClass="table table-bordered table-striped table-hover tetable_params">
 								<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['name']}" sortBy="#{item.name}">
 									<f:facet name="header">
 										<a4j:commandLink value="#{entityStrings.TestExecutionParameter_name}" render="testExecutionParameterTable" action="#{testExecutionController.sort()}">
@@ -125,20 +110,24 @@
 								</rich:column>
 								<h:column headerClass="button-header">
 									<f:facet name="header">
-										<a4j:commandLink styleClass="btn btn-success btn-small" render="testExecutionParameterNewPopupForm" action="#{testExecutionController.newTestExecutionParameter()}"
-								oncomplete="#{rich:component('testExecutionParameterNewPopup')}.show();" value=" " alt="#{strings.new_m}" title="#{strings.new_m}">
-											<i class="icon-plus"/>
+										<a4j:commandLink styleClass="btn btn-success btn-small" render="testExecutionParameterNewPopupForm"
+											action="#{testExecutionController.newTestExecutionParameter()}" oncomplete="#{rich:component('testExecutionParameterNewPopup')}.show();" value=" "
+											alt="#{strings.new_m}" title="#{strings.new_m}">
+											<i class="icon-plus" />
 										</a4j:commandLink>
 									</f:facet>
-									<a4j:commandLink styleClass="btn btn-success btn-small" render="testExecutionValueEditPopupForm" action="#{testExecutionController.setTestExecutionParameter(item)}" oncomplete="#{rich:component('testExecutionParameterEditPopup')}.show();"
-										value=" " alt="#{strings.edit}" title="#{strings.edit}">
-										<i class="icon-edit"/>
-									</a4j:commandLink>
-									<a4j:commandLink styleClass="btn btn-success btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
-										onclick="if (!confirm('Are you sure you want to delete test execution parameter (#{item.name})?') ) { return false;}; return true;"
-										action="#{testExecutionController.deleteTestExecutionParamenter(item)}" render="testExecutionParameterList :messagesPanel">
-										<i class="icon-remove"/>
-									</a4j:commandLink>
+									<div class="btn-group">
+										<a4j:commandLink styleClass="btn btn-success btn-small" render="testExecutionValueEditPopupForm"
+											action="#{testExecutionController.setTestExecutionParameter(item)}" oncomplete="#{rich:component('testExecutionParameterEditPopup')}.show();"
+											value=" " alt="#{strings.edit}" title="#{strings.edit}">
+											<i class="icon-edit" />
+										</a4j:commandLink>
+										<a4j:commandLink styleClass="btn btn-success btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
+											onclick="if (!confirm('Are you sure you want to delete test execution parameter (#{item.name})?') ) { return false;}; return true;"
+											action="#{testExecutionController.deleteTestExecutionParamenter(item)}" render="testExecutionParameterList :messagesPanel">
+											<i class="icon-remove" />
+										</a4j:commandLink>
+									</div>
 								</h:column>
 							</rich:dataTable>
 						</h:form>
@@ -173,6 +162,7 @@
 						</h:form>
 					</rich:tab>
 				</rich:tabPanel>
+
 			</h:form>
 
 		</ui:define>

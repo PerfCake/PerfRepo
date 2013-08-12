@@ -19,7 +19,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -27,6 +29,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.jboss.qa.perfrepo.controller.JFreechartBean.XYLineChartSpec;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
@@ -38,6 +41,8 @@ import org.jboss.qa.perfrepo.rest.TestExecutionREST;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 @Named
 @ViewScoped
@@ -45,6 +50,7 @@ public class TestExecutionController extends ControllerBase {
 
    private static final long serialVersionUID = 3012075520261954430L;
    private static final Logger log = Logger.getLogger(TestExecutionController.class);
+
    @Inject
    private TestService testService;
 
@@ -57,6 +63,12 @@ public class TestExecutionController extends ControllerBase {
    private Value value = null;
 
    private List<ValueInfo> values = null;
+
+   private List<ParamInfo> selectedMultiValueList = null;
+   private List<String> selectedMultiValueParamSelectionList = null;
+   private String selectedMultiValueParamSelection = null;
+   private ValueInfo selectedMultiValue = null;
+   private XYLineChartSpec chartData = null;
 
    private boolean editMode;
    private boolean createMode;
@@ -90,8 +102,8 @@ public class TestExecutionController extends ControllerBase {
       reloadSessionMessages();
       if (testExecutionId == null) {
          if (!createMode) {
-            log.error("No test ID supplied");
-            redirectWithMessage("/", ERROR, "page.test.errorNoTestId");
+            log.error("No execution ID supplied");
+            redirectWithMessage("/", ERROR, "page.exec.errorNoExecId");
          } else {
             if (testExecution == null) {
                testExecution = new TestExecution();
@@ -101,8 +113,8 @@ public class TestExecutionController extends ControllerBase {
          if (testExecution == null) {
             testExecution = testService.getFullTestExecution(testExecutionId);
             if (testExecution == null) {
-               log.error("Can't find test execution with id " + testExecutionId);
-               redirectWithMessage("/", ERROR, "page.test.errorTestNotFound", testExecutionId);
+               log.error("Can't find execution with id " + testExecutionId);
+               redirectWithMessage("/", ERROR, "page.exec.errorExecNotFound", testExecutionId);
             } else {
                values = computeValues();
             }
@@ -111,15 +123,50 @@ public class TestExecutionController extends ControllerBase {
    }
 
    private List<ValueInfo> computeValues() {
-      List<ValueInfo> r = new ArrayList<TestExecutionController.ValueInfo>();
+      // group by metric
+      Map<String, List<Value>> valuesByMetric = new HashMap<String, List<Value>>();
       for (Value v : testExecution.getValues()) {
-         if (v.getParameters() == null || v.getParameters().isEmpty()) {
-            r.add(new ValueInfo(v, null));
+         List<Value> values = valuesByMetric.get(v.getMetricName());
+         if (values == null) {
+            values = new ArrayList<Value>();
+            valuesByMetric.put(v.getMetricName(), values);
+         }
+         values.add(v);
+      }
+      List<ValueInfo> r = new ArrayList<TestExecutionController.ValueInfo>();
+      for (Map.Entry<String, List<Value>> entry : valuesByMetric.entrySet()) {
+         ValueInfo vInfo = new ValueInfo();
+         vInfo.metricName = entry.getKey();
+         if (entry.getValue().size() == 1) {
+            vInfo.simpleValue = entry.getValue().get(0).getResultValue();
          } else {
-            for (ValueParameter vp : v.getParameters()) {
-               r.add(new ValueInfo(v, vp));
+            vInfo.complexValueByParamName = new HashMap<String, List<ParamInfo>>();
+            for (Value v : entry.getValue()) {
+               if (v.getParameters() == null || v.getParameters().isEmpty()) {
+                  addMessage(ERROR, "page.exec.errorMetricDataError", vInfo.metricName);
+                  vInfo.complexValueByParamName = null;
+                  break;
+               } else {
+                  for (ValueParameter vp : v.getParameters()) {
+                     List<ParamInfo> paramInfos = vInfo.complexValueByParamName.get(vp.getName());
+                     if (paramInfos == null) {
+                        paramInfos = new ArrayList<TestExecutionController.ParamInfo>();
+                        vInfo.complexValueByParamName.put(vp.getName(), paramInfos);
+                     }
+                     ParamInfo paramInfo = new ParamInfo();
+                     paramInfo.setParamValue(vp.getParamValue());
+                     paramInfo.setValue(v.getResultValue());
+                     paramInfos.add(paramInfo);
+                  }
+               }
             }
          }
+         if (vInfo.complexValueByParamName != null) {
+            for (List<ParamInfo> paramInfoList : vInfo.complexValueByParamName.values()) {
+               Collections.sort(paramInfoList);
+            }
+         }
+         r.add(vInfo);
       }
       return r;
    }
@@ -310,32 +357,180 @@ public class TestExecutionController extends ControllerBase {
       return values;
    }
 
-   public static class ValueInfo {
-      private static final DecimalFormat FMT = new DecimalFormat("##.000");
-      private Value value;
-      private ValueParameter param;
+   private static final DecimalFormat FMT = new DecimalFormat("##.000");
 
-      public ValueInfo(Value value, ValueParameter param) {
-         this.value = value;
-         this.param = param;
-      }
-
-      public String getMetricName() {
-         return value.getMetricName();
-      }
-
-      public String getMetricValue() {
-         return FMT.format(value.getResultValue());
-      }
-
-      public String getParamName() {
-         return param == null ? "N/A" : param.getName();
-      }
+   public static class ParamInfo implements Comparable<ParamInfo> {
+      private String paramValue;
+      private Double value;
 
       public String getParamValue() {
-         return param == null ? "N/A" : param.getParamValue();
+         return paramValue;
       }
 
+      public void setParamValue(String paramValue) {
+         this.paramValue = paramValue;
+      }
+
+      public Double getValue() {
+         return value;
+      }
+
+      public void setValue(Double value) {
+         this.value = value;
+      }
+
+      @Override
+      public int compareTo(ParamInfo o) {
+         try {
+            return Double.valueOf(this.paramValue).compareTo(Double.valueOf(o.paramValue));
+         } catch (NumberFormatException e) {
+            return this.paramValue.compareTo(o.paramValue);
+         }
+      }
+
+      public String getFormattedValue() {
+         return value == null ? null : FMT.format(value);
+      }
+   }
+
+   public static class ValueInfo implements Comparable<ValueInfo> {
+      private String metricName;
+      private Double simpleValue;
+      private Map<String, List<ParamInfo>> complexValueByParamName;
+
+      public String getMetricName() {
+         return metricName;
+      }
+
+      public Double getSimpleValue() {
+         return simpleValue;
+      }
+
+      public List<ParamInfo> getComplexValueByParamName(String paramName) {
+         return complexValueByParamName == null ? null : complexValueByParamName.get(paramName);
+      }
+
+      @Override
+      public int compareTo(ValueInfo o) {
+         return this.metricName.compareTo(o.metricName);
+      }
+
+      public boolean isMultiValue() {
+         return complexValueByParamName != null;
+      }
+
+      public String getFormattedSimpleValue() {
+         return simpleValue == null ? null : FMT.format(simpleValue);
+      }
+
+   }
+
+   public void updateParamSelection() {
+      if (selectedMultiValue == null || selectedMultiValue.complexValueByParamName == null) {
+         addMessage(ERROR, "page.exec.notMultiValue");
+         return;
+      }
+      selectedMultiValueList = selectedMultiValue.complexValueByParamName.get(selectedMultiValueParamSelection);
+      chartData = createChart(selectedMultiValueList, selectedMultiValue);
+   }
+
+   public void showMultiValue(ValueInfo value) {
+      if (value == null || !value.isMultiValue()) {
+         addMessage(ERROR, "page.exec.notMultiValue");
+         return;
+      }
+      selectedMultiValueParamSelectionList = new ArrayList<String>(value.complexValueByParamName.keySet());
+      if (selectedMultiValueParamSelectionList.isEmpty()) {
+         addMessage(ERROR, "page.exec.notMultiValue");
+         selectedMultiValueParamSelectionList = null;
+         return;
+      }
+      Collections.sort(selectedMultiValueParamSelectionList);
+      selectedMultiValueParamSelection = selectedMultiValueParamSelectionList.get(0);
+      selectedMultiValueList = value.complexValueByParamName.get(selectedMultiValueParamSelection);
+      selectedMultiValue = value;
+      chartData = createChart(selectedMultiValueList, selectedMultiValue);
+   }
+
+   public XYLineChartSpec getChartData() {
+      return chartData;
+   }
+
+   private XYLineChartSpec createChart(List<ParamInfo> values, ValueInfo mainValue) {
+      if (selectedMultiValueList == null) {
+         return null;
+      }
+      XYSeriesCollection dataset = new XYSeriesCollection();
+      XYSeries series = new XYSeries(selectedMultiValueParamSelection);
+      dataset.addSeries(series);
+      try {
+         for (ParamInfo pinfo : selectedMultiValueList) {
+            Double paramValue = Double.valueOf(pinfo.getParamValue());
+            if (paramValue != null) {
+               series.add(paramValue, pinfo.getValue());
+            }
+         }
+         XYLineChartSpec chartSpec = new XYLineChartSpec();
+         chartSpec.title = "Multi-value";
+         chartSpec.xAxisLabel = selectedMultiValueParamSelection;
+         chartSpec.yAxisLabel = "Metric value";
+         chartSpec.dataset = dataset;
+         return chartSpec;
+      } catch (Exception e) {
+         log.error("Error while creating chart", e);
+         return null;
+      }
+   }
+
+   //
+   //   private void createChart(List<ParamInfo> values, ValueInfo mainValue) {
+   //      try {
+   //         double minValue = Double.MAX_VALUE;
+   //         double maxValue = Double.MIN_VALUE;
+   //         XYDataList series = new XYDataList();
+   //         series.setLabel(mainValue.getMetricName());
+   //         for (ParamInfo pinfo : values) {
+   //            Double paramValue = Double.valueOf(pinfo.getParamValue());
+   //            if (paramValue != null) {
+   //               XYDataPoint dp = new XYDataPoint(paramValue, pinfo.getValue());
+   //               series.addDataPoint(dp);
+   //               if (paramValue > maxValue) {
+   //                  maxValue = paramValue;
+   //               }
+   //               if (paramValue < minValue) {
+   //                  minValue = paramValue;
+   //               }
+   //            }
+   //         }
+   //         chartData.addDataList(series);
+   //         double range = maxValue - minValue;
+   //         chart.setYaxisMaxValue(maxValue + 0.1d * range);
+   //         double yaxisMinValue = minValue - 0.1d * range;
+   //         if (minValue >= 0d && yaxisMinValue < 0) {
+   //            yaxisMinValue = 0d; // don't get below zero if min value isn't negative
+   //         }
+   //         chart.setYaxisMinValue(yaxisMinValue);
+   //      } catch (Exception e) {
+   //         log.error("Error while creating chart", e);
+   //         chart = null;
+   //         chartData = null;
+   //      }
+   //   }
+
+   public List<ParamInfo> getSelectedMultiValueList() {
+      return selectedMultiValueList;
+   }
+
+   public String getSelectedMultiValueParamSelection() {
+      return selectedMultiValueParamSelection;
+   }
+
+   public void setSelectedMultiValueParamSelection(String selectedMultiValueParamSelection) {
+      this.selectedMultiValueParamSelection = selectedMultiValueParamSelection;
+   }
+
+   public List<String> getSelectedMultiValueParamSelectionList() {
+      return selectedMultiValueParamSelectionList;
    }
 
 }

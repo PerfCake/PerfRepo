@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <parent>
       <groupId>org.jboss.qa</groupId>
@@ -159,6 +158,11 @@
          <artifactId>urlrewritefilter</artifactId>
          <version>${urlrewritefilter.version}</version>
       </dependency>
+      <dependency>
+         <groupId>jfree</groupId>
+         <artifactId>jfreechart</artifactId>
+         <version>${jfreechart.version}</version>
+      </dependency>
    </dependencies>
 
 
@@ -212,8 +216,7 @@
    <profiles>
       <profile>
          <!-- The default profile skips all tests, though you can tune it to run just unit tests based on a custom pattern -->
-         <!-- Seperate profiles are provided for running all tests, including Arquillian tests that execute in the specified 
-            container -->
+         <!-- Seperate profiles are provided for running all tests, including Arquillian tests that execute in the specified container -->
          <id>default</id>
          <activation>
             <activeByDefault>true</activeByDefault>
