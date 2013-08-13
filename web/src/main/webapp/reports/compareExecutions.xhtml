@@ -92,8 +92,13 @@
 								<td class="rf-dt-c"><h:commandLink value="#{metric.name}" action="#{compareExecutionsController.createChart(metric.id, false)}"
 										title="Compute chart" /></td>
 								<ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
-									<td class="rf-dt-c #{compareExecutionsController.isBaseline(exec.id) ? 'compare_exec_baseline' : '' }">#{compareExecutionsController.getMetricValue(exec.id,
-										metric.id)}</td>
+									<td class="rf-dt-c #{compareExecutionsController.isBaseline(exec.id) ? 'compare_exec_baseline' : '' }"><h:outputText
+											value="#{compareExecutionsController.getMetricValue(exec.id, metric.name)}"
+											rendered="#{compareExecutionsController.getMetricValue(exec.id, metric.name) != 'MULTIVALUE'}" /> <a4j:commandLink value="Multi-value"
+											render="@form" action="#{compareExecutionsController.showMultiValue(metric.name)}"
+											rendered="#{compareExecutionsController.getMetricValue(exec.id, metric.name) == 'MULTIVALUE'}">
+											<f:ajax render="@form" />
+										</a4j:commandLink></td>
 								</ui:repeat>
 							</tr>
 						</ui:repeat>
@@ -114,11 +119,51 @@
 						<tbody class="rf-dt-b">
 							<ui:repeat value="#{compareExecutionsController.metrics}" var="metric">
 								<tr class="rf-dt-r rf-dt-fst-r">
-									<td class="rf-dt-c"><h:commandLink value="#{metric.name}" action="#{compareExecutionsController.createChart(metric.id, true)}"
+									<td class="rf-dt-c"><h:commandLink value="#{metric.name}" action="#{compareExecutionsController.createChart(metric.name, true)}"
 											title="Compute chart" /></td>
 									<ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
-										<td class="rf-dt-c #{compareExecutionsController.isBaseline(exec.id) ? 'compare_exec_baseline' : '' }">#{compareExecutionsController.getMetricValueBaselineCompared(exec.id,
-											metric.id)}</td>
+										<td class="rf-dt-c #{compareExecutionsController.isBaseline(exec.id) ? 'compare_exec_baseline' : '' }"><h:outputText
+												value="#{compareExecutionsController.getMetricBaselinedValue(exec.id, metric.name)}"
+												rendered="#{compareExecutionsController.getMetricBaselinedValue(exec.id, metric.name) != 'MULTIVALUE'}" /> <a4j:commandLink value="Multi-value"
+												render="@form" action="#{compareExecutionsController.showMultiValue(metric.name)}"
+												rendered="#{compareExecutionsController.getMetricBaselinedValue(exec.id, metric.name) == 'MULTIVALUE'}">
+												<f:ajax render="@form" />
+											</a4j:commandLink></td>
+									</ui:repeat>
+								</tr>
+							</ui:repeat>
+						</tbody>
+					</table>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{compareExecutionsController.multiValueCompareList != null}">
+					<h2>Multi-value comparison</h2>
+					<p>
+						<h:selectOneMenu value="#{compareExecutionsController.multiValueCompareParam}">
+							<f:selectItems styleClass="input-text" value="#{compareExecutionsController.multiValueCompareParamList}" var="item" itemLabel="#{item}"
+								itemValue="#{item}" />
+							<f:ajax listener="#{compareExecutionsController.updateParamSelection}" render="@form" />
+						</h:selectOneMenu>
+					</p>
+					<p>
+						<a4j:mediaOutput element="img" expires="#{now}" cacheable="#{false}" createContent="#{jfreechart.generate}" mimeType="image/png"
+							value="#{compareExecutionsController.multiValueCompareChartData}" />
+					</p>
+					<table class="rf-dt tetable_values">
+						<thead class="rf-dt-thd">
+							<tr class="rf-dt-shdr">
+								<th class="rf-dt-shdr-c">#{compareExecutionsController.multiValueCompareParam} \ Execution</th>
+								<ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
+									<th class="rf-dt-shdr-c">#{exec.name}</th>
+								</ui:repeat>
+							</tr>
+						</thead>
+						<tbody class="rf-dt-b">
+							<ui:repeat value="#{compareExecutionsController.multiValueCompareList}" var="item">
+								<tr class="rf-dt-r rf-dt-fst-r">
+									<td class="rf-dt-c">#{item}</td>
+									<ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
+										<td class="rf-dt-c">#{compareExecutionsController.getMultiValueCompare(exec.id, item)}</td>
 									</ui:repeat>
 								</tr>
 							</ui:repeat>

@@ -6198,7 +6198,7 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
 	font-size: 0.8em;
 	width: 940px;
 }
-.tetable_params td {
+.smallpad td {
 	padding: 2px;
 }
 
@@ -6217,4 +6217,8 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
 
 .table-hover tbody tr:hover>td,.table-hover tbody tr:hover>th {
    background-color: #FFF58A;
+}
+
+td.numvalcolumn {
+	text-align: right;
 }

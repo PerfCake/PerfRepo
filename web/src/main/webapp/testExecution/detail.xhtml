@@ -63,13 +63,19 @@
 								</rich:column>
 							</rich:dataTable>
 							<h:panelGroup id="multiValue" rendered="#{testExecutionController.selectedMultiValueList != null}">
-								<h:selectOneMenu value="#{testExecutionController.selectedMultiValueParamSelection}">
-									<f:selectItems styleClass="input-text" value="#{testExecutionController.selectedMultiValueParamSelectionList}" var="item" itemLabel="#{item}"
-										itemValue="#{item}" />
-									<f:ajax listener="#{testExecutionController.updateParamSelection}" render="@form" />
-								</h:selectOneMenu>
+								<p>
+									<h:selectOneMenu value="#{testExecutionController.selectedMultiValueParamSelection}">
+										<f:selectItems styleClass="input-text" value="#{testExecutionController.selectedMultiValueParamSelectionList}" var="item" itemLabel="#{item}"
+											itemValue="#{item}" />
+										<f:ajax listener="#{testExecutionController.updateParamSelection}" render="@form" />
+									</h:selectOneMenu>
+								</p>
+								<p>
+									<a4j:mediaOutput element="img" expires="#{now}" cacheable="#{false}" createContent="#{jfreechart.generate}" mimeType="image/png"
+										value="#{testExecutionController.chartData}" />
+								</p>
 								<rich:dataTable id="multiValueTable" value="#{testExecutionController.selectedMultiValueList}" var="item" columnClasses="numvalcolumn,numvalcolumn"
-									styleClass="table table-bordered table-striped table-hover">
+									styleClass="table table-bordered table-striped table-hover smallpad">
 									<rich:column>
 										<f:facet name="header">#{testExecutionController.selectedMultiValueParamSelection}</f:facet>
 										<h:outputText value="#{item.paramValue}" />
@@ -79,8 +85,7 @@
 										<h:outputText value="#{item.formattedValue}" />
 									</rich:column>
 								</rich:dataTable>
-								<a4j:mediaOutput element="img" expires="#{now}" cacheable="#{false}" createContent="#{jfreechart.generate}" mimeType="image/png"
-									value="#{testExecutionController.chartData}" />
+
 							</h:panelGroup>
 						</h:form>
 

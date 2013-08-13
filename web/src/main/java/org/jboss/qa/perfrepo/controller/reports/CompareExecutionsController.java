@@ -18,21 +18,31 @@ package org.jboss.qa.perfrepo.controller.reports;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.ControllerBase;
+import org.jboss.qa.perfrepo.controller.JFreechartBean.XYLineChartSpec;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
-import org.jboss.qa.perfrepo.model.Value;
+import org.jboss.qa.perfrepo.model.to.MultiValue;
+import org.jboss.qa.perfrepo.model.to.MultiValue.ParamInfo;
+import org.jboss.qa.perfrepo.model.to.MultiValue.ValueInfo;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.jsflot.components.FlotChartRendererData;
 import org.jsflot.xydata.XYDataList;
 import org.jsflot.xydata.XYDataPoint;
@@ -53,6 +63,17 @@ public class CompareExecutionsController extends ControllerBase {
    private static final long serialVersionUID = 1L;
    private static final DecimalFormat FMT = new DecimalFormat("##.0000");
    private static final DecimalFormat FMT_PERCENT = new DecimalFormat("0.00");
+   private static final Comparator<String> COMPARE_PARAM_VALUE = new Comparator<String>() {
+      @Override
+      public int compare(String o1, String o2) {
+         try {
+            return Double.valueOf(o1).compareTo(Double.valueOf(o2));
+         } catch (Exception e) {
+            return o1.compareTo(o2);
+         }
+      }
+   };
+
    @Inject
    private TestService service;
 
@@ -60,10 +81,17 @@ public class CompareExecutionsController extends ControllerBase {
    private TEComparatorSession teComparator;
 
    private List<TestExecution> testExecutions = null;
+   private Map<Long, Map<String, ValueInfo>> values = null;
    private Test test = null;
    private TestExecution baselineExecution = null;
    private XYDataSetCollection chartData;
    private FlotChartRendererData chart;
+
+   private List<String> multiValueCompareList;
+   private String multiValueCompareMetric;
+   private String multiValueCompareParam;
+   private List<String> multiValueCompareParamList;
+   private XYLineChartSpec multiValueCompareChartData = null;
 
    public Test getTest() {
       return test;
@@ -100,12 +128,7 @@ public class CompareExecutionsController extends ControllerBase {
       return baselineExecution != null && baselineExecution.getId().equals(execId);
    }
 
-   public void createChart(Long metricId, boolean percents) {
-      Metric metric = findMetric(metricId);
-      if (metric == null) {
-         log.error("Couldn't find metric " + metricId);
-         return;
-      }
+   public void createChart(String metricName, boolean percents) {
       if (testExecutions == null || testExecutions.isEmpty()) {
          return;
       }
@@ -114,10 +137,10 @@ public class CompareExecutionsController extends ControllerBase {
       double minValue = Double.MAX_VALUE;
       double maxValue = Double.MIN_VALUE;
       XYDataList series = new XYDataList();
-      series.setLabel(metric.getName() + (percents ? " % diff" : ""));
+      series.setLabel(metricName + (percents ? " % diff" : ""));
       int i = 0;
       for (TestExecution te : testExecutions) {
-         Double value = percents ? getMetricValueBaselineComparedNum(te.getId(), metricId) : getMetricValueNum(te.getId(), metricId);
+         Double value = percents ? getSimpleBaselineNum(te.getId(), metricName) : getSimpleNum(te.getId(), metricName);
          if (value != null) {
             XYDataPoint dp = new XYDataPoint(new Double(i), value, te.getName());
             series.addDataPoint(dp);
@@ -148,6 +171,42 @@ public class CompareExecutionsController extends ControllerBase {
       return chartData;
    }
 
+   public List<String> getMultiValueCompareList() {
+      return multiValueCompareList;
+   }
+
+   public String getMultiValueCompareParam() {
+      return multiValueCompareParam;
+   }
+
+   public void setMultiValueCompareParam(String multiValueCompareParam) {
+      this.multiValueCompareParam = multiValueCompareParam;
+   }
+
+   public List<String> getMultiValueCompareParamList() {
+      return multiValueCompareParamList;
+   }
+
+   public XYLineChartSpec getMultiValueCompareChartData() {
+      return multiValueCompareChartData;
+   }
+
+   private Map<Long, Map<String, ValueInfo>> computeValues() {
+      if (testExecutions == null || testExecutions.isEmpty()) {
+         return null;
+      }
+      Map<Long, Map<String, ValueInfo>> r = new TreeMap<Long, Map<String, ValueInfo>>();
+      for (TestExecution testExecution : testExecutions) {
+         List<ValueInfo> valueInfos = MultiValue.createFrom(testExecution);
+         Map<String, ValueInfo> valueInfosForExec = new TreeMap<String, MultiValue.ValueInfo>();
+         for (ValueInfo valueInfo : valueInfos) {
+            valueInfosForExec.put(valueInfo.getMetricName(), valueInfo);
+         }
+         r.put(testExecution.getId(), valueInfosForExec);
+      }
+      return r;
+   }
+
    private TestExecution findTestExecution(Long execId) {
       if (testExecutions == null || testExecutions.isEmpty()) {
          return null;
@@ -161,69 +220,66 @@ public class CompareExecutionsController extends ControllerBase {
       }
    }
 
-   public String getMetricValue(Long execId, Long metricId) {
-      Double num = getMetricValueNum(execId, metricId);
-      return num == null ? "N/A" : FMT.format(num);
-   }
-
-   private Double getMetricValueNum(Long execId, Long metricId) {
-      TestExecution exec = findTestExecution(execId);
-      if (exec == null) {
-         return null;
+   public String getMetricValue(Long execId, String metricName) {
+      ValueInfo valueInfo = findValueInfo(execId, metricName);
+      if (valueInfo == null) {
+         return "N/A";
+      }
+      if (valueInfo.isMultiValue()) {
+         return "MULTIVALUE";
       } else {
-         Value v = findValue(exec, metricId);
-         return v == null ? null : v.getResultValue();
+         return valueInfo.getSimpleValue() == null ? "N/A" : FMT.format(valueInfo.getSimpleValue());
       }
    }
 
-   public String getMetricValueBaselineCompared(Long execId, Long metricId) {
-      Double num = getMetricValueBaselineComparedNum(execId, metricId);
-      return num == null ? "N/A" : (num < 0d ? "" : "+") + FMT_PERCENT.format(num) + " %";
+   public String getMetricBaselinedValue(Long execId, String metricName) {
+      if (baselineExecution == null) {
+         return "N/A";
+      }
+      ValueInfo val = findValueInfo(execId, metricName);
+      ValueInfo valBase = findValueInfo(baselineExecution.getId(), metricName);
+      if (val == null || valBase == null) {
+         return "N/A";
+      }
+      if (val.isMultiValue() || valBase.isMultiValue()) {
+         return "MULTIVALUE";
+      }
+      if (val.getSimpleValue() == null || valBase.getSimpleValue() == null) {
+         return "N/A";
+      }
+      double dv = val.getSimpleValue();
+      double dvbase = valBase.getSimpleValue();
+      return FMT_PERCENT.format(((dv - dvbase) / dvbase) * 100d) + " %";
    }
 
-   private Double getMetricValueBaselineComparedNum(Long execId, Long metricId) {
+   private ValueInfo findValueInfo(Long execId, String metricName) {
+      if (values == null) {
+         return null;
+      }
+      Map<String, ValueInfo> valueInfosForExec = values.get(execId);
+      if (valueInfosForExec == null) {
+         return null;
+      }
+      return valueInfosForExec.get(metricName);
+   }
+
+   private Double getSimpleNum(Long execId, String metricName) {
+      ValueInfo val = findValueInfo(execId, metricName);
+      return val == null ? null : val.getSimpleValue();
+   }
+
+   private Double getSimpleBaselineNum(Long execId, String metricName) {
       if (baselineExecution == null) {
          return null;
       }
-      TestExecution exec = findTestExecution(execId);
-      if (exec == null) {
-         return null;
-      } else {
-         Value v = findValue(exec, metricId);
-         if (v == null) {
-            return null;
-         } else {
-            Value vBase = findValue(baselineExecution, metricId);
-            if (vBase == null) {
-               return null;
-            } else {
-               double dv = v.getResultValue();
-               double dvbase = vBase.getResultValue();
-               return ((dv - dvbase) / dvbase) * 100d;
-            }
-         }
-      }
-   }
-
-   private Value findValue(TestExecution exec, Long metricId) {
-      for (Value v : exec.getValues()) {
-         if (v.getMetric().getId().equals(metricId)) {
-            return v;
-         }
-      }
-      return null;
-   }
-
-   private Metric findMetric(Long metricId) {
-      if (test == null) {
+      ValueInfo val = findValueInfo(execId, metricName);
+      ValueInfo valBase = findValueInfo(baselineExecution.getId(), metricName);
+      if (val == null || valBase == null || val.getSimpleValue() == null || valBase.getSimpleValue() == null) {
          return null;
       }
-      for (Metric m : test.getMetrics()) {
-         if (m.getId().equals(metricId)) {
-            return m;
-         }
-      }
-      return null;
+      double dv = val.getSimpleValue();
+      double dvbase = valBase.getSimpleValue();
+      return ((dv - dvbase) / dvbase) * 100d;
    }
 
    private Long checkCommonTestId(List<TestExecution> execs) {
@@ -259,10 +315,128 @@ public class CompareExecutionsController extends ControllerBase {
          }
          Long testId = checkCommonTestId(testExecutions);
          if (testId == null) {
+            log.error("Can't compare executions of different tests");
             addMessage(ERROR, "page.compareExecs.errorDifferentTests");
             return;
          }
          test = service.getFullTest(testId);
+         values = computeValues();
+      }
+   }
+
+   private List<ValueInfo> findValueInfos(String metricName) {
+      if (testExecutions == null || values == null) {
+         return Collections.emptyList();
+      }
+      List<ValueInfo> infos = new ArrayList<MultiValue.ValueInfo>(testExecutions.size());
+      for (TestExecution exec : testExecutions) {
+         ValueInfo vi = findValueInfo(exec.getId(), metricName);
+         if (vi != null) {
+            infos.add(vi);
+         }
+      }
+      return infos;
+   }
+
+   public void showMultiValue(String metricName) {
+      if (testExecutions == null || values == null) {
+         return;
+      }
+      Set<String> stringSet = new HashSet<String>();
+      List<ValueInfo> infos = findValueInfos(metricName);
+      for (ValueInfo vi : infos) {
+         stringSet.addAll(vi.getComplexValueParams());
+      }
+      multiValueCompareParamList = new ArrayList<String>(stringSet);
+      Collections.sort(multiValueCompareParamList);
+      if (multiValueCompareParamList.isEmpty()) {
+         multiValueCompareParamList = null;
+         return;
+      }
+      multiValueCompareParam = multiValueCompareParamList.get(0);
+      multiValueCompareMetric = metricName;
+      updateParamValues(stringSet, infos);
+      multiValueCompareChartData = createChart();
+   }
+
+   private void updateParamValues(Set<String> stringSet, List<ValueInfo> infos) {
+      stringSet.clear();
+      for (ValueInfo vi : infos) {
+         List<ParamInfo> cv = vi.getComplexValueByParamName(multiValueCompareParam);
+         if (cv != null) {
+            for (ParamInfo pi : cv) {
+               stringSet.add(pi.getParamValue());
+            }
+         }
+      }
+      multiValueCompareList = new ArrayList<String>(stringSet);
+      Collections.sort(multiValueCompareList, COMPARE_PARAM_VALUE);
+   }
+
+   public String getMultiValueCompare(Long execId, String paramValue) {
+      if (multiValueCompareMetric == null || multiValueCompareParam == null) {
+         return null;
+      }
+      ValueInfo vi = findValueInfo(execId, multiValueCompareMetric);
+      if (vi == null) {
+         return null;
+      }
+      List<ParamInfo> cv = vi.getComplexValueByParamName(multiValueCompareParam);
+      if (cv == null) {
+         return null;
+      }
+      for (ParamInfo pi : cv) {
+         if (paramValue.equals(pi.getParamValue())) {
+            return pi.getFormattedValue();
+         }
+      }
+      return null;
+   }
+
+   public void updateParamSelection() {
+      if (multiValueCompareMetric == null || multiValueCompareParam == null) {
+         return;
+      }
+      updateParamValues(new HashSet<String>(), findValueInfos(multiValueCompareMetric));
+      multiValueCompareChartData = createChart();
+   }
+
+   private XYLineChartSpec createChart() {
+      try {
+         if (multiValueCompareMetric == null || multiValueCompareParam == null || testExecutions == null) {
+            return null;
+         }
+         XYSeriesCollection dataset = new XYSeriesCollection();
+         for (TestExecution exec : testExecutions) {
+            ValueInfo vi = findValueInfo(exec.getId(), multiValueCompareMetric);
+            if (vi != null) {
+               List<ParamInfo> pinfos = vi.getComplexValueByParamName(multiValueCompareParam);
+               if (pinfos != null) {
+                  XYSeries series = new XYSeries(exec.getName());
+                  dataset.addSeries(series);
+
+                  for (ParamInfo pinfo : pinfos) {
+                     Double paramValue = Double.valueOf(pinfo.getParamValue());
+                     if (paramValue != null) {
+                        series.add(paramValue, pinfo.getValue());
+                     }
+                  }
+
+               }
+            }
+         }
+         XYLineChartSpec chartSpec = new XYLineChartSpec();
+         chartSpec.title = "Multi-value for " + multiValueCompareMetric;
+         chartSpec.xAxisLabel = multiValueCompareParam;
+         chartSpec.yAxisLabel = "Metric value";
+         chartSpec.dataset = dataset;
+         return chartSpec;
+      } catch (NumberFormatException e) {
+         log.error("Can't chart non-numeric values");
+         return null;
+      } catch (Exception e) {
+         log.error("Error while creating chart", e);
+         return null;
       }
    }
 
