@@ -13,8 +13,7 @@
 			<c:set target="#{testExecutionController}" property="editMode" value="#{false}" />
 			<c:set target="#{testExecutionController}" property="createMode" value="#{false}" />
 
-			<ui:include src="/testExecutionParameter/new_popup.xhtml" />
-			<ui:include src="/testExecutionParameter/edit_popup.xhtml" />
+			<ui:include src="/testExecution/param_edit.xhtml" />
 			<ui:include src="/testExecutionTag/new_popup.xhtml" />
 			<ui:include src="/value/new_popup.xhtml" />
 			<ui:include src="/value/edit_popup.xhtml" />
@@ -117,9 +116,8 @@
 										</a4j:commandLink>
 									</f:facet>
 									<div class="btn-group">
-										<a4j:commandLink styleClass="btn btn-success btn-small" render="testExecutionValueEditPopupForm"
-											action="#{testExecutionController.setTestExecutionParameter(item)}" oncomplete="#{rich:component('testExecutionParameterEditPopup')}.show();"
-											value=" " alt="#{strings.edit}" title="#{strings.edit}">
+										<a4j:commandLink styleClass="btn btn-success btn-small" render="dialogParamEdit" action="#{testExecutionController.setParameter(item)}"
+											oncomplete="#{rich:component('dialogParamEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
 											<i class="icon-edit" />
 										</a4j:commandLink>
 										<a4j:commandLink styleClass="btn btn-success btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"

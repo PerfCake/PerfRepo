@@ -56,7 +56,7 @@ public class TestExecutionController extends ControllerBase {
 
    private TestExecution testExecution = null;
 
-   private TestExecutionParameter testExecutionParameter = null;
+   private TestExecutionParameter parameter = null;
 
    private TestExecutionTag testExecutionTag = null;
 
@@ -175,16 +175,20 @@ public class TestExecutionController extends ControllerBase {
       return testExecution;
    }
 
-   public TestExecutionParameter getTestExecutionParameter() {
-      return testExecutionParameter;
+   public TestExecutionParameter getParameter() {
+      return parameter;
    }
 
-   public void setTestExecutionParameter(TestExecutionParameter tep) {
-      this.testExecutionParameter = tep;
+   public void setParameter(TestExecutionParameter param) {
+      this.parameter = param;
+   }
+
+   public void unsetParameter() {
+      this.parameter = null;
    }
 
    public void newTestExecutionParameter() {
-      this.testExecutionParameter = new TestExecutionParameter();
+      this.parameter = new TestExecutionParameter();
    }
 
    public TestExecutionTag getTestExecutionTag() {
@@ -220,9 +224,7 @@ public class TestExecutionController extends ControllerBase {
    }
 
    public List<TestExecutionParameter> getTestExecutionParameters() {
-
       return testExecution.getSortedParameters();
-
    }
 
    public List<TestExecutionTag> getTestExecutionTags() {
@@ -264,11 +266,11 @@ public class TestExecutionController extends ControllerBase {
    }
 
    public void addTestExecutionParameter() {
-      if (testExecutionParameter != null && testExecution != null) {
+      if (parameter != null && testExecution != null) {
          try {
-            TestExecutionParameter tep = testService.addTestExecutionParameter(testExecution, testExecutionParameter);
+            TestExecutionParameter tep = testService.addTestExecutionParameter(testExecution, parameter);
             testExecution.getParameters().add(tep);
-            testExecutionParameter = null;
+            parameter = null;
          } catch (Exception e) {
             throw new RuntimeException(e);
          }
@@ -278,12 +280,22 @@ public class TestExecutionController extends ControllerBase {
    }
 
    public void updateTestExecutionParameter() {
-      if (testExecutionParameter != null) {
+      if (parameter != null) {
+         TestExecution idHolder = new TestExecution();
+         idHolder.setId(testExecutionId);
+         parameter.setTestExecution(idHolder);
          try {
-            testExecutionParameter.setTestExecution(testExecution);
-            testService.updateTestExecutionParameter(testExecutionParameter);
-         } catch (Exception e) {
-            throw new RuntimeException(e);
+            TestExecutionParameter freshParam = testService.updateTestExecutionParameter(parameter);
+            for (TestExecutionParameter param : testExecution.getParameters()) {
+               if (param.getId().equals(freshParam.getId())) {
+                  testExecution.getParameters().remove(param);
+                  break;
+               }
+            }
+            testExecution.getParameters().add(freshParam);
+            parameter = null;
+         } catch (ServiceException e) {
+            addMessageFor(e);
          }
       }
    }

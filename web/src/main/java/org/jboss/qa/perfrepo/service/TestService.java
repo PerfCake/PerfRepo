@@ -251,8 +251,9 @@ public interface TestService extends Codes {
     * 
     * @param tep TestExecutionParameter to update
     * @return
+    * @throws ServiceException
     */
-   TestExecutionParameter updateTestExecutionParameter(TestExecutionParameter tep);
+   TestExecutionParameter updateTestExecutionParameter(TestExecutionParameter tep) throws ServiceException;
 
    /**
     * Removes TestExecutionParameter

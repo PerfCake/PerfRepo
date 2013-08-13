@@ -545,8 +545,12 @@ public class TestServiceBean implements TestService {
       return testExecutionParameterDAO.find(id);
    }
 
-   public TestExecutionParameter updateTestExecutionParameter(TestExecutionParameter tep) {
-      tep.setTestExecution(testExecutionDAO.find(tep.getTestExecution().getId()));
+   public TestExecutionParameter updateTestExecutionParameter(TestExecutionParameter tep) throws ServiceException {
+      TestExecution exec = testExecutionDAO.find(tep.getTestExecution().getId());
+      if (exec == null) {
+         serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", tep.getTestExecution().getId());
+      }
+      checkUserCanChangeTest(exec.getTest());
       return testExecutionParameterDAO.update(tep);
    }
 
