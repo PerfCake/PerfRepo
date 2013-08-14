@@ -2,6 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
 <h:body>
+	<f:metadata>
+		<f:event type="preRenderView" listener="#{testSearchController.preRender}" />
+	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="title">#{strings['page.testSearch.title']}</ui:define>
 		<ui:define name="content">
@@ -11,21 +14,21 @@
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testName">#{strings['page.testSearch.prop.testname']}</h:outputLabel>
 						<div class="controls">
-							<h:inputText type="text" class="input-xlarge" id="testName" value="#{testSearchController.search.name}" />
+							<h:inputText type="text" class="input-xlarge" id="testName" value="#{testSearchController.criteria.name}" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testUID">#{strings['page.testSearch.prop.testuid']}</h:outputLabel>
 						<div class="controls">
-							<h:inputText class="input-xlarge" id="testUID" value="#{testSearchController.search.uid}" />
+							<h:inputText class="input-xlarge" id="testUID" value="#{testSearchController.criteria.uid}" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="groupId">#{strings['page.testSearch.prop.groupid']}</h:outputLabel>
 						<div class="controls">
-							<h:inputText class="input-xlarge" id="groupId" value="#{testSearchController.search.groupId}" />
+							<h:inputText class="input-xlarge" id="groupId" value="#{testSearchController.criteria.groupId}" />
 						</div>
 					</div>
 
@@ -34,7 +37,6 @@
 				<div class="form-actions">
 					<a4j:commandButton action="#{testSearchController.search}" value="#{strings['page.testSearch.buSearch']}" styleClass="btn btn-primary"
 						alt="Search Test Execution" title="Search Test Execution" render="searchResult:searchResultTable">
-						<f:param name="testSearchTO" value="#{testSearchController.search}" />
 					</a4j:commandButton>
 				</div>
 			</h:form>

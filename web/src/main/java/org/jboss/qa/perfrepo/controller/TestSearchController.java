@@ -15,10 +15,8 @@
  */
 package org.jboss.qa.perfrepo.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -26,8 +24,16 @@ import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.qa.perfrepo.session.SearchCriteriaSession;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
+/**
+ * Search tests.
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Named
 @ViewScoped
 public class TestSearchController extends ControllerBase {
@@ -37,22 +43,22 @@ public class TestSearchController extends ControllerBase {
    @Inject
    private TestService testService;
 
-   private TestSearchTO search = null;
+   @Inject
+   private SearchCriteriaSession criteriaSession;
+
+   private TestSearchTO criteria = null;
 
    private List<Test> result;
 
-   @PostConstruct
-   public void init() {
-      if (search == null) {
-         search = new TestSearchTO();
-      }
-      if (result == null) {
-         result = new ArrayList<Test>();
+   public void preRender() {
+      if (criteria == null) {
+         criteria = criteriaSession.getTestSearchCriteria();
+         search();
       }
    }
 
    public void search() {
-      result = testService.searchTest(search);
+      result = testService.searchTest(criteria);
    }
 
    public List<Test> getResult() {
@@ -63,12 +69,12 @@ public class TestSearchController extends ControllerBase {
       this.result = result;
    }
 
-   public TestSearchTO getSearch() {
-      return search;
+   public TestSearchTO getCriteria() {
+      return criteria;
    }
 
-   public void setSearch(TestSearchTO search) {
-      this.search = search;
+   public void setCriteria(TestSearchTO search) {
+      this.criteria = search;
    }
 
    public String delete() {

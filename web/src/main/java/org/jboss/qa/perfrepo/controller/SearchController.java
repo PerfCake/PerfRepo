@@ -15,10 +15,8 @@
  */
 package org.jboss.qa.perfrepo.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -26,8 +24,16 @@ import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.qa.perfrepo.session.SearchCriteriaSession;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
+/**
+ * Search test executions.
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Named
 @ViewScoped
 public class SearchController extends ControllerBase {
@@ -39,24 +45,24 @@ public class SearchController extends ControllerBase {
    @Inject
    private TestService testService;
 
+   @Inject
+   private SearchCriteriaSession criteriaSession;
+
    private String tag;
 
-   private TestExecutionSearchTO bean = null;
+   private TestExecutionSearchTO criteria = null;
 
    private List<TestExecution> result;
 
-   @PostConstruct
-   public void init() {
-      if (bean == null) {
-         bean = new TestExecutionSearchTO();
-      }
-      if (result == null) {
-         result = new ArrayList<TestExecution>();
+   public void preRender() {
+      if (criteria == null) {
+         criteria = criteriaSession.getExecutionSearchCriteria();
+         search();
       }
    }
 
-   public TestExecutionSearchTO getBean() {
-      return bean;
+   public TestExecutionSearchTO getCriteria() {
+      return criteria;
    }
 
    public String getTag() {
@@ -67,9 +73,8 @@ public class SearchController extends ControllerBase {
       this.tag = tag;
    }
 
-   public String search() {
-      result = testService.searchTestExecutions(bean);
-      return null;
+   public void search() {
+      result = testService.searchTestExecutions(criteria);
    }
 
    public String delete() {

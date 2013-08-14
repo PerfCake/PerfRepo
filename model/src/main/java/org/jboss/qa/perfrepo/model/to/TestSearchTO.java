@@ -15,12 +15,21 @@
  */
 package org.jboss.qa.perfrepo.model.to;
 
-public class TestSearchTO {
-   
+import java.io.Serializable;
+
+/**
+ * Test search criteria.
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
+public class TestSearchTO implements Serializable {
+
    private String name;
-   
+
    private String uid;
-   
+
    private String groupId;
 
    public String getName() {
@@ -46,7 +55,5 @@ public class TestSearchTO {
    public void setGroupId(String groupId) {
       this.groupId = groupId;
    }
-   
-   
 
 }

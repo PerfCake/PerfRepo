@@ -67,7 +67,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       if (search.getTags() != null && !"".equals(search.getTags())) {
          Join<TestExecution, TestExecutionTag> tegRoot = root.join("testExecutionTags");
          Join<TestExecutionTag, Tag> tagRoot = tegRoot.join("tag");
-         Object[] tags = search.getTags().split(";");
+         Object[] tags = search.getTags().split(" ");
          criteria.where((tagRoot.get("name").in(tags)));
          criteria.having(cb.greaterThanOrEqualTo(cb.count(tagRoot), Long.valueOf(tags.length)));
       }

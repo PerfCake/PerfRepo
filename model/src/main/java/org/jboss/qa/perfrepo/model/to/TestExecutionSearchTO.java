@@ -15,19 +15,22 @@
  */
 package org.jboss.qa.perfrepo.model.to;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
-public class TestExecutionSearchTO {
-   
+/**
+ * Test execution search criteria.
+ * 
+ * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
+public class TestExecutionSearchTO implements Serializable {
+
    private Date startedFrom;
    private Date startedTo;
    private String tags;
-   
-   private List<String> tagList;
-   
    private String testUID;
-   
    private String testName;
 
    public Date getStartedFrom() {
@@ -44,14 +47,6 @@ public class TestExecutionSearchTO {
 
    public void setStartedTo(Date startedTo) {
       this.startedTo = startedTo;
-   }
-
-   public List<String> getTagList() {
-      return tagList;
-   }
-
-   public void setTagList(List<String> tagList) {
-      this.tagList = tagList;
    }
 
    public String getTestUID() {
@@ -77,5 +72,5 @@ public class TestExecutionSearchTO {
    public void setTags(String tags) {
       this.tags = tags;
    }
-   
+
 }
