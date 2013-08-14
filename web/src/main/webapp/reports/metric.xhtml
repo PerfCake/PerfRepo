@@ -36,31 +36,37 @@
 				</table>
 				<h:panelGroup rendered="#{metricReportBean.testUidDisabled and metricReportBean.execParamDisabled}">
 					<h2>Data series</h2>
-					<rich:dataTable id="seriesTable" styleClass="searchresults" value="#{metricReportBean.seriesSpecs}" var="item">
+					<rich:dataTable id="seriesTable" styleClass="table table-bordered table-striped seriesTable" value="#{metricReportBean.seriesSpecs}" var="seriesItem">
 						<rich:column>
 							<f:facet name="header">Series name</f:facet>
-							<h:inputText value="#{item.name}" />
+							<h:inputText value="#{seriesItem.name}" />
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">Metric</f:facet>
-							<h:selectOneMenu value="#{item.selectedMetricId}">
-								<f:selectItems value="#{metricReportBean.selectionMetrics}" var="item" itemLabel="#{item.name}" itemValue="#{item.id}" />
+							<h:selectOneMenu value="#{seriesItem.selectedMetricId}">
+								<f:selectItems value="#{metricReportBean.selectionMetrics}" var="metricItem" itemLabel="#{metricItem.name}" itemValue="#{metricItem.id}" />
 							</h:selectOneMenu>
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">Tags</f:facet>
-							<h:inputText value="#{item.selectedTags}" />
+							<h:inputText value="#{seriesItem.selectedTags}" />
 						</rich:column>
 						<rich:column>
 							<f:facet name="header"></f:facet>
-							<h:commandButton action="#{metricReportBean.removeSeries(item)}" value="Remove" alt="Remove" title="Remove" />
+							<h:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.removeSeries(seriesItem)}" alt="Remove" title="Remove">
+								<i class="icon-minus"></i>
+							</h:commandLink>
 						</rich:column>
 					</rich:dataTable>
 				</h:panelGroup>
 
-				<h:commandButton action="#{metricReportBean.redraw}" value="Submit" alt="Submit" title="Submit" />
-				<h:commandButton action="#{metricReportBean.addSeries}" value="Add series" alt="Add series" title="Add series"
-					rendered="#{metricReportBean.testUidDisabled and metricReportBean.execParamDisabled}" />
+				<h:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.redraw}" alt="Redraw" title="Redraw">
+					<i class="icon-refresh"></i> Redraw
+				</h:commandLink>
+				<h:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addSeries}" alt="Add series" title="Add series"
+					rendered="#{metricReportBean.testUidDisabled and metricReportBean.execParamDisabled}">
+					<i class="icon-plus"></i> Add series
+				</h:commandLink>
 
 				<h:panelGroup id="chartPanel" rendered="#{metricReportBean.chartVisible}">
 					<script type="text/javascript">
@@ -69,9 +75,10 @@
 					<h2>
 						<h:outputText value="#{strings.metricReport_chart}" />
 					</h2>
-					<jsflot:flotChart id="metricChart" value="#{metricReportBean.chartData}" height="320" width="640" mode="Series" title="#{strings.metricReport_chartTitle}"
+					<jsflot:flotChart id="metricChart" value="#{metricReportBean.chartData}" height="400" width="800" mode="Series" title="#{strings.metricReport_chartTitle}"
 						chartType="line" showTooltip="true" yaxisMinValue="#{metricReportBean.chart.yaxisMinValue}" yaxisMaxValue="#{metricReportBean.chart.yaxisMaxValue}"
-						showXaxisLabels="true" tooltipFollowMouse="true" chartClickable="true" actionListener="#{metricReportBean.chartActionListener}" reRender="dataPointPanel">
+						showXaxisLabels="true" yaxisTitle="#{metricReportBean.chart.yaxisTitle}" xaxisTitle="#{metricReportBean.chart.xaxisTitle}" tooltipFollowMouse="true"
+						chartClickable="true" actionListener="#{metricReportBean.chartActionListener}" reRender="dataPointPanel">
 					</jsflot:flotChart>
 				</h:panelGroup>
 
@@ -111,9 +118,11 @@
 							<td class="dpcmp"><h:outputText value="N/A" rendered="#{metricReportBean.dataPointExecId == 'N/A'}" /> <h:panelGroup
 									rendered="#{metricReportBean.dataPointExecId != 'N/A'}">
 									<a href="/repo/exec/#{metricReportBean.dataPointExecId}">#{metricReportBean.dataPointExecId}</a>
-                           <!-- TODO: if this could be ajax button that would be great -->   
-									<h:commandButton styleClass="button-edit" render=":compareMenuItem1" value=" " alt="Add to comparison" title="Add to comparison"
-										action="#{teComparatorSession.add(metricReportBean.dataPointExecIdLong)}" />
+									<!-- TODO: if this could be ajax button that would be great -->
+									<h:commandLink styleClass="btn btn-primary btn-small" action="#{teComparatorSession.add(metricReportBean.dataPointExecIdLong)}" alt="Add to comparison"
+										title="Add to comparison">
+										<i class="icon-plus" /> Add to comparison
+									</h:commandLink>
 								</h:panelGroup></td>
 						</tr>
 					</table>

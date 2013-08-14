@@ -435,6 +435,8 @@ public class MetricReportController extends ControllerBase {
          yaxisMinValue = 0d; // don't get below zero if min value isn't negative
       }
       chart.setYaxisMinValue(yaxisMinValue);
+      chart.setYaxisTitle("Metric values");
+      chart.setXaxisTitle(response.getSelectedParam());
       return collection;
    }
 
