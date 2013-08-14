@@ -295,13 +295,24 @@ public class CompareExecutionsController extends ControllerBase {
       return commonTestId;
    }
 
+   public String getPermaLink() {
+      return "/repo/reports/compare/exec?q=" + ParamUtil.generateExecQuery(testExecutions);
+   }
+
    /**
     * called on preRenderView
     */
    public void preRender() {
       reloadSessionMessages();
       if (testExecutions == null) {
-         List<Long> execIdList = new ArrayList<Long>(teComparator.getExecIds());
+         List<Long> execIdList = ParamUtil.parseExecQuery(getRequestParam("q"));
+         if (execIdList == null) {
+            execIdList = new ArrayList<Long>(teComparator.getExecIds());
+         } else {
+            teComparator.clear();
+            teComparator.getExecIds().addAll(execIdList);
+            execIdList = new ArrayList<Long>(teComparator.getExecIds());
+         }
          if (execIdList.isEmpty()) {
             addMessage(INFO, "page.compareExecs.nothingToCompare");
             return;

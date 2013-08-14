@@ -6194,7 +6194,7 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
    text-align: right;
 }
 
-.tetable_params {
+.paramcmp {
 	font-size: 0.8em;
 	width: 940px;
 }
@@ -6202,20 +6202,23 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
 	padding: 2px;
 }
 
-.tetable_params td.paramname {
+.paramcmp td.paramname {
 	text-align: left;
 }
 
-.tetable_params tr.neq {
+.paramcmp tr.neq {
    background: #FFE0E4;
 }
 
-.table-striped tbody>tr.neq:nth-child(odd)>td,.table-striped tbody>tr.neq:nth-child(odd)>th
-   {
+.paramcmp tbody>tr.neq:nth-child(odd)>td,.paramcmp tbody>tr.neq:nth-child(odd)>th {
    background-color: #F2D3D7;
 }
 
 .table-hover tbody tr:hover>td,.table-hover tbody tr:hover>th {
+   background-color: #FFF58A;
+}
+
+.table-hover tbody tr.neq:hover>td,.table-hover tbody tr.neq:hover>th {
    background-color: #FFF58A;
 }
 

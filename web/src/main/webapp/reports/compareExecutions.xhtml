@@ -13,6 +13,7 @@
 		<ui:define name="title">Compare test executions</ui:define>
 		<ui:define name="content">
 			<h1>Compare Test Executions</h1>
+			<a href="#{compareExecutionsController.permaLink}">Permanent link to comparison</a>
 			<h:form>
 				<p>
 					Executions for test <a href="/repo/test/#{compareExecutionsController.test.id}">#{compareExecutionsController.test.name}</a>

@@ -13,6 +13,7 @@
 		<ui:define name="title">Compare execution parameters</ui:define>
 		<ui:define name="content">
 			<h1>Compare execution parameters</h1>
+			<a href="#{compareParametersController.permaLink}">Permanent link to comparison</a>
 			<h:form>
 				<p>
 					Executions for test <a href="/repo/test/#{compareParametersController.test.id}">#{compareParametersController.test.name}</a>
@@ -88,7 +89,7 @@ $(function() {
 					<td><input id="paramfilterinput" class="input-xlarge" type="text" /></td>
 				</tr>
 			</table>
-			<table class="table table-bordered table-striped table-hover smallpad" id="paramtable">
+			<table class="table table-bordered table-striped table-hover smallpad paramcmp" id="paramtable">
 				<thead>
 					<tr>
 						<th>Parameter \ Execution</th>
