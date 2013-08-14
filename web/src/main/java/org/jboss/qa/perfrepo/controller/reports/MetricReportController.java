@@ -17,7 +17,6 @@ package org.jboss.qa.perfrepo.controller.reports;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +37,7 @@ import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesRequest;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesResponse;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SortType;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 import org.jsflot.components.FlotChartClickedEvent;
 import org.jsflot.components.FlotChartRendererData;
@@ -131,7 +131,7 @@ public class MetricReportController extends ControllerBase {
       seriesSpecs = new ArrayList<SeriesRequest>();
       if (seriesSpecs.isEmpty()) {
          String tagStr = getRequestParam("tags");
-         seriesSpecs.add(new SeriesRequestExt("1", getRequestParam("m"), parseTags(tagStr), null, tagStr));
+         seriesSpecs.add(new SeriesRequestExt("1", getRequestParam("m"), Util.parseTags(tagStr), null, tagStr));
       }
       updateReport(new Request(getRequestParam("t"), getRequestParam("p"), (List<SeriesRequest>) seriesSpecs, sortType));
       updateSeriesSpecsFromReport();
@@ -172,7 +172,7 @@ public class MetricReportController extends ControllerBase {
             String seriesLabel = tokens[2 + i * 3];
             String seriesMetricName = tokens[3 + i * 3];
             String seriesTags = tokens[4 + i * 3];
-            seriesSpecs.add(new SeriesRequestExt(seriesLabel, seriesMetricName, parseTags(seriesTags), null, seriesTags));
+            seriesSpecs.add(new SeriesRequestExt(seriesLabel, seriesMetricName, Util.parseTags(seriesTags), null, seriesTags));
          }
          updateReport(new Request(testQuery, paramQuery, seriesSpecs, sortType));
          updateSeriesSpecsFromReport();
@@ -193,7 +193,7 @@ public class MetricReportController extends ControllerBase {
       for (SeriesRequest s : seriesSpecs) {
          SeriesRequestExt s1 = (SeriesRequestExt) s;
          s1.setMetricName(findSelectedMetricName(s1.getSelectedMetricId()));
-         s1.setTags(parseTags(s1.getSelectedTags()));
+         s1.setTags(Util.parseTags(s1.getSelectedTags()));
       }
    }
 
@@ -314,7 +314,7 @@ public class MetricReportController extends ControllerBase {
          Request request = new Request(report.getSelectedTest().getUid(), report.getSelectedParam(), sortType);
          for (SeriesRequest r : seriesSpecs) {
             SeriesRequestExt rExt = (SeriesRequestExt) r;
-            request.addSeries(new SeriesRequest(rExt.getName(), findSelectedMetricName(rExt.getSelectedMetricId()), parseTags(rExt.getSelectedTags())));
+            request.addSeries(new SeriesRequest(rExt.getName(), findSelectedMetricName(rExt.getSelectedMetricId()), Util.parseTags(rExt.getSelectedTags())));
          }
          updateReport(request);
       }
@@ -341,10 +341,6 @@ public class MetricReportController extends ControllerBase {
 
    public List<SeriesRequest> getSeriesSpecs() {
       return seriesSpecs;
-   }
-
-   private List<String> parseTags(String tags) {
-      return (tags == null || "".equals(tags.trim())) ? null : Arrays.asList(tags.split(" "));
    }
 
    public String getSortType() {

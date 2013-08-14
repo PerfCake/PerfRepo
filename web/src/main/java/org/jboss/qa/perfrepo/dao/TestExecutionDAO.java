@@ -31,10 +31,11 @@ import org.jboss.qa.perfrepo.model.Tag;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
-import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
+import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
+import org.jboss.qa.perfrepo.util.Util;
 
 /**
  * DAO for {@link TestExecution}
@@ -54,35 +55,82 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search) {
       CriteriaQuery<TestExecution> criteria = createCriteria();
-      Root<TestExecution> root = criteria.from(TestExecution.class);
-      criteria.select(root);
       CriteriaBuilder cb = criteriaBuilder();
+      List<String> tags = Util.parseTags(search.getTags());
 
+      Root<TestExecution> rExec = criteria.from(TestExecution.class);
+
+      Predicate pStartedFrom = cb.and();
+      Predicate pStartedTo = cb.and();
+      Predicate pTagNameInFixedList = cb.and();
+      Predicate pTestName = cb.and();
+      Predicate pTestUID = cb.and();
+      Predicate pParamsMatch = cb.and();
+      Predicate pHavingAllTagsPresent = cb.and();
+
+      // construct criteria
       if (search.getStartedFrom() != null) {
-         criteria.where(cb.greaterThanOrEqualTo(root.<Date> get("started"), search.getStartedFrom()));
+         pStartedFrom = cb.greaterThanOrEqualTo(rExec.<Date> get("started"), cb.parameter(Date.class, "startedFrom"));
       }
       if (search.getStartedTo() != null) {
-         criteria.where(cb.lessThanOrEqualTo(root.<Date> get("started"), search.getStartedTo()));
+         pStartedTo = cb.lessThanOrEqualTo(rExec.<Date> get("started"), cb.parameter(Date.class, "startedTo"));
       }
-      if (search.getTags() != null && !"".equals(search.getTags())) {
-         Join<TestExecution, TestExecutionTag> tegRoot = root.join("testExecutionTags");
-         Join<TestExecutionTag, Tag> tagRoot = tegRoot.join("tag");
-         Object[] tags = search.getTags().split(" ");
-         criteria.where((tagRoot.get("name").in(tags)));
-         criteria.having(cb.greaterThanOrEqualTo(cb.count(tagRoot), Long.valueOf(tags.length)));
+      if (!tags.isEmpty()) {
+         Join<TestExecution, Tag> rTag = rExec.join("testExecutionTags").join("tag");
+         pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
+         pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
       }
       if (search.getTestName() != null && !"".equals(search.getTestName())) {
-         Join<TestExecution, Test> testRoot = root.join("test");
-         criteria.where(cb.equal(testRoot.get("name"), search.getTestName()));
+         Join<TestExecution, Test> rTest = rExec.join("test");
+         pTestName = cb.equal(rTest.get("name"), cb.parameter(String.class, "testName"));
       }
       if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
-         Join<TestExecution, Test> testRoot = root.join("test");
-         criteria.where(cb.equal(testRoot.get("uid"), search.getTestUID()));
+         Join<TestExecution, Test> rTest = rExec.join("test");
+         pTestUID = cb.equal(rTest.get("uid"), cb.parameter(String.class, "testUID"));
       }
+      if (search.getParameters() != null && !search.getParameters().isEmpty()) {
+         for (int pCount = 1; pCount < search.getParameters().size() + 1; pCount++) {
+            Join<TestExecution, TestExecutionParameter> rParam = rExec.join("parameters");
+            pParamsMatch = cb.and(pParamsMatch, cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName" + pCount)));
+            pParamsMatch = cb.and(pParamsMatch, cb.equal(rParam.get("value"), cb.parameter(String.class, "paramValue" + pCount)));
+         }
+      }
+
+      // construct query
+      criteria.select(rExec);
+      criteria.where(cb.and(pStartedFrom, pStartedTo, pTagNameInFixedList, pTestName, pTestUID, pParamsMatch));
+      criteria.having(pHavingAllTagsPresent);
       // this isn't very ellegant, but Postgres 8.4 doesn't allow GROUP BY only with id
       // this feature is allowed only since Postgres 9.1+
-      criteria.groupBy(root.get("test"), root.get("id"), root.get("name"), root.get("started"));
-      return findByCustomCriteria(criteria);
+      criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("started"));
+      TypedQuery<TestExecution> query = query(criteria);
+
+      // set parameters
+      if (search.getStartedFrom() != null) {
+         query.setParameter("startedFrom", search.getStartedFrom());
+      }
+      if (search.getStartedTo() != null) {
+         query.setParameter("startedTo", search.getStartedTo());
+      }
+      if (!tags.isEmpty()) {
+         query.setParameter("tagList", tags);
+         query.setParameter("tagListSize", new Long(tags.size()));
+      }
+      if (search.getTestName() != null && !"".equals(search.getTestName())) {
+         query.setParameter("testName", search.getTestName());
+      }
+      if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
+         query.setParameter("testUID", search.getTestUID());
+      }
+      if (search.getParameters() != null && !search.getParameters().isEmpty()) {
+         int pCount = 1;
+         for (ParamCriteria paramCriteria : search.getParameters()) {
+            query.setParameter("paramName" + pCount, paramCriteria.getName());
+            query.setParameter("paramValue" + pCount, paramCriteria.getValue());
+            pCount++;
+         }
+      }
+      return query.getResultList();
    }
 
    /**

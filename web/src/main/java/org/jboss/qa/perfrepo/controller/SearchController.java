@@ -77,6 +77,14 @@ public class SearchController extends ControllerBase {
       result = testService.searchTestExecutions(criteria);
    }
 
+   public void addParameterCriteria() {
+      criteria.getParameters().add(new TestExecutionSearchTO.ParamCriteria());
+   }
+
+   public void removeParameterCriteria(TestExecutionSearchTO.ParamCriteria criteriaToRemove) {
+      criteria.getParameters().remove(criteriaToRemove);
+   }
+
    public String delete() {
       Long idToDelete = Long.valueOf(getRequestParam("idToDelete"));
       if (idToDelete == null) {

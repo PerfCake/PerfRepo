@@ -8,7 +8,7 @@
 	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="title">Search Test Execution</ui:define>
 		<ui:define name="content">
-			<h:form class="form-horizontal well">
+			<h:form id="criteriaForm" class="form-horizontal well">
 				<fieldset>
 					<legend>Search Test Execution</legend>
 					<div class="control-group">
@@ -45,6 +45,47 @@
 							<h:inputText class="input-xlarge" id="tags" value="#{searchController.criteria.tags}" />
 						</div>
 					</div>
+
+					<h:panelGroup rendered="#{searchController.criteria.parameters.isEmpty()}">
+						<div class="control-group">
+							<h:outputLabel class="control-label">Parameters</h:outputLabel>
+							<div class="controls">
+								<a4j:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Add parameter criteria" title="Add parameter criteria"
+									action="#{searchController.addParameterCriteria}">
+									<i class="icon-plus"></i>
+								</a4j:commandLink>
+							</div>
+						</div>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{!searchController.criteria.parameters.isEmpty()}">
+						<div class="control-group">
+							<h:outputLabel class="control-label">Parameters</h:outputLabel>
+							<div class="controls">
+								<h:dataTable value="#{searchController.criteria.parameters}" var="item">
+									<h:column>
+										<f:facet name="header">Name</f:facet>
+										<h:inputText class="input-xlarge" value="#{item.name}" />
+									</h:column>
+									<h:column>
+										<f:facet name="header">Value</f:facet>
+                              <h:inputText class="input-xlarge" value="#{item.value}" />
+                           </h:column>
+									<h:column>
+										<f:facet name="header">
+											<a4j:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Add parameter criteria" title="Add parameter criteria"
+												action="#{searchController.addParameterCriteria}">
+												<i class="icon-plus"></i>
+											</a4j:commandLink>
+										</f:facet>
+										<a4j:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Remove" title="Remove"
+											action="#{searchController.removeParameterCriteria(item)}">
+											<i class="icon-trash"></i>
+										</a4j:commandLink>
+									</h:column>
+								</h:dataTable>
+							</div>
+						</div>
+					</h:panelGroup>
 				</fieldset>
 
 				<div class="form-actions">
