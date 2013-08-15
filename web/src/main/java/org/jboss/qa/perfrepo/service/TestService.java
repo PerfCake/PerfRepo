@@ -326,8 +326,9 @@ public interface TestService extends Codes {
     * 
     * @param value
     * @return
+    * @throws ServiceException
     */
-   Value updateValue(Value value);
+   Value updateValue(Value value) throws ServiceException;
 
    /**
     * Removes value from TestExecution

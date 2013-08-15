@@ -6198,8 +6198,8 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
 	font-size: 0.8em;
 	width: 940px;
 }
-.smallpad td {
-	padding: 2px;
+.smallpad td, .smallpad th {
+	padding: 3px;
 }
 
 .paramcmp td.paramname {
@@ -6226,10 +6226,10 @@ td.numvalcolumn {
 	text-align: right;
 }
 
-table.seriesTable td {
+table.editableEntryTable td {
 	padding: 1px;
 }
 
-table.seriesTable input {
+table.editableEntryTable input {
    width: inherit;
 }

@@ -15,23 +15,21 @@
 			<ui:include src="/test/metric_add.xhtml" />
 			<ui:include src="/test/metric_edit.xhtml" />
 
-			<div class="well">
-				<fieldset>
-					<legend>
-						#{testController.test.name} <a href="/repo/test/#{testController.testId}/edit"><i class="icon-edit" title="#{strings.edit}" /></a>
-					</legend>
-					<h:outputLabel class="detail-label">ID</h:outputLabel>
-					<div class="detail-value">#{testController.test.id}</div>
-					<h:outputLabel class="detail-label">#{entityStrings.Test_uid}</h:outputLabel>
-					<div class="detail-value">#{testController.test.uid}</div>
-					<h:outputLabel class="detail-label">#{entityStrings.Test_groupid}</h:outputLabel>
-					<div class="detail-value">#{testController.test.groupId}</div>
-					<h:outputLabel class="detail-label">Description</h:outputLabel>
-					<div class="detail-value">
-						<h:outputText value="#{testController.test.description}" escape="false" />
-					</div>
-				</fieldset>
-			</div>
+			<fieldset>
+				<legend>
+					#{testController.test.name} <a href="/repo/test/#{testController.testId}/edit"><i class="icon-edit" title="#{strings.edit}" /></a>
+				</legend>
+				<h:outputLabel class="detail-label">ID</h:outputLabel>
+				<div class="detail-value">#{testController.test.id}</div>
+				<h:outputLabel class="detail-label">#{entityStrings.Test_uid}</h:outputLabel>
+				<div class="detail-value">#{testController.test.uid}</div>
+				<h:outputLabel class="detail-label">#{entityStrings.Test_groupid}</h:outputLabel>
+				<div class="detail-value">#{testController.test.groupId}</div>
+				<h:outputLabel class="detail-label">Description</h:outputLabel>
+				<div class="detail-value">
+					<h:outputText value="#{testController.test.description}" escape="false" />
+				</div>
+			</fieldset>
 
 
 			<h3>Metrics</h3>

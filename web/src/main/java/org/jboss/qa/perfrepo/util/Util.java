@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.jboss.qa.perfrepo.model.TestExecutionParameter;
+
 /**
  * 
  * Various utility methods.
@@ -29,6 +31,27 @@ public class Util {
          } else {
             return Arrays.asList(trimmed.split(" "));
          }
+      }
+   }
+
+   public static String displayValue(TestExecutionParameter param) {
+      if (param == null) {
+         return null;
+      }
+      String value = param.getValue();
+      if (value == null) {
+         return null;
+      }
+      if (value.startsWith("http://") || value.startsWith("https://")) {
+         if (value.length() > 100) {
+            return "<a href=\"" + value + "\">" + value.substring(0, 96) + " ...</a>";
+         } else {
+            return "<a href=\"" + value + "\">" + value + "</a>";
+         }
+      } else if (value.length() > 100) {
+         return "<a href=\"/repo/param/" + param.getId() + "\">" + value.substring(0, 96) + " ...</a>";
+      } else {
+         return value;
       }
    }
 }

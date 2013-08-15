@@ -33,6 +33,7 @@ import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
+import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 /**
@@ -150,21 +151,7 @@ public class CompareParametersController extends ControllerBase {
    }
 
    public String getParamValue(TestExecution exec, String paramName) {
-      TestExecutionParameter param = exec.findParameter(paramName);
-      if (param == null) {
-         return null;
-      }
-      String value = param.getValue();
-      if (value == null) {
-         return null;
-      }
-      if (value.startsWith("http://") || value.startsWith("https://")) {
-         return "<a href=\"" + value + "\">" + value + "</a>";
-      } else if (value.length() > 100) {
-         return "<a href=\"/repo/param/" + param.getId() + "\">" + value.substring(0, 96) + " ...</a>";
-      } else {
-         return value;
-      }
+      return Util.displayValue(exec.findParameter(paramName));
    }
 
    public boolean paramsEqual(String paramName) {

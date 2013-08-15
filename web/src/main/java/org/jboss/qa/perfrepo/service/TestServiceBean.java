@@ -603,9 +603,12 @@ public class TestServiceBean implements TestService {
       return valueDAO.create(value);
    }
 
-   public Value updateValue(Value value) {
-      TestExecution freshTestExecution = testExecutionDAO.find(value.getTestExecution().getId());
-      value.setTestExecution(freshTestExecution);
+   public Value updateValue(Value value) throws ServiceException {
+      TestExecution exec = testExecutionDAO.find(value.getTestExecution().getId());
+      if (exec == null) {
+         serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
+      }
+      checkUserCanChangeTest(exec.getTest());
       return valueDAO.update(value);
    }
 

@@ -1,8 +1,5 @@
-Bugs in 0.0.1
+Bugs in 0.0.5
 -------------
-
-- BUG: http://localhost:8080/repo/rest/test/all
-- BUG: edit test, fail SecurityException
 
 
 
@@ -11,3 +8,6 @@ TODO
 
 - database management scripts (PostgreSQL)
 - deletion of some objects might take long, show "please wait..." disable work for that time
+- metric human readable names and units for display in charts (from rvansa)
+- test executions uploaded from automated tests should be markable read-only and not editable 
+  in first iteration read only checkbox should be changable by anyone, but later only by admin role if we add that (from mgencur)

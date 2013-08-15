@@ -39,10 +39,17 @@ import org.jboss.qa.perfrepo.model.to.MultiValue.ValueInfo;
 import org.jboss.qa.perfrepo.rest.TestExecutionREST;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+/**
+ * Details of {@link TestExecution}
+ * 
+ * @author Michal Linhard (mlinhard@redhat.com)
+ * 
+ */
 @Named
 @ViewScoped
 public class TestExecutionController extends ControllerBase {
@@ -55,11 +62,8 @@ public class TestExecutionController extends ControllerBase {
 
    private TestExecution testExecution = null;
 
-   private TestExecutionParameter parameter = null;
-
-   private TestExecutionTag testExecutionTag = null;
-
-   private Value value = null;
+   private TestExecutionParameter editedParameter = null;
+   private Value editedValue = null;
 
    private List<ValueInfo> values = null;
 
@@ -125,40 +129,24 @@ public class TestExecutionController extends ControllerBase {
       return testExecution;
    }
 
-   public TestExecutionParameter getParameter() {
-      return parameter;
+   public TestExecutionParameter getEditedParameter() {
+      return editedParameter;
    }
 
-   public void setParameter(TestExecutionParameter param) {
-      this.parameter = param;
+   public void setEditedParameter(TestExecutionParameter param) {
+      this.editedParameter = param;
    }
 
-   public void unsetParameter() {
-      this.parameter = null;
+   public void unsetEditedParameter() {
+      this.editedParameter = null;
    }
 
-   public void newTestExecutionParameter() {
-      this.parameter = new TestExecutionParameter();
+   public void createEditedParameter() {
+      this.editedParameter = new TestExecutionParameter();
    }
 
-   public TestExecutionTag getTestExecutionTag() {
-      return testExecutionTag;
-   }
-
-   public Value getValue() {
-      return value;
-   }
-
-   public void setValue(Value value) {
-      this.value = value;
-   }
-
-   public void setTestExecutionTag(TestExecutionTag testExecutionTag) {
-      this.testExecutionTag = testExecutionTag;
-   }
-
-   public void newTestExecutionTag() {
-      this.testExecutionTag = new TestExecutionTag();
+   public Value getEditedValue() {
+      return editedValue;
    }
 
    public String update() {
@@ -204,7 +192,7 @@ public class TestExecutionController extends ControllerBase {
       return "Search";
    }
 
-   public void deleteTestExecutionParamenter(TestExecutionParameter param) {
+   public void deleteParameter(TestExecutionParameter param) {
       if (param != null) {
          try {
             testService.deleteTestExecutionParameter(param);
@@ -215,27 +203,13 @@ public class TestExecutionController extends ControllerBase {
       }
    }
 
-   public void addTestExecutionParameter() {
-      if (parameter != null && testExecution != null) {
-         try {
-            TestExecutionParameter tep = testService.addTestExecutionParameter(testExecution, parameter);
-            testExecution.getParameters().add(tep);
-            parameter = null;
-         } catch (Exception e) {
-            throw new RuntimeException(e);
-         }
-      } else {
-         throw new RuntimeException("parameters are not set");
-      }
-   }
-
-   public void updateTestExecutionParameter() {
-      if (parameter != null) {
+   public void updateEditedParameter() {
+      if (editedParameter != null) {
          TestExecution idHolder = new TestExecution();
          idHolder.setId(testExecutionId);
-         parameter.setTestExecution(idHolder);
+         editedParameter.setTestExecution(idHolder);
          try {
-            TestExecutionParameter freshParam = testService.updateTestExecutionParameter(parameter);
+            TestExecutionParameter freshParam = testService.updateTestExecutionParameter(editedParameter);
             for (TestExecutionParameter param : testExecution.getParameters()) {
                if (param.getId().equals(freshParam.getId())) {
                   testExecution.getParameters().remove(param);
@@ -243,49 +217,47 @@ public class TestExecutionController extends ControllerBase {
                }
             }
             testExecution.getParameters().add(freshParam);
-            parameter = null;
+            editedParameter = null;
          } catch (ServiceException e) {
             addMessageFor(e);
          }
       }
    }
 
-   public void addTestExecutionTag() {
-      if (testExecutionTag != null && testExecution != null) {
+   public void setEditedValue(Value value) {
+      this.editedValue = value;
+   }
+
+   public void createEditedValue() {
+      editedValue = new Value();
+   }
+
+   public void unsetEditedValue() {
+      editedValue = null;
+   }
+
+   public void addEditedValueParameter() {
+      log.info("add edited val param");
+   }
+
+   public void updateEditedValue() {
+      if (editedValue != null) {
+         TestExecution idHolder = new TestExecution();
+         idHolder.setId(testExecutionId);
+         editedValue.setTestExecution(idHolder);
          try {
-            TestExecutionTag teg = testService.addTestExecutionTag(testExecution, testExecutionTag);
-            testExecution.getTestExecutionTags().add(teg);
-            testExecutionTag = null;
-         } catch (Exception e) {
-            throw new RuntimeException(e);
+            Value freshValue = testService.updateValue(editedValue);
+            for (Value val : testExecution.getValues()) {
+               if (val.getId().equals(freshValue.getId())) {
+                  testExecution.getParameters().remove(val);
+                  break;
+               }
+            }
+            testExecution.getValues().add(freshValue);
+            editedValue = null;
+         } catch (ServiceException e) {
+            addMessageFor(e);
          }
-      } else {
-         throw new RuntimeException("parameters are not set");
-      }
-   }
-
-   public void deleteTestExecutionTag(TestExecutionTag teg) {
-      if (teg != null) {
-         testService.deleteTestExecutionTag(teg);
-         testExecution.getTestExecutionTags().remove(teg);
-      }
-   }
-
-   public void createValue() {
-      value = new Value();
-   }
-
-   public void addValue() {
-      if (value != null && testExecution != null) {
-         Value v = testService.addValue(testExecution, value);
-         testExecution.getValues().add(v);
-
-      }
-   }
-
-   public void updateValue() {
-      if (value != null) {
-         testService.updateValue(value);
       }
    }
 
@@ -379,41 +351,6 @@ public class TestExecutionController extends ControllerBase {
       }
    }
 
-   //
-   //   private void createChart(List<ParamInfo> values, ValueInfo mainValue) {
-   //      try {
-   //         double minValue = Double.MAX_VALUE;
-   //         double maxValue = Double.MIN_VALUE;
-   //         XYDataList series = new XYDataList();
-   //         series.setLabel(mainValue.getMetricName());
-   //         for (ParamInfo pinfo : values) {
-   //            Double paramValue = Double.valueOf(pinfo.getParamValue());
-   //            if (paramValue != null) {
-   //               XYDataPoint dp = new XYDataPoint(paramValue, pinfo.getValue());
-   //               series.addDataPoint(dp);
-   //               if (paramValue > maxValue) {
-   //                  maxValue = paramValue;
-   //               }
-   //               if (paramValue < minValue) {
-   //                  minValue = paramValue;
-   //               }
-   //            }
-   //         }
-   //         chartData.addDataList(series);
-   //         double range = maxValue - minValue;
-   //         chart.setYaxisMaxValue(maxValue + 0.1d * range);
-   //         double yaxisMinValue = minValue - 0.1d * range;
-   //         if (minValue >= 0d && yaxisMinValue < 0) {
-   //            yaxisMinValue = 0d; // don't get below zero if min value isn't negative
-   //         }
-   //         chart.setYaxisMinValue(yaxisMinValue);
-   //      } catch (Exception e) {
-   //         log.error("Error while creating chart", e);
-   //         chart = null;
-   //         chartData = null;
-   //      }
-   //   }
-
    public List<ParamInfo> getSelectedMultiValueList() {
       return selectedMultiValueList;
    }
@@ -428,6 +365,10 @@ public class TestExecutionController extends ControllerBase {
 
    public List<String> getSelectedMultiValueParamSelectionList() {
       return selectedMultiValueParamSelectionList;
+   }
+
+   public String displayValue(TestExecutionParameter param) {
+      return Util.displayValue(param);
    }
 
 }

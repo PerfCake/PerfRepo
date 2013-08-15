@@ -174,4 +174,8 @@ public class Value implements Serializable, CloneableEntity<Value> {
       }
    }
 
+   public boolean hasParameters() {
+      return parameters != null && !parameters.isEmpty();
+   }
+
 }

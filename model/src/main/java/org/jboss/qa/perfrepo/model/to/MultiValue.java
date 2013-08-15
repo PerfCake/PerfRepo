@@ -44,7 +44,7 @@ public class MultiValue {
          ValueInfo vInfo = new ValueInfo();
          vInfo.metricName = entry.getKey();
          if (entry.getValue().size() == 1) {
-            vInfo.simpleValue = entry.getValue().get(0).getResultValue();
+            vInfo.simpleValue = entry.getValue().get(0);
          } else {
             vInfo.complexValueByParamName = new TreeMap<String, List<ParamInfo>>();
             for (Value v : entry.getValue()) {
@@ -58,8 +58,8 @@ public class MultiValue {
                         vInfo.complexValueByParamName.put(vp.getName(), paramInfos);
                      }
                      ParamInfo paramInfo = new ParamInfo();
-                     paramInfo.setParamValue(vp.getParamValue());
-                     paramInfo.setValue(v.getResultValue());
+                     paramInfo.param = vp;
+                     paramInfo.value = v;
                      paramInfos.add(paramInfo);
                   }
                }
@@ -78,50 +78,46 @@ public class MultiValue {
    private static final DecimalFormat FMT = new DecimalFormat("0.000");
 
    public static class ParamInfo implements Comparable<ParamInfo> {
-      private String paramValue;
-      private Double value;
+      private ValueParameter param;
+      private Value value;
 
       public String getParamValue() {
-         return paramValue;
-      }
-
-      public void setParamValue(String paramValue) {
-         this.paramValue = paramValue;
+         return param == null ? null : param.getParamValue();
       }
 
       public Double getValue() {
-         return value;
-      }
-
-      public void setValue(Double value) {
-         this.value = value;
+         return value == null ? null : value.getResultValue();
       }
 
       @Override
       public int compareTo(ParamInfo o) {
          try {
-            return Double.valueOf(this.paramValue).compareTo(Double.valueOf(o.paramValue));
+            return Double.valueOf(this.getParamValue()).compareTo(Double.valueOf(o.getParamValue()));
          } catch (NumberFormatException e) {
-            return this.paramValue.compareTo(o.paramValue);
+            return this.getParamValue().compareTo(o.getParamValue());
          }
       }
 
       public String getFormattedValue() {
-         return value == null ? null : FMT.format(value);
+         return getValue() == null ? null : FMT.format(getValue());
       }
    }
 
    public static class ValueInfo implements Comparable<ValueInfo> {
       private String metricName;
-      private Double simpleValue;
+      private Value simpleValue;
       private SortedMap<String, List<ParamInfo>> complexValueByParamName;
 
       public String getMetricName() {
          return metricName;
       }
 
-      public Double getSimpleValue() {
+      public Value getEntity() {
          return simpleValue;
+      }
+
+      public Double getSimpleValue() {
+         return simpleValue == null ? null : simpleValue.getResultValue();
       }
 
       public List<ParamInfo> getComplexValueByParamName(String paramName) {
@@ -138,7 +134,7 @@ public class MultiValue {
       }
 
       public String getFormattedSimpleValue() {
-         return simpleValue == null ? null : FMT.format(simpleValue);
+         return simpleValue == null ? null : FMT.format(simpleValue.getResultValue());
       }
 
       public List<String> getComplexValueParams() {

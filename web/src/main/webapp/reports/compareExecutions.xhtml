@@ -64,14 +64,16 @@
 					</rich:column>
 					<rich:column styleClass="#{compareExecutionsController.isBaseline(te.id) ? 'compare_exec_baseline' : '' }">
 						<f:facet name="header"></f:facet>
-						<h:commandLink styleClass="btn btn-primary btn-small" action="#{compareExecutionsController.setAsBaseline(te.id)}" alt="Set as baseline"
-							title="Set as baseline">
-							<i class="icon-compass "></i>
-						</h:commandLink>
-						<h:commandLink styleClass="btn btn-primary btn-small" action="#{compareExecutionsController.removeFromComparison(te.id)}" alt="Remove from comparison"
-							title="Remove from comparison">
-							<i class="icon-trash"></i>
-						</h:commandLink>
+						<div class="btn-group">
+							<h:commandLink styleClass="btn btn-primary btn-small" action="#{compareExecutionsController.setAsBaseline(te.id)}" alt="Set as baseline"
+								title="Set as baseline">
+								<i class="icon-compass "></i>
+							</h:commandLink>
+							<h:commandLink styleClass="btn btn-primary btn-small" action="#{compareExecutionsController.removeFromComparison(te.id)}" alt="Remove from comparison"
+								title="Remove from comparison">
+								<i class="icon-trash"></i>
+							</h:commandLink>
+						</div>
 					</rich:column>
 				</rich:dataTable>
 			</h:form>

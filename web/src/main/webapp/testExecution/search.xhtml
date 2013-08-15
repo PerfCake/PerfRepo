@@ -68,8 +68,8 @@
 									</h:column>
 									<h:column>
 										<f:facet name="header">Value</f:facet>
-                              <h:inputText class="input-xlarge" value="#{item.value}" />
-                           </h:column>
+										<h:inputText class="input-xlarge" value="#{item.value}" />
+									</h:column>
 									<h:column>
 										<f:facet name="header">
 											<a4j:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Add parameter criteria" title="Add parameter criteria"
@@ -127,17 +127,17 @@
 					</rich:column>
 					<rich:column>
 						<f:facet name="header"></f:facet>
-
-
-						<a4j:commandLink styleClass="btn btn-primary btn-small" action="#{searchController.delete}" alt="#{strings.delete}" title="#{strings.delete}"
-							render="@form :messagesPanel">
-							<f:param name="idToDelete" value="#{item.id}" />
-							<i class="icon-trash"></i>
-						</a4j:commandLink>
-						<a4j:commandLink styleClass="btn btn-primary btn-small" render=":compareMenuItem" lt="Add to comparison" title="Add to comparison"
-							action="#{teComparatorSession.add(item.id)}">
-							<i class="icon-plus"></i>
-						</a4j:commandLink>
+						<div class="btn-group">
+							<a4j:commandLink styleClass="btn btn-primary btn-small" action="#{searchController.delete}" alt="#{strings.delete}" title="#{strings.delete}"
+								render="@form :messagesPanel">
+								<f:param name="idToDelete" value="#{item.id}" />
+								<i class="icon-trash"></i>
+							</a4j:commandLink>
+							<a4j:commandLink styleClass="btn btn-primary btn-small" render=":compareMenuItem" lt="Add to comparison" title="Add to comparison"
+								action="#{teComparatorSession.add(item.id)}">
+								<i class="icon-plus"></i>
+							</a4j:commandLink>
+						</div>
 					</rich:column>
 				</rich:dataTable>
 			</h:form>

@@ -36,7 +36,7 @@
 				</table>
 				<h:panelGroup rendered="#{metricReportBean.testUidDisabled and metricReportBean.execParamDisabled}">
 					<h2>Data series</h2>
-					<rich:dataTable id="seriesTable" styleClass="table table-bordered table-striped seriesTable" value="#{metricReportBean.seriesSpecs}" var="seriesItem">
+					<rich:dataTable id="seriesTable" styleClass="table table-bordered table-striped editableEntryTable" value="#{metricReportBean.seriesSpecs}" var="seriesItem">
 						<rich:column>
 							<f:facet name="header">Series name</f:facet>
 							<h:inputText value="#{seriesItem.name}" />
