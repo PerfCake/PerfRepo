@@ -15,13 +15,10 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.io.Serializable;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,7 +34,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-@Entity
+@javax.persistence.Entity
 @Table(name = "value_parameter")
 @NamedQueries({
       @NamedQuery(name = ValueParameter.FIND_ALL, query = "SELECT x from ValueParameter x"),
@@ -52,7 +49,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "valueParameter")
 @Named("valueParameter")
 @RequestScoped
-public class ValueParameter implements Serializable, CloneableEntity<ValueParameter> {
+public class ValueParameter implements Entity<ValueParameter>, Comparable<ValueParameter> {
 
    public static final String FIND_ALL = "ValueParameter.findAll";
 
@@ -140,5 +137,10 @@ public class ValueParameter implements Serializable, CloneableEntity<ValueParame
       } catch (CloneNotSupportedException e) {
          throw new RuntimeException(e);
       }
+   }
+
+   @Override
+   public int compareTo(ValueParameter o) {
+      return name.compareTo(o.name);
    }
 }

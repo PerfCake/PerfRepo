@@ -57,6 +57,8 @@ import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesResponse;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SortType;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
+import org.jboss.qa.perfrepo.model.util.EntityUtil;
+import org.jboss.qa.perfrepo.model.util.EntityUtil.UpdateSet;
 import org.jboss.qa.perfrepo.security.Secure;
 import org.jboss.qa.perfrepo.security.UserInfo;
 
@@ -472,17 +474,7 @@ public class TestServiceBean implements TestService {
       testExecution.getSortedTags();
       List<Value> cloneValues = new ArrayList<Value>();
       for (Value v : testExecution.getValues()) {
-         Value cloneValue = v.clone();
-         cloneValues.add(cloneValue);
-         boolean emptyParams = true;
-         for (ValueParameter p : cloneValue.getParameters()) {
-            emptyParams = false;
-            p.getName();
-            p.getParamValue();
-         }
-         if (emptyParams) {
-            cloneValue.setParameters(null);
-         }
+         cloneValues.add(v.cloneWithParameters());
       }
       testExecution.setValues(cloneValues);
       testExecution.setAttachments(testExecutionAttachmentDAO.findByExecution(id));
@@ -575,32 +567,46 @@ public class TestServiceBean implements TestService {
       testExecutionTagDAO.delete(tegRemove);
    }
 
-   public ValueParameter addValueParameter(Value value, ValueParameter vp) {
-      Value freshValue = valueDAO.find(value.getId());
-      vp.setValue(freshValue);
-      return valueParameterDAO.create(vp);
-   }
-
-   public ValueParameter updateValueParameter(ValueParameter vp) {
-      vp.setValue(valueDAO.find(vp.getValue().getId()));
-      return valueParameterDAO.update(vp);
-   }
-
-   public void deleteValueParameter(ValueParameter vp) {
-      ValueParameter freshVP = valueParameterDAO.find(vp.getId());
-      valueParameterDAO.delete(freshVP);
-   }
-
    public Value getValue(Long id) {
       return valueDAO.getValue(id);
    }
 
-   public Value addValue(TestExecution te, Value value) {
-      TestExecution freshTestExecution = testExecutionDAO.find(te.getId());
+   public Value createValue(Value value) throws ServiceException {
+      TestExecution exec = testExecutionDAO.find(value.getTestExecution().getId());
+      if (exec == null) {
+         throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
+      }
+      checkUserCanChangeTest(exec.getTest());
       Metric metric = metricDAO.find(value.getMetric().getId());
-      value.setTestExecution(freshTestExecution);
+      if (metric == null) {
+         throw serviceException(METRIC_NOT_FOUND, "Metric not found (id=%s)", value.getMetric().getId());
+      }
+      value.setTestExecution(exec);
       value.setMetric(metric);
-      return valueDAO.create(value);
+      // check if other values for given metric exist, if yes, we can only add one if both old and new one have at least one parameter
+      List<Value> existingValuesForMetric = valueDAO.find(exec.getId(), metric.getId());
+      if (!existingValuesForMetric.isEmpty()) {
+         for (Value v : existingValuesForMetric) {
+            if (!v.hasParameters()) {
+               throw serviceException(UNPARAMETRIZED_MULTI_VALUE, "If you create multiple values for same metric, they must be parametrized.");
+            }
+         }
+         if (!value.hasParameters()) {
+            throw serviceException(UNPARAMETRIZED_MULTI_VALUE, "If you create multiple values for same metric, they must be parametrized.");
+         }
+      }
+      Value freshValue = valueDAO.create(value);
+      Value freshValueClone = freshValue.clone();
+      List<ValueParameter> newParams = new ArrayList<ValueParameter>();
+      if (value.hasParameters()) {
+         for (ValueParameter valueParameter : value.getParameters()) {
+            valueParameter.setValue(freshValue);
+            newParams.add(valueParameterDAO.create(valueParameter).clone());
+            newParams.get(newParams.size() - 1).setValue(freshValueClone);
+         }
+      }
+      freshValueClone.setParameters(newParams.isEmpty() ? null : newParams);
+      return freshValueClone;
    }
 
    public Value updateValue(Value value) throws ServiceException {
@@ -609,10 +615,39 @@ public class TestServiceBean implements TestService {
          serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
       }
       checkUserCanChangeTest(exec.getTest());
-      return valueDAO.update(value);
+      Value oldValue = valueDAO.find(value.getId());
+      if (oldValue == null) {
+         serviceException(VALUE_NOT_FOUND, "Value doesn't exist (id=%s)", value.getId());
+      }
+      Value freshValue = valueDAO.update(value);
+      Value freshValueClone = freshValue.clone();
+      UpdateSet<ValueParameter> updateSet = EntityUtil.updateSet(oldValue.getParameters(), value.getParameters());
+      if (!updateSet.removed.isEmpty()) {
+         serviceException(STALE_COLLECTION, "Collection of value parameters contains stale ids: %s", updateSet.removed);
+      }
+      List<ValueParameter> newParams = new ArrayList<ValueParameter>();
+      for (ValueParameter vp : updateSet.toAdd) {
+         vp.setValue(freshValue);
+         newParams.add(valueParameterDAO.create(vp).clone());
+         newParams.get(newParams.size() - 1).setValue(freshValueClone);
+      }
+      for (ValueParameter vp : updateSet.toUpdate) {
+         newParams.add(valueParameterDAO.update(vp).clone());
+         newParams.get(newParams.size() - 1).setValue(freshValueClone);
+      }
+      for (ValueParameter vp : updateSet.toRemove) {
+         valueParameterDAO.delete(vp);
+      }
+      freshValueClone.setParameters(newParams.isEmpty() ? null : newParams);
+      return freshValueClone;
    }
 
-   public void deleteValue(Value value) {
+   public void deleteValue(Value value) throws ServiceException {
+      TestExecution exec = testExecutionDAO.find(value.getTestExecution().getId());
+      if (exec == null) {
+         serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
+      }
+      checkUserCanChangeTest(exec.getTest());
       Value v = valueDAO.find(value.getId());
       for (ValueParameter vp : v.getParameters()) {
          valueParameterDAO.delete(vp);

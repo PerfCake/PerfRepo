@@ -69,11 +69,6 @@ public class ValueBuilder {
       return this;
    }
 
-   public ValueBuilder name(String name) {
-      value.setName(name);
-      return this;
-   }
-
    public TestExecutionBuilder execution() {
       return parentBuilder;
    }

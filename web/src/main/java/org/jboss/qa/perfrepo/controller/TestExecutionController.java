@@ -28,17 +28,20 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.JFreechartBean.XYLineChartSpec;
 import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.Value;
-import org.jboss.qa.perfrepo.model.to.MultiValue;
-import org.jboss.qa.perfrepo.model.to.MultiValue.ParamInfo;
-import org.jboss.qa.perfrepo.model.to.MultiValue.ValueInfo;
+import org.jboss.qa.perfrepo.model.ValueParameter;
+import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.rest.TestExecutionREST;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.qa.perfrepo.util.MultiValue;
+import org.jboss.qa.perfrepo.util.MultiValue.ParamInfo;
+import org.jboss.qa.perfrepo.util.MultiValue.ValueInfo;
 import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 import org.jfree.data.xy.XYSeries;
@@ -61,9 +64,11 @@ public class TestExecutionController extends ControllerBase {
    private TestService testService;
 
    private TestExecution testExecution = null;
+   private Test test = null;
 
    private TestExecutionParameter editedParameter = null;
    private Value editedValue = null;
+   private Long editedValueMetricSelectionId = null;
 
    private List<ValueInfo> values = null;
 
@@ -119,7 +124,13 @@ public class TestExecutionController extends ControllerBase {
                log.error("Can't find execution with id " + testExecutionId);
                redirectWithMessage("/", ERROR, "page.exec.errorExecNotFound", testExecutionId);
             } else {
-               values = MultiValue.createFrom(testExecution);
+               test = testService.getFullTest(testExecution.getTest().getId());
+               if (test == null) {
+                  log.error("Can't find test with id " + testExecution.getTest().getId());
+                  redirectWithMessage("/", ERROR, "page.test.errorTestNotFound", testExecution.getTest().getId());
+               } else {
+                  values = MultiValue.createFrom(testExecution);
+               }
             }
          }
       }
@@ -127,6 +138,10 @@ public class TestExecutionController extends ControllerBase {
 
    public TestExecution getTestExecution() {
       return testExecution;
+   }
+
+   public Test getTest() {
+      return test;
    }
 
    public TestExecutionParameter getEditedParameter() {
@@ -210,12 +225,7 @@ public class TestExecutionController extends ControllerBase {
          editedParameter.setTestExecution(idHolder);
          try {
             TestExecutionParameter freshParam = testService.updateTestExecutionParameter(editedParameter);
-            for (TestExecutionParameter param : testExecution.getParameters()) {
-               if (param.getId().equals(freshParam.getId())) {
-                  testExecution.getParameters().remove(param);
-                  break;
-               }
-            }
+            EntityUtil.removeById(testExecution.getParameters(), freshParam.getId());
             testExecution.getParameters().add(freshParam);
             editedParameter = null;
          } catch (ServiceException e) {
@@ -225,7 +235,20 @@ public class TestExecutionController extends ControllerBase {
    }
 
    public void setEditedValue(Value value) {
-      this.editedValue = value;
+      this.editedValue = value == null ? null : value.cloneWithParameters();
+      if (editedValue != null || editedValue.getParameters() != null) {
+         if (editedValue.getParameters() instanceof List) {
+            Collections.sort((List<ValueParameter>) editedValue.getParameters());
+         }
+      }
+   }
+
+   public Long getEditedValueMetricSelectionId() {
+      return editedValueMetricSelectionId;
+   }
+
+   public void setEditedValueMetricSelectionId(Long editedValueMetricSelectionId) {
+      this.editedValueMetricSelectionId = editedValueMetricSelectionId;
    }
 
    public void createEditedValue() {
@@ -237,24 +260,54 @@ public class TestExecutionController extends ControllerBase {
    }
 
    public void addEditedValueParameter() {
-      log.info("add edited val param");
+      if (editedValue == null) {
+         log.error("can't add parameter, editedValue not set");
+         return;
+      }
+      ValueParameter vp = new ValueParameter();
+      if (editedValue.getParameters() == null) {
+         editedValue.setParameters(new ArrayList<ValueParameter>(1));
+      }
+      vp.setName("param" + (editedValue.getParameters().size() + 1));
+      editedValue.getParameters().add(vp);
    }
 
+   public void removeEditedValueParameter(ValueParameter vp) {
+      if (editedValue == null) {
+         log.error("can't remove parameter, editedValue not set");
+         return;
+      }
+      if (editedValue.getParameters() == null) {
+         return;
+      }
+      editedValue.getParameters().remove(vp);
+   }
+
+   // this is also create method for value
    public void updateEditedValue() {
       if (editedValue != null) {
          TestExecution idHolder = new TestExecution();
          idHolder.setId(testExecutionId);
          editedValue.setTestExecution(idHolder);
          try {
-            Value freshValue = testService.updateValue(editedValue);
-            for (Value val : testExecution.getValues()) {
-               if (val.getId().equals(freshValue.getId())) {
-                  testExecution.getParameters().remove(val);
-                  break;
+            Value freshValue = null;
+            if (editedValue.getId() == null) {
+               Metric selectedMetric = EntityUtil.findById(test.getMetrics(), editedValueMetricSelectionId);
+               if (selectedMetric == null) {
+                  addMessage(ERROR, "page.exec.errorMetricMandatory");
+                  return;
                }
+               editedValue.setMetric(selectedMetric.clone());
+               freshValue = testService.createValue(editedValue);
+            } else {
+               freshValue = testService.updateValue(editedValue);
+               EntityUtil.removeById(testExecution.getValues(), freshValue.getId());
             }
             testExecution.getValues().add(freshValue);
             editedValue = null;
+            ValueInfo prevValueInfo = MultiValue.find(values, freshValue);
+            values = MultiValue.createFrom(testExecution);
+            showMultiValue(prevValueInfo == null ? null : prevValueInfo.getMetricName());
          } catch (ServiceException e) {
             addMessageFor(e);
          }
@@ -270,8 +323,18 @@ public class TestExecutionController extends ControllerBase {
 
    public void deleteValue(Value value) {
       if (value != null) {
-         testService.deleteValue(value);
-         testExecution.getValues().remove(value);
+         TestExecution idHolder = new TestExecution();
+         idHolder.setId(testExecutionId);
+         value.setTestExecution(idHolder);
+         try {
+            testService.deleteValue(value);
+            EntityUtil.removeById(testExecution.getValues(), value.getId());
+            ValueInfo prevValueInfo = MultiValue.find(values, value);
+            values = MultiValue.createFrom(testExecution);
+            showMultiValue(prevValueInfo.getMetricName());
+         } catch (ServiceException e) {
+            addMessageFor(e);
+         }
       }
    }
 
@@ -300,19 +363,33 @@ public class TestExecutionController extends ControllerBase {
       chartData = createChart(selectedMultiValueList, selectedMultiValue);
    }
 
-   public void showMultiValue(ValueInfo value) {
+   private void clearSelectedMultiValue() {
+      selectedMultiValueParamSelectionList = null;
+      selectedMultiValueParamSelection = null;
+      selectedMultiValue = null;
+      selectedMultiValueList = null;
+      chartData = null;
+   }
+
+   public void showMultiValue(String metricName) {
+      if (metricName == null) {
+         clearSelectedMultiValue();
+         return;
+      }
+      ValueInfo value = MultiValue.find(values, metricName);
       if (value == null || !value.isMultiValue()) {
-         addMessage(ERROR, "page.exec.notMultiValue");
+         clearSelectedMultiValue();
          return;
       }
       selectedMultiValueParamSelectionList = value.getComplexValueParams();
       if (selectedMultiValueParamSelectionList.isEmpty()) {
-         addMessage(ERROR, "page.exec.notMultiValue");
-         selectedMultiValueParamSelectionList = null;
+         clearSelectedMultiValue();
          return;
       }
       Collections.sort(selectedMultiValueParamSelectionList);
-      selectedMultiValueParamSelection = selectedMultiValueParamSelectionList.get(0);
+      if (selectedMultiValueParamSelection == null) {
+         selectedMultiValueParamSelection = selectedMultiValueParamSelectionList.get(0);
+      }
       selectedMultiValueList = value.getComplexValueByParamName(selectedMultiValueParamSelection);
       selectedMultiValue = value;
       chartData = createChart(selectedMultiValueList, selectedMultiValue);

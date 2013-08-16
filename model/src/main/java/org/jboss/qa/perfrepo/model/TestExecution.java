@@ -15,7 +15,6 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +27,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -58,13 +56,13 @@ import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
  * @author Michal Linhard (mlinhard@redhat.com)
  * 
  */
-@Entity
+@javax.persistence.Entity
 @Table(name = "test_execution")
 @NamedQueries({ @NamedQuery(name = TestExecution.FIND_TEST_ID, query = "SELECT te.test from TestExecution te inner join te.test where te= :entity") })
 @XmlRootElement(name = "testExecution")
 @Named("testExecution")
 @RequestScoped
-public class TestExecution implements Serializable, CloneableEntity<TestExecution> {
+public class TestExecution implements Entity<TestExecution> {
 
    private static final long serialVersionUID = -2956845045583534606L;
 
@@ -98,6 +96,9 @@ public class TestExecution implements Serializable, CloneableEntity<TestExecutio
 
    @Column(name = "started")
    private Date started;
+
+   @Column(name = "locked")
+   private Boolean locked;
 
    public TestExecution() {
       this.test = new Test();
@@ -279,5 +280,17 @@ public class TestExecution implements Serializable, CloneableEntity<TestExecutio
       } catch (CloneNotSupportedException e) {
          throw new RuntimeException(e);
       }
+   }
+
+   public boolean isLocked() {
+      return locked == null || locked.booleanValue();
+   }
+
+   public Boolean getLocked() {
+      return locked;
+   }
+
+   public void setLocked(Boolean locked) {
+      this.locked = locked;
    }
 }

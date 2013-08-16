@@ -15,13 +15,11 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,12 +31,12 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-@Entity
+@javax.persistence.Entity
 @Table(name = "tag")
 @XmlRootElement(name = "tag")
 @Named("tag")
 @RequestScoped
-public class Tag implements Serializable, Comparable<Tag>, CloneableEntity<Tag> {
+public class Tag implements Entity<Tag>, Comparable<Tag> {
 
    @Id
    @SequenceGenerator(name = "TAG_ID_GENERATOR", sequenceName = "TAG_SEQUENCE", allocationSize = 1)

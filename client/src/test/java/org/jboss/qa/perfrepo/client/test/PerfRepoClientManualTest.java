@@ -33,7 +33,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jboss.qa.perfrepo.client.PerfRepoClient;
 import org.jboss.qa.perfrepo.model.Metric;
@@ -189,7 +188,7 @@ public class PerfRepoClientManualTest {
                if (propName == null && propValue == null) {
                   result.add(v);
                } else {
-                  Set<ValueParameter> params = v.getParameters();
+                  Collection<ValueParameter> params = v.getParameters();
                   if (params != null) {
                      for (ValueParameter p : params) {
                         if ((propName == null || propName.equals(p.getName())) && (propValue == null || propValue.equals(p.getParamValue()))) {

@@ -15,11 +15,8 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.io.Serializable;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -44,11 +41,11 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Michal Linhard (mlinhard@redhat.com)
  * 
  */
-@Entity
+@javax.persistence.Entity
 @Table(name = "test_execution_attachment")
 @NamedQueries({ @NamedQuery(name = TestExecutionAttachment.FIND_BY_EXECUTION, query = "SELECT new TestExecutionAttachment(a.id, a.filename, a.mimetype) from TestExecutionAttachment a WHERE a.testExecution.id = :exec") })
 @XmlRootElement(name = "attachment")
-public class TestExecutionAttachment implements Serializable, CloneableEntity<TestExecutionAttachment> {
+public class TestExecutionAttachment implements Entity<TestExecutionAttachment> {
    public static final String FIND_BY_EXECUTION = "TestExecutionAttachment.findByExecution";
 
    public TestExecutionAttachment(Long id, String filename, String mimetype) {

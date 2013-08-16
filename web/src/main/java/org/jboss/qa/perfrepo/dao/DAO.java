@@ -33,7 +33,7 @@ import javax.persistence.criteria.FetchParent;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
-import org.jboss.qa.perfrepo.model.CloneableEntity;
+import org.jboss.qa.perfrepo.model.Entity;
 
 /**
  * Common ancestor for DAO objects
@@ -43,7 +43,7 @@ import org.jboss.qa.perfrepo.model.CloneableEntity;
  * @param <T> entity type
  * @param <PK> primary key type
  */
-public abstract class DAO<T extends CloneableEntity<T>, PK extends Serializable> {
+public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
 
    @PersistenceContext(unitName = "PerfRepoPU")
    private EntityManager em;

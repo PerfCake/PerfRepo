@@ -35,11 +35,12 @@ import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
-import org.jboss.qa.perfrepo.model.to.MultiValue;
-import org.jboss.qa.perfrepo.model.to.MultiValue.ParamInfo;
-import org.jboss.qa.perfrepo.model.to.MultiValue.ValueInfo;
+import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
+import org.jboss.qa.perfrepo.util.MultiValue;
+import org.jboss.qa.perfrepo.util.MultiValue.ParamInfo;
+import org.jboss.qa.perfrepo.util.MultiValue.ValueInfo;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -102,7 +103,7 @@ public class CompareExecutionsController extends ControllerBase {
    }
 
    public void setAsBaseline(Long execId) {
-      TestExecution baselineExec1 = findTestExecution(execId);
+      TestExecution baselineExec1 = EntityUtil.findById(testExecutions, execId);
       if (baselineExec1 == null) {
          throw new IllegalStateException("Can't find execution " + execId);
       }
@@ -113,7 +114,7 @@ public class CompareExecutionsController extends ControllerBase {
 
    public void removeFromComparison(Long execId) {
       teComparator.remove(execId);
-      TestExecution execToRemove = findTestExecution(execId);
+      TestExecution execToRemove = EntityUtil.findById(testExecutions, execId);
       if (baselineExecution == execToRemove) {
          baselineExecution = null;
       }
@@ -205,19 +206,6 @@ public class CompareExecutionsController extends ControllerBase {
          r.put(testExecution.getId(), valueInfosForExec);
       }
       return r;
-   }
-
-   private TestExecution findTestExecution(Long execId) {
-      if (testExecutions == null || testExecutions.isEmpty()) {
-         return null;
-      } else {
-         for (TestExecution e : testExecutions) {
-            if (e.getId().equals(execId)) {
-               return e;
-            }
-         }
-         return null;
-      }
    }
 
    public String getMetricValue(Long execId, String metricName) {

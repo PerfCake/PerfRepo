@@ -15,8 +15,18 @@
  */
 package org.jboss.qa.perfrepo.dao;
 
-import javax.inject.Named;
+import java.util.List;
 
+import javax.inject.Named;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.Value;
 
 /**
@@ -33,4 +43,34 @@ public class ValueDAO extends DAO<Value, Long> {
       return findWithDepth(id, "parameters");
    }
 
+   public List<Value> find(Long execId, Long metricId) {
+      CriteriaQuery<Value> criteria = createCriteria();
+      CriteriaBuilder cb = criteriaBuilder();
+
+      Root<Value> rValue = criteria.from(Value.class);
+      Join<Value, Metric> rMetric = rValue.join("metric");
+      Join<Value, TestExecution> rExec = rValue.join("testExecution");
+      Predicate pFixExec = cb.equal(rMetric.get("id"), cb.parameter(Long.class, "metricId"));
+      Predicate pFixMetric = cb.equal(rExec.get("id"), cb.parameter(Long.class, "execId"));
+
+      rValue.fetch("parameters");
+      criteria.select(rValue);
+      criteria.where(cb.and(pFixExec, pFixMetric));
+      TypedQuery<Value> query = query(criteria);
+      query.setParameter("metricId", metricId);
+      query.setParameter("execId", execId);
+      return query.getResultList();
+
+      //      Map<Long, Value> cloneValues = new HashMap<Long, Value>();
+      //      for (Value result : results) {
+      //         Value uniqueValue = cloneValues.get(result.getId());
+      //         if (uniqueValue == null) {
+      //            uniqueValue = result.clone();
+      //            uniqueValue.setp
+      //            cloneValues.put(result.getId(), uniqueValue);
+      //         }
+      //         
+      //      }
+
+   }
 }

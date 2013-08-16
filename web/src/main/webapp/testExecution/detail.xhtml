@@ -54,7 +54,8 @@
 									<f:facet name="header">Value
 									</f:facet>
 									<h:outputText value="#{item.formattedSimpleValue}" rendered="#{!item.isMultiValue()}" />
-									<a4j:commandLink value="Multi-value" render="@form" action="#{testExecutionController.showMultiValue(item)}" rendered="#{item.isMultiValue()}">
+									<a4j:commandLink value="Multi-value" render="@form" action="#{testExecutionController.showMultiValue(item.metricName)}"
+										rendered="#{item.isMultiValue()}">
 										<f:ajax render="@form" />
 									</a4j:commandLink>
 								</rich:column>
@@ -65,17 +66,19 @@
 											<i class="icon-plus" />
 										</a4j:commandLink>
 									</f:facet>
-									<div class="btn-group">
-										<a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogValueEdit" action="#{testExecutionController.setEditedValue(item.entity)}"
-											oncomplete="#{rich:component('dialogValueEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
-											<i class="icon-edit" />
-										</a4j:commandLink>
-										<a4j:commandLink styleClass="btn btn-primary btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
-											onclick="if (!confirm('Are you sure you want to delete value for metric #{item.metricName} ?') ) { return false;}; return true;"
-											action="#{testExecutionController.deleteValue(item)}" render="primaryValueTable :messagesPanel">
-											<i class="icon-remove" />
-										</a4j:commandLink>
-									</div>
+									<h:panelGroup rendered="#{item.entity != null}">
+										<div class="btn-group">
+											<a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogValueEdit" action="#{testExecutionController.setEditedValue(item.entity)}"
+												oncomplete="#{rich:component('dialogValueEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
+												<i class="icon-edit" />
+											</a4j:commandLink>
+											<a4j:commandLink styleClass="btn btn-primary btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
+												onclick="if (!confirm('Are you sure you want to delete value for metric #{item.metricName} ?') ) { return false;}; return true;"
+												action="#{testExecutionController.deleteValue(item.entity)}" render="@form :tabForm:tabValues :messagesPanel">
+												<i class="icon-remove" />
+											</a4j:commandLink>
+										</div>
+									</h:panelGroup>
 								</h:column>
 							</rich:dataTable>
 							<h:panelGroup id="multiValue" rendered="#{testExecutionController.selectedMultiValueList != null}">
@@ -83,25 +86,38 @@
 									<h:selectOneMenu value="#{testExecutionController.selectedMultiValueParamSelection}">
 										<f:selectItems styleClass="input-text" value="#{testExecutionController.selectedMultiValueParamSelectionList}" var="item" itemLabel="#{item}"
 											itemValue="#{item}" />
-										<f:ajax listener="#{testExecutionController.updateParamSelection}" render="@form" />
+										<f:ajax listener="#{testExecutionController.updateParamSelection}" render="@form :tabForm:tabValues :messagesPanel" />
 									</h:selectOneMenu>
 								</p>
 								<p>
 									<a4j:mediaOutput element="img" expires="#{now}" cacheable="#{false}" createContent="#{jfreechart.generate}" mimeType="image/png"
 										value="#{testExecutionController.chartData}" />
 								</p>
-								<rich:dataTable id="multiValueTable" value="#{testExecutionController.selectedMultiValueList}" var="item" columnClasses="numvalcolumn,numvalcolumn"
+								<h:dataTable id="multiValueTable" value="#{testExecutionController.selectedMultiValueList}" var="item" columnClasses="numvalcolumn,numvalcolumn"
 									styleClass="table table-bordered table-striped table-hover smallpad">
-									<rich:column>
+									<h:column>
 										<f:facet name="header">#{testExecutionController.selectedMultiValueParamSelection}</f:facet>
 										<h:outputText value="#{item.paramValue}" />
-									</rich:column>
-									<rich:column>
+									</h:column>
+									<h:column>
 										<f:facet name="header">Value</f:facet>
 										<h:outputText value="#{item.formattedValue}" />
-									</rich:column>
-								</rich:dataTable>
-
+									</h:column>
+									<h:column headerClass="button-header">
+										<f:facet name="header"></f:facet>
+										<div class="btn-group">
+											<a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogValueEdit" action="#{testExecutionController.setEditedValue(item.entity)}"
+												oncomplete="#{rich:component('dialogValueEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
+												<i class="icon-edit" />
+											</a4j:commandLink>
+											<a4j:commandLink styleClass="btn btn-primary btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
+												onclick="if (!confirm('Are you sure you want to delete value for metric #{item.entity.metricName} ?') ) { return false;}; return true;"
+												action="#{testExecutionController.deleteValue(item.entity)}" render="@form :tabForm:tabValues :messagesPanel">
+												<i class="icon-remove" />
+											</a4j:commandLink>
+										</div>
+									</h:column>
+								</h:dataTable>
 							</h:panelGroup>
 						</h:form>
 

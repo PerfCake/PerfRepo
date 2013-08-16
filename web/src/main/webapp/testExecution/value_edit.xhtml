@@ -8,7 +8,10 @@
 		<fieldset>
 			<h:outputLabel class="detail-label">Metric</h:outputLabel>
 			<div class="detail-value">
-				<h:outputText value="#{testExecutionController.editedValue.metricName}" />
+				<h:outputText value="#{testExecutionController.editedValue.metricName}" rendered="#{testExecutionController.editedValue.id != null}" />
+				<h:selectOneMenu value="#{testExecutionController.editedValueMetricSelectionId}" rendered="#{testExecutionController.editedValue.id == null}">
+					<f:selectItems styleClass="input-text" value="#{testExecutionController.test.metrics}" var="item" itemLabel="#{item.name}" itemValue="#{item.id}" />
+				</h:selectOneMenu>
 			</div>
 			<h:outputLabel class="detail-label">Value</h:outputLabel>
 			<div class="detail-value">
@@ -16,25 +19,37 @@
 			</div>
 			<h:panelGroup rendered="#{testExecutionController.editedValue.hasParameters()}">
 				<h:dataTable id="paramTable" styleClass="table table-bordered table-striped editableEntryTable" value="#{testExecutionController.editedValue.parameters}"
-					var="paramItem">
+					var="item">
 					<h:column>
 						<f:facet name="header">Name</f:facet>
-						<h:inputText value="#{paramItem.name}" />
+						<h:inputText value="#{item.name}" />
 					</h:column>
 					<h:column>
 						<f:facet name="header">Value</f:facet>
-						<h:inputText value="#{paramItem.value}" />
+						<h:inputText value="#{item.paramValue}" />
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<a4j:commandLink styleClass="btn btn-primary btn-small" value=" " alt="Add parameter" title="Add parameter"
+								action="#{testExecutionController.addEditedValueParameter()}" render="@form :messagesPanel" oncomplete="#{rich:component('dialogValueEdit')}.show()">
+								<i class="icon-plus" />
+							</a4j:commandLink>
+						</f:facet>
+						<a4j:commandLink styleClass="btn btn-primary btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
+							action="#{testExecutionController.removeEditedValueParameter(item)}" render="@form :messagesPanel">
+							<i class="icon-minus" />
+						</a4j:commandLink>
 					</h:column>
 				</h:dataTable>
 			</h:panelGroup>
 			<h:panelGroup rendered="#{!testExecutionController.editedValue.hasParameters()}">
 				<a4j:commandButton action="#{testExecutionController.addEditedValueParameter()}" value="Add parameter" alt="Add parameter" title="Add parameter"
-					render="@form" />
+					render="@form :messagesPanel" oncomplete="#{rich:component('dialogValueEdit')}.show()" />
 			</h:panelGroup>
 			<a4j:commandButton oncomplete="#{rich:component('dialogValueEdit')}.hide()" value="#{strings.cancel}" alt="#{strings.cancel}" title="#{strings.cancel}"
 				render="@form" action="#{testExecutionController.unsetEditedValue()}" />
 			<a4j:commandButton action="#{testExecutionController.updateEditedValue()}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}"
-				oncomplete="#{rich:component('dialogValueEdit')}.hide()" render="@form :tabForm:tabValues :tabForm:valueForm" />
+				oncomplete="#{rich:component('dialogValueEdit')}.hide()" render="@form :tabForm:tabValues :tabForm:valueForm :messagesPanel" />
 		</fieldset>
 
 	</rich:popupPanel>

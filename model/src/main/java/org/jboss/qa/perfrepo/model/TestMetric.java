@@ -15,12 +15,9 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.io.Serializable;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.persistence.CascadeType;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,7 +28,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-@Entity
+@javax.persistence.Entity
 @Table(name = "test_metric")
 @NamedQueries({
       @NamedQuery(name = TestMetric.FIND_TEST_ID, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm.id= :entity"),
@@ -39,7 +36,7 @@ import javax.persistence.Table;
       @NamedQuery(name = TestMetric.FIND_TEST_METRIC_BY_NAME, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test AND m.name= :metricName") })
 @Named("testMetric")
 @RequestScoped
-public class TestMetric implements Serializable, CloneableEntity<TestMetric> {
+public class TestMetric implements Entity<TestMetric> {
 
    public static final String FIND_TEST_ID = "TestMetric.findTestId";
    public static final String FIND_TEST_METRIC = "TestMetric.findTestMetric";

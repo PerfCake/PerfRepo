@@ -15,7 +15,6 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +25,6 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -52,7 +50,7 @@ import org.jboss.qa.perfrepo.model.builder.TestBuilder;
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
  */
-@Entity
+@javax.persistence.Entity
 @Table(name = "test")
 @NamedQueries({
       @NamedQuery(name = Test.FIND_TEST_ID, query = "SELECT test from Test test where test = :entity"),
@@ -60,7 +58,7 @@ import org.jboss.qa.perfrepo.model.builder.TestBuilder;
 @XmlRootElement(name = "test")
 @Named("test")
 @RequestScoped
-public class Test implements Serializable, CloneableEntity<Test> {
+public class Test implements Entity<Test> {
 
    private static final long serialVersionUID = 2936849220074718535L;
 

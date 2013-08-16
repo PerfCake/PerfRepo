@@ -36,6 +36,9 @@ public class ServiceException extends Exception {
       static final int TEST_NOT_FOUND = 700;
       static final int TEST_UID_NOT_FOUND = 800;
       static final int METRIC_HAS_VALUES = 900;
+      static final int VALUE_NOT_FOUND = 1000;
+      static final int STALE_COLLECTION = 1100;
+      static final int UNPARAMETRIZED_MULTI_VALUE = 1200;
    }
 
    private int code;

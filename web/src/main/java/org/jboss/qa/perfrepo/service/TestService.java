@@ -25,7 +25,6 @@ import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.TestMetric;
 import org.jboss.qa.perfrepo.model.Value;
-import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
@@ -281,30 +280,6 @@ public interface TestService extends Codes {
    void deleteTestExecutionTag(TestExecutionTag teg);
 
    /**
-    * Creates Value Parameter to Value
-    * 
-    * @param value
-    * @param vp
-    * @return
-    */
-   ValueParameter addValueParameter(Value value, ValueParameter vp);
-
-   /**
-    * Updates Value Parameter
-    * 
-    * @param vp
-    * @return
-    */
-   ValueParameter updateValueParameter(ValueParameter vp);
-
-   /**
-    * Removes Value Parameter
-    * 
-    * @param vp
-    */
-   void deleteValueParameter(ValueParameter vp);
-
-   /**
     * Return value according to id
     * 
     * @param id
@@ -313,16 +288,16 @@ public interface TestService extends Codes {
    Value getValue(Long id);
 
    /**
-    * Adds Value to Test Execution
+    * Creates new value.
     * 
-    * @param te
     * @param value
     * @return
+    * @throws ServiceException
     */
-   Value addValue(TestExecution te, Value value);
+   Value createValue(Value value) throws ServiceException;
 
    /**
-    * Updates Test Execution Value
+    * Updates Test Execution Value and the set of it's parameters.
     * 
     * @param value
     * @return
@@ -334,8 +309,9 @@ public interface TestService extends Codes {
     * Removes value from TestExecution
     * 
     * @param value
+    * @throws ServiceException
     */
-   void deleteValue(Value value);
+   void deleteValue(Value value) throws ServiceException;
 
    /**
     * Computes metric report.

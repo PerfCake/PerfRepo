@@ -15,14 +15,14 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.io.Serializable;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,7 +33,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -48,13 +47,13 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Michal Linhard (mlinhard@redhat.com)
  * 
  */
-@Entity
+@javax.persistence.Entity
 @Table(name = "value")
 @NamedQueries({ @NamedQuery(name = Value.FIND_TEST_ID, query = "SELECT test from Value v inner join v.testExecution te inner join te.test test where v.id= :entity") })
 @XmlRootElement(name = "value")
 @Named("value")
 @RequestScoped
-public class Value implements Serializable, CloneableEntity<Value> {
+public class Value implements Entity<Value> {
 
    public static final String FIND_TEST_ID = "Value.findTestId";
 
@@ -67,10 +66,6 @@ public class Value implements Serializable, CloneableEntity<Value> {
    @JoinColumn(name = "metric_id", referencedColumnName = "id")
    private Metric metric;
 
-   @Column(name = "name")
-   @Size(max = 255)
-   private String name;
-
    @Column(name = "result_value")
    private Double resultValue;
 
@@ -79,7 +74,7 @@ public class Value implements Serializable, CloneableEntity<Value> {
    private TestExecution testExecution;
 
    @OneToMany(mappedBy = "value")
-   private Set<ValueParameter> parameters;
+   private Collection<ValueParameter> parameters;
 
    public Value() {
       this.metric = new Metric();
@@ -104,15 +99,6 @@ public class Value implements Serializable, CloneableEntity<Value> {
       return this.metric;
    }
 
-   public void setName(String name) {
-      this.name = name;
-   }
-
-   @XmlAttribute(name = "name")
-   public String getName() {
-      return this.name;
-   }
-
    public void setResultValue(Double resultValue) {
       this.resultValue = resultValue;
    }
@@ -131,13 +117,13 @@ public class Value implements Serializable, CloneableEntity<Value> {
       return this.testExecution;
    }
 
-   public void setParameters(Set<ValueParameter> valueParameters) {
+   public void setParameters(Collection<ValueParameter> valueParameters) {
       this.parameters = valueParameters;
    }
 
    @XmlElementWrapper(name = "parameters")
    @XmlElement(name = "parameter")
-   public Set<ValueParameter> getParameters() {
+   public Collection<ValueParameter> getParameters() {
       return this.parameters;
    }
 
@@ -172,6 +158,18 @@ public class Value implements Serializable, CloneableEntity<Value> {
       } catch (CloneNotSupportedException e) {
          throw new RuntimeException(e);
       }
+   }
+
+   public Value cloneWithParameters() {
+      Value cloneValue = clone();
+      List<ValueParameter> cloneValueParameters = new ArrayList<ValueParameter>();
+      for (ValueParameter p : cloneValue.getParameters()) {
+         ValueParameter pClone = p.clone();
+         pClone.setValue(cloneValue);
+         cloneValueParameters.add(pClone);
+      }
+      cloneValue.setParameters(cloneValueParameters.isEmpty() ? null : cloneValueParameters);
+      return cloneValue;
    }
 
    public boolean hasParameters() {

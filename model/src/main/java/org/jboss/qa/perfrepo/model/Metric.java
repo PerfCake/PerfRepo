@@ -15,7 +15,6 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +23,6 @@ import java.util.Iterator;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -50,7 +48,7 @@ import org.jboss.qa.perfrepo.model.builder.MetricBuilder;
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
  */
-@Entity
+@javax.persistence.Entity
 @Table(name = "metric")
 @NamedQueries({
       @NamedQuery(name = Metric.FIND_TEST_ID, query = "SELECT test from TestMetric tm inner join tm.test test inner join tm.metric m where m= :entity"),
@@ -60,7 +58,7 @@ import org.jboss.qa.perfrepo.model.builder.MetricBuilder;
 @XmlRootElement(name = "metric")
 @Named("metric")
 @RequestScoped
-public class Metric implements Serializable, Comparable<Metric>, CloneableEntity<Metric> {
+public class Metric implements Entity<Metric>, Comparable<Metric> {
 
    private static final long serialVersionUID = -5234628391341278215L;
 

@@ -15,12 +15,9 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.io.Serializable;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.persistence.CascadeType;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,13 +31,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-@Entity
+@javax.persistence.Entity
 @Table(name = "test_execution_tag")
 @NamedQueries({ @NamedQuery(name = TestExecutionTag.FIND_TEST_ID, query = "SELECT test from TestExecutionTag teg inner join teg.testExecution te inner join te.test test WHERE teg = :entity") })
 @XmlRootElement(name = "testExecutionTag")
 @Named("testExecutionTag")
 @RequestScoped
-public class TestExecutionTag implements Serializable, CloneableEntity<TestExecutionTag> {
+public class TestExecutionTag implements Entity<TestExecutionTag> {
 
    public static final String FIND_TEST_ID = "TestExecutionTag.findTestId";
 
