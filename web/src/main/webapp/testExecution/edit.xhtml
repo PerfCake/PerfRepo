@@ -1,49 +1,25 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets">
-<h:body>
-	<ui:composition template="/layout/template.xhtml">
-		<ui:define name="title">#{strings.edit} TestExecution -</ui:define>
-		<ui:define name="content">
-			<h1>TestExecution</h1>
-			<h2>#{testExecutionController.testExecution.name}</h2>
-			<h:form>
-				<table class="table">
-					<thead>
-						<tr>
-							<td colspan="2" class="table-header">#{strings.properties}</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr class="table-row">
-							<td><label>ID</label></td>
-							<td><label>#{testExecutionController.testExecution.id}</label></td>
-						</tr>
-						<tr class="table-row">
-							<td><label>#{entityStrings.TestExecution_test}</label></td>
-							<td><label>#{testExecutionController.testExecution.test.name}</label></td>
-						</tr>
-						<tr class="table-row">
-							<td><label>#{entityStrings.TestExecution_name}</label></td>
-							<td><h:inputText styleClass="input-text"
-									value="#{testExecutionController.testExecution.name}" /></td>
-						</tr>
-					</tbody>
-					<tfoot>
-						<tr>
-							<td class="table-footer" colspan="2"><h:commandButton
-									styleClass="button-check"
-									action="#{testExecutionController.update}" value=""
-									alt="#{strings.save}" title="#{strings.save}">
-									<f:param name="testExecutionId"	value="#{testExecutionController.testExecution.id}" />
-								</h:commandButton></td>
-						</tr>
-					</tfoot>
-				</table>
-			</h:form>			
-		</ui:define>
-	</ui:composition>
-</h:body>
-</html>
+<h:form xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich">
+	<rich:popupPanel id="dialogDetailsEdit" modal="true" autosized="true" resizeable="false" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="Edit execution details" />
+		</f:facet>
+
+		<fieldset>
+			<h:outputLabel class="detail-label">Name</h:outputLabel>
+			<div class="detail-value">
+				<h:inputText styleClass="input-text" value="#{testExecutionController.editedTestExecution.name}" />
+			</div>
+			<h:outputLabel class="detail-label">Tags</h:outputLabel>
+			<div class="detail-value">
+				<h:inputText styleClass="input-text" value="#{testExecutionController.rawTags}" />
+			</div>
+			<a4j:commandButton oncomplete="#{rich:component('dialogDetailsEdit')}.hide()" value="#{strings.cancel}" alt="#{strings.cancel}" title="#{strings.cancel}"
+				action="#{testExecutionController.unsetEditedTestExecution()}" />
+			<a4j:commandButton action="#{testExecutionController.updateEditedTestExecution()}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}"
+				oncomplete="#{rich:component('dialogDetailsEdit')}.hide()" />
+		</fieldset>
+
+	</rich:popupPanel>
+</h:form>
+

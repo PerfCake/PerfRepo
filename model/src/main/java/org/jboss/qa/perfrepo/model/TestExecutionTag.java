@@ -109,4 +109,10 @@ public class TestExecutionTag implements Entity<TestExecutionTag> {
       }
    }
 
+   public TestExecutionTag cloneWithTag() {
+      TestExecutionTag clone = clone();
+      clone.setTag(tag == null ? null : tag.clone());
+      return clone;
+   }
+
 }

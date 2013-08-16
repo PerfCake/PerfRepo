@@ -15,9 +15,9 @@
  */
 package org.jboss.qa.perfrepo.model.builder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.jboss.qa.perfrepo.model.Tag;
@@ -68,7 +68,7 @@ public class TestExecutionBuilder {
    private TestExecutionParameter addParameter(TestExecutionParameter param) {
       Collection<TestExecutionParameter> parameters = testExecution.getParameters();
       if (parameters == null) {
-         parameters = new HashSet<TestExecutionParameter>();
+         parameters = new ArrayList<TestExecutionParameter>();
          testExecution.setParameters((Set<TestExecutionParameter>) parameters);
       }
       parameters.add(param);
@@ -95,8 +95,8 @@ public class TestExecutionBuilder {
    private Tag addTag(String tag) {
       Collection<TestExecutionTag> testExecutionTags = testExecution.getTestExecutionTags();
       if (testExecutionTags == null) {
-         testExecutionTags = new HashSet<TestExecutionTag>();
-         testExecution.setTestExecutionTags((Set<TestExecutionTag>) testExecutionTags);
+         testExecutionTags = new ArrayList<TestExecutionTag>();
+         testExecution.setTestExecutionTags(testExecutionTags);
       }
       TestExecutionTag intermediate = new TestExecutionTag();
       Tag tagObj = new Tag();
@@ -120,7 +120,7 @@ public class TestExecutionBuilder {
    private Value addValue(Value value) {
       Collection<Value> values = testExecution.getValues();
       if (values == null) {
-         values = new HashSet<Value>();
+         values = new ArrayList<Value>();
          testExecution.setValues((Set<Value>) values);
       }
       values.add(value);

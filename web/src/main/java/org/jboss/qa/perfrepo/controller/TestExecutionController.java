@@ -35,6 +35,7 @@ import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
+import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.rest.TestExecutionREST;
 import org.jboss.qa.perfrepo.service.ServiceException;
@@ -78,9 +79,53 @@ public class TestExecutionController extends ControllerBase {
    private ValueInfo selectedMultiValue = null;
    private XYLineChartSpec chartData = null;
 
-   private boolean editMode;
    private boolean createMode;
    private Long testExecutionId;
+
+   private TestExecution editedTestExecution = null;
+
+   public String getRawTags() {
+      return Util.rawTags(editedTestExecution == null ? null : editedTestExecution.getSortedTags());
+   }
+
+   public void setRawTags(String rawTags) {
+      if (editedTestExecution == null) {
+         return;
+      }
+      List<String> tags = Util.parseTags(rawTags);
+      TestExecutionBuilder b = TestExecution.builder();
+      for (String tag : tags) {
+         b.tag(tag);
+      }
+      editedTestExecution.setTestExecutionTags(b.build().getTestExecutionTags());
+   }
+
+   public void setEditedTestExecution() {
+      this.editedTestExecution = testExecution.clone();
+   }
+
+   public void unsetEditedTestExecution() {
+      this.editedTestExecution = null;
+   }
+
+   public TestExecution getEditedTestExecution() {
+      return editedTestExecution;
+   }
+
+   public void updateEditedTestExecution() {
+      if (editedTestExecution != null) {
+         try {
+            if (editedTestExecution.getId() == null) {
+               testExecution = testService.createTestExecution(editedTestExecution);
+            } else {
+               testExecution = testService.updateTestExecution(editedTestExecution);
+            }
+            showMultiValue(null);
+         } catch (ServiceException e) {
+            addMessageFor(e);
+         }
+      }
+   }
 
    public Long getTestExecutionId() {
       return testExecutionId;
@@ -88,14 +133,6 @@ public class TestExecutionController extends ControllerBase {
 
    public void setTestExecutionId(Long testExecutionId) {
       this.testExecutionId = testExecutionId;
-   }
-
-   public boolean isEditMode() {
-      return editMode;
-   }
-
-   public void setEditMode(boolean editMode) {
-      this.editMode = editMode;
    }
 
    public boolean isCreateMode() {

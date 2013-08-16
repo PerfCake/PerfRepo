@@ -27,6 +27,23 @@ public class EntityUtil {
    }
 
    /**
+    * Clone collection of entities.
+    * 
+    * @param entities
+    * @return
+    */
+   public static <T extends Entity<T>> Collection<T> clone(Collection<T> entities) {
+      if (entities == null) {
+         return null;
+      }
+      Collection<T> result = new ArrayList<T>(entities.size());
+      for (T entity : entities) {
+         result.add(entity.clone());
+      }
+      return result;
+   }
+
+   /**
     * Finds an entity with given ID in the collection.
     * 
     * @param entities

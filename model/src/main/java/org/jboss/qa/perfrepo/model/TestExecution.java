@@ -221,6 +221,13 @@ public class TestExecution implements Entity<TestExecution> {
 
    @XmlTransient
    public List<String> getSortedTags() {
+      List<String> result = getTags();
+      Collections.sort(result);
+      return result;
+   }
+
+   @XmlTransient
+   public List<String> getTags() {
       if (testExecutionTags == null || testExecutionTags.isEmpty()) {
          return new ArrayList<String>(0);
       } else {
@@ -228,7 +235,6 @@ public class TestExecution implements Entity<TestExecution> {
          for (TestExecutionTag tet : testExecutionTags) {
             result.add(tet.getTag().getName());
          }
-         Collections.sort(result);
          return result;
       }
    }

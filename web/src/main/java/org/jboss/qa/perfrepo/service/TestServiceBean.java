@@ -470,14 +470,18 @@ public class TestServiceBean implements TestService {
       }
       // lazy fetching (clone still contains, JPA-Managed collections)
       // TODO: try alternative with findWithDepth and test performance
-      testExecution.getParametersAsMap();
-      testExecution.getSortedTags();
+      testExecution.setParameters(EntityUtil.clone(testExecution.getParameters()));
+      Collection<TestExecutionTag> cloneTags = new ArrayList<TestExecutionTag>();
+      for (TestExecutionTag interObject : testExecution.getTestExecutionTags()) {
+         cloneTags.add(interObject.cloneWithTag());
+      }
+      testExecution.setTestExecutionTags(cloneTags);
       List<Value> cloneValues = new ArrayList<Value>();
       for (Value v : testExecution.getValues()) {
          cloneValues.add(v.cloneWithParameters());
       }
       testExecution.setValues(cloneValues);
-      testExecution.setAttachments(testExecutionAttachmentDAO.findByExecution(id));
+      testExecution.setAttachments(EntityUtil.clone(testExecutionAttachmentDAO.findByExecution(id)));
       return testExecution;
    }
 
@@ -523,8 +527,28 @@ public class TestServiceBean implements TestService {
    }
 
    public TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException {
-      checkUserCanChangeTest(testExecution.getTest());
-      return testExecutionDAO.update(testExecution);
+      TestExecution oldExecution = testExecutionDAO.find(testExecution.getId());
+      if (oldExecution == null) {
+         throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", testExecution.getId());
+      }
+      checkUserCanChangeTest(oldExecution.getTest());
+      for (TestExecutionTag interObj : oldExecution.getTestExecutionTags()) {
+         testExecutionTagDAO.delete(interObj);
+      }
+      TestExecution updatedExecution = testExecutionDAO.update(testExecution);
+      for (String tag : testExecution.getTags()) {
+         Tag tagEntity = tagDAO.findByName(tag);
+         if (tagEntity == null) {
+            Tag newTag = new Tag();
+            newTag.setName(tag);
+            tagEntity = tagDAO.create(newTag);
+         }
+         TestExecutionTag newTestExecutionTag = new TestExecutionTag();
+         newTestExecutionTag.setTag(tagEntity);
+         newTestExecutionTag.setTestExecution(updatedExecution);
+         testExecutionTagDAO.create(newTestExecutionTag);
+      }
+      return getFullTestExecution(testExecution.getId());
    }
 
    public TestExecutionParameter addTestExecutionParameter(TestExecution te, TestExecutionParameter tep) throws ServiceException {
@@ -540,7 +564,7 @@ public class TestServiceBean implements TestService {
    public TestExecutionParameter updateTestExecutionParameter(TestExecutionParameter tep) throws ServiceException {
       TestExecution exec = testExecutionDAO.find(tep.getTestExecution().getId());
       if (exec == null) {
-         serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", tep.getTestExecution().getId());
+         throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", tep.getTestExecution().getId());
       }
       checkUserCanChangeTest(exec.getTest());
       return testExecutionParameterDAO.update(tep);
@@ -612,18 +636,18 @@ public class TestServiceBean implements TestService {
    public Value updateValue(Value value) throws ServiceException {
       TestExecution exec = testExecutionDAO.find(value.getTestExecution().getId());
       if (exec == null) {
-         serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
+         throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
       }
       checkUserCanChangeTest(exec.getTest());
       Value oldValue = valueDAO.find(value.getId());
       if (oldValue == null) {
-         serviceException(VALUE_NOT_FOUND, "Value doesn't exist (id=%s)", value.getId());
+         throw serviceException(VALUE_NOT_FOUND, "Value doesn't exist (id=%s)", value.getId());
       }
       Value freshValue = valueDAO.update(value);
       Value freshValueClone = freshValue.clone();
       UpdateSet<ValueParameter> updateSet = EntityUtil.updateSet(oldValue.getParameters(), value.getParameters());
       if (!updateSet.removed.isEmpty()) {
-         serviceException(STALE_COLLECTION, "Collection of value parameters contains stale ids: %s", updateSet.removed);
+         throw serviceException(STALE_COLLECTION, "Collection of value parameters contains stale ids: %s", updateSet.removed);
       }
       List<ValueParameter> newParams = new ArrayList<ValueParameter>();
       for (ValueParameter vp : updateSet.toAdd) {
@@ -645,7 +669,7 @@ public class TestServiceBean implements TestService {
    public void deleteValue(Value value) throws ServiceException {
       TestExecution exec = testExecutionDAO.find(value.getTestExecution().getId());
       if (exec == null) {
-         serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
+         throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
       }
       checkUserCanChangeTest(exec.getTest());
       Value v = valueDAO.find(value.getId());

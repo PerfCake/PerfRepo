@@ -53,15 +53,8 @@
 
    <rule>
       <from>^/exec/new$</from>
-      <to type="forward" last="true">/testExecution/new.jsf</to>
+      <to type="forward" last="true">/testExecution/detail.jsf?createMode=true</to>
       <set name="formActionURL">/exec/new</set>
-   </rule>
-
-   <rule>
-      <!-- /exec/{testExecutionId}/edit -->
-      <from>^/exec/([\d]+)/edit$</from>
-      <to type="forward" last="true">/testExecution/edit.jsf?testExecutionId=$1</to>
-      <set name="formActionURL">/exec/$1/edit</set>
    </rule>
 
    <rule>

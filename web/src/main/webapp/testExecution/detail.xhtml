@@ -4,37 +4,41 @@
 	xmlns:c="http://java.sun.com/jsp/jstl/core">
 <h:body>
 	<f:metadata>
+		<f:viewParam name="createMode" value="#{testExecutionController.createMode}" />
 		<f:viewParam name="testExecutionId" value="#{testExecutionController.testExecutionId}" />
 		<f:event type="preRenderView" listener="#{testExecutionController.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="title">Test execution</ui:define>
 		<ui:define name="content">
-			<c:set target="#{testExecutionController}" property="editMode" value="#{false}" />
-			<c:set target="#{testExecutionController}" property="createMode" value="#{false}" />
-
 			<ui:include src="/testExecution/param_edit.xhtml" />
 			<ui:include src="/testExecution/value_edit.xhtml" />
-			<fieldset>
-				<legend>
-					#{testExecutionController.testExecution.name} <a href="/repo/exec/#{testExecutionController.testExecutionId}/edit"><i class="icon-edit"
-						title="#{strings.edit}" /></a>
-				</legend>
-				<h:outputLabel class="detail-label">ID</h:outputLabel>
-				<div class="detail-value">#{testExecutionController.testExecution.id}</div>
-				<h:outputLabel class="detail-label">#{entityStrings.TestExecution_test}</h:outputLabel>
-				<div class="detail-value">
-					<a href="/repo/test/#{testExecutionController.testExecution.test.id}">#{testExecutionController.testExecution.test.name}</a>
-				</div>
-				<h:outputLabel class="detail-label">Owner</h:outputLabel>
-				<div class="detail-value">#{testExecutionController.testExecution.test.groupId}</div>
-				<h:outputLabel class="detail-label">Tags</h:outputLabel>
-				<div class="detail-value">
-					<ui:repeat value="#{testExecutionController.testExecution.sortedTags}" varStatus="status" var="item">
-						<span class="badge badge-success">#{item}</span>
-					</ui:repeat>
-				</div>
-			</fieldset>
+			<ui:include src="/testExecution/edit.xhtml" />
+			<h:form id="detailsForm">
+				<fieldset>
+					<legend>
+						#{testExecutionController.testExecution.name}
+						<a4j:commandLink render="dialogDetailsEdit" action="#{testExecutionController.setEditedTestExecution()}"
+							oncomplete="#{rich:component('dialogDetailsEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
+							<i class="icon-edit" title="#{strings.edit}" />
+						</a4j:commandLink>
+					</legend>
+					<h:outputLabel class="detail-label">ID</h:outputLabel>
+					<div class="detail-value">#{testExecutionController.testExecution.id}</div>
+					<h:outputLabel class="detail-label">#{entityStrings.TestExecution_test}</h:outputLabel>
+					<div class="detail-value">
+						<a href="/repo/test/#{testExecutionController.testExecution.test.id}">#{testExecutionController.testExecution.test.name}</a>
+					</div>
+					<h:outputLabel class="detail-label">Owner</h:outputLabel>
+					<div class="detail-value">#{testExecutionController.testExecution.test.groupId}</div>
+					<h:outputLabel class="detail-label">Tags</h:outputLabel>
+					<div class="detail-value">
+						<ui:repeat value="#{testExecutionController.testExecution.sortedTags}" varStatus="status" var="item">
+							<span class="badge badge-success">#{item}</span>
+						</ui:repeat>
+					</div>
+				</fieldset>
+			</h:form>
 			<h:form id="tabForm">
 				<rich:tabPanel switchType="client">
 					<rich:tab header="Values" id="tabValues">

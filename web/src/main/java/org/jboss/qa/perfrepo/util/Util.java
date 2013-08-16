@@ -34,6 +34,18 @@ public class Util {
       }
    }
 
+   public static String rawTags(List<String> tags) {
+      if (tags == null || tags.isEmpty()) {
+         return "";
+      }
+      StringBuffer s = new StringBuffer(tags.get(0));
+      for (int i = 1; i < tags.size(); i++) {
+         s.append(" ");
+         s.append(tags.get(1));
+      }
+      return s.toString();
+   }
+
    public static String displayValue(TestExecutionParameter param) {
       if (param == null) {
          return null;
