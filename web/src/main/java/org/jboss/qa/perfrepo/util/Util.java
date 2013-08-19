@@ -41,7 +41,7 @@ public class Util {
       StringBuffer s = new StringBuffer(tags.get(0));
       for (int i = 1; i < tags.size(); i++) {
          s.append(" ");
-         s.append(tags.get(1));
+         s.append(tags.get(i));
       }
       return s.toString();
    }
