@@ -22,8 +22,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -56,8 +54,6 @@ import org.jboss.qa.perfrepo.model.builder.TestBuilder;
       @NamedQuery(name = Test.FIND_TEST_ID, query = "SELECT test from Test test where test = :entity"),
       @NamedQuery(name = Test.FIND_TESTS_USING_METRIC, query = "SELECT test from Test test, TestMetric tm, Metric m where test = tm.test and tm.metric = m and m.id = :metric") })
 @XmlRootElement(name = "test")
-@Named("test")
-@RequestScoped
 public class Test implements Entity<Test> {
 
    private static final long serialVersionUID = 2936849220074718535L;

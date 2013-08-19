@@ -48,6 +48,20 @@ import javax.xml.bind.annotation.XmlTransient;
 public class TestExecutionAttachment implements Entity<TestExecutionAttachment> {
    public static final String FIND_BY_EXECUTION = "TestExecutionAttachment.findByExecution";
 
+   /**
+    * Constructor.
+    */
+   public TestExecutionAttachment() {
+      super();
+   }
+
+   /**
+    * Constructor.
+    * 
+    * @param id
+    * @param filename
+    * @param mimetype
+    */
    public TestExecutionAttachment(Long id, String filename, String mimetype) {
       super();
       this.id = id;
@@ -79,10 +93,6 @@ public class TestExecutionAttachment implements Entity<TestExecutionAttachment> 
    @NotNull
    @Size(max = 1048576)
    private byte[] content;
-
-   public TestExecutionAttachment() {
-      this.testExecution = new TestExecution();
-   }
 
    @XmlTransient
    public Long getId() {

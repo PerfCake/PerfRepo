@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -56,8 +54,6 @@ import org.jboss.qa.perfrepo.model.builder.MetricBuilder;
       @NamedQuery(name = Metric.FIND_BY_GROUPID, query = "SELECT m from Metric m, TestMetric tm, Test t WHERE t.groupId= :groupId AND tm.test.id = t.id AND tm.metric.id = m.id"),
       @NamedQuery(name = Metric.FIND_BY_TESTID, query = "SELECT m from Metric m, TestMetric tm WHERE tm.test.id = :testId AND tm.metric.id = m.id") })
 @XmlRootElement(name = "metric")
-@Named("metric")
-@RequestScoped
 public class Metric implements Entity<Metric>, Comparable<Metric> {
 
    private static final long serialVersionUID = -5234628391341278215L;

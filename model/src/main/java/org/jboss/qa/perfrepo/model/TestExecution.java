@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -60,8 +58,6 @@ import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
 @Table(name = "test_execution")
 @NamedQueries({ @NamedQuery(name = TestExecution.FIND_TEST_ID, query = "SELECT te.test from TestExecution te inner join te.test where te= :entity") })
 @XmlRootElement(name = "testExecution")
-@Named("testExecution")
-@RequestScoped
 public class TestExecution implements Entity<TestExecution> {
 
    private static final long serialVersionUID = -2956845045583534606L;
@@ -99,10 +95,6 @@ public class TestExecution implements Entity<TestExecution> {
 
    @Column(name = "locked")
    private Boolean locked;
-
-   public TestExecution() {
-      this.test = new Test();
-   }
 
    @XmlTransient
    public Long getId() {

@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -51,8 +49,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "value")
 @NamedQueries({ @NamedQuery(name = Value.FIND_TEST_ID, query = "SELECT test from Value v inner join v.testExecution te inner join te.test test where v.id= :entity") })
 @XmlRootElement(name = "value")
-@Named("value")
-@RequestScoped
 public class Value implements Entity<Value> {
 
    public static final String FIND_TEST_ID = "Value.findTestId";
@@ -75,11 +71,6 @@ public class Value implements Entity<Value> {
 
    @OneToMany(mappedBy = "value")
    private Collection<ValueParameter> parameters;
-
-   public Value() {
-      this.metric = new Metric();
-      this.testExecution = new TestExecution();
-   }
 
    @XmlTransient
    public Long getId() {

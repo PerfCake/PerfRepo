@@ -15,8 +15,6 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -40,8 +38,6 @@ import javax.xml.bind.annotation.XmlTransient;
       @NamedQuery(name = TestExecutionParameter.FIND_TEST_ID, query = "SELECT test from Test test inner join test.testExecutions te inner join te.parameters tep where tep.id = :entity"),
       @NamedQuery(name = TestExecutionParameter.FIND_BY_TEST_ID, query = "SELECT DISTINCT p.name FROM TestExecutionParameter p, TestExecution e WHERE p.testExecution.id = e.id AND e.test.id = :testId") })
 @XmlRootElement(name = "testExecutionParameter")
-@Named("testExecutionParameter")
-@RequestScoped
 public class TestExecutionParameter implements Entity<TestExecutionParameter>, Comparable<TestExecutionParameter> {
 
    public static final String FIND_ALL = "TestExecutionParameter.findAll";
@@ -69,7 +65,7 @@ public class TestExecutionParameter implements Entity<TestExecutionParameter>, C
    private String value;
 
    public TestExecutionParameter() {
-      this.testExecution = new TestExecution();
+      super();
    }
 
    public TestExecutionParameter(String name, String value) {

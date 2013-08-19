@@ -15,8 +15,6 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 import javax.persistence.CascadeType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -35,8 +33,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "test_execution_tag")
 @NamedQueries({ @NamedQuery(name = TestExecutionTag.FIND_TEST_ID, query = "SELECT test from TestExecutionTag teg inner join teg.testExecution te inner join te.test test WHERE teg = :entity") })
 @XmlRootElement(name = "testExecutionTag")
-@Named("testExecutionTag")
-@RequestScoped
 public class TestExecutionTag implements Entity<TestExecutionTag> {
 
    public static final String FIND_TEST_ID = "TestExecutionTag.findTestId";
@@ -53,13 +49,6 @@ public class TestExecutionTag implements Entity<TestExecutionTag> {
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
    @JoinColumn(name = "test_execution_id", referencedColumnName = "id")
    private TestExecution testExecution;
-
-   public TestExecutionTag() {
-      super();
-      this.tag = new Tag();
-      this.testExecution = new TestExecution();
-
-   }
 
    @XmlTransient
    public Long getId() {

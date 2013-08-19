@@ -15,8 +15,6 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 import javax.persistence.CascadeType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,8 +32,6 @@ import javax.persistence.Table;
       @NamedQuery(name = TestMetric.FIND_TEST_ID, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm.id= :entity"),
       @NamedQuery(name = TestMetric.FIND_TEST_METRIC, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test and m.id= :metric"),
       @NamedQuery(name = TestMetric.FIND_TEST_METRIC_BY_NAME, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test AND m.name= :metricName") })
-@Named("testMetric")
-@RequestScoped
 public class TestMetric implements Entity<TestMetric> {
 
    public static final String FIND_TEST_ID = "TestMetric.findTestId";
@@ -54,11 +50,6 @@ public class TestMetric implements Entity<TestMetric> {
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
    @JoinColumn(name = "test_id", referencedColumnName = "id")
    private Test test;
-
-   public TestMetric() {
-      this.metric = new Metric();
-      this.test = new Test();
-   }
 
    public Long getId() {
       return id;

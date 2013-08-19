@@ -15,8 +15,6 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -47,8 +45,6 @@ import javax.xml.bind.annotation.XmlTransient;
       @NamedQuery(name = ValueParameter.FIND_BY_ID, query = "SELECT x from ValueParameter x WHERE x.id = :" + ValueParameter.NQ_ID),
       @NamedQuery(name = ValueParameter.FIND_TEST_ID, query = "SELECT test from ValueParameter vp inner join vp.value v inner join v.testExecution te inner join te.test test where vp.id= :entity") })
 @XmlRootElement(name = "valueParameter")
-@Named("valueParameter")
-@RequestScoped
 public class ValueParameter implements Entity<ValueParameter>, Comparable<ValueParameter> {
 
    public static final String FIND_ALL = "ValueParameter.findAll";

@@ -17,8 +17,6 @@ package org.jboss.qa.perfrepo.model;
 
 import java.util.Collection;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,8 +32,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @javax.persistence.Entity
 @Table(name = "tag")
 @XmlRootElement(name = "tag")
-@Named("tag")
-@RequestScoped
 public class Tag implements Entity<Tag>, Comparable<Tag> {
 
    @Id
