@@ -17,7 +17,7 @@
 			<a4j:commandButton oncomplete="#{rich:component('dialogParamEdit')}.hide()" value="#{strings.cancel}" alt="#{strings.cancel}" title="#{strings.cancel}"
 				render="@form" action="#{testExecutionController.unsetEditedParameter()}" />
 			<a4j:commandButton action="#{testExecutionController.updateEditedParameter()}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}"
-				oncomplete="#{rich:component('dialogParamEdit')}.hide()" render="@form :tabForm:testExecutionParameterList" />
+				oncomplete="#{rich:component('dialogParamEdit')}.hide()" render="@form :tabForm:testExecutionParameterList :messagesPanel" />
 		</fieldset>
 
 	</rich:popupPanel>

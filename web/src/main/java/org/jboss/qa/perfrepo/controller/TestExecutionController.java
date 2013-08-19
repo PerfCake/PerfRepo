@@ -195,7 +195,7 @@ public class TestExecutionController extends ControllerBase {
    }
 
    public void setEditedParameter(TestExecutionParameter param) {
-      this.editedParameter = param;
+      this.editedParameter = param == null ? null : param.clone();
    }
 
    public void unsetEditedParameter() {
@@ -276,6 +276,7 @@ public class TestExecutionController extends ControllerBase {
             editedParameter = null;
          } catch (ServiceException e) {
             addMessageFor(e);
+            editedParameter = null;
          }
       }
    }
