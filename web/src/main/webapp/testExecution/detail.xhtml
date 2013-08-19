@@ -19,8 +19,17 @@
 					<legend>
 						#{testExecutionController.testExecution.name}
 						<a4j:commandLink render="dialogDetailsEdit" action="#{testExecutionController.setEditedTestExecution()}"
-							oncomplete="#{rich:component('dialogDetailsEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
+							oncomplete="#{rich:component('dialogDetailsEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}"
+							rendered="#{!testExecutionController.testExecution.isLocked()}">
 							<i class="icon-edit" title="#{strings.edit}" />
+						</a4j:commandLink>
+						<a4j:commandLink render="@form :tabForm" action="#{testExecutionController.setExecutionLocked(false)}" value=" " alt="Unlock" title="Unlock"
+							rendered="#{testExecutionController.testExecution.isLocked()}">
+							<i class="icon-lock" title="Unlock" />
+						</a4j:commandLink>
+						<a4j:commandLink render="@form :tabForm" action="#{testExecutionController.setExecutionLocked(true)}" value=" " alt="Lock" title="Lock"
+							rendered="#{!testExecutionController.testExecution.isLocked()}">
+							<i class="icon-unlock" title="Lock" />
 						</a4j:commandLink>
 					</legend>
 					<h:outputLabel class="detail-label">ID</h:outputLabel>
@@ -66,19 +75,22 @@
 								<h:column headerClass="button-header">
 									<f:facet name="header">
 										<a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogValueEdit" action="#{testExecutionController.createEditedValue}"
-											oncomplete="#{rich:component('dialogValueEdit')}.show();" value=" " alt="New value" title="New value">
+											oncomplete="#{rich:component('dialogValueEdit')}.show();" value=" " alt="New value" title="New value"
+											rendered="#{!testExecutionController.testExecution.isLocked()}">
 											<i class="icon-plus" />
 										</a4j:commandLink>
 									</f:facet>
 									<h:panelGroup rendered="#{item.entity != null}">
 										<div class="btn-group">
 											<a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogValueEdit" action="#{testExecutionController.setEditedValue(item.entity)}"
-												oncomplete="#{rich:component('dialogValueEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
+												oncomplete="#{rich:component('dialogValueEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}"
+												rendered="#{!testExecutionController.testExecution.isLocked()}">
 												<i class="icon-edit" />
 											</a4j:commandLink>
 											<a4j:commandLink styleClass="btn btn-primary btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
 												onclick="if (!confirm('Are you sure you want to delete value for metric #{item.metricName} ?') ) { return false;}; return true;"
-												action="#{testExecutionController.deleteValue(item.entity)}" render="@form :tabForm:tabValues :messagesPanel">
+												action="#{testExecutionController.deleteValue(item.entity)}" render="@form :tabForm:tabValues :messagesPanel"
+												rendered="#{!testExecutionController.testExecution.isLocked()}">
 												<i class="icon-remove" />
 											</a4j:commandLink>
 										</div>
@@ -111,12 +123,14 @@
 										<f:facet name="header"></f:facet>
 										<div class="btn-group">
 											<a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogValueEdit" action="#{testExecutionController.setEditedValue(item.entity)}"
-												oncomplete="#{rich:component('dialogValueEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
+												oncomplete="#{rich:component('dialogValueEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}"
+												rendered="#{!testExecutionController.testExecution.isLocked()}">
 												<i class="icon-edit" />
 											</a4j:commandLink>
 											<a4j:commandLink styleClass="btn btn-primary btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
 												onclick="if (!confirm('Are you sure you want to delete value for metric #{item.entity.metricName} ?') ) { return false;}; return true;"
-												action="#{testExecutionController.deleteValue(item.entity)}" render="@form :tabForm:tabValues :messagesPanel">
+												action="#{testExecutionController.deleteValue(item.entity)}" render="@form :tabForm:tabValues :messagesPanel"
+												rendered="#{!testExecutionController.testExecution.isLocked()}">
 												<i class="icon-remove" />
 											</a4j:commandLink>
 										</div>
@@ -151,18 +165,21 @@
 								<h:column headerClass="button-header">
 									<f:facet name="header">
 										<a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogParamEdit" action="#{testExecutionController.createEditedParameter}"
-											oncomplete="#{rich:component('dialogParamEdit')}.show();" value=" " alt="New parameter" title="New parameter">
+											oncomplete="#{rich:component('dialogParamEdit')}.show();" value=" " alt="New parameter" title="New parameter"
+											rendered="#{!testExecutionController.testExecution.isLocked()}">
 											<i class="icon-plus" />
 										</a4j:commandLink>
 									</f:facet>
 									<div class="btn-group">
 										<a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogParamEdit" action="#{testExecutionController.setEditedParameter(item)}"
-											oncomplete="#{rich:component('dialogParamEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
+											oncomplete="#{rich:component('dialogParamEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}"
+											rendered="#{!testExecutionController.testExecution.isLocked()}">
 											<i class="icon-edit" />
 										</a4j:commandLink>
 										<a4j:commandLink styleClass="btn btn-primary btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
 											onclick="if (!confirm('Are you sure you want to delete test execution parameter (#{item.name})?') ) { return false;}; return true;"
-											action="#{testExecutionController.deleteParameter(item)}" render="testExecutionParameterList :messagesPanel">
+											action="#{testExecutionController.deleteParameter(item)}" render="testExecutionParameterList :messagesPanel"
+											rendered="#{!testExecutionController.testExecution.isLocked()}">
 											<i class="icon-remove" />
 										</a4j:commandLink>
 									</div>

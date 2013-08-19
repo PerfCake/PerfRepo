@@ -226,50 +226,42 @@ public interface TestService extends Codes {
     */
    void deleteTestMetric(TestMetric tm);
 
+   /**
+    * Update only attributes name and started and collection of tags.
+    * 
+    * @param testExecution
+    * @return fresh full test execution
+    * @throws ServiceException
+    */
    TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException;
 
    /**
-    * Adds TestExecutionParamter to existing TestExecution
+    * Lock/unlock test execution.
     * 
-    * @param te TestExecution
-    * @param tep TestExecutionParameter to add
+    * @param anExec
+    * @param locked
+    * @return full test execution
     * @throws ServiceException
     */
-   TestExecutionParameter addTestExecutionParameter(TestExecution te, TestExecutionParameter tep) throws ServiceException;
+   TestExecution setExecutionLocked(TestExecution anExec, boolean locked) throws ServiceException;
 
    /**
-    * Returns TestExecutionParameter by id
-    * 
-    * @param id TestExecutionParameter
-    * @return
-    */
-   TestExecutionParameter getTestExecutionParameter(Long id);
-
-   /**
-    * Updates TestExecutionParameter
+    * Updates or creates TestExecutionParameter
     * 
     * @param tep TestExecutionParameter to update
     * @return
     * @throws ServiceException
     */
-   TestExecutionParameter updateTestExecutionParameter(TestExecutionParameter tep) throws ServiceException;
+   TestExecutionParameter updateParameter(TestExecutionParameter tep) throws ServiceException;
 
    /**
     * Removes TestExecutionParameter
     * 
     * @param tep
     * @return
-    */
-   void deleteTestExecutionParameter(TestExecutionParameter tep);
-
-   /**
-    * Adds TestExecutionTag to existing TestExecution
-    * 
-    * @param te TestExecution
-    * @param tep TestExecutionTag to add
     * @throws ServiceException
     */
-   TestExecutionTag addTestExecutionTag(TestExecution te, TestExecutionTag teg) throws ServiceException;
+   void deleteParameter(TestExecutionParameter tep) throws ServiceException;
 
    /**
     * Removes TestExecutionParameter
@@ -280,21 +272,13 @@ public interface TestService extends Codes {
    void deleteTestExecutionTag(TestExecutionTag teg);
 
    /**
-    * Return value according to id
-    * 
-    * @param id
-    * @return
-    */
-   Value getValue(Long id);
-
-   /**
     * Creates new value.
     * 
     * @param value
     * @return
     * @throws ServiceException
     */
-   Value createValue(Value value) throws ServiceException;
+   Value addValue(Value value) throws ServiceException;
 
    /**
     * Updates Test Execution Value and the set of it's parameters.

@@ -127,6 +127,15 @@ public class TestExecutionController extends ControllerBase {
       }
    }
 
+   public void setExecutionLocked(boolean locked) {
+      try {
+         testExecution = testService.setExecutionLocked(testExecution, locked);
+         showMultiValue(null);
+      } catch (ServiceException e) {
+         addMessageFor(e);
+      }
+   }
+
    public Long getTestExecutionId() {
       return testExecutionId;
    }
@@ -247,8 +256,8 @@ public class TestExecutionController extends ControllerBase {
    public void deleteParameter(TestExecutionParameter param) {
       if (param != null) {
          try {
-            testService.deleteTestExecutionParameter(param);
-            testExecution.getParameters().remove(param);
+            testService.deleteParameter(param);
+            EntityUtil.removeById(testExecution.getParameters(), param.getId());
          } catch (Exception e) {
             throw new RuntimeException(e);
          }
@@ -261,7 +270,7 @@ public class TestExecutionController extends ControllerBase {
          idHolder.setId(testExecutionId);
          editedParameter.setTestExecution(idHolder);
          try {
-            TestExecutionParameter freshParam = testService.updateTestExecutionParameter(editedParameter);
+            TestExecutionParameter freshParam = testService.updateParameter(editedParameter);
             EntityUtil.removeById(testExecution.getParameters(), freshParam.getId());
             testExecution.getParameters().add(freshParam);
             editedParameter = null;
@@ -335,7 +344,7 @@ public class TestExecutionController extends ControllerBase {
                   return;
                }
                editedValue.setMetric(selectedMetric.clone());
-               freshValue = testService.createValue(editedValue);
+               freshValue = testService.addValue(editedValue);
             } else {
                freshValue = testService.updateValue(editedValue);
                EntityUtil.removeById(testExecution.getValues(), freshValue.getId());

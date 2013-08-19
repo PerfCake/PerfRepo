@@ -50,6 +50,10 @@ public class TestExecutionTag implements Entity<TestExecutionTag> {
    @JoinColumn(name = "test_execution_id", referencedColumnName = "id")
    private TestExecution testExecution;
 
+   public TestExecutionTag() {
+      super();
+   }
+
    @XmlTransient
    public Long getId() {
       return id;

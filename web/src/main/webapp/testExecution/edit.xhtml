@@ -17,7 +17,7 @@
 			<a4j:commandButton oncomplete="#{rich:component('dialogDetailsEdit')}.hide()" value="#{strings.cancel}" alt="#{strings.cancel}" title="#{strings.cancel}"
 				action="#{testExecutionController.unsetEditedTestExecution()}" />
 			<a4j:commandButton action="#{testExecutionController.updateEditedTestExecution()}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}"
-				oncomplete="#{rich:component('dialogDetailsEdit')}.hide()" />
+				oncomplete="#{rich:component('dialogDetailsEdit')}.hide()" render="@form :detailsForm" />
 		</fieldset>
 
 	</rich:popupPanel>

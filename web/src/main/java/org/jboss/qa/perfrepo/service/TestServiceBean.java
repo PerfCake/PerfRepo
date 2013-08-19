@@ -18,6 +18,7 @@ package org.jboss.qa.perfrepo.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -193,13 +194,14 @@ public class TestServiceBean implements TestService {
 
    @Override
    public Long addAttachment(TestExecutionAttachment attachment) throws ServiceException {
-      TestExecution testExecution = testExecutionDAO.find(attachment.getTestExecution().getId());
-      if (testExecution == null) {
+      TestExecution exec = testExecutionDAO.find(attachment.getTestExecution().getId());
+      if (exec == null) {
          throw serviceException(TEST_EXECUTION_NOT_FOUND, "Trying to add attachment to non-existent test execution (id=%s)", attachment.getTestExecution()
                .getId());
       }
-      checkUserCanChangeTest(testExecution.getTest());
-      attachment.setTestExecution(testExecution);
+      checkUserCanChangeTest(exec.getTest());
+      checkLocked(exec);
+      attachment.setTestExecution(exec);
       TestExecutionAttachment newAttachment = testExecutionAttachmentDAO.create(attachment);
       return newAttachment.getId();
    }
@@ -526,17 +528,27 @@ public class TestServiceBean implements TestService {
       return freshTest;
    }
 
-   public TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException {
-      TestExecution oldExecution = testExecutionDAO.find(testExecution.getId());
-      if (oldExecution == null) {
-         throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", testExecution.getId());
+   private void checkLocked(TestExecution exec) throws ServiceException {
+      if (exec.isLocked()) {
+         serviceException(EXECUTION_LOCKED, "Test execution (id=%s) is locked.", exec.getId());
       }
-      checkUserCanChangeTest(oldExecution.getTest());
-      for (TestExecutionTag interObj : oldExecution.getTestExecutionTags()) {
+   }
+
+   public TestExecution updateTestExecution(TestExecution anExec) throws ServiceException {
+      TestExecution execEntity = testExecutionDAO.find(anExec.getId());
+      if (execEntity == null) {
+         throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", anExec.getId());
+      }
+      checkUserCanChangeTest(execEntity.getTest());
+      checkLocked(execEntity);
+      for (TestExecutionTag interObj : execEntity.getTestExecutionTags()) {
          testExecutionTagDAO.delete(interObj);
       }
-      TestExecution updatedExecution = testExecutionDAO.update(testExecution);
-      for (String tag : testExecution.getTags()) {
+      execEntity.getTestExecutionTags().clear();
+      // this is what can be updated here
+      execEntity.setName(anExec.getName());
+      execEntity.setStarted(anExec.getStarted());
+      for (String tag : new HashSet<String>(anExec.getTags())) {
          Tag tagEntity = tagDAO.findByName(tag);
          if (tagEntity == null) {
             Tag newTag = new Tag();
@@ -545,45 +557,42 @@ public class TestServiceBean implements TestService {
          }
          TestExecutionTag newTestExecutionTag = new TestExecutionTag();
          newTestExecutionTag.setTag(tagEntity);
-         newTestExecutionTag.setTestExecution(updatedExecution);
+         newTestExecutionTag.setTestExecution(execEntity);
          testExecutionTagDAO.create(newTestExecutionTag);
+         execEntity.getTestExecutionTags().add(newTestExecutionTag);
       }
-      return getFullTestExecution(testExecution.getId());
+      return getFullTestExecution(anExec.getId());
    }
 
-   public TestExecutionParameter addTestExecutionParameter(TestExecution te, TestExecutionParameter tep) throws ServiceException {
-      TestExecution freshTE = testExecutionDAO.find(te.getId());
-      tep.setTestExecution(freshTE);
-      return testExecutionParameterDAO.create(tep);
+   public TestExecution setExecutionLocked(TestExecution anExec, boolean locked) throws ServiceException {
+      TestExecution execEntity = testExecutionDAO.find(anExec.getId());
+      if (execEntity == null) {
+         throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", anExec.getId());
+      }
+      checkUserCanChangeTest(execEntity.getTest());
+      execEntity.setLocked(locked);
+      return getFullTestExecution(anExec.getId());
    }
 
-   public TestExecutionParameter getTestExecutionParameter(Long id) {
-      return testExecutionParameterDAO.find(id);
-   }
-
-   public TestExecutionParameter updateTestExecutionParameter(TestExecutionParameter tep) throws ServiceException {
+   public TestExecutionParameter updateParameter(TestExecutionParameter tep) throws ServiceException {
       TestExecution exec = testExecutionDAO.find(tep.getTestExecution().getId());
       if (exec == null) {
          throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", tep.getTestExecution().getId());
       }
       checkUserCanChangeTest(exec.getTest());
+      checkLocked(exec);
       return testExecutionParameterDAO.update(tep);
    }
 
-   public void deleteTestExecutionParameter(TestExecutionParameter tep) {
+   public void deleteParameter(TestExecutionParameter tep) throws ServiceException {
+      TestExecution exec = testExecutionDAO.find(tep.getTestExecution().getId());
+      if (exec == null) {
+         throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", tep.getTestExecution().getId());
+      }
+      checkUserCanChangeTest(exec.getTest());
+      checkLocked(exec);
       TestExecutionParameter tepRemove = testExecutionParameterDAO.find(tep.getId());
       testExecutionParameterDAO.delete(tepRemove);
-   }
-
-   public TestExecutionTag addTestExecutionTag(TestExecution te, TestExecutionTag teg) throws ServiceException {
-      TestExecution freshTE = testExecutionDAO.find(te.getId());
-      Tag tag = tagDAO.findByName(teg.getTag().getName());
-      if (tag == null) {
-         tag = tagDAO.create(teg.getTag());
-      }
-      teg.setTestExecution(freshTE);
-      teg.setTag(tag);
-      return testExecutionTagDAO.create(teg);
    }
 
    public void deleteTestExecutionTag(TestExecutionTag teg) {
@@ -591,16 +600,13 @@ public class TestServiceBean implements TestService {
       testExecutionTagDAO.delete(tegRemove);
    }
 
-   public Value getValue(Long id) {
-      return valueDAO.getValue(id);
-   }
-
-   public Value createValue(Value value) throws ServiceException {
+   public Value addValue(Value value) throws ServiceException {
       TestExecution exec = testExecutionDAO.find(value.getTestExecution().getId());
       if (exec == null) {
          throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
       }
       checkUserCanChangeTest(exec.getTest());
+      checkLocked(exec);
       Metric metric = metricDAO.find(value.getMetric().getId());
       if (metric == null) {
          throw serviceException(METRIC_NOT_FOUND, "Metric not found (id=%s)", value.getMetric().getId());
@@ -639,6 +645,7 @@ public class TestServiceBean implements TestService {
          throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
       }
       checkUserCanChangeTest(exec.getTest());
+      checkLocked(exec);
       Value oldValue = valueDAO.find(value.getId());
       if (oldValue == null) {
          throw serviceException(VALUE_NOT_FOUND, "Value doesn't exist (id=%s)", value.getId());
@@ -672,6 +679,7 @@ public class TestServiceBean implements TestService {
          throw serviceException(TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
       }
       checkUserCanChangeTest(exec.getTest());
+      checkLocked(exec);
       Value v = valueDAO.find(value.getId());
       for (ValueParameter vp : v.getParameters()) {
          valueParameterDAO.delete(vp);
