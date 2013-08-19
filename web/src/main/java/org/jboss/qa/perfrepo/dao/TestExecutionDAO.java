@@ -168,12 +168,11 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Predicate pParameterNameFixed = cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName"));
       Predicate pTestFixed = cb.equal(rTest_Exec.get("id"), cb.parameter(Long.class, "testId"));
       Predicate pMetricFromSameTest = cb.equal(rTest_Metric.get("id"), rTest_Exec.get("id"));
-      Predicate pHavingExactlyOneValue = cb.equal(cb.count(rValue.get("id")), cb.literal(1)); // only single valued test executions
 
       criteria.where(cb.and(pMetricNameFixed, pParameterNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
       criteria.select(cb.construct(DataPoint.class, rParam.get("value"), rValue.get("resultValue"), rExec.get("id")));
       criteria.groupBy(rParam.get("value"), rValue.get("resultValue"), rExec.get("id"));
-      criteria.having(cb.and(pHavingExactlyOneValue, pHavingAllTagsPresent));
+      criteria.having(pHavingAllTagsPresent);
       criteria.orderBy(cb.asc(rParam.get("value")));
 
       TypedQuery<DataPoint> query = query(criteria);
