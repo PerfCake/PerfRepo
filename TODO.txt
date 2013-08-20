@@ -1,7 +1,7 @@
-Bugs in 0.0.5
+Bugs in 0.0.8
 -------------
-
-
+- metric report doesn't load data properly - error in query in DAO
+- losing view context in test execution details after several posts
 
 TODO
 ----
@@ -9,5 +9,4 @@ TODO
 - database management scripts (PostgreSQL)
 - deletion of some objects might take long, show "please wait..." disable work for that time
 - metric human readable names and units for display in charts (from rvansa)
-- test executions uploaded from automated tests should be markable read-only and not editable 
-  in first iteration read only checkbox should be changable by anyone, but later only by admin role if we add that (from mgencur)
+- client-side validation of test and execution objects (with hibernate validator)

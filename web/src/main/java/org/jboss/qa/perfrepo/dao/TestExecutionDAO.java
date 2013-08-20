@@ -82,17 +82,17 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       }
       if (search.getTestName() != null && !"".equals(search.getTestName())) {
          Join<TestExecution, Test> rTest = rExec.join("test");
-         pTestName = cb.equal(rTest.get("name"), cb.parameter(String.class, "testName"));
+         pTestName = cb.like(rTest.<String> get("name"), cb.parameter(String.class, "testName"));
       }
       if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
          Join<TestExecution, Test> rTest = rExec.join("test");
-         pTestUID = cb.equal(rTest.get("uid"), cb.parameter(String.class, "testUID"));
+         pTestUID = cb.like(rTest.<String> get("uid"), cb.parameter(String.class, "testUID"));
       }
       if (search.getParameters() != null && !search.getParameters().isEmpty()) {
          for (int pCount = 1; pCount < search.getParameters().size() + 1; pCount++) {
             Join<TestExecution, TestExecutionParameter> rParam = rExec.join("parameters");
             pParamsMatch = cb.and(pParamsMatch, cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName" + pCount)));
-            pParamsMatch = cb.and(pParamsMatch, cb.equal(rParam.get("value"), cb.parameter(String.class, "paramValue" + pCount)));
+            pParamsMatch = cb.and(pParamsMatch, cb.like(rParam.<String> get("value"), cb.parameter(String.class, "paramValue" + pCount)));
          }
       }
 

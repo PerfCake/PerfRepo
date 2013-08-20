@@ -58,6 +58,7 @@ import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesRequest;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesResponse;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SortType;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
+import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.model.util.EntityUtil.UpdateSet;
@@ -189,6 +190,15 @@ public class TestServiceBean implements TestService {
    }
 
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search) {
+      // remove param criteria with empty param name
+      if (search.getParameters() != null) {
+         for (Iterator<ParamCriteria> allParams = search.getParameters().iterator(); allParams.hasNext();) {
+            ParamCriteria param = allParams.next();
+            if (param.getName() == null || "".equals(param.getName().trim())) {
+               allParams.remove();
+            }
+         }
+      }
       List<TestExecution> result = testExecutionDAO.searchTestExecutions(search);
       return result;
    }
