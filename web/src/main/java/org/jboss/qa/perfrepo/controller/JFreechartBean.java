@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 
 @RequestScoped
@@ -29,11 +30,30 @@ public class JFreechartBean extends ControllerBase {
       public int height = 320;
    }
 
+   public static class BarChartSpec implements Serializable {
+      public String title;
+      public String xAxisLabel;
+      public String yAxisLabel;
+      public CategoryDataset dataset;
+      public int width = 640;
+      public int height = 320;
+   }
+
    public void generate(OutputStream out, Object data) throws IOException {
       if (data instanceof XYLineChartSpec) {
          XYLineChartSpec chartSpec = (XYLineChartSpec) data;
          try {
             JFreeChart chart = ChartFactory.createXYLineChart(chartSpec.title, chartSpec.xAxisLabel, chartSpec.yAxisLabel, chartSpec.dataset,
+                  PlotOrientation.VERTICAL, false, false, false);
+            BufferedImage buffImg = chart.createBufferedImage(chartSpec.width, chartSpec.height, BufferedImage.TYPE_INT_RGB, null);
+            ImageIO.write(buffImg, "png", out);
+         } catch (Exception e) {
+            log.error("Error while creating chart", e);
+         }
+      } else if (data instanceof BarChartSpec) {
+         BarChartSpec chartSpec = (BarChartSpec) data;
+         try {
+            JFreeChart chart = ChartFactory.createBarChart(chartSpec.title, chartSpec.xAxisLabel, chartSpec.yAxisLabel, chartSpec.dataset,
                   PlotOrientation.VERTICAL, false, false, false);
             BufferedImage buffImg = chart.createBufferedImage(chartSpec.width, chartSpec.height, BufferedImage.TYPE_INT_RGB, null);
             ImageIO.write(buffImg, "png", out);

@@ -30,6 +30,7 @@ import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.ControllerBase;
+import org.jboss.qa.perfrepo.controller.JFreechartBean.BarChartSpec;
 import org.jboss.qa.perfrepo.controller.JFreechartBean.XYLineChartSpec;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
@@ -42,12 +43,9 @@ import org.jboss.qa.perfrepo.util.MultiValue;
 import org.jboss.qa.perfrepo.util.MultiValue.ParamInfo;
 import org.jboss.qa.perfrepo.util.MultiValue.ValueInfo;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jsflot.components.FlotChartRendererData;
-import org.jsflot.xydata.XYDataList;
-import org.jsflot.xydata.XYDataPoint;
-import org.jsflot.xydata.XYDataSetCollection;
 
 /**
  * Simple comparison of test execution values.
@@ -85,8 +83,7 @@ public class CompareExecutionsController extends ControllerBase {
    private Map<Long, Map<String, ValueInfo>> values = null;
    private Test test = null;
    private TestExecution baselineExecution = null;
-   private XYDataSetCollection chartData;
-   private FlotChartRendererData chart;
+   private BarChartSpec chartData;
 
    private List<String> multiValueCompareList;
    private String multiValueCompareMetric;
@@ -108,7 +105,6 @@ public class CompareExecutionsController extends ControllerBase {
          throw new IllegalStateException("Can't find execution " + execId);
       }
       baselineExecution = baselineExec1;
-      chart = null;
       chartData = null;
    }
 
@@ -121,7 +117,6 @@ public class CompareExecutionsController extends ControllerBase {
       if (execToRemove != null && testExecutions != null) {
          testExecutions.remove(execToRemove);
       }
-      chart = null;
       chartData = null;
    }
 
@@ -133,42 +128,22 @@ public class CompareExecutionsController extends ControllerBase {
       if (testExecutions == null || testExecutions.isEmpty()) {
          return;
       }
-      chart = new FlotChartRendererData();
-      chartData = new XYDataSetCollection();
-      double minValue = Double.MAX_VALUE;
-      double maxValue = Double.MIN_VALUE;
-      XYDataList series = new XYDataList();
-      series.setLabel(metricName + (percents ? " % diff" : ""));
-      int i = 0;
+      chartData = new BarChartSpec();
+      DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+      chartData.dataset = dataset;
+      String seriesName = metricName + (percents ? " % diff" : "");
       for (TestExecution te : testExecutions) {
          Double value = percents ? getSimpleBaselineNum(te.getId(), metricName) : getSimpleNum(te.getId(), metricName);
          if (value != null) {
-            XYDataPoint dp = new XYDataPoint(new Double(i), value, te.getName());
-            series.addDataPoint(dp);
-            if (value > maxValue) {
-               maxValue = value;
-            }
-            if (value < minValue) {
-               minValue = value;
-            }
+            dataset.addValue(value, seriesName, te.getName());
          }
-         i++;
       }
-      chartData.addDataList(series);
-      double range = maxValue - minValue;
-      chart.setYaxisMaxValue(maxValue + 0.1d * range);
-      double yaxisMinValue = minValue - 0.1d * range;
-      if (minValue >= 0d && yaxisMinValue < 0) {
-         yaxisMinValue = 0d; // don't get below zero if min value isn't negative
-      }
-      chart.setYaxisMinValue(yaxisMinValue);
+      chartData.xAxisLabel = "Execution";
+      chartData.yAxisLabel = seriesName;
+      chartData.title = "Compare executions";
    }
 
-   public FlotChartRendererData getChart() {
-      return chart;
-   }
-
-   public XYDataSetCollection getChartData() {
+   public BarChartSpec getChartData() {
       return chartData;
    }
 

@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"
-	xmlns:jsflot="http://www.jsflot.org/taglib/jsflot">
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
 <h:body>
 	<f:metadata>
 		<f:event type="preRenderComponent" listener="#{compareExecutionsController.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
-		<ui:define name="head">
-			<jsflot:resources />
-		</ui:define>
 		<ui:define name="title">Compare test executions</ui:define>
 		<ui:define name="content">
 			<h1>Compare Test Executions</h1>
@@ -92,7 +88,7 @@
 					<tbody class="rf-dt-b">
 						<ui:repeat value="#{compareExecutionsController.metrics}" var="metric">
 							<tr class="rf-dt-r rf-dt-fst-r">
-								<td class="rf-dt-c"><h:commandLink value="#{metric.name}" action="#{compareExecutionsController.createChart(metric.id, false)}"
+								<td class="rf-dt-c"><h:commandLink value="#{metric.name}" action="#{compareExecutionsController.createChart(metric.name, false)}"
 										title="Compute chart" /></td>
 								<ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
 									<td class="rf-dt-c #{compareExecutionsController.isBaseline(exec.id) ? 'compare_exec_baseline' : '' }"><h:outputText
@@ -175,18 +171,11 @@
 				</h:panelGroup>
 			</h:form>
 
-			<h:panelGroup id="chartPanelContainer">
-				<h:panelGroup id="chartPanel" rendered="#{compareExecutionsController.chart != null}">
-					<h:form>
-						<script type="text/javascript">
-            $.noConflict();
-         </script>
-						<jsflot:flotChart id="execComparisonChart" value="#{compareExecutionsController.chartData}" height="320" width="640" mode="Series"
-							title="Compare test executions" chartType="bar" showTooltip="true" yaxisMinValue="#{compareExecutionsController.chart.yaxisMinValue}"
-							yaxisMaxValue="#{compareExecutionsController.chart.yaxisMaxValue}" showXaxisLabels="false" showLines="false">
-						</jsflot:flotChart>
-					</h:form>
-				</h:panelGroup>
+			<h:panelGroup id="chartPanel" rendered="#{compareExecutionsController.chartData != null}">
+				<p>
+					<a4j:mediaOutput element="img" expires="#{now}" cacheable="#{false}" createContent="#{jfreechart.generate}" mimeType="image/png"
+						value="#{compareExecutionsController.chartData}" />
+				</p>
 			</h:panelGroup>
 
 		</ui:define>
