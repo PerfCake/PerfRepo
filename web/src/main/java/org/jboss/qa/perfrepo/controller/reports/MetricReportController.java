@@ -430,11 +430,7 @@ public class MetricReportController extends ControllerBase {
       }
       double range = maxValue - minValue;
       chart.setYaxisMaxValue(maxValue + 0.1d * range);
-      double yaxisMinValue = minValue - 0.1d * range;
-      if (minValue >= 0d && yaxisMinValue < 0) {
-         yaxisMinValue = 0d; // don't get below zero if min value isn't negative
-      }
-      chart.setYaxisMinValue(yaxisMinValue);
+      chart.setYaxisMinValue(minValue < 0d ? minValue : 0d);
       chart.setYaxisTitle("Metric values");
       chart.setXaxisTitle(response.getSelectedParam());
       return collection;
