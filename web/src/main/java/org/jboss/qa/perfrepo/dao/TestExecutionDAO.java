@@ -15,8 +15,12 @@
  */
 package org.jboss.qa.perfrepo.dao;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
@@ -35,6 +39,7 @@ import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
+import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.util.Util;
 
 /**
@@ -53,7 +58,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       return findAllByProperty("test", test);
    }
 
-   public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search) {
+   public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, TestExecutionParameterDAO paramDAO) {
       CriteriaQuery<TestExecution> criteria = createCriteria();
       CriteriaBuilder cb = criteriaBuilder();
       List<String> tags = Util.parseTags(search.getTags());
@@ -88,7 +93,17 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          Join<TestExecution, Test> rTest = rExec.join("test");
          pTestUID = cb.like(rTest.<String> get("uid"), cb.parameter(String.class, "testUID"));
       }
+      List<String> displayedParams = null;
       if (search.getParameters() != null && !search.getParameters().isEmpty()) {
+         displayedParams = new ArrayList<String>(search.getParameters().size());
+         for (ParamCriteria pc : search.getParameters()) {
+            if (pc.isDisplayed()) {
+               displayedParams.add(pc.getName());
+            }
+            if (pc.getValue() == null || "".equals(pc.getValue().trim())) {
+               pc.setValue("%");
+            }
+         }
          for (int pCount = 1; pCount < search.getParameters().size() + 1; pCount++) {
             Join<TestExecution, TestExecutionParameter> rParam = rExec.join("parameters");
             pParamsMatch = cb.and(pParamsMatch, cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName" + pCount)));
@@ -130,7 +145,28 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
             pCount++;
          }
       }
-      return query.getResultList();
+      List<TestExecution> r = EntityUtil.clone(query.getResultList());
+      if (displayedParams != null && !displayedParams.isEmpty() && paramDAO != null) {
+         List<TestExecutionParameter> allParams = paramDAO.find(EntityUtil.extractIds(r), displayedParams);
+         Map<Long, List<TestExecutionParameter>> paramsByExecId = new HashMap<Long, List<TestExecutionParameter>>();
+         for (TestExecutionParameter param : allParams) {
+            List<TestExecutionParameter> paramListForExec = paramsByExecId.get(param.getTestExecution().getId());
+            if (paramListForExec == null) {
+               paramListForExec = new ArrayList<TestExecutionParameter>(displayedParams.size());
+               paramsByExecId.put(param.getTestExecution().getId(), paramListForExec);
+            }
+            paramListForExec.add(param);
+         }
+         for (TestExecution exec : r) {
+            List<TestExecutionParameter> paramListForExec = paramsByExecId.get(exec.getId());
+            exec.setParameters(paramListForExec == null ? Collections.<TestExecutionParameter> emptyList() : paramListForExec);
+         }
+      } else {
+         for (TestExecution exec : r) {
+            exec.setParameters(Collections.<TestExecutionParameter> emptyList());
+         }
+      }
+      return r;
    }
 
    /**

@@ -1,7 +1,7 @@
-Bugs in 0.0.8
+Bugs in 0.0.9
 -------------
-- metric report doesn't load data properly - error in query in DAO
 - losing view context in test execution details after several posts
+- newlines in execution parameter values aren't imported via perfrepo client properly
 
 TODO
 ----

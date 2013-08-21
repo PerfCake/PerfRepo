@@ -15,13 +15,16 @@
  */
 package org.jboss.qa.perfrepo.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.TestExecution;
+import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
+import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.SearchCriteriaSession;
@@ -53,6 +56,11 @@ public class SearchController extends ControllerBase {
    private TestExecutionSearchTO criteria = null;
 
    private List<TestExecution> result;
+   private List<String> paramColumns;
+
+   public List<String> getParamColumns() {
+      return paramColumns;
+   }
 
    public void preRender() {
       if (criteria == null) {
@@ -75,6 +83,17 @@ public class SearchController extends ControllerBase {
 
    public void search() {
       result = testService.searchTestExecutions(criteria);
+      paramColumns = new ArrayList<String>(3);
+      for (ParamCriteria pc : criteria.getParameters()) {
+         if (pc.isDisplayed()) {
+            paramColumns.add(pc.getName());
+         }
+      }
+   }
+
+   public String itemParam(TestExecution exec, String paramName) {
+      TestExecutionParameter p = exec.findParameter(paramName);
+      return p == null ? null : p.getValue();
    }
 
    public void addParameterCriteria() {

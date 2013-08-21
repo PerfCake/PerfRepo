@@ -55,6 +55,14 @@ public class TestExecutionSearchTO implements Serializable {
       public void setValue(String value) {
          this.value = value;
       }
+
+      public boolean isDisplayed() {
+         return isNameEmpty() || value == null || "".equals(value.trim()) || value.contains("%");
+      }
+
+      public boolean isNameEmpty() {
+         return name == null || "".equals(name.trim());
+      }
    }
 
    public Date getStartedFrom() {

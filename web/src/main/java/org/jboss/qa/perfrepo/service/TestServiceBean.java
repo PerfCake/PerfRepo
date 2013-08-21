@@ -194,12 +194,12 @@ public class TestServiceBean implements TestService {
       if (search.getParameters() != null) {
          for (Iterator<ParamCriteria> allParams = search.getParameters().iterator(); allParams.hasNext();) {
             ParamCriteria param = allParams.next();
-            if (param.getName() == null || "".equals(param.getName().trim())) {
+            if (param.isNameEmpty()) {
                allParams.remove();
             }
          }
       }
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(search);
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(search, testExecutionParameterDAO);
       return result;
    }
 

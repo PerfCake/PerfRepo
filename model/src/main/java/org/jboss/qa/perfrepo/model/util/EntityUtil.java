@@ -32,11 +32,11 @@ public class EntityUtil {
     * @param entities
     * @return
     */
-   public static <T extends Entity<T>> Collection<T> clone(Collection<T> entities) {
+   public static <T extends Entity<T>> List<T> clone(Collection<T> entities) {
       if (entities == null) {
          return null;
       }
-      Collection<T> result = new ArrayList<T>(entities.size());
+      List<T> result = new ArrayList<T>(entities.size());
       for (T entity : entities) {
          result.add(entity.clone());
       }

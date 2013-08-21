@@ -6,6 +6,9 @@
 		<f:event type="preRenderView" listener="#{searchController.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
+		<ui:define name="head">
+			<link href="/repo/rfRes/datatable.ecss.jsf?ln=org.richfaces" rel="stylesheet" type="text/css"></link>
+		</ui:define>
 		<ui:define name="title">Search Test Execution</ui:define>
 		<ui:define name="content">
 			<h:form id="criteriaForm" class="form-horizontal well">
@@ -90,56 +93,54 @@
 
 				<div class="form-actions">
 					<a4j:commandButton action="#{searchController.search}" value="Search" styleClass="btn btn-primary" alt="Search Test Execution"
-						title="Search Test Execution" render="searchResult:searchResultTable">
+						title="Search Test Execution" render="@form :searchResult :messagesPanel">
 						<f:param name="testExecutionSearchTO" value="#{searchController.criteria}" />
 					</a4j:commandButton>
 				</div>
 			</h:form>
 
 			<h:form id="searchResult">
-				<rich:dataTable id="searchResultTable" styleClass="table table-bordered table-striped table-hover" value="#{searchController.result}" var="item">
-					<rich:column sortable="true" sortOrder="#{searchController.sortsOrders['name']}" sortBy="#{item.name}">
-						<f:facet name="header">
-							<a4j:commandLink value="#{entityStrings.Test_id}" render="searchResultTable" action="#{searchController.sort()}">
-								<f:param name="sortProperty" value="id" />
-								<f:ajax render="searchResultTable" />
-							</a4j:commandLink>
-						</f:facet>
-						<h:outputText value="#{item.id}" />
-					</rich:column>
-					<rich:column sortable="true" sortOrder="#{searchController.sortsOrders['name']}" sortBy="#{item.name}">
-						<f:facet name="header">
-							<a4j:commandLink value="#{entityStrings.TestExecution_name}" render="searchResultTable" action="#{searchController.sort()}">
-								<f:param name="sortProperty" value="name" />
-								<f:ajax render="searchResultTable" />
-							</a4j:commandLink>
-						</f:facet>
-						<a href="/repo/exec/#{item.id}">#{item.name}</a>
-					</rich:column>
-					<rich:column sortable="true" sortOrder="#{searchController.sortsOrders['test']}" sortBy="#{item.test.name}">
-						<f:facet name="header">
-							<a4j:commandLink value="#{entityStrings.TestExecution_test}" render="searchResultTable" action="#{searchController.sort()}">
-								<f:param name="sortProperty" value="test" />
-								<f:ajax render="searchResultTable" />
-							</a4j:commandLink>
-						</f:facet>
-						<a href="/repo/test/#{item.test.id}">#{item.test.name}</a>
-					</rich:column>
-					<rich:column>
-						<f:facet name="header"></f:facet>
-						<div class="btn-group">
-							<a4j:commandLink styleClass="btn btn-primary btn-small" action="#{searchController.delete}" alt="#{strings.delete}" title="#{strings.delete}"
-								render="@form :messagesPanel">
-								<f:param name="idToDelete" value="#{item.id}" />
-								<i class="icon-trash"></i>
-							</a4j:commandLink>
-							<a4j:commandLink styleClass="btn btn-primary btn-small" render=":compareMenuItem" lt="Add to comparison" title="Add to comparison"
-								action="#{teComparatorSession.add(item.id)}">
-								<i class="icon-plus"></i>
-							</a4j:commandLink>
-						</div>
-					</rich:column>
-				</rich:dataTable>
+				<table class="rf-dt searchResult">
+					<thead class="rf-dt-thd">
+						<tr class="rf-dt-shdr">
+							<th class="rf-dt-shdr-c">ID</th>
+							<th class="rf-dt-shdr-c">Name</th>
+							<th class="rf-dt-shdr-c">Test</th>
+							<th class="rf-dt-shdr-c">Time</th>
+							<ui:repeat value="#{searchController.paramColumns}" var="item">
+								<th class="rf-dt-shdr-c">#{item}</th>
+							</ui:repeat>
+							<th class="rf-dt-shdr-c">Commands</th>
+						</tr>
+					</thead>
+					<tbody class="rf-dt-b">
+						<ui:repeat value="#{searchController.result}" var="item">
+							<tr class="rf-dt-r rf-dt-fst-r">
+								<td class="rf-dt-c"><h:outputText value="#{item.id}" /></td>
+								<td class="rf-dt-c"><a href="/repo/exec/#{item.id}">#{item.name}</a></td>
+								<td class="rf-dt-c"><a href="/repo/test/#{item.test.id}">#{item.test.name}</a></td>
+								<td class="rf-dt-c"><h:outputText value="#{item.started}">
+										<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeStyle="full" />
+									</h:outputText></td>
+
+								<ui:repeat value="#{searchController.paramColumns}" var="item2">
+									<td class="rf-dt-c"><h:outputText value="#{searchController.itemParam(item, item2)}" /></td>
+								</ui:repeat>
+								<td class="rf-dt-c"><div class="btn-group">
+										<a4j:commandLink styleClass="btn btn-primary btn-small" action="#{searchController.delete}" alt="#{strings.delete}" title="#{strings.delete}"
+											render="@form :criteriaForm :messagesPanel">
+											<f:param name="idToDelete" value="#{item.id}" />
+											<i class="icon-trash"></i>
+										</a4j:commandLink>
+										<a4j:commandLink styleClass="btn btn-primary btn-small" render=":compareMenuItem" lt="Add to comparison" title="Add to comparison"
+											action="#{teComparatorSession.add(item.id)}">
+											<i class="icon-plus"></i>
+										</a4j:commandLink>
+									</div></td>
+							</tr>
+						</ui:repeat>
+					</tbody>
+				</table>
 			</h:form>
 		</ui:define>
 	</ui:composition>

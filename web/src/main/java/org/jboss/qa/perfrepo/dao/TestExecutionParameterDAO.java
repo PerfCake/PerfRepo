@@ -62,4 +62,20 @@ public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long>
       query.setParameter("paramName", paramName);
       return query.getSingleResult() != 0l;
    }
+
+   public List<TestExecutionParameter> find(List<Long> execIdList, List<String> paramNameList) {
+      CriteriaBuilder cb = criteriaBuilder();
+      CriteriaQuery<TestExecutionParameter> criteria = cb.createQuery(TestExecutionParameter.class);
+
+      Root<TestExecutionParameter> rParam = criteria.from(TestExecutionParameter.class);
+      Predicate pParamNameInList = rParam.get("name").in(cb.parameter(List.class, "paramNameList"));
+      Predicate pExecIdInList = rParam.get("testExecution").get("id").in(cb.parameter(List.class, "execIdList"));
+      rParam.fetch("testExecution");
+      criteria.where(cb.and(pParamNameInList, pExecIdInList));
+      criteria.select(rParam);
+      TypedQuery<TestExecutionParameter> query = query(criteria);
+      query.setParameter("paramNameList", paramNameList);
+      query.setParameter("execIdList", execIdList);
+      return query.getResultList();
+   }
 }

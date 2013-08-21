@@ -45,7 +45,7 @@
 					<rich:column sortable="true" sortOrder="#{compareExecutionsController.sortsOrders['started']}" sortBy="#{te.started}" width="200px"
 						styleClass="#{compareExecutionsController.isBaseline(te.id) ? 'compare_exec_baseline' : '' }">
 						<f:facet name="header">
-							<a4j:commandLink value="Test Execution Date" render="teTable" action="#{compareExecutionsController.sort()}">
+							<a4j:commandLink value="Time" render="teTable" action="#{compareExecutionsController.sort()}">
 								<f:param name="sortProperty" value="started" />
 								<f:ajax render="teTable" />
 							</a4j:commandLink>

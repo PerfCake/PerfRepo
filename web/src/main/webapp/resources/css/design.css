@@ -6233,3 +6233,6 @@ table.editableEntryTable td {
 table.editableEntryTable input {
    width: inherit;
 }
+table.searchResult {
+	width: 940px;
+}
