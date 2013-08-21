@@ -96,6 +96,7 @@ public class TestExecution implements Entity<TestExecution> {
 
    @NotNull
    @Column(name = "locked")
+   @XmlAttribute(name = "locked")
    private Boolean locked;
 
    @XmlTransient
@@ -286,7 +287,6 @@ public class TestExecution implements Entity<TestExecution> {
       return locked == null || locked.booleanValue();
    }
 
-   @XmlAttribute(name = "locked")
    public Boolean getLocked() {
       return locked;
    }
