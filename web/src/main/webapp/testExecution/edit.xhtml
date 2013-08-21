@@ -10,6 +10,10 @@
 			<div class="detail-value">
 				<h:inputText styleClass="input-text" value="#{testExecutionController.editedTestExecution.name}" />
 			</div>
+			<h:outputLabel class="detail-label">Time</h:outputLabel>
+			<div class="detail-value">
+				<rich:calendar value="#{testExecutionController.editedTestExecution.started}" datePattern="yyyy-MM-dd HH:mm" />
+			</div>
 			<h:outputLabel class="detail-label">Tags</h:outputLabel>
 			<div class="detail-value">
 				<h:inputText styleClass="input-text" value="#{testExecutionController.rawTags}" />

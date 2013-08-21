@@ -65,6 +65,28 @@ public class TestExecutionBuilder {
       return this;
    }
 
+   /**
+    * Set locked to true
+    * 
+    * @param name
+    * @return this {@link TestExecutionBuilder}
+    */
+   public TestExecutionBuilder locked() {
+      testExecution.setLocked(Boolean.TRUE);
+      return this;
+   }
+
+   /**
+    * Set locked to false
+    * 
+    * @param name
+    * @return this {@link TestExecutionBuilder}
+    */
+   public TestExecutionBuilder unlocked() {
+      testExecution.setLocked(Boolean.FALSE);
+      return this;
+   }
+
    private TestExecutionParameter addParameter(TestExecutionParameter param) {
       Collection<TestExecutionParameter> parameters = testExecution.getParameters();
       if (parameters == null) {

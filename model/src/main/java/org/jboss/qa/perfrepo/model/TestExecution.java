@@ -90,9 +90,11 @@ public class TestExecution implements Entity<TestExecution> {
    @OneToMany(mappedBy = "testExecution")
    private Collection<TestExecutionAttachment> attachments;
 
+   @NotNull
    @Column(name = "started")
    private Date started;
 
+   @NotNull
    @Column(name = "locked")
    private Boolean locked;
 
@@ -284,6 +286,7 @@ public class TestExecution implements Entity<TestExecution> {
       return locked == null || locked.booleanValue();
    }
 
+   @XmlAttribute(name = "locked")
    public Boolean getLocked() {
       return locked;
    }

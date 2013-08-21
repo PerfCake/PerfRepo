@@ -41,6 +41,12 @@
 					</div>
 					<h:outputLabel class="detail-label">Owner</h:outputLabel>
 					<div class="detail-value">#{testExecutionController.testExecution.test.groupId}</div>
+					<h:outputLabel class="detail-label">Time</h:outputLabel>
+					<div class="detail-value">
+						<h:outputText value="#{testExecutionController.testExecution.started}">
+							<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeStyle="full" />
+						</h:outputText>
+					</div>
 					<h:outputLabel class="detail-label">Tags</h:outputLabel>
 					<div class="detail-value">
 						<ui:repeat value="#{testExecutionController.testExecution.sortedTags}" varStatus="status" var="item">
