@@ -428,8 +428,7 @@ public class MetricReportController extends ControllerBase {
          }
          collection.addDataList(series);
       }
-      double range = maxValue - minValue;
-      chart.setYaxisMaxValue(maxValue + 0.1d * range);
+      chart.setYaxisMaxValue(maxValue + 0.1d * maxValue);
       chart.setYaxisMinValue(minValue < 0d ? minValue : 0d);
       chart.setYaxisTitle("Metric values");
       chart.setXaxisTitle(response.getSelectedParam());
