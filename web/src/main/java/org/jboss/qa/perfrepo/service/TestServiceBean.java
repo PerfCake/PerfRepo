@@ -217,6 +217,20 @@ public class TestServiceBean implements TestService {
       return newAttachment.getId();
    }
 
+   public void deleteAttachment(TestExecutionAttachment attachment) throws ServiceException {
+      TestExecution exec = testExecutionDAO.find(attachment.getTestExecution().getId());
+      if (exec == null) {
+         throw serviceException(TEST_EXECUTION_NOT_FOUND, "Trying to delete attachment of non-existent test execution (id=%s)", attachment.getTestExecution()
+               .getId());
+      }
+      checkUserCanChangeTest(exec.getTest());
+      checkLocked(exec);
+      TestExecutionAttachment freshAttachment = testExecutionAttachmentDAO.find(attachment.getId());
+      if (freshAttachment != null) {
+         testExecutionAttachmentDAO.delete(freshAttachment);
+      }
+   }
+
    @Override
    public TestExecutionAttachment getAttachment(Long id) {
       return testExecutionAttachmentDAO.find(id);
@@ -483,6 +497,9 @@ public class TestServiceBean implements TestService {
       }
       // lazy fetching (clone still contains, JPA-Managed collections)
       // TODO: try alternative with findWithDepth and test performance
+      testExecution.setTest(testExecution.getTest().clone());
+      testExecution.getTest().setTestExecutions(null);
+      testExecution.getTest().setTestMetrics(null);
       testExecution.setParameters(EntityUtil.clone(testExecution.getParameters()));
       Collection<TestExecutionTag> cloneTags = new ArrayList<TestExecutionTag>();
       for (TestExecutionTag interObject : testExecution.getTestExecutionTags()) {

@@ -47,6 +47,8 @@ import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.richfaces.event.FileUploadEvent;
+import org.richfaces.model.UploadedFile;
 
 /**
  * Details of {@link TestExecution}
@@ -493,6 +495,35 @@ public class TestExecutionController extends ControllerBase {
 
    public String displayValue(TestExecutionParameter param) {
       return Util.displayValue(param);
+   }
+
+   public void uploadAttachment(FileUploadEvent event) throws Exception {
+      UploadedFile item = event.getUploadedFile();
+      TestExecutionAttachment attachment = new TestExecutionAttachment();
+      attachment.setFilename(item.getName());
+      attachment.setMimetype(item.getContentType());
+      attachment.setContent(item.getData());
+      attachment.setTestExecution(new TestExecution());
+      attachment.getTestExecution().setId(testExecutionId);
+      try {
+         testService.addAttachment(attachment);
+         testExecution = testService.getFullTestExecution(testExecutionId);
+         showMultiValue(null);
+      } catch (ServiceException e) {
+         addMessageFor(e);
+      }
+   }
+
+   public void deleteAttachment(TestExecutionAttachment attachment) {
+      try {
+         attachment.setTestExecution(new TestExecution());
+         attachment.getTestExecution().setId(testExecutionId);
+         testService.deleteAttachment(attachment);
+         testExecution = testService.getFullTestExecution(testExecutionId);
+         showMultiValue(null);
+      } catch (ServiceException e) {
+         addMessageFor(e);
+      }
    }
 
 }

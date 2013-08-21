@@ -13,6 +13,7 @@
 		<ui:define name="content">
 			<ui:include src="/testExecution/param_edit.xhtml" />
 			<ui:include src="/testExecution/value_edit.xhtml" />
+			<ui:include src="/testExecution/upload_attachment.xhtml" />
 			<ui:include src="/testExecution/edit.xhtml" />
 			<h:form id="detailsForm">
 				<fieldset>
@@ -213,6 +214,24 @@
 									</f:facet>
 									<h:outputText value="#{item.mimetype}" />
 								</rich:column>
+
+								<h:column headerClass="button-header">
+									<f:facet name="header">
+										<a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogUploadAttachment"
+											oncomplete="#{rich:component('dialogUploadAttachment')}.show();" value=" " alt="Upload attachment" title="Upload attachment"
+											rendered="#{!testExecutionController.testExecution.isLocked()}">
+											<i class="icon-plus" />
+										</a4j:commandLink>
+									</f:facet>
+									<div class="btn-group">
+										<a4j:commandLink styleClass="btn btn-primary btn-small" value=" " alt="#{strings.delete}" title="#{strings.delete}"
+											onclick="if (!confirm('Are you sure you want to delete the attachment (#{item.filename})?') ) { return false;}; return true;"
+											action="#{testExecutionController.deleteAttachment(item)}" render="attachmentList :messagesPanel"
+											rendered="#{!testExecutionController.testExecution.isLocked()}">
+											<i class="icon-remove" />
+										</a4j:commandLink>
+									</div>
+								</h:column>
 							</rich:dataTable>
 						</h:form>
 					</rich:tab>

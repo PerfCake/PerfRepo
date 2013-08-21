@@ -37,7 +37,7 @@
    <rule>
       <!-- /exec/{testExecutionId} -->
       <from>^/exec/([\d]+)$</from>
-      <to type="forward" last="true">/testExecution/detail.jsf?testExecutionId=$1</to>
+      <to type="forward" last="true" qsappend="true">/testExecution/detail.jsf?testExecutionId=$1</to>
       <set name="formActionURL">/exec/$1</set>
    </rule>
 

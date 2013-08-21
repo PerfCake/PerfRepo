@@ -92,6 +92,14 @@ public interface TestService extends Codes {
    Long addAttachment(TestExecutionAttachment attachment) throws ServiceException;
 
    /**
+    * Delete attachment.
+    * 
+    * @param attachment
+    * @throws ServiceException
+    */
+   void deleteAttachment(TestExecutionAttachment attachment) throws ServiceException;
+
+   /**
     * Get test execution attachment by id.
     * 
     * @param id
