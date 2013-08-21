@@ -30,10 +30,12 @@
 					<h:outputText value="#{testController.test.description}" escape="false" />
 				</div>
 			</fieldset>
-
-
+			<p>
+				<a class="btn btn-primary btn-small" href="/repo/test/#{testController.testId}/newExec" title="Create new test execution"> <i class="icon-plus"></i>
+					Create execution
+				</a>
+			</p>
 			<h3>Metrics</h3>
-
 			<h:form id="metricList">
 				<p>
 					<a4j:commandLink styleClass="btn btn-primary btn-small" render=":dialogMetricAddAssignForm :dialogMetricAddCreateForm"
@@ -60,7 +62,6 @@
 				</ui:repeat>
 
 			</h:form>
-
 		</ui:define>
 	</ui:composition>
 </h:body>

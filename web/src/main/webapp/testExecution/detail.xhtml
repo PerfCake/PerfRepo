@@ -4,7 +4,7 @@
 	xmlns:c="http://java.sun.com/jsp/jstl/core">
 <h:body>
 	<f:metadata>
-		<f:viewParam name="createMode" value="#{testExecutionController.createMode}" />
+		<f:viewParam name="createForTest" value="#{testExecutionController.createForTest}" />
 		<f:viewParam name="testExecutionId" value="#{testExecutionController.testExecutionId}" />
 		<f:event type="preRenderView" listener="#{testExecutionController.preRender}" />
 	</f:metadata>
@@ -34,7 +34,7 @@
 						</a4j:commandLink>
 					</legend>
 					<h:outputLabel class="detail-label">ID</h:outputLabel>
-					<div class="detail-value">#{testExecutionController.testExecution.id}</div>
+					<div class="detail-value">#{testExecutionController.testExecution.id == null ? '-' : testExecutionController.testExecution.id}</div>
 					<h:outputLabel class="detail-label">#{entityStrings.TestExecution_test}</h:outputLabel>
 					<div class="detail-value">
 						<a href="/repo/test/#{testExecutionController.testExecution.test.id}">#{testExecutionController.testExecution.test.name}</a>

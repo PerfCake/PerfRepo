@@ -35,6 +35,13 @@
    </rule>
 
    <rule>
+      <!-- /test/{testId}/newExec -->
+      <from>^/test/([\d]+)/newExec$</from>
+      <to type="forward" last="true" qsappend="true">/testExecution/detail.jsf?createForTest=$1</to>
+      <set name="formActionURL">/test/$1/newExec</set>
+   </rule>
+
+   <rule>
       <!-- /exec/{testExecutionId} -->
       <from>^/exec/([\d]+)$</from>
       <to type="forward" last="true" qsappend="true">/testExecution/detail.jsf?testExecutionId=$1</to>

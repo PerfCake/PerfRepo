@@ -18,6 +18,7 @@ package org.jboss.qa.perfrepo.controller;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
@@ -81,10 +82,18 @@ public class TestExecutionController extends ControllerBase {
    private ValueInfo selectedMultiValue = null;
    private XYLineChartSpec chartData = null;
 
-   private boolean createMode;
+   private Long createForTest;
    private Long testExecutionId;
 
    private TestExecution editedTestExecution = null;
+
+   public Long getCreateForTest() {
+      return createForTest;
+   }
+
+   public void setCreateForTest(Long createForTest) {
+      this.createForTest = createForTest;
+   }
 
    public String getRawTags() {
       return Util.rawTags(editedTestExecution == null ? null : editedTestExecution.getSortedTags());
@@ -107,7 +116,11 @@ public class TestExecutionController extends ControllerBase {
    }
 
    public void unsetEditedTestExecution() {
-      this.editedTestExecution = null;
+      if (createForTest != null) {
+         redirect("/test/" + createForTest);
+      } else {
+         this.editedTestExecution = null;
+      }
    }
 
    public TestExecution getEditedTestExecution() {
@@ -119,10 +132,11 @@ public class TestExecutionController extends ControllerBase {
          try {
             if (editedTestExecution.getId() == null) {
                testExecution = testService.createTestExecution(editedTestExecution);
+               redirectWithMessage("/exec/" + testExecution.getId(), INFO, "page.exec.successfullyCreated", testExecution.getName());
             } else {
                testExecution = testService.updateTestExecution(editedTestExecution);
+               showMultiValue(null);
             }
-            showMultiValue(null);
          } catch (ServiceException e) {
             addMessageFor(e);
          }
@@ -146,23 +160,25 @@ public class TestExecutionController extends ControllerBase {
       this.testExecutionId = testExecutionId;
    }
 
-   public boolean isCreateMode() {
-      return createMode;
-   }
-
-   public void setCreateMode(boolean createMode) {
-      this.createMode = createMode;
-   }
-
    public void preRender() {
       reloadSessionMessages();
       if (testExecutionId == null) {
-         if (!createMode) {
+         if (createForTest == null) {
             log.error("No execution ID supplied");
             redirectWithMessage("/", ERROR, "page.exec.errorNoExecId");
          } else {
             if (testExecution == null) {
+               test = testService.getFullTest(createForTest);
+               if (test == null) {
+                  log.error("Can't find test with id " + testExecution.getTest().getId());
+                  redirectWithMessage("/", ERROR, "page.test.errorTestNotFound", testExecution.getTest().getId());
+               }
                testExecution = new TestExecution();
+               testExecution.setTest(test);
+               testExecution.setLocked(Boolean.FALSE);
+               testExecution.setStarted(new Date());
+               testExecution.setName("New execution");
+               setEditedTestExecution();
             }
          }
       } else {

@@ -1,6 +1,7 @@
 <h:form xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich">
-	<rich:popupPanel id="dialogDetailsEdit" modal="true" autosized="true" resizeable="false" domElementAttachment="form">
+	<rich:popupPanel id="dialogDetailsEdit" modal="true" autosized="true" resizeable="false" domElementAttachment="form"
+		show="#{testExecutionController.createForTest != null}">
 		<f:facet name="header">
 			<h:outputText value="Edit execution details" />
 		</f:facet>
