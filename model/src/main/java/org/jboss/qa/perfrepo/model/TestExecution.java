@@ -98,6 +98,17 @@ public class TestExecution implements Entity<TestExecution> {
       }
    };
 
+   public static Comparator<TestExecution> SORT_BY_TEST_NAME = new Comparator<TestExecution>() {
+      @Override
+      public int compare(TestExecution o1, TestExecution o2) {
+         if (o1 == null || o1.getTest() == null || o1.getTest().getName() == null) {
+            return o2 == null || o2.getTest() == null || o2.getTest().getName() == null ? 0 : -1;
+         } else {
+            return o2 == null || o2.getTest() == null || o2.getTest().getName() == null ? 1 : o1.getTest().getName().compareTo(o2.getTest().getName());
+         }
+      }
+   };
+
    @Id
    @SequenceGenerator(name = "TEST_EXECUTION_ID_GENERATOR", sequenceName = "TEST_EXECUTION_SEQUENCE", allocationSize = 1)
    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_EXECUTION_ID_GENERATOR")

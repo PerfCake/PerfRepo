@@ -16,6 +16,8 @@
 package org.jboss.qa.perfrepo.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -28,6 +30,7 @@ import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.SearchCriteriaSession;
+import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 /**
@@ -92,8 +95,7 @@ public class SearchController extends ControllerBase {
    }
 
    public String itemParam(TestExecution exec, String paramName) {
-      TestExecutionParameter p = exec.findParameter(paramName);
-      return p == null ? null : p.getValue();
+      return Util.displayValue(exec.findParameter(paramName));
    }
 
    public void addParameterCriteria() {
@@ -142,4 +144,56 @@ public class SearchController extends ControllerBase {
       this.result = result;
    }
 
+   private class ParamComparator implements Comparator<TestExecution> {
+
+      private String param;
+      private boolean num;
+
+      public ParamComparator(String param, boolean num) {
+         super();
+         this.param = param;
+         this.num = num;
+      }
+
+      @Override
+      public int compare(TestExecution o1, TestExecution o2) {
+         if (o1 == null) {
+            return o2 == null ? 0 : -1;
+         } else {
+            return o2 == null ? 1 : compareNotNull(o1, o2);
+         }
+      }
+
+      private int compareNotNull(TestExecution o1, TestExecution o2) {
+         TestExecutionParameter p1 = o1.findParameter(param);
+         TestExecutionParameter p2 = o2.findParameter(param);
+         if (p1 == null || p1.getValue() == null) {
+            return p2 == null || p2.getValue() == null ? 0 : -1;
+         } else {
+            try {
+               return p2 == null || p2.getValue() == null ? 1 : (num ? new Double(p1.getValue()).compareTo(new Double(p2.getValue())) : p1.getValue()
+                     .compareTo(p2.getValue()));
+            } catch (NumberFormatException e) {
+               return p1.getValue().compareTo(p2.getValue());
+            }
+         }
+      }
+
+   }
+
+   public void sortBy(String what, boolean num) {
+      if ("id".equals(what)) {
+         Collections.sort(result, TestExecution.SORT_BY_ID);
+      } else if ("name".equals(what)) {
+         Collections.sort(result, TestExecution.SORT_BY_NAME);
+      } else if ("started".equals(what)) {
+         Collections.sort(result, TestExecution.SORT_BY_STARTED);
+      } else if ("test".equals(what)) {
+         Collections.sort(result, TestExecution.SORT_BY_TEST_NAME);
+      } else if (paramColumns.contains(what)) {
+         Collections.sort(result, new ParamComparator(what, num));
+      } else {
+         throw new IllegalArgumentException("unknown sort criteria");
+      }
+   }
 }
