@@ -328,10 +328,12 @@ public class TestExecution implements Entity<TestExecution> {
       }
    }
 
+   @XmlTransient
    public boolean isLocked() {
       return locked == null || locked.booleanValue();
    }
 
+   @XmlTransient
    public Boolean getLocked() {
       return locked;
    }
