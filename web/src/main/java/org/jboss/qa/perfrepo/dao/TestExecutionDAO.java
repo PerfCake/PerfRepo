@@ -146,8 +146,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          }
       }
       List<TestExecution> r = EntityUtil.clone(query.getResultList());
-      if (displayedParams != null && !displayedParams.isEmpty() && paramDAO != null) {
-         List<TestExecutionParameter> allParams = paramDAO.find(EntityUtil.extractIds(r), displayedParams);
+      List<Long> execIds = EntityUtil.extractIds(r);
+      if (displayedParams != null && !displayedParams.isEmpty() && !execIds.isEmpty() && paramDAO != null) {
+         List<TestExecutionParameter> allParams = paramDAO.find(execIds, displayedParams);
          Map<Long, List<TestExecutionParameter>> paramsByExecId = new HashMap<Long, List<TestExecutionParameter>>();
          for (TestExecutionParameter param : allParams) {
             List<TestExecutionParameter> paramListForExec = paramsByExecId.get(param.getTestExecution().getId());
