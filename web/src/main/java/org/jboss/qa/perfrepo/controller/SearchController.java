@@ -27,9 +27,11 @@ import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
+import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.SearchCriteriaSession;
+import org.jboss.qa.perfrepo.session.TEComparatorSession;
 import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
@@ -53,6 +55,9 @@ public class SearchController extends ControllerBase {
 
    @Inject
    private SearchCriteriaSession criteriaSession;
+
+   @Inject
+   private TEComparatorSession comparatorSession;
 
    private String tag;
 
@@ -194,6 +199,15 @@ public class SearchController extends ControllerBase {
          Collections.sort(result, new ParamComparator(what, num));
       } else {
          throw new IllegalArgumentException("unknown sort criteria");
+      }
+   }
+
+   public void addAllCurrentResultsToComparison() {
+      List<Long> ids = EntityUtil.extractIds(result);
+      if (ids != null) {
+         for (Long id : ids) {
+            comparatorSession.add(id);
+         }
       }
    }
 }

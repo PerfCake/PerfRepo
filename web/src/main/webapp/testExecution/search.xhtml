@@ -6,6 +6,12 @@
 		<f:event type="preRenderView" listener="#{searchController.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
+		<ui:define name="compareAddAll">
+			<li><a4j:commandLink value=" " alt="Add all current results" title="Add all current results"
+					action="#{searchController.addAllCurrentResultsToComparison()}" render="compareMenuItem :messagesPanel">
+					<i class="icon-copy"></i>
+				</a4j:commandLink></li>
+		</ui:define>
 		<ui:define name="head">
 			<link href="/repo/rfRes/datatable.ecss.jsf?ln=org.richfaces" rel="stylesheet" type="text/css"></link>
 		</ui:define>

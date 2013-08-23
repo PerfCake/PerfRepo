@@ -113,7 +113,16 @@ public class CompareParametersController extends ControllerBase {
     */
    public void preRender() {
       reloadSessionMessages();
-      if (testExecutions == null) {
+      boolean load = testExecutions == null;
+      if (!load) {
+         Set<Long> idsInComparator = new HashSet<Long>(teComparator.getExecIds());
+         Set<Long> idsDisplayed = new HashSet<Long>(EntityUtil.extractIds(testExecutions));
+         if (!idsInComparator.equals(idsDisplayed)) {
+            load = true;
+         }
+      }
+
+      if (load) {
          List<Long> execIdList = ParamUtil.parseExecQuery(getRequestParam("q"));
          if (execIdList == null) {
             execIdList = new ArrayList<Long>(teComparator.getExecIds());

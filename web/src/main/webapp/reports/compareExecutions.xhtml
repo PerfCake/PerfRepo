@@ -7,10 +7,16 @@
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="title">Compare test executions</ui:define>
+		<ui:define name="compareClean">
+			<li><a4j:commandLink value=" " alt="Clean comparison selection" title="Clean comparison selection" action="#{teComparatorSession.clear()}"
+					render="compareMenuItem :messagesPanel :executionsForm :valuesForm">
+					<i class="icon-trash"></i>
+				</a4j:commandLink></li>
+		</ui:define>
 		<ui:define name="content">
 			<h1>Compare Test Executions</h1>
 			<a href="#{compareExecutionsController.permaLink}">Permanent link to comparison</a>
-			<h:form>
+			<h:form id="executionsForm">
 				<p>
 					Executions for test <a href="/repo/test/#{compareExecutionsController.test.id}">#{compareExecutionsController.test.name}</a>
 				</p>
@@ -74,7 +80,7 @@
 				</rich:dataTable>
 			</h:form>
 
-			<h:form>
+			<h:form id="valuesForm">
 				<h2>Test execution values</h2>
 				<table class="rf-dt tetable_values">
 					<thead class="rf-dt-thd">
