@@ -8,8 +8,7 @@
 	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="title">Compare test executions</ui:define>
 		<ui:define name="compareClean">
-			<li><a4j:commandLink value=" " alt="Clean comparison selection" title="Clean comparison selection" action="#{teComparatorSession.clear()}"
-					render="compareMenuItem :messagesPanel :executionsForm :valuesForm">
+			<li><a4j:commandLink value=" " alt="Clean comparison selection" title="Clean comparison selection" action="#{teComparatorSession.clear()}" render="@all">
 					<i class="icon-trash"></i>
 				</a4j:commandLink></li>
 		</ui:define>
