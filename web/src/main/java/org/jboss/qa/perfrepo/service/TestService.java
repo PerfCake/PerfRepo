@@ -24,6 +24,8 @@ import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.TestMetric;
+import org.jboss.qa.perfrepo.model.User;
+import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
@@ -320,4 +322,37 @@ public interface TestService extends Codes {
     * @return
     */
    TestExecutionParameter getFullParameter(Long paramId);
+
+   /**
+    * 
+    * @param userName
+    * @return User with properties.
+    */
+   User getFullUser(String userName);
+
+   /**
+    * Set user property.
+    * 
+    * @param property
+    * @throws ServiceException
+    */
+   UserProperty updateUserProperty(UserProperty property) throws ServiceException;
+
+   /**
+    * Create new user.
+    * 
+    * @param user
+    * @return
+    * @throws ServiceException
+    */
+   User createUser(User user) throws ServiceException;
+
+   /**
+    * Update user
+    * 
+    * @param user
+    * @return
+    * @throws ServiceException
+    */
+   User updateUser(User user) throws ServiceException;
 }

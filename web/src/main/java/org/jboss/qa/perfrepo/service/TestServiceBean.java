@@ -40,6 +40,8 @@ import org.jboss.qa.perfrepo.dao.TestExecutionDAO;
 import org.jboss.qa.perfrepo.dao.TestExecutionParameterDAO;
 import org.jboss.qa.perfrepo.dao.TestExecutionTagDAO;
 import org.jboss.qa.perfrepo.dao.TestMetricDAO;
+import org.jboss.qa.perfrepo.dao.UserDAO;
+import org.jboss.qa.perfrepo.dao.UserPropertyDAO;
 import org.jboss.qa.perfrepo.dao.ValueDAO;
 import org.jboss.qa.perfrepo.dao.ValueParameterDAO;
 import org.jboss.qa.perfrepo.model.Metric;
@@ -50,6 +52,8 @@ import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.TestMetric;
+import org.jboss.qa.perfrepo.model.User;
+import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
@@ -115,6 +119,12 @@ public class TestServiceBean implements TestService {
 
    @Inject
    private UserInfo userInfo;
+
+   @Inject
+   private UserDAO userDAO;
+
+   @Inject
+   private UserPropertyDAO userPropertyDAO;
 
    @Override
    public TestExecution createTestExecution(TestExecution testExecution) throws ServiceException {
@@ -858,5 +868,63 @@ public class TestServiceBean implements TestService {
       TestExecutionParameter pclone = p.clone();
       pclone.setTestExecution(p.getTestExecution().clone());
       return pclone;
+   }
+
+   @Override
+   public User getFullUser(String userName) {
+      User user = userDAO.findByUsername(userName);
+      if (user == null) {
+         return null;
+      }
+      user = user.clone();
+      List<UserProperty> properties = userPropertyDAO.findByUserId(user.getId());
+      user.setProperties(EntityUtil.clone(properties));
+      return user;
+   }
+
+   @Override
+   public UserProperty updateUserProperty(UserProperty property) throws ServiceException {
+      if (property.getUser() == null || property.getUser().getId() == null) {
+         throw new IllegalArgumentException("user id is required");
+      }
+      User user = userDAO.find(property.getUser().getId());
+      if (user == null) {
+         throw serviceException(USER_NOT_FOUND, "Couldn't find user with ID %s", property.getUser().getId());
+      }
+      if (!user.getUsername().equals(userInfo.getUserName())) {
+         throw serviceException(NOT_YOU, "Only logged-in user can change his own properties");
+      }
+      property.setUser(user);
+      if (property.getId() == null) {
+         return userPropertyDAO.create(property);
+      } else {
+         return userPropertyDAO.update(property);
+      }
+   }
+
+   public User createUser(User user) throws ServiceException {
+      if (user.getId() != null) {
+         throw new IllegalArgumentException("can't create with id");
+      }
+      if (!user.getUsername().equals(userInfo.getUserName())) {
+         throw serviceException(NOT_YOU, "Only logged-in user can change his own properties");
+      }
+      return userDAO.create(user);
+   }
+
+   public User updateUser(User user) throws ServiceException {
+      if (user == null || user.getId() == null) {
+         throw new IllegalArgumentException("user id required");
+      }
+      User oldUser = userDAO.find(user.getId());
+      if (oldUser == null) {
+         throw serviceException(USER_NOT_FOUND, "Couldn't find user with ID %s", user.getId());
+      }
+      if (!oldUser.getUsername().equals(userInfo.getUserName())) {
+         throw serviceException(NOT_YOU, "Only logged-in user can change his own properties");
+      }
+      // currently you can update only e-mail
+      oldUser.setEmail(user.getEmail());
+      return userDAO.update(oldUser);
    }
 }

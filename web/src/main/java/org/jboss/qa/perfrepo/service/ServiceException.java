@@ -41,6 +41,8 @@ public class ServiceException extends Exception {
       static final int UNPARAMETRIZED_MULTI_VALUE = 1200;
       static final int EXECUTION_LOCKED = 1300;
       static final int PARAMETER_EXISTS = 1400;
+      static final int USER_NOT_FOUND = 1500;
+      static final int NOT_YOU = 1600;
    }
 
    private int code;

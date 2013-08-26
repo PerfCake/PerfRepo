@@ -5,6 +5,11 @@
 <urlrewrite>
 
    <rule>
+      <from>^/profile$</from>
+      <to type="forward" last="true">/user/profile.jsf</to>
+   </rule>
+
+   <rule>
       <!-- /test/{testId} -->
       <from>^/test/([\d]+)$</from>
       <to type="forward" last="true">/test/detail.jsf?testId=$1</to>

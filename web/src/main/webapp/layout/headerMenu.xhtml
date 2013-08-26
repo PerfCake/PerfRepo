@@ -29,14 +29,16 @@
 												</a4j:commandLink></li>
 										</ui:insert>
 										<li class="divider-vertical"></li>
-										<li><a href="#{facesContext.externalContext.requestContextPath}">Logout</a></li>
+										<li><a href="/repo/profile" title="User profile"><i class="icon-user" /></a></li>
+										<li><a href="/repo/profile" title="Logout"><i class="icon-long-arrow-right" /></a></li>
 									</ul>
 								</h:panelGroup>
 								<h:panelGroup id="compareMenuItemNoCompare" rendered="#{!teComparatorSession.isAnyToCompare()}">
 									<ul class="nav pull-right">
 										<ui:insert name="compareAddAll"></ui:insert>
 										<li class="divider-vertical"></li>
-										<li><a href="#{facesContext.externalContext.requestContextPath}">Logout</a></li>
+										<li><a href="/repo/profile" title="User profile"><i class="icon-user" /></a></li>
+										<li><a href="/repo/profile" title="Logout"><i class="icon-long-arrow-right" /></a></li>
 									</ul>
 								</h:panelGroup>
 							</h:panelGroup>
