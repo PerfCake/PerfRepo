@@ -6236,3 +6236,8 @@ table.editableEntryTable input {
 table.searchResult {
 	width: 940px;
 }
+
+label.fav-param-label a {
+	text-decoration: none;
+	color: #555;
+}

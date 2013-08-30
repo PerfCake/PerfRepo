@@ -902,6 +902,25 @@ public class TestServiceBean implements TestService {
       }
    }
 
+   public void deleteUserProperty(UserProperty property) throws ServiceException {
+      if (property.getUser() == null || property.getUser().getId() == null) {
+         throw new IllegalArgumentException("user id is required");
+      }
+      User user = userDAO.find(property.getUser().getId());
+      if (user == null) {
+         throw serviceException(USER_NOT_FOUND, "Couldn't find user with ID %s", property.getUser().getId());
+      }
+      if (!user.getUsername().equals(userInfo.getUserName())) {
+         throw serviceException(NOT_YOU, "Only logged-in user can change his own properties");
+      }
+      UserProperty property2 = userPropertyDAO.find(property.getId());
+      if (property2 == null) {
+         log.warn("Tried to delete non-existent user-property " + property.getId());
+      } else {
+         userPropertyDAO.delete(property2);
+      }
+   }
+
    public User createUser(User user) throws ServiceException {
       if (user.getId() != null) {
          throw new IllegalArgumentException("can't create with id");
@@ -909,7 +928,9 @@ public class TestServiceBean implements TestService {
       if (!user.getUsername().equals(userInfo.getUserName())) {
          throw serviceException(NOT_YOU, "Only logged-in user can change his own properties");
       }
-      return userDAO.create(user);
+      User newUser = userDAO.create(user).clone();
+      newUser.setProperties(new ArrayList<UserProperty>(0));
+      return newUser;
    }
 
    public User updateUser(User user) throws ServiceException {

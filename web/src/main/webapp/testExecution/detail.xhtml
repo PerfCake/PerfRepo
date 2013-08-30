@@ -12,6 +12,7 @@
 		<ui:define name="title">Test execution</ui:define>
 		<ui:define name="content">
 			<ui:include src="/testExecution/param_edit.xhtml" />
+			<ui:include src="/testExecution/favparam_edit.xhtml" />
 			<ui:include src="/testExecution/value_edit.xhtml" />
 			<ui:include src="/testExecution/upload_attachment.xhtml" />
 			<ui:include src="/testExecution/edit.xhtml" />
@@ -53,6 +54,16 @@
 							<span class="badge badge-success">#{item}</span>
 						</ui:repeat>
 					</div>
+					<ui:repeat value="#{testExecutionController.favoriteParameters}" varStatus="status" var="item">
+						<h:outputLabel class="detail-label fav-param-label">
+							<a4j:commandLink render="dialogFavParamEdit"
+								action="#{testExecutionController.setEditedFavoriteParameter(item.parameterName)}" oncomplete="#{rich:component('dialogFavParamEdit')}.show();"
+								value="#{item.label}" alt="Edit favorite parameter" title="Edit favorite parameter" />
+						</h:outputLabel>
+						<div class="detail-value">
+							<h:outputText value="#{testExecutionController.displayValueFavParam(item.parameterName)}" escape="false" />
+						</div>
+					</ui:repeat>
 				</fieldset>
 			</h:form>
 			<h:form id="tabForm">
@@ -167,7 +178,7 @@
 											<f:ajax render="testExecutionParameterTable" />
 										</a4j:commandLink>
 									</f:facet>
-									<h:outputText value="#{testExecutionController.displayValue(item)}" escape="false" />
+									<h:outputText value="#{testExecutionController.displayValueTable(item)}" escape="false" />
 								</rich:column>
 								<h:column headerClass="button-header">
 									<f:facet name="header">
@@ -178,6 +189,16 @@
 										</a4j:commandLink>
 									</f:facet>
 									<div class="btn-group">
+										<a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogFavParamEdit"
+											action="#{testExecutionController.setEditedFavoriteParameter(item.name)}" oncomplete="#{rich:component('dialogFavParamEdit')}.show();" value=" "
+											alt="Add to favorites" title="Add to favorites" rendered="#{!testExecutionController.isFavorite(item.name)}">
+											<i class="icon-star-empty" />
+										</a4j:commandLink>
+										<a4j:commandLink styleClass="btn btn-primary btn-small" render="@form :messagesPanel :detailsForm"
+											action="#{testExecutionController.removeFromFavorites(item.name)}" value=" " alt="Remove from favorites" title="Remove from favorites"
+											rendered="#{testExecutionController.isFavorite(item.name)}">
+											<i class="icon-star" />
+										</a4j:commandLink>
 										<a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogParamEdit" action="#{testExecutionController.setEditedParameter(item)}"
 											oncomplete="#{rich:component('dialogParamEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}"
 											rendered="#{!testExecutionController.testExecution.isLocked()}">

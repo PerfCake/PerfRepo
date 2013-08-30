@@ -2,6 +2,7 @@ package org.jboss.qa.perfrepo.session;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -16,6 +17,7 @@ import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.security.UserInfo;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.qa.perfrepo.util.FavoriteParameter;
 
 /**
  * Holds information about user.
@@ -38,6 +40,10 @@ public class UserSession extends ControllerBase {
 
    private Map<String, String> userProperties = new HashMap<String, String>();
 
+   private List<FavoriteParameter> favoriteParameters = new ArrayList<FavoriteParameter>();
+
+   private static final String FAV_PARAM_KEY_PREFIX = "fav.param.";
+
    @PostConstruct
    public void init() {
       user = testService.getFullUser(userInfo.getUserName());
@@ -51,13 +57,63 @@ public class UserSession extends ControllerBase {
          } catch (ServiceException e) {
             addMessageFor(e);
          }
-      } else {
-         if (user.getProperties() != null) {
-            for (UserProperty prop : user.getProperties()) {
-               userProperties.put(prop.getName(), prop.getValue());
+      }
+      if (user == null) {
+         return;
+      }
+      if (user.getProperties() != null) {
+         for (UserProperty prop : user.getProperties()) {
+            userProperties.put(prop.getName(), prop.getValue());
+            if (prop.getName().startsWith(FAV_PARAM_KEY_PREFIX)) {
+               favoriteParameters.add(FavoriteParameter.fromString(prop.getValue()));
             }
          }
       }
+   }
+
+   public List<FavoriteParameter> getFavoriteParametersFor(long testId) {
+      List<FavoriteParameter> r = new ArrayList<FavoriteParameter>();
+      for (FavoriteParameter fp : favoriteParameters) {
+         if (fp.getTestId() == testId) {
+            r.add(fp);
+         }
+      }
+      return r;
+   }
+
+   private String favPropKey(long testId, String paramName) {
+      return FAV_PARAM_KEY_PREFIX + testId + "." + paramName;
+   }
+
+   public void addFavoriteParameter(long testId, String paramName, String label) {
+      FavoriteParameter fp = new FavoriteParameter();
+      fp.setLabel(label);
+      fp.setParameterName(paramName);
+      fp.setTestId(testId);
+      setProperty(favPropKey(testId, paramName), fp.toString());
+      FavoriteParameter prev = findFavoriteParameter(testId, paramName);
+      if (prev != null) {
+         prev.setLabel(label);
+      } else {
+         favoriteParameters.add(fp);
+      }
+   }
+
+   public void removeFavoriteParameter(long testId, String paramName) {
+      FavoriteParameter prev = findFavoriteParameter(testId, paramName);
+      if (prev != null) {
+         favoriteParameters.remove(prev);
+      }
+      setProperty(favPropKey(testId, paramName), null);
+   }
+
+   public FavoriteParameter findFavoriteParameter(long testId, String paramName) {
+      for (FavoriteParameter fp : favoriteParameters) {
+         if (fp.getTestId() == testId && paramName.equals(fp.getParameterName())) {
+            return fp;
+         }
+      }
+      return null;
    }
 
    public String getProperty(String name) {
@@ -79,7 +135,11 @@ public class UserSession extends ControllerBase {
                }
                user.getProperties().add(newProp);
             } else {
-               if (value == null || !value.equals(existingProp.getValue())) {
+               if (value == null) {
+                  UserProperty toDelete = existingProp.clone();
+                  testService.deleteUserProperty(toDelete);
+                  user.getProperties().remove(existingProp);
+               } else if (!value.equals(existingProp.getValue())) {
                   UserProperty toUpdate = existingProp.clone();
                   toUpdate.setValue(value);
                   toUpdate = testService.updateUserProperty(toUpdate);

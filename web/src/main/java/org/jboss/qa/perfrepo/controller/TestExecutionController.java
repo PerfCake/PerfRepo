@@ -41,6 +41,8 @@ import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.rest.TestExecutionREST;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.qa.perfrepo.session.UserSession;
+import org.jboss.qa.perfrepo.util.FavoriteParameter;
 import org.jboss.qa.perfrepo.util.MultiValue;
 import org.jboss.qa.perfrepo.util.MultiValue.ParamInfo;
 import org.jboss.qa.perfrepo.util.MultiValue.ValueInfo;
@@ -67,14 +69,20 @@ public class TestExecutionController extends ControllerBase {
    @Inject
    private TestService testService;
 
+   @Inject
+   private UserSession userSession;
+
    private TestExecution testExecution = null;
    private Test test = null;
 
    private TestExecutionParameter editedParameter = null;
    private Value editedValue = null;
    private Long editedValueMetricSelectionId = null;
+   private TestExecution editedTestExecution = null;
+   private FavoriteParameter editedFavoriteParameter = null;
 
    private List<ValueInfo> values = null;
+   private List<FavoriteParameter> favoriteParameters = null;
 
    private List<ParamInfo> selectedMultiValueList = null;
    private List<String> selectedMultiValueParamSelectionList = null;
@@ -85,7 +93,43 @@ public class TestExecutionController extends ControllerBase {
    private Long createForTest;
    private Long testExecutionId;
 
-   private TestExecution editedTestExecution = null;
+   public List<FavoriteParameter> getFavoriteParameters() {
+      return favoriteParameters;
+   }
+
+   public FavoriteParameter getEditedFavoriteParameter() {
+      return editedFavoriteParameter;
+   }
+
+   public void setEditedFavoriteParameter(String paramName) {
+      editedFavoriteParameter = new FavoriteParameter();
+      editedFavoriteParameter.setTestId(test.getId());
+      editedFavoriteParameter.setParameterName(paramName);
+      FavoriteParameter fp = findFavoriteParameter(paramName);
+      if (fp != null) {
+         editedFavoriteParameter.setLabel(fp.getLabel());
+      } else {
+         editedFavoriteParameter.setLabel("New label " + (favoriteParameters == null ? 0 : favoriteParameters.size()));
+      }
+   }
+
+   public void unsetEditedFavoriteParameter() {
+      editedFavoriteParameter = null;
+   }
+
+   public void saveEditedFavoriteParameter() {
+      userSession.addFavoriteParameter(editedFavoriteParameter.getTestId(), editedFavoriteParameter.getParameterName(), editedFavoriteParameter.getLabel());
+      favoriteParameters = userSession.getFavoriteParametersFor(test.getId());
+   }
+
+   public void removeFromFavorites(String paramName) {
+      if (paramName == null || !isFavorite(paramName)) {
+         log.error("incorrect request for removeFromFavorites");
+         return;
+      }
+      userSession.removeFavoriteParameter(test.getId(), paramName);
+      favoriteParameters = userSession.getFavoriteParametersFor(test.getId());
+   }
 
    public Long getCreateForTest() {
       return createForTest;
@@ -194,6 +238,7 @@ public class TestExecutionController extends ControllerBase {
                   redirectWithMessage("/", ERROR, "page.test.errorTestNotFound", testExecution.getTest().getId());
                } else {
                   values = MultiValue.createFrom(testExecution);
+                  favoriteParameters = userSession.getFavoriteParametersFor(test.getId());
                }
             }
          }
@@ -218,6 +263,11 @@ public class TestExecutionController extends ControllerBase {
 
    public void unsetEditedParameter() {
       this.editedParameter = null;
+   }
+
+   public void unsetEditedParameterAndRemove() {
+      removeFromFavorites(editedFavoriteParameter.getParameterName());
+      editedFavoriteParameter = null;
    }
 
    public void createEditedParameter() {
@@ -509,8 +559,28 @@ public class TestExecutionController extends ControllerBase {
       return selectedMultiValueParamSelectionList;
    }
 
-   public String displayValue(TestExecutionParameter param) {
+   public String displayValueFavParam(String param) {
+      return displayValueTable(testExecution.findParameter(param));
+   }
+
+   public String displayValueTable(TestExecutionParameter param) {
       return Util.displayValue(param);
+   }
+
+   private FavoriteParameter findFavoriteParameter(String paramName) {
+      if (paramName == null || favoriteParameters == null) {
+         return null;
+      }
+      for (FavoriteParameter fp : favoriteParameters) {
+         if (fp.getParameterName().equals(paramName)) {
+            return fp;
+         }
+      }
+      return null;
+   }
+
+   public boolean isFavorite(String paramName) {
+      return findFavoriteParameter(paramName) != null;
    }
 
    public void uploadAttachment(FileUploadEvent event) throws Exception {

@@ -339,6 +339,14 @@ public interface TestService extends Codes {
    UserProperty updateUserProperty(UserProperty property) throws ServiceException;
 
    /**
+    * Deletes user property.
+    * 
+    * @param property
+    * @throws ServiceException
+    */
+   void deleteUserProperty(UserProperty property) throws ServiceException;
+
+   /**
     * Create new user.
     * 
     * @param user
