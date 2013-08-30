@@ -36,7 +36,8 @@
 				</table>
 				<h:panelGroup rendered="#{metricReportBean.testUidDisabled and metricReportBean.execParamDisabled}">
 					<h2>Data series</h2>
-					<rich:dataTable id="seriesTable" styleClass="table table-bordered table-striped editableEntryTable" value="#{metricReportBean.seriesSpecs}" var="seriesItem">
+					<rich:dataTable id="seriesTable" styleClass="table table-bordered table-striped editableEntryTable" value="#{metricReportBean.seriesSpecs}"
+						var="seriesItem">
 						<rich:column>
 							<f:facet name="header">Series name</f:facet>
 							<h:inputText value="#{seriesItem.name}" />
@@ -82,51 +83,38 @@
 					</jsflot:flotChart>
 				</h:panelGroup>
 
-				<h2>
-					<h:outputText value="#{strings.metricReport_stats}" />
-				</h2>
-				<table id="stats">
-					<tr>
-						<td><h:outputText value="#{strings.metricReport_minValue}" /></td>
-						<td><h:outputText value="#{metricReportBean.minValue}" /></td>
-					</tr>
-					<tr>
-						<td><h:outputText value="#{strings.metricReport_maxValue}" /></td>
-						<td><h:outputText value="#{metricReportBean.maxValue}" /></td>
-					</tr>
-					<tr>
-						<td><h:outputText value="#{strings.metricReport_range}" /></td>
-						<td><h:outputText value="#{metricReportBean.range}" /></td>
-					</tr>
-				</table>
-
-				<h2>
-					<h:outputText value="#{strings.metricReport_dataPoint}" />
-				</h2>
+				<fieldset>
+					<legend> Statistics </legend>
+					<h:outputLabel class="detail-label">Min. value</h:outputLabel>
+					<div class="detail-value">#{metricReportBean.minValueFmt}</div>
+					<h:outputLabel class="detail-label">Max. value</h:outputLabel>
+					<div class="detail-value">#{metricReportBean.maxValueFmt}</div>
+					<h:outputLabel class="detail-label">Range</h:outputLabel>
+					<div class="detail-value">#{metricReportBean.range}</div>
+					<h:outputLabel class="detail-label">Found values</h:outputLabel>
+					<div class="detail-value">#{metricReportBean.numValues}</div>
+					<h:outputLabel class="detail-label">Normalize</h:outputLabel>
+					<div class="detail-value">
+						<h:selectBooleanCheckbox id="checkNormalize" value="#{metricReportBean.normalize}" immediate="true" disabled="false" />
+					</div>
+				</fieldset>
 				<h:panelGroup id="dataPointPanel">
-					<table id="dataPointTable">
-						<tr>
-							<td><h:outputText value="#{metricReportBean.reportSelectedParam}" /></td>
-							<td><h:outputText value="#{metricReportBean.dataPointParam}" /></td>
-						</tr>
-						<tr>
-							<td><h:outputText value="Metric value" /></td>
-							<td><h:outputText value="#{metricReportBean.dataPointValue}" /></td>
-						</tr>
-						<tr>
-							<td><h:outputText value="Exec ID" /></td>
-							<td class="dpcmp"><h:outputText value="N/A" rendered="#{metricReportBean.dataPointExecId == 'N/A'}" /> <h:panelGroup
-									rendered="#{metricReportBean.dataPointExecId != 'N/A'}">
-									<a href="/repo/exec/#{metricReportBean.dataPointExecId}">#{metricReportBean.dataPointExecId}</a>
-									<!-- TODO: if this could be ajax button that would be great -->
-									<h:commandLink styleClass="btn btn-primary btn-small" action="#{teComparatorSession.add(metricReportBean.dataPointExecIdLong)}" alt="Add to comparison"
-										title="Add to comparison">
-										<i class="icon-plus" /> Add to comparison
-									</h:commandLink>
-								</h:panelGroup></td>
-						</tr>
-					</table>
-
+					<h:panelGroup rendered="#{metricReportBean.dataPointExecId != 'N/A'}">
+						<fieldset>
+							<legend> Selected data point </legend>
+							<h:outputLabel class="detail-label">#{metricReportBean.reportSelectedParam}</h:outputLabel>
+							<div class="detail-value">#{metricReportBean.dataPointParam}</div>
+							<h:outputLabel class="detail-label">Metric value</h:outputLabel>
+							<div class="detail-value">#{metricReportBean.dataPointValue}</div>
+							<h:outputLabel class="detail-label">Exec ID</h:outputLabel>
+							<div class="detail-value">
+								<a href="/repo/exec/#{metricReportBean.dataPointExecId}">#{metricReportBean.dataPointExecId}</a>
+								<!-- TODO: if this could be ajax button that would be great -->
+								<h:commandButton action="#{teComparatorSession.add(metricReportBean.dataPointExecIdLong)}" alt="Add to comparison" title="Add to comparison"
+									value="Add to comparison" />
+							</div>
+						</fieldset>
+					</h:panelGroup>
 				</h:panelGroup>
 
 				<h:panelGroup id="problemPointsPanel" rendered="#{metricReportBean.problematicDataPointsVisible}">

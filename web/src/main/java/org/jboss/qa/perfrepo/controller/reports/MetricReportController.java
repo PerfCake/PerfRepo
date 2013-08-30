@@ -17,7 +17,11 @@ package org.jboss.qa.perfrepo.controller.reports;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,7 +65,7 @@ public class MetricReportController extends ControllerBase {
    private static final long serialVersionUID = 1L;
 
    private static final Logger log = Logger.getLogger(MetricReportController.class);
-   private static final DecimalFormat FMT = new DecimalFormat("##.####");
+   private static final DecimalFormat FMT = new DecimalFormat("0.000");
    private static final Pattern DPPATTERN = Pattern.compile("Exec ID\\: (\\d+)");
 
    @Inject
@@ -71,14 +75,15 @@ public class MetricReportController extends ControllerBase {
 
    private XYDataSetCollection chartData;
    private FlotChartRendererData chart;
-   private Double minValue = null;
-   private Double maxValue = null;
+   private DataPoint minValue = null;
+   private DataPoint maxValue = null;
    private DataPoint selectedDataPoint;
    //private DataPoint baselineDataPoint;
 
    private Long selectedTestId;
    private String selectedParam;
    private Response report;
+   private boolean normalize = true;
 
    private List<SeriesRequest> seriesSpecs;
 
@@ -114,6 +119,14 @@ public class MetricReportController extends ControllerBase {
          return super.toString() + "(metricId=" + selectedMetricId + ", selectedTags=" + selectedTags + ")";
       }
 
+   }
+
+   public boolean isNormalize() {
+      return normalize;
+   }
+
+   public void setNormalize(boolean normalize) {
+      this.normalize = normalize;
    }
 
    @PostConstruct
@@ -412,24 +425,37 @@ public class MetricReportController extends ControllerBase {
          return null;
       }
       XYDataSetCollection collection = new XYDataSetCollection();
-      minValue = Double.MAX_VALUE;
-      maxValue = Double.MIN_VALUE;
+      minValue = null;
+      maxValue = null;
+
+      Map<Long, Long> normalizedDomain = new HashMap<Long, Long>();
+      long currentX = 0;
+
       for (SeriesResponse seriesResponse : response.getSeries()) {
          XYDataList series = new XYDataList();
          series.setLabel(seriesResponse.getName());
          for (DataPoint dp : seriesResponse.getDatapoints()) {
-            series.addDataPoint(new XYDataPoint((Long) dp.param, dp.value, "Exec ID: " + dp.execId));
-            if (dp.value > maxValue) {
-               maxValue = dp.value;
+            Long xValue = (Long) dp.param;
+            if (normalize) {
+               Long normalizedXValue = normalizedDomain.get(xValue);
+               if (normalizedXValue == null) {
+                  normalizedXValue = currentX++;
+                  normalizedDomain.put(xValue, normalizedXValue);
+               }
+               xValue = normalizedXValue;
             }
-            if (dp.value < minValue) {
-               minValue = dp.value;
+            series.addDataPoint(new XYDataPoint(xValue, dp.value, "Exec ID: " + dp.execId));
+            if (maxValue == null || dp.value > maxValue.value) {
+               maxValue = dp;
+            }
+            if (minValue == null || dp.value < minValue.value) {
+               minValue = dp;
             }
          }
          collection.addDataList(series);
       }
-      chart.setYaxisMaxValue(maxValue + 0.1d * maxValue);
-      chart.setYaxisMinValue(minValue < 0d ? minValue : 0d);
+      chart.setYaxisMaxValue(maxValue.value + 0.1d * maxValue.value);
+      chart.setYaxisMinValue(minValue.value < 0d ? minValue.value : 0d);
       chart.setYaxisTitle("Metric values");
       chart.setXaxisTitle(response.getSelectedParam());
       return collection;
@@ -449,16 +475,34 @@ public class MetricReportController extends ControllerBase {
    }
 
    ///////////////// UI AREA: statistics
-   public String getMinValue() {
-      return minValue == null || minValue == Double.MAX_VALUE ? "N/A" : FMT.format(minValue);
+   public String getMinValueFmt() {
+      return minValue == null || minValue == null ? "N/A" : FMT.format(minValue.value);
    }
 
-   public String getMaxValue() {
-      return maxValue == null || maxValue == Double.MIN_VALUE ? "N/A" : FMT.format(maxValue);
+   public String getMaxValueFmt() {
+      return maxValue == null || maxValue == null ? "N/A" : FMT.format(maxValue.value);
    }
 
    public String getRange() {
-      return "N/A".equals(getMinValue()) || "N/A".equals(getMaxValue()) ? "N/A" : FMT.format(maxValue - minValue);
+      return "N/A".equals(getMinValueFmt()) || "N/A".equals(getMaxValueFmt()) ? "N/A" : FMT.format(maxValue.value - minValue.value);
+   }
+
+   public String getNumValues() {
+      if (report == null) {
+         return "N/A";
+      }
+      Set<Object> values = new HashSet<Object>();
+      if (report.getSeries() != null) {
+         for (SeriesResponse sr : report.getSeries()) {
+            if (sr.getDatapoints() == null) {
+               continue;
+            }
+            for (DataPoint dp : sr.getDatapoints()) {
+               values.add(dp.param);
+            }
+         }
+      }
+      return Integer.toString(values.size());
    }
 
    ///////////////// UI AREA: data point
