@@ -19,6 +19,11 @@
          <version>0.0.13-SNAPSHOT</version>
       </dependency>
       <dependency>
+         <groupId>commons-lang</groupId>
+         <artifactId>commons-lang</artifactId>
+         <version>${commons.lang.version}</version>
+      </dependency>
+      <dependency>
          <groupId>javax.enterprise</groupId>
          <artifactId>cdi-api</artifactId>
          <scope>provided</scope>

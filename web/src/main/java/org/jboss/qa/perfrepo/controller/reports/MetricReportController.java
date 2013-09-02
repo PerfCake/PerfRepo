@@ -17,6 +17,7 @@ package org.jboss.qa.perfrepo.controller.reports;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +31,7 @@ import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.ControllerBase;
 import org.jboss.qa.perfrepo.model.Metric;
@@ -420,6 +422,22 @@ public class MetricReportController extends ControllerBase {
       return chartData;
    }
 
+   private Map<Long, Long> normalizedDomain(Response response) {
+      Map<Long, Long> normalizedDomain = new HashMap<Long, Long>();
+      for (SeriesResponse seriesResponse : response.getSeries()) {
+         for (DataPoint dp : seriesResponse.getDatapoints()) {
+            normalizedDomain.put((Long) dp.param, (Long) dp.param);
+         }
+      }
+      List<Long> sortedDomain = new ArrayList<Long>(normalizedDomain.values());
+      Collections.sort(sortedDomain);
+      normalizedDomain.clear();
+      for (int i = 0; i < sortedDomain.size(); i++) {
+         normalizedDomain.put(sortedDomain.get(i), (long) i);
+      }
+      return normalizedDomain;
+   }
+
    private XYDataSetCollection recomputeChartData(Response response) {
       if (response == null || response.getSeries() == null || response.getSeries().isEmpty()) {
          return null;
@@ -428,29 +446,43 @@ public class MetricReportController extends ControllerBase {
       minValue = null;
       maxValue = null;
 
-      Map<Long, Long> normalizedDomain = new HashMap<Long, Long>();
-      long currentX = 0;
+      Map<Long, Long> normalizedDomain = null;
+      if (normalize) {
+         normalizedDomain = normalizedDomain(response);
+      }
+      StringBuffer traceData = null;
 
       for (SeriesResponse seriesResponse : response.getSeries()) {
          XYDataList series = new XYDataList();
          series.setLabel(seriesResponse.getName());
+         if (log.isTraceEnabled()) {
+            traceData = new StringBuffer("Chart data for series ");
+            traceData.append(seriesResponse.getName());
+            traceData.append(":\n");
+            traceData.append(StringUtils.leftPad("X value", 16));
+            traceData.append(StringUtils.leftPad("Param value", 16));
+            traceData.append(StringUtils.leftPad("Y value", 16));
+            traceData.append(StringUtils.leftPad("Exec ID", 16));
+         }
          for (DataPoint dp : seriesResponse.getDatapoints()) {
-            Long xValue = (Long) dp.param;
-            if (normalize) {
-               Long normalizedXValue = normalizedDomain.get(xValue);
-               if (normalizedXValue == null) {
-                  normalizedXValue = currentX++;
-                  normalizedDomain.put(xValue, normalizedXValue);
-               }
-               xValue = normalizedXValue;
-            }
+            Long xValue = normalize ? normalizedDomain.get((Long) dp.param) : (Long) dp.param;
             series.addDataPoint(new XYDataPoint(xValue, dp.value, "Exec ID: " + dp.execId));
+            if (log.isTraceEnabled()) {
+               traceData.append("\n");
+               traceData.append(StringUtils.leftPad(xValue.toString(), 16));
+               traceData.append(StringUtils.leftPad(dp.param.toString(), 16));
+               traceData.append(StringUtils.leftPad(FMT.format(dp.value), 16));
+               traceData.append(StringUtils.leftPad(dp.execId == null ? "N/A" : dp.execId.toString(), 16));
+            }
             if (maxValue == null || dp.value > maxValue.value) {
                maxValue = dp;
             }
             if (minValue == null || dp.value < minValue.value) {
                minValue = dp;
             }
+         }
+         if (log.isTraceEnabled()) {
+            log.trace(traceData.toString());
          }
          collection.addDataList(series);
       }
