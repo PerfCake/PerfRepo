@@ -102,7 +102,7 @@ public class MultiValue {
                   errorParameter.setName("ERROR");
                   errorParameter.setParamValue("This value is erroneous.");
                   v.setParameters(Collections.singletonList(errorParameter));
-                  log.error("Multi-value " + v.getResultValue() + " for metric " + vInfo.metricName + " is not perametrized");
+                  log.error("Multi-value " + v.getResultValue() + " for metric " + vInfo.metricName + " is not parametrized");
                }
                for (ValueParameter vp : v.getParameters()) {
                   List<ParamInfo> paramInfos = vInfo.complexValueByParamName.get(vp.getName());
