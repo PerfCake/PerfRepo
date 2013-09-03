@@ -17,17 +17,17 @@ package org.jboss.qa.perfrepo.controller;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.TestExecution;
-import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
+import org.jboss.qa.perfrepo.model.util.ExecutionSort;
+import org.jboss.qa.perfrepo.model.util.ExecutionSort.ParamExecutionSort;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.SearchCriteriaSession;
@@ -66,12 +66,15 @@ public class SearchController extends ControllerBase {
    private List<TestExecution> result;
    private List<String> paramColumns;
 
+   private ExecutionSort sort;
+
    public List<String> getParamColumns() {
       return paramColumns;
    }
 
    public void preRender() {
       if (criteria == null) {
+         sort = criteriaSession.getExecutionSearchSort();
          criteria = criteriaSession.getExecutionSearchCriteria();
          search();
       }
@@ -97,6 +100,7 @@ public class SearchController extends ControllerBase {
             paramColumns.add(pc.getName());
          }
       }
+      Collections.sort(result, sort);
    }
 
    public String itemParam(TestExecution exec, String paramName) {
@@ -149,57 +153,39 @@ public class SearchController extends ControllerBase {
       this.result = result;
    }
 
-   private class ParamComparator implements Comparator<TestExecution> {
-
-      private String param;
-      private boolean num;
-
-      public ParamComparator(String param, boolean num) {
-         super();
-         this.param = param;
-         this.num = num;
+   private ExecutionSort.Type getSortType(String what, boolean num) {
+      // all sorts are ascending in this phase
+      if ("id".equals(what)) {
+         return ExecutionSort.Type.ID;
+      } else if ("name".equals(what)) {
+         return ExecutionSort.Type.NAME;
+      } else if ("started".equals(what)) {
+         return ExecutionSort.Type.TIME;
+      } else if ("test".equals(what)) {
+         return ExecutionSort.Type.TEST_NAME;
+      } else if (paramColumns.contains(what)) {
+         return num ? ExecutionSort.Type.PARAM_DOUBLE : ExecutionSort.Type.PARAM_STRING;
+      } else {
+         throw new IllegalArgumentException("unknown sort type");
       }
-
-      @Override
-      public int compare(TestExecution o1, TestExecution o2) {
-         if (o1 == null) {
-            return o2 == null ? 0 : -1;
-         } else {
-            return o2 == null ? 1 : compareNotNull(o1, o2);
-         }
-      }
-
-      private int compareNotNull(TestExecution o1, TestExecution o2) {
-         TestExecutionParameter p1 = o1.findParameter(param);
-         TestExecutionParameter p2 = o2.findParameter(param);
-         if (p1 == null || p1.getValue() == null) {
-            return p2 == null || p2.getValue() == null ? 0 : -1;
-         } else {
-            try {
-               return p2 == null || p2.getValue() == null ? 1 : (num ? new Double(p1.getValue()).compareTo(new Double(p2.getValue())) : p1.getValue()
-                     .compareTo(p2.getValue()));
-            } catch (NumberFormatException e) {
-               return p1.getValue().compareTo(p2.getValue());
-            }
-         }
-      }
-
    }
 
    public void sortBy(String what, boolean num) {
-      if ("id".equals(what)) {
-         Collections.sort(result, TestExecution.SORT_BY_ID);
-      } else if ("name".equals(what)) {
-         Collections.sort(result, TestExecution.SORT_BY_NAME);
-      } else if ("started".equals(what)) {
-         Collections.sort(result, TestExecution.SORT_BY_STARTED);
-      } else if ("test".equals(what)) {
-         Collections.sort(result, TestExecution.SORT_BY_TEST_NAME);
-      } else if (paramColumns.contains(what)) {
-         Collections.sort(result, new ParamComparator(what, num));
-      } else {
-         throw new IllegalArgumentException("unknown sort criteria");
+      ExecutionSort.Type type = getSortType(what, num);
+      boolean invertAscending = false;
+      if (type.equals(sort.type())) {
+         if (type.isParametrized()) {
+            ParamExecutionSort<?> psort = (ParamExecutionSort<?>) sort;
+            if (what.equals(psort.getParam())) {
+               invertAscending = true;
+            }
+         } else {
+            invertAscending = true;
+         }
       }
+      sort = ExecutionSort.create(type, what, invertAscending ? !sort.isAscending() : sort.isAscending());
+      criteriaSession.setExecutionSearchSort(sort);
+      Collections.sort(result, sort);
    }
 
    public void addAllCurrentResultsToComparison() {

@@ -7,6 +7,7 @@ import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
+import org.jboss.qa.perfrepo.model.util.ExecutionSort;
 
 /**
  * Session storage for search criteria.
@@ -19,6 +20,8 @@ import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 public class SearchCriteriaSession implements Serializable {
 
    private TestExecutionSearchTO executionSearchCriteria;
+
+   private ExecutionSort executionSearchSort;
 
    private TestSearchTO testSearchCriteria;
 
@@ -34,6 +37,17 @@ public class SearchCriteriaSession implements Serializable {
          testSearchCriteria = new TestSearchTO();
       }
       return testSearchCriteria;
+   }
+
+   public ExecutionSort getExecutionSearchSort() {
+      if (executionSearchSort == null) {
+         executionSearchSort = ExecutionSort.TIME_DESC;
+      }
+      return executionSearchSort;
+   }
+
+   public void setExecutionSearchSort(ExecutionSort executionSearchSort) {
+      this.executionSearchSort = executionSearchSort;
    }
 
 }

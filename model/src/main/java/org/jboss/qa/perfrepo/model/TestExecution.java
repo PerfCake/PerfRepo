@@ -18,7 +18,6 @@ package org.jboss.qa.perfrepo.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -64,50 +63,6 @@ public class TestExecution implements Entity<TestExecution> {
    private static final long serialVersionUID = -2956845045583534606L;
 
    public static final String FIND_TEST_ID = "TestExecution.findTestId";
-
-   public static Comparator<TestExecution> SORT_BY_NAME = new Comparator<TestExecution>() {
-      @Override
-      public int compare(TestExecution o1, TestExecution o2) {
-         if (o1 == null || o1.getName() == null) {
-            return o2 == null || o2.getName() == null ? 0 : -1;
-         } else {
-            return o2 == null || o2.getName() == null ? 1 : o1.getName().compareTo(o2.getName());
-         }
-      }
-   };
-
-   public static Comparator<TestExecution> SORT_BY_ID = new Comparator<TestExecution>() {
-      @Override
-      public int compare(TestExecution o1, TestExecution o2) {
-         if (o1 == null || o1.getId() == null) {
-            return o2 == null || o2.getId() == null ? 0 : -1;
-         } else {
-            return o2 == null || o2.getId() == null ? 1 : o1.getId().compareTo(o2.getId());
-         }
-      }
-   };
-
-   public static Comparator<TestExecution> SORT_BY_STARTED = new Comparator<TestExecution>() {
-      @Override
-      public int compare(TestExecution o1, TestExecution o2) {
-         if (o1 == null || o1.getStarted() == null) {
-            return o2 == null || o2.getStarted() == null ? 0 : -1;
-         } else {
-            return o2 == null || o2.getStarted() == null ? 1 : o1.getStarted().compareTo(o2.getStarted());
-         }
-      }
-   };
-
-   public static Comparator<TestExecution> SORT_BY_TEST_NAME = new Comparator<TestExecution>() {
-      @Override
-      public int compare(TestExecution o1, TestExecution o2) {
-         if (o1 == null || o1.getTest() == null || o1.getTest().getName() == null) {
-            return o2 == null || o2.getTest() == null || o2.getTest().getName() == null ? 0 : -1;
-         } else {
-            return o2 == null || o2.getTest() == null || o2.getTest().getName() == null ? 1 : o1.getTest().getName().compareTo(o2.getTest().getName());
-         }
-      }
-   };
 
    @Id
    @SequenceGenerator(name = "TEST_EXECUTION_ID_GENERATOR", sequenceName = "TEST_EXECUTION_SEQUENCE", allocationSize = 1)
