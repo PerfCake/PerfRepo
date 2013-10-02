@@ -414,6 +414,7 @@ public class CompareExecutionsController extends ControllerBase {
          chartSpec.xAxisLabel = multiValueCompareParam;
          chartSpec.yAxisLabel = "Metric value";
          chartSpec.dataset = dataset;
+         chartSpec.legend = true;
          return chartSpec;
       } catch (NumberFormatException e) {
          log.error("Can't chart non-numeric values");

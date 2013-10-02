@@ -28,6 +28,7 @@ public class JFreechartBean extends ControllerBase {
       public XYSeriesCollection dataset;
       public int width = 640;
       public int height = 320;
+      public boolean legend = false;
    }
 
    public static class BarChartSpec implements Serializable {
@@ -44,7 +45,7 @@ public class JFreechartBean extends ControllerBase {
          XYLineChartSpec chartSpec = (XYLineChartSpec) data;
          try {
             JFreeChart chart = ChartFactory.createXYLineChart(chartSpec.title, chartSpec.xAxisLabel, chartSpec.yAxisLabel, chartSpec.dataset,
-                  PlotOrientation.VERTICAL, false, false, false);
+                  PlotOrientation.VERTICAL, chartSpec.legend, false, false);
             BufferedImage buffImg = chart.createBufferedImage(chartSpec.width, chartSpec.height, BufferedImage.TYPE_INT_RGB, null);
             ImageIO.write(buffImg, "png", out);
          } catch (Exception e) {
