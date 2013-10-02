@@ -85,7 +85,7 @@
 					<rich:column>
 						<f:facet name="header"></f:facet>
 						<a4j:commandLink styleClass="btn btn-primary btn-small" action="#{testSearchController.delete}" alt="#{strings.delete}" title="#{strings.delete}"
-							render="@form :messagesPanel">
+							render="@form :messagesPanel" onclick="if (!confirm('Are you sure you want to delete the test (#{item.name})?') ) { return false;}; return true;">
 							<f:param name="idToDelete" value="#{item.id}" />
 							<i class="icon-trash"></i>
 						</a4j:commandLink>

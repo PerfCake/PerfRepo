@@ -139,7 +139,8 @@
 								</ui:repeat>
 								<td class="rf-dt-c"><div class="btn-group">
 										<a4j:commandLink styleClass="btn btn-primary btn-small" action="#{searchController.delete}" alt="#{strings.delete}" title="#{strings.delete}"
-											render="@form :criteriaForm :messagesPanel">
+											render="@form :criteriaForm :messagesPanel"
+											onclick="if (!confirm('Are you sure you want to delete the test execution (#{item.name})?') ) { return false;}; return true;">
 											<f:param name="idToDelete" value="#{item.id}" />
 											<i class="icon-trash"></i>
 										</a4j:commandLink>
