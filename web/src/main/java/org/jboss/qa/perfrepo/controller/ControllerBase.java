@@ -124,7 +124,8 @@ public class ControllerBase implements Serializable {
       }
    }
 
-   protected void addSessionMessage(Severity severity, String msg) {
+   protected void addSessionMessage(Severity severity, String msgKey, Object... params) {
+      String msg = getBundleString(msgKey, params);
       addSessionMessage(new FacesMessage(severity, msg, msg));
    }
 
@@ -153,8 +154,7 @@ public class ControllerBase implements Serializable {
 
    protected void redirectWithMessage(String relPath, Severity severity, String msgKey, Object... params) {
       FacesContext fc = FacesContext.getCurrentInstance();
-      String message = getBundleString(msgKey, params);
-      addSessionMessage(severity, message);
+      addSessionMessage(severity, msgKey, params);
       try {
          externalContext().redirect(externalContext().getRequestContextPath() + relPath);
       } catch (IOException e) {
@@ -173,7 +173,7 @@ public class ControllerBase implements Serializable {
       fc.renderResponse();
    }
 
-   private String getBundleString(String key, Object... params) {
+   protected String getBundleString(String key, Object... params) {
       if (bundle == null) {
          bundle = ResourceBundle.getBundle("lang.strings");
       }
@@ -187,6 +187,10 @@ public class ControllerBase implements Serializable {
             return MessageFormat.format(str, params);
          }
       }
+   }
+
+   public String getEnumString(Enum<?> anEnum) {
+      return getBundleString("enum." + anEnum.getClass().getName() + "." + anEnum.toString());
    }
 
    protected void addMessage(Severity severity, String msgKey, Object... params) {

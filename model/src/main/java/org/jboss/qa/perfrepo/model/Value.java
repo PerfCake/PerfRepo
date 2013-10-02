@@ -15,9 +15,7 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -36,6 +34,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import org.jboss.qa.perfrepo.model.util.EntityUtil;
 
 /**
  * 
@@ -153,13 +153,12 @@ public class Value implements Entity<Value> {
 
    public Value cloneWithParameters() {
       Value cloneValue = clone();
-      List<ValueParameter> cloneValueParameters = new ArrayList<ValueParameter>();
-      for (ValueParameter p : cloneValue.getParameters()) {
-         ValueParameter pClone = p.clone();
-         pClone.setValue(cloneValue);
-         cloneValueParameters.add(pClone);
+      cloneValue.setParameters(EntityUtil.clone(cloneValue.getParameters()));
+      if (cloneValue.getParameters() != null) {
+         for (ValueParameter pClone : cloneValue.getParameters()) {
+            pClone.setValue(cloneValue);
+         }
       }
-      cloneValue.setParameters(cloneValueParameters.isEmpty() ? null : cloneValueParameters);
       return cloneValue;
    }
 

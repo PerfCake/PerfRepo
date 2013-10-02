@@ -1,5 +1,6 @@
 package org.jboss.qa.perfrepo.util;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -65,5 +66,41 @@ public class Util {
       } else {
          return value;
       }
+   }
+
+   public static String format4(double val) {
+      return new DecimalFormat("0.0000").format(val);
+   }
+
+   /**
+    * @param a
+    * @param s
+    * @return True iff array a contains string s
+    */
+   public static boolean contains(String[] a, String s) {
+      if (a == null) {
+         return false;
+      }
+      for (String e : a) {
+         if (e.equals(s)) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   /**
+    * 
+    * @param s1
+    * @param s2
+    * @return True iff all strings from s1 are contained in s2
+    */
+   public static boolean isSubset(String[] s1, String[] s2) {
+      for (String s : s1) {
+         if (!contains(s2, s)) {
+            return false;
+         }
+      }
+      return true;
    }
 }

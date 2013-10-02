@@ -46,6 +46,10 @@ public class UserSession extends ControllerBase {
 
    @PostConstruct
    public void init() {
+      refreshUser();
+   }
+
+   public User refreshUser() {
       user = testService.getFullUser(userInfo.getUserName());
       if (user == null) {
          log.error("Couldn't find user \"" + userInfo.getUserName() + "\". Creating new user entry.");
@@ -59,7 +63,7 @@ public class UserSession extends ControllerBase {
          }
       }
       if (user == null) {
-         return;
+         return null;
       }
       if (user.getProperties() != null) {
          for (UserProperty prop : user.getProperties()) {
@@ -69,6 +73,7 @@ public class UserSession extends ControllerBase {
             }
          }
       }
+      return user;
    }
 
    public List<FavoriteParameter> getFavoriteParametersFor(long testId) {

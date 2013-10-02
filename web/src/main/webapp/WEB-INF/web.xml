@@ -34,11 +34,19 @@
       <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
       <param-value>true</param-value>
    </context-param>
+   <context-param>
+      <param-name>repo.endpoint.host</param-name>
+      <param-value>${repo.endpoint.host}</param-value>
+   </context-param>
+   <context-param>
+      <param-name>repo.endpoint.port</param-name>
+      <param-value>${repo.endpoint.port}</param-value>
+   </context-param>
 
    <listener>
       <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
    </listener>
-   <!-- JSF 2 -->
+
    <servlet>
       <servlet-name>Faces Servlet</servlet-name>
       <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>

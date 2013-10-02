@@ -16,6 +16,7 @@
 package org.jboss.qa.perfrepo.dao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ import org.jboss.qa.perfrepo.model.Tag;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
+import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
@@ -56,6 +58,71 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Test test = new Test();
       test.setId(testId);
       return findAllByProperty("test", test);
+   }
+
+   /**
+    * Fetch test via JPA relationship.
+    * 
+    * @param exec
+    * @return
+    */
+   public static TestExecution fetchTest(TestExecution exec) {
+      exec.setTest(exec.getTest().clone());
+      exec.getTest().setTestExecutions(null);
+      exec.getTest().setTestMetrics(null);
+      return exec;
+   }
+
+   /**
+    * Fetch tags via JPA relationships.
+    * 
+    * @param exec
+    * @return
+    */
+   public static TestExecution fetchTags(TestExecution testExecution) {
+      Collection<TestExecutionTag> cloneTags = new ArrayList<TestExecutionTag>();
+      for (TestExecutionTag interObject : testExecution.getTestExecutionTags()) {
+         cloneTags.add(interObject.cloneWithTag());
+      }
+      testExecution.setTestExecutionTags(cloneTags);
+      return testExecution;
+   }
+
+   /**
+    * Fetch parameters via JPA relationships.
+    * 
+    * @param exec
+    * @return
+    */
+   public static TestExecution fetchParameters(TestExecution testExecution) {
+      testExecution.setParameters(EntityUtil.clone(testExecution.getParameters()));
+      return testExecution;
+   }
+
+   /**
+    * Fetch attachments via JPA relationships.
+    * 
+    * @param exec
+    * @return
+    */
+   public static TestExecution fetchAttachments(TestExecution testExecution) {
+      testExecution.setAttachments(EntityUtil.clone(testExecution.getAttachments()));
+      return testExecution;
+   }
+
+   /**
+    * Fetch values with parameters via JPA relationships.
+    * 
+    * @param exec
+    * @return
+    */
+   public static TestExecution fetchValues(TestExecution testExecution) {
+      List<Value> cloneValues = new ArrayList<Value>();
+      for (Value v : testExecution.getValues()) {
+         cloneValues.add(v.cloneWithParameters());
+      }
+      testExecution.setValues(cloneValues);
+      return testExecution;
    }
 
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, TestExecutionParameterDAO paramDAO) {

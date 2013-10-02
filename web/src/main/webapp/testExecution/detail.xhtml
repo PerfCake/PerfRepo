@@ -56,9 +56,8 @@
 					</div>
 					<ui:repeat value="#{testExecutionController.favoriteParameters}" varStatus="status" var="item">
 						<h:outputLabel class="detail-label fav-param-label">
-							<a4j:commandLink render="dialogFavParamEdit"
-								action="#{testExecutionController.setEditedFavoriteParameter(item.parameterName)}" oncomplete="#{rich:component('dialogFavParamEdit')}.show();"
-								value="#{item.label}" alt="Edit favorite parameter" title="Edit favorite parameter" />
+							<a4j:commandLink render="dialogFavParamEdit" action="#{testExecutionController.setEditedFavoriteParameter(item.parameterName)}"
+								oncomplete="#{rich:component('dialogFavParamEdit')}.show();" value="#{item.label}" alt="Edit favorite parameter" title="Edit favorite parameter" />
 						</h:outputLabel>
 						<div class="detail-value">
 							<h:outputText value="#{testExecutionController.displayValueFavParam(item.parameterName)}" escape="false" />

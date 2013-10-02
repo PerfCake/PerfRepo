@@ -363,4 +363,13 @@ public interface TestService extends Codes {
     * @throws ServiceException
     */
    User updateUser(User user) throws ServiceException;
+
+   /**
+    * Get value with metric and full execution and test.
+    * 
+    * @param valueId value id
+    * @return value
+    */
+   Value getFullValue(Long valueId);
+
 }

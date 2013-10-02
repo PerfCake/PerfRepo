@@ -32,13 +32,14 @@ public class EntityUtil {
     * @param entities
     * @return
     */
-   public static <T extends Entity<T>> List<T> clone(Collection<T> entities) {
+   @SuppressWarnings("unchecked")
+   public static <T extends Entity<?>> List<T> clone(Collection<T> entities) {
       if (entities == null) {
          return null;
       }
       List<T> result = new ArrayList<T>(entities.size());
       for (T entity : entities) {
-         result.add(entity.clone());
+         result.add((T) entity.clone());
       }
       return result;
    }

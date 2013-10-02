@@ -172,8 +172,9 @@ public class TestServiceBean implements TestService {
             }
          }
       }
-      log.debug("Created new test execution " + storedTestExecution.getId());
-      return storedTestExecution;
+      TestExecution clone = cloneAndFetch(storedTestExecution, true, true, true, true, true);
+      log.debug("Created new test execution " + clone.getId());
+      return clone;
    }
 
    public List<TestExecution> getFullTestExecutions(List<Long> ids) {
@@ -501,28 +502,41 @@ public class TestServiceBean implements TestService {
 
    @Override
    public TestExecution getFullTestExecution(Long id) {
-      TestExecution testExecution = testExecutionDAO.findReadOnly(id);
-      if (testExecution == null) {
+      return cloneAndFetch(testExecutionDAO.find(id), true, true, true, true, true);
+   }
+
+   private TestExecution cloneAndFetch(TestExecution exec, boolean fetchTest, boolean fetchParameters, boolean fetchTags, boolean fetchValues,
+         boolean fetchAttachments) {
+      if (exec == null) {
          return null;
       }
-      // lazy fetching (clone still contains, JPA-Managed collections)
-      // TODO: try alternative with findWithDepth and test performance
-      testExecution.setTest(testExecution.getTest().clone());
-      testExecution.getTest().setTestExecutions(null);
-      testExecution.getTest().setTestMetrics(null);
-      testExecution.setParameters(EntityUtil.clone(testExecution.getParameters()));
-      Collection<TestExecutionTag> cloneTags = new ArrayList<TestExecutionTag>();
-      for (TestExecutionTag interObject : testExecution.getTestExecutionTags()) {
-         cloneTags.add(interObject.cloneWithTag());
+      TestExecution clone = exec.clone();
+      if (fetchTest) {
+         TestExecutionDAO.fetchTest(clone);
+      } else {
+         clone.setTest(null);
       }
-      testExecution.setTestExecutionTags(cloneTags);
-      List<Value> cloneValues = new ArrayList<Value>();
-      for (Value v : testExecution.getValues()) {
-         cloneValues.add(v.cloneWithParameters());
+      if (fetchParameters) {
+         TestExecutionDAO.fetchParameters(clone);
+      } else {
+         clone.setParameters(null);
       }
-      testExecution.setValues(cloneValues);
-      testExecution.setAttachments(EntityUtil.clone(testExecutionAttachmentDAO.findByExecution(id)));
-      return testExecution;
+      if (fetchTags) {
+         TestExecutionDAO.fetchTags(clone);
+      } else {
+         clone.setTestExecutionTags(null);
+      }
+      if (fetchValues) {
+         TestExecutionDAO.fetchValues(clone);
+      } else {
+         clone.setValues(null);
+      }
+      if (fetchAttachments) {
+         TestExecutionDAO.fetchAttachments(clone);
+      } else {
+         clone.setAttachments(null);
+      }
+      return clone;
    }
 
    @Override
@@ -599,7 +613,8 @@ public class TestServiceBean implements TestService {
          testExecutionTagDAO.create(newTestExecutionTag);
          execEntity.getTestExecutionTags().add(newTestExecutionTag);
       }
-      return getFullTestExecution(anExec.getId());
+      TestExecution execClone = cloneAndFetch(execEntity, true, true, true, true, true);
+      return execClone;
    }
 
    public TestExecution setExecutionLocked(TestExecution anExec, boolean locked) throws ServiceException {
@@ -704,6 +719,9 @@ public class TestServiceBean implements TestService {
       }
       Value freshValue = valueDAO.update(value);
       Value freshValueClone = freshValue.clone();
+      freshValueClone.setMetric(freshValue.getMetric().clone());
+      freshValueClone.getMetric().setTestMetrics(null);
+      freshValueClone.getMetric().setValues(null);
       UpdateSet<ValueParameter> updateSet = EntityUtil.updateSet(oldValue.getParameters(), value.getParameters());
       if (!updateSet.removed.isEmpty()) {
          throw serviceException(STALE_COLLECTION, "Collection of value parameters contains stale ids: %s", updateSet.removed);
@@ -884,16 +902,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public UserProperty updateUserProperty(UserProperty property) throws ServiceException {
-      if (property.getUser() == null || property.getUser().getId() == null) {
-         throw new IllegalArgumentException("user id is required");
-      }
-      User user = userDAO.find(property.getUser().getId());
-      if (user == null) {
-         throw serviceException(USER_NOT_FOUND, "Couldn't find user with ID %s", property.getUser().getId());
-      }
-      if (!user.getUsername().equals(userInfo.getUserName())) {
-         throw serviceException(NOT_YOU, "Only logged-in user can change his own properties");
-      }
+      User user = checkThisUser(property.getUser());
       property.setUser(user);
       if (property.getId() == null) {
          return userPropertyDAO.create(property);
@@ -903,16 +912,7 @@ public class TestServiceBean implements TestService {
    }
 
    public void deleteUserProperty(UserProperty property) throws ServiceException {
-      if (property.getUser() == null || property.getUser().getId() == null) {
-         throw new IllegalArgumentException("user id is required");
-      }
-      User user = userDAO.find(property.getUser().getId());
-      if (user == null) {
-         throw serviceException(USER_NOT_FOUND, "Couldn't find user with ID %s", property.getUser().getId());
-      }
-      if (!user.getUsername().equals(userInfo.getUserName())) {
-         throw serviceException(NOT_YOU, "Only logged-in user can change his own properties");
-      }
+      checkThisUser(property.getUser());
       UserProperty property2 = userPropertyDAO.find(property.getId());
       if (property2 == null) {
          log.warn("Tried to delete non-existent user-property " + property.getId());
@@ -934,6 +934,26 @@ public class TestServiceBean implements TestService {
    }
 
    public User updateUser(User user) throws ServiceException {
+      User oldUser = checkThisUser(user);
+      // currently you can update only e-mail
+      oldUser.setEmail(user.getEmail());
+      return userDAO.update(oldUser);
+   }
+
+   @Override
+   public Value getFullValue(Long valueId) {
+      Value value = valueDAO.find(valueId);
+      if (value == null) {
+         return null;
+      }
+      Value valueClone = value.cloneWithParameters();
+      valueClone.setMetric(value.getMetric().clone());
+      // load test execution with test and tags, no parameters, no attachments, no values
+      valueClone.setTestExecution(cloneAndFetch(value.getTestExecution(), true, false, true, false, false));
+      return valueClone;
+   }
+
+   private User checkThisUser(User user) throws ServiceException {
       if (user == null || user.getId() == null) {
          throw new IllegalArgumentException("user id required");
       }
@@ -944,8 +964,7 @@ public class TestServiceBean implements TestService {
       if (!oldUser.getUsername().equals(userInfo.getUserName())) {
          throw serviceException(NOT_YOU, "Only logged-in user can change his own properties");
       }
-      // currently you can update only e-mail
-      oldUser.setEmail(user.getEmail());
-      return userDAO.update(oldUser);
+      return oldUser;
    }
+
 }
