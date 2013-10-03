@@ -84,6 +84,21 @@ public class EntityUtil {
    }
 
    /**
+    * Removes all entities from entitiesToRemove from allEntities collection. The allEntities
+    * collection is modified by this operation.
+    *
+    * @param allEntities
+    * @param entitiesToRemove
+    * @return Modified allEntities collection.
+    */
+   public static <T extends Entity<T>, V extends Collection<T>> V removeAllById(V allEntities, Collection<T> entitiesToRemove) {
+      for (T entityToRemove : entitiesToRemove) {
+         removeById(allEntities, entityToRemove.getId());
+      }
+      return allEntities;
+   }
+
+   /**
     * Extract ids from id holders.
     * 
     * @param entities

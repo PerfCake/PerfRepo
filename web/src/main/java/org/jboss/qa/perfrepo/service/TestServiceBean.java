@@ -399,9 +399,7 @@ public class TestServiceBean implements TestService {
 
    public List<Metric> getAvailableMetrics(Test test) {
       Test t = testDAO.find(test.getId());
-      List<Metric> result = metricDAO.getMetricByGroup(t.getGroupId());
-      result.removeAll(t.getSortedMetrics());
-      return result;
+      return EntityUtil.removeAllById(metricDAO.getMetricByGroup(t.getGroupId()), t.getMetrics());
    }
 
    public TestMetric addMetric(Test test, Metric metric) throws ServiceException {
