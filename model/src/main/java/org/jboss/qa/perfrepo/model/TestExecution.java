@@ -99,6 +99,9 @@ public class TestExecution implements Entity<TestExecution> {
    @XmlAttribute(name = "locked")
    private Boolean locked;
 
+   @Column(name = "jobId")
+   private Long jobId;
+
    @XmlTransient
    public Long getId() {
       return id;
@@ -258,6 +261,7 @@ public class TestExecution implements Entity<TestExecution> {
       }
    }
 
+   @Deprecated //should be moved to util class
    public TestExecutionParameter findParameter(String name) {
       if (parameters == null || parameters.isEmpty()) {
          return null;
@@ -296,4 +300,14 @@ public class TestExecution implements Entity<TestExecution> {
    public void setLocked(Boolean locked) {
       this.locked = locked;
    }
+
+   @XmlAttribute(name = "jobId")
+   public Long getJobId() {
+	  return jobId;
+   }
+
+   public void setJobId(Long jobId) {
+	  this.jobId = jobId;
+   }
+
 }

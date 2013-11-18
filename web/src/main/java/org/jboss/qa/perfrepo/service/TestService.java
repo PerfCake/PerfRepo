@@ -61,6 +61,14 @@ public interface TestService extends Codes {
    List<TestExecution> searchTestExecutions(TestExecutionSearchTO search);
 
    /**
+    * Returns list of TestExecutionss according to criteria defined by TestExecutionSearchTO grouped by job ID
+    * @param search
+    * @return
+    */
+   List<TestExecution> searchTestExecutionsGroupedByJobId(TestExecutionSearchTO search);
+
+
+   /**
     * Returns list of Tests according to criteria defined by TestSearchTO
     * 
     * @param search
@@ -139,6 +147,14 @@ public interface TestService extends Codes {
    List<TestExecution> getAllFullTestExecutions();
 
    List<TestExecution> findExecutionsByTest(Long testId);
+
+   /**
+    * Returns TestExecutions by Test id and job Id
+    * @param testId
+    * @param jobId
+    * @return
+    */
+   public List<TestExecution> getFullTestExecutionsByTestAndJob(Long testId, Long jobId);
 
    /**
     * Add metric to given test.

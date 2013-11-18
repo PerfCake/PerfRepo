@@ -114,6 +114,8 @@
 									action="#{searchController.sortBy('name', false)}" /></th>
 							<th class="rf-dt-shdr-c"><a4j:commandLink value="Test" render="@form :searchResult :messagesPanel"
 									action="#{searchController.sortBy('test', false)}" /></th>
+							<th class="rf-dt-shdr-c"><a4j:commandLink value="Job Id" render="@form :searchResult :messagesPanel"
+									action="#{searchController.sortBy('jobId', false)}" /></th>
 							<th class="rf-dt-shdr-c"><a4j:commandLink value="Time" render="@form :searchResult :messagesPanel"
 									action="#{searchController.sortBy('started', false)}" /></th>
 							<ui:repeat value="#{searchController.paramColumns}" var="item">
@@ -130,6 +132,7 @@
 								<td class="rf-dt-c"><h:outputText value="#{item.id}" /></td>
 								<td class="rf-dt-c"><a href="/repo/exec/#{item.id}">#{item.name}</a></td>
 								<td class="rf-dt-c"><a href="/repo/test/#{item.test.id}">#{item.test.name}</a></td>
+								<td class="rf-dt-c"><h:outputText value="#{item.jobId}" /></td>
 								<td class="rf-dt-c"><h:outputText value="#{item.started}">
 										<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeStyle="full" />
 									</h:outputText></td>

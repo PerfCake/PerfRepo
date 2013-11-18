@@ -69,6 +69,10 @@ import org.jboss.qa.perfrepo.model.util.EntityUtil.UpdateSet;
 import org.jboss.qa.perfrepo.security.Secure;
 import org.jboss.qa.perfrepo.security.UserInfo;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
 /**
  * 
  * Implements {@link TestService}.
@@ -177,6 +181,18 @@ public class TestServiceBean implements TestService {
       return clone;
    }
 
+   public List<TestExecution> getFullTestExecutionsByTestAndJob(Long testId, Long jobId) {
+      List<TestExecution> result = new ArrayList<TestExecution>();
+      for (TestExecution te : testExecutionDAO.findByTestAndJob(testId, jobId)) {
+         TestExecution testExecution = getFullTestExecution(te.getId());
+         if (testExecution != null) {
+            result.add(testExecution);
+         }
+      }
+      return result;
+   }
+
+
    public List<TestExecution> getFullTestExecutions(List<Long> ids) {
       List<TestExecution> result = new ArrayList<TestExecution>();
       for (Long id : ids) {
@@ -212,6 +228,24 @@ public class TestServiceBean implements TestService {
       }
       List<TestExecution> result = testExecutionDAO.searchTestExecutions(search, testExecutionParameterDAO);
       return result;
+   }
+
+   public List<TestExecution> searchTestExecutionsGroupedByJobId(TestExecutionSearchTO search) {
+	   List<TestExecution> result = testExecutionDAO.searchTestExecutions(search, testExecutionParameterDAO);
+	   final HashSet<Long> jobIds = new HashSet<Long>();
+	   List<TestExecution> r = Lists.newArrayList(Iterables.filter(result, new Predicate<TestExecution>() {
+
+		   @Override
+		    public boolean apply(TestExecution te) {
+			   if (jobIds.contains(te.getJobId())) {
+				   return false;
+			   }
+			   jobIds.add(te.getJobId());
+			   TestExecutionDAO.fetchTags(te);
+		       return true;
+		    }
+	   }));
+	   return r;
    }
 
    @Override

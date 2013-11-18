@@ -35,6 +35,7 @@ public class TestExecutionSearchTO implements Serializable {
    private String testUID;
    private String testName;
    private List<ParamCriteria> parameters = new ArrayList<ParamCriteria>();
+   private int limit;
 
    public static class ParamCriteria implements Serializable {
       private String name;
@@ -109,4 +110,11 @@ public class TestExecutionSearchTO implements Serializable {
       return parameters;
    }
 
+   public int getLimit() {
+	  return limit;
+   }
+
+   public void setLimit(int limit) {
+	  this.limit = limit;
+   }
 }

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Named;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -125,6 +126,18 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       return testExecution;
    }
 
+   public List<TestExecution> findByTestAndJob(Long testId, Long jobId) {
+	  Test test = new Test();
+	  test.setId(testId);
+	  CriteriaQuery<TestExecution> criteria = createCriteria();
+	  Root<TestExecution> root = criteria.from(TestExecution.class);
+	  criteria.select(root);
+	  CriteriaBuilder cb = criteriaBuilder();
+	  Predicate p = cb.and(cb.equal(root.get("test"), test), cb.equal(root.get("jobId"), jobId));
+	  criteria.where(p);
+	  return  query(criteria).getResultList();
+   }
+
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, TestExecutionParameterDAO paramDAO) {
       CriteriaQuery<TestExecution> criteria = createCriteria();
       CriteriaBuilder cb = criteriaBuilder();
@@ -184,7 +197,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       criteria.having(pHavingAllTagsPresent);
       // this isn't very ellegant, but Postgres 8.4 doesn't allow GROUP BY only with id
       // this feature is allowed only since Postgres 9.1+
-      criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("locked"), rExec.get("started"));
+      criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("locked"), rExec.get("started"), rExec.get("jobId"));
       TypedQuery<TestExecution> query = query(criteria);
 
       // set parameters
