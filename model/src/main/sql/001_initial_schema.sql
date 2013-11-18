@@ -92,7 +92,6 @@ CREATE TABLE test_execution (
     id bigint NOT NULL,
     name character varying(255) NOT NULL,
     test_id bigint NOT NULL,
-    job_id bigint NOT NULL,
     started timestamp without time zone NOT NULL,
     locked boolean DEFAULT false NOT NULL
 );
