@@ -95,17 +95,10 @@
    </rule>
 
    <rule>
-      <!-- /reports/metric/{testId} -->
-      <from>^/reports/metric/([\w_]+)$</from>
-      <to type="forward" last="true">/reports/metric.jsf?t=$1</to>
-      <set name="formActionURL">/reports/metric/$1</set>
-   </rule>
-
-   <rule>
-      <!-- /reports/metric/{testId}/{paramName} -->
-      <from>^/reports/metric/([\w_]+)/([\w_.]+)$</from>
-      <to type="forward" last="true">/reports/metric.jsf?t=$1&amp;p=$2</to>
-      <set name="formActionURL">/reports/metric/$1/$2</set>
+      <!-- /reports/metric/saved/{reportOwnerId}/{reportId} -->
+      <from>^/reports/metric/saved/([\w_]+)/([\w_]+)$</from>
+      <to type="forward" last="true">/reports/metric.jsf?reportOwnerId=$1&amp;reportId=$2</to>
+      <set name="formActionURL">/reports/metric/saved/$1/$2</set>
    </rule>
 
    <rule>

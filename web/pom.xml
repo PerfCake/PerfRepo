@@ -95,23 +95,8 @@
          <version>${commons.collections.version}</version>
       </dependency>
       <dependency>
-         <groupId>org.richfaces.core</groupId>
-         <artifactId>richfaces-core-api</artifactId>
-         <version>${richfaces.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.richfaces.core</groupId>
-         <artifactId>richfaces-core-impl</artifactId>
-         <version>${richfaces.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.richfaces.ui</groupId>
-         <artifactId>richfaces-components-api</artifactId>
-         <version>${richfaces.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.richfaces.ui</groupId>
-         <artifactId>richfaces-components-ui</artifactId>
+         <groupId>org.richfaces.compat</groupId>
+         <artifactId>richfaces-components-rich</artifactId>
          <version>${richfaces.version}</version>
       </dependency>
       <dependency>
@@ -154,11 +139,6 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.jsflot</groupId>
-         <artifactId>jsflot</artifactId>
-         <version>${jsflot.version}</version>
-      </dependency>
-      <dependency>
          <groupId>org.jboss.spec.javax.el</groupId>
          <artifactId>jboss-el-api_2.2_spec</artifactId>
          <scope>provided</scope>
@@ -177,7 +157,7 @@
          <groupId>com.google.guava</groupId>
          <artifactId>guava</artifactId>
          <version>${guava.version}</version>
-	  </dependency>
+      </dependency>
    </dependencies>
 
 

@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:r="http://richfaces.org">
 <h:body>
 	<f:metadata>
 		<f:event type="preRenderView" listener="#{searchController.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="compareAddAll">
-			<li><a4j:commandLink value=" " alt="Add all current results" title="Add all current results"
+			<li><r:commandLink value=" " alt="Add all current results" title="Add all current results"
 					action="#{searchController.addAllCurrentResultsToComparison()}" render="compareMenuItem :messagesPanel">
 					<i class="icon-copy"></i>
-				</a4j:commandLink></li>
+				</r:commandLink></li>
 		</ui:define>
 		<ui:define name="head">
 			<link href="/repo/rfRes/datatable.ecss.jsf?ln=org.richfaces" rel="stylesheet" type="text/css"></link>
@@ -37,14 +37,14 @@
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testStartedFrom">Test started from</h:outputLabel>
 						<div class="controls">
-							<rich:calendar value="#{searchController.criteria.startedFrom}" datePattern="yyyy-MM-dd HH:mm" id="testStartedFrom" />
+							<r:calendar value="#{searchController.criteria.startedFrom}" datePattern="yyyy-MM-dd HH:mm" id="testStartedFrom" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testStartedTo">Test started to</h:outputLabel>
 						<div class="controls">
-							<rich:calendar value="#{searchController.criteria.startedTo}" datePattern="yyyy-MM-dd HH:mm" id="testStartedTo" />
+							<r:calendar value="#{searchController.criteria.startedTo}" datePattern="yyyy-MM-dd HH:mm" id="testStartedTo" />
 						</div>
 					</div>
 
@@ -59,10 +59,10 @@
 						<div class="control-group">
 							<h:outputLabel class="control-label">Parameters</h:outputLabel>
 							<div class="controls">
-								<a4j:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Add parameter criteria" title="Add parameter criteria"
+								<r:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Add parameter criteria" title="Add parameter criteria"
 									action="#{searchController.addParameterCriteria}">
 									<i class="icon-plus"></i>
-								</a4j:commandLink>
+								</r:commandLink>
 							</div>
 						</div>
 					</h:panelGroup>
@@ -81,27 +81,36 @@
 									</h:column>
 									<h:column>
 										<f:facet name="header">
-											<a4j:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Add parameter criteria" title="Add parameter criteria"
+											<r:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Add parameter criteria" title="Add parameter criteria"
 												action="#{searchController.addParameterCriteria}">
 												<i class="icon-plus"></i>
-											</a4j:commandLink>
+											</r:commandLink>
 										</f:facet>
-										<a4j:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Remove" title="Remove"
+										<r:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Remove" title="Remove"
 											action="#{searchController.removeParameterCriteria(item)}">
 											<i class="icon-trash"></i>
-										</a4j:commandLink>
+										</r:commandLink>
 									</h:column>
 								</h:dataTable>
 							</div>
 						</div>
 					</h:panelGroup>
+					<div class="control-group">
+						<h:outputLabel class="control-label" for="tags">Additional columns</h:outputLabel>
+						<div class="controls">
+							<h:selectManyListbox value="#{searchController.extraColumns}">
+								<f:selectItem itemValue="execId" itemLabel="Execution Id" />
+								<f:selectItem itemValue="tags" itemLabel="Tags" />
+							</h:selectManyListbox>
+						</div>
+					</div>
 				</fieldset>
 
 				<div class="form-actions">
-					<a4j:commandButton action="#{searchController.search}" value="Search" styleClass="btn btn-primary" alt="Search Test Execution"
-						title="Search Test Execution" render="@form :searchResult :messagesPanel">
+					<r:commandButton action="#{searchController.search}" value="Search" styleClass="btn btn-primary" alt="Search Test Execution" title="Search Test Execution"
+						render="@form :searchResult :messagesPanel">
 						<f:param name="testExecutionSearchTO" value="#{searchController.criteria}" />
-					</a4j:commandButton>
+					</r:commandButton>
 				</div>
 			</h:form>
 
@@ -109,18 +118,18 @@
 				<table class="rf-dt searchResult">
 					<thead class="rf-dt-thd">
 						<tr class="rf-dt-shdr">
-							<th class="rf-dt-shdr-c"><a4j:commandLink value="ID" render="@form :searchResult :messagesPanel" action="#{searchController.sortBy('id', false)}" /></th>
-							<th class="rf-dt-shdr-c"><a4j:commandLink value="Name" render="@form :searchResult :messagesPanel"
-									action="#{searchController.sortBy('name', false)}" /></th>
-							<th class="rf-dt-shdr-c"><a4j:commandLink value="Test" render="@form :searchResult :messagesPanel"
-									action="#{searchController.sortBy('test', false)}" /></th>
-							<th class="rf-dt-shdr-c"><a4j:commandLink value="Job Id" render="@form :searchResult :messagesPanel"
-									action="#{searchController.sortBy('jobId', false)}" /></th>
-							<th class="rf-dt-shdr-c"><a4j:commandLink value="Time" render="@form :searchResult :messagesPanel"
+							<c:if test="#{searchController.isDisplayColumn('execId')}">
+								<th class="rf-dt-shdr-c"><r:commandLink value="ID" render="@form :searchResult :messagesPanel" action="#{searchController.sortBy('id', false)}" /></th>
+							</c:if>
+							<th class="rf-dt-shdr-c"><r:commandLink value="Name" render="@form :searchResult :messagesPanel" action="#{searchController.sortBy('name', false)}" /></th>
+							<th class="rf-dt-shdr-c"><r:commandLink value="Time" render="@form :searchResult :messagesPanel"
 									action="#{searchController.sortBy('started', false)}" /></th>
+							<c:if test="#{searchController.isDisplayColumn('tags')}">
+								<th class="rf-dt-shdr-c">Tags</th>
+							</c:if>
 							<ui:repeat value="#{searchController.paramColumns}" var="item">
-								<th class="rf-dt-shdr-c"><a4j:commandLink value="#{item}" render="@form :searchResult :messagesPanel"
-										action="#{searchController.sortBy(item, false)}" /> - <a4j:commandLink value="#" render="@form :searchResult :messagesPanel"
+								<th class="rf-dt-shdr-c"><r:commandLink value="#{item}" render="@form :searchResult :messagesPanel"
+										action="#{searchController.sortBy(item, false)}" /> - <r:commandLink value="#" render="@form :searchResult :messagesPanel"
 										action="#{searchController.sortBy(item, true)}" /></th>
 							</ui:repeat>
 							<th class="rf-dt-shdr-c">Commands</th>
@@ -128,31 +137,39 @@
 					</thead>
 					<tbody class="rf-dt-b">
 						<ui:repeat value="#{searchController.result}" var="item">
-							<tr class="rf-dt-r rf-dt-fst-r">
-								<td class="rf-dt-c"><h:outputText value="#{item.id}" /></td>
+							<tr class="rf-dt-r rf-dt-fst-r" id="line-#{item.id}">
+								<c:if test="#{searchController.isDisplayColumn('execId')}">
+									<td class="rf-dt-c">#{item.id}</td>
+								</c:if>
 								<td class="rf-dt-c"><a href="/repo/exec/#{item.id}">#{item.name}</a></td>
-								<td class="rf-dt-c"><a href="/repo/test/#{item.test.id}">#{item.test.name}</a></td>
-								<td class="rf-dt-c"><h:outputText value="#{item.jobId}" /></td>
 								<td class="rf-dt-c"><h:outputText value="#{item.started}">
 										<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeStyle="full" />
 									</h:outputText></td>
-
+								<c:if test="#{searchController.isDisplayColumn('tags')}">
+									<td class="rf-dt-c"><ui:repeat value="#{item.sortedTags}" var="item2">
+								 #{item2}
+									</ui:repeat></td>
+								</c:if>
 								<ui:repeat value="#{searchController.paramColumns}" var="item2">
 									<td class="rf-dt-c"><h:outputText value="#{searchController.itemParam(item, item2)}" escape="false" /></td>
 								</ui:repeat>
 								<td class="rf-dt-c"><div class="btn-group">
-										<a4j:commandLink styleClass="btn btn-primary btn-small" action="#{searchController.delete}" alt="#{strings.delete}" title="#{strings.delete}"
+										<r:commandLink styleClass="btn btn-primary btn-small" action="#{searchController.delete}" alt="#{strings.delete}" title="#{strings.delete}"
 											render="@form :criteriaForm :messagesPanel"
 											onclick="if (!confirm('Are you sure you want to delete the test execution (#{item.name})?') ) { return false;}; return true;">
 											<f:param name="idToDelete" value="#{item.id}" />
 											<i class="icon-trash"></i>
-										</a4j:commandLink>
-										<a4j:commandLink styleClass="btn btn-primary btn-small" render=":compareMenuItem" lt="Add to comparison" title="Add to comparison"
+										</r:commandLink>
+										<r:commandLink styleClass="btn btn-primary btn-small" render=":compareMenuItem" lt="Add to comparison" title="Add to comparison"
 											action="#{teComparatorSession.add(item.id)}">
 											<i class="icon-plus"></i>
-										</a4j:commandLink>
+										</r:commandLink>
 									</div></td>
 							</tr>
+							<r:tooltip target="line-#{item.id}" followMouse="false" direction="topLeft">
+								<span><b>ID:</b> #{item.id}<br /> <b>Test name:</b> <a href="/repo/test/#{item.test.id}">#{item.test.name}</a><br /> <b>Comment:</b><br /> <h:outputText
+										value="#{item.comment}" escape="false" /> </span>
+							</r:tooltip>
 						</ui:repeat>
 					</tbody>
 				</table>

@@ -16,6 +16,80 @@ import org.jboss.qa.perfrepo.model.Test;
 public class MetricReportTO {
 
    /**
+    * Chart specification.
+    */
+   public static class ChartRequest implements Serializable {
+      private String testUid;
+      private String paramName;
+      private List<SeriesRequest> series = new ArrayList<SeriesRequest>();
+      private List<BaselineRequest> baselines = new ArrayList<BaselineRequest>();
+      private SortType sortType = SortType.EXEC_DATE;
+
+      public ChartRequest() {
+      }
+
+      public String getTestUid() {
+         return testUid;
+      }
+
+      public String getParamName() {
+         return paramName;
+      }
+
+      public SortType getSortType() {
+         return sortType;
+      }
+
+      public List<SeriesRequest> getSeries() {
+         return series;
+      }
+
+      public void addSeries(SeriesRequest seriesToAdd) {
+         series.add(seriesToAdd);
+      }
+
+      public void removeSeries(SeriesRequest seriesToRemove) {
+         if (series != null) {
+            series.remove(seriesToRemove);
+         }
+      }
+
+      public void clearSeries() {
+         series = null;
+      }
+
+      public List<BaselineRequest> getBaselines() {
+         return baselines;
+      }
+
+      public void addBaseline(BaselineRequest baselineToAdd) {
+         baselines.add(baselineToAdd);
+      }
+
+      public void removeBaselines(BaselineRequest baselineToRemove) {
+         if (baselines != null) {
+            baselines.remove(baselineToRemove);
+         }
+      }
+
+      public void clearBaselines() {
+         baselines = null;
+      }
+
+      public void setSortType(SortType sortType) {
+         this.sortType = sortType;
+      }
+
+      public void setParamName(String paramName) {
+         this.paramName = paramName;
+      }
+
+      public void setTestUid(String testUid) {
+         this.testUid = testUid;
+      }
+   }
+
+   /**
     * Chart series specification.
     */
    public static class SeriesRequest implements Serializable {
@@ -23,10 +97,8 @@ public class MetricReportTO {
       private String metricName;
       private List<String> tags;
 
-      public SeriesRequest(String name, String metricName, List<String> tags) {
+      public SeriesRequest(String name) {
          this.name = name;
-         this.metricName = metricName;
-         this.tags = tags;
       }
 
       public String getName() {
@@ -66,16 +138,56 @@ public class MetricReportTO {
       }
    }
 
+   /**
+    * Chart series specification.
+    */
+   public static class BaselineRequest implements Serializable {
+      private String name;
+      private String metricName;
+      private Long execId;
+
+      public BaselineRequest(String name) {
+         this.name = name;
+      }
+
+      public String getName() {
+         return name;
+      }
+
+      public void setName(String name) {
+         this.name = name;
+      }
+
+      public String getMetricName() {
+         return metricName;
+      }
+
+      public void setMetricName(String metricName) {
+         this.metricName = metricName;
+      }
+
+      public Long getExecId() {
+         return execId;
+      }
+
+      public void setExecId(Long execId) {
+         this.execId = execId;
+      }
+
+      @Override
+      public String toString() {
+         return "(" + name + "|" + metricName + "|" + Long.toString(execId) + ")";
+      }
+   }
+
    public static class SeriesResponse implements Serializable {
       private String name;
       private Metric selectedMetric;
       private List<DataPoint> datapoints;
 
-      public SeriesResponse(String name, Metric selectedMetric, List<DataPoint> datapoints) {
+      public SeriesResponse(String name) {
          super();
          this.name = name;
-         this.selectedMetric = selectedMetric;
-         this.datapoints = datapoints;
       }
 
       public String getName() {
@@ -104,6 +216,51 @@ public class MetricReportTO {
 
    }
 
+   public static class BaselineResponse implements Serializable {
+      private String name;
+      private Metric selectedMetric;
+      private Long execId;
+      private Double value;
+
+      public BaselineResponse(String name) {
+         super();
+         this.name = name;
+      }
+
+      public String getName() {
+         return name;
+      }
+
+      public void setName(String name) {
+         this.name = name;
+      }
+
+      public Metric getSelectedMetric() {
+         return selectedMetric;
+      }
+
+      public void setSelectedMetric(Metric selectedMetric) {
+         this.selectedMetric = selectedMetric;
+      }
+
+      public Long getExecId() {
+         return execId;
+      }
+
+      public void setExecId(Long execId) {
+         this.execId = execId;
+      }
+
+      public Double getValue() {
+         return value;
+      }
+
+      public void setValue(Double value) {
+         this.value = value;
+      }
+
+   }
+
    /**
     * Request
     */
@@ -111,35 +268,15 @@ public class MetricReportTO {
 
       public static final int DEFAULT_SIZE_LIMIT = 100;
 
-      private String testUid;
-      private String paramName;
-      private List<SeriesRequest> seriesSpecs;
-      private SortType sortType = SortType.NUMBER;
+      private List<ChartRequest> chartSpecs;
       private int limitSize = DEFAULT_SIZE_LIMIT;
 
-      public Request(String testUid, String paramName, List<SeriesRequest> seriesSpecs, SortType sortType) {
-         this.testUid = testUid;
-         this.paramName = paramName;
-         this.seriesSpecs = seriesSpecs;
-         this.sortType = sortType;
+      public Request() {
+
       }
 
-      public Request(String testUid, String paramName, SortType sortType) {
-         this.testUid = testUid;
-         this.paramName = paramName;
-         this.sortType = sortType;
-      }
-
-      public String getTestUid() {
-         return testUid;
-      }
-
-      public String getParamName() {
-         return paramName;
-      }
-
-      public SortType getSortType() {
-         return sortType;
+      public Request(List<ChartRequest> chartSpecs) {
+         this.chartSpecs = chartSpecs;
       }
 
       public int getLimitSize() {
@@ -150,15 +287,15 @@ public class MetricReportTO {
          this.limitSize = limitSize;
       }
 
-      public List<? extends SeriesRequest> getSeriesSpecs() {
-         return seriesSpecs;
+      public List<ChartRequest> getCharts() {
+         return chartSpecs;
       }
 
-      public void addSeries(SeriesRequest series) {
-         if (seriesSpecs == null) {
-            seriesSpecs = new ArrayList<MetricReportTO.SeriesRequest>();
+      public void addChart(ChartRequest chart) {
+         if (chartSpecs == null) {
+            chartSpecs = new ArrayList<ChartRequest>();
          }
-         seriesSpecs.add(series);
+         chartSpecs.add(chart);
       }
    }
 
@@ -167,16 +304,19 @@ public class MetricReportTO {
     * 
     */
    public static class Response implements Serializable {
-
       private List<Test> selectionTests;
-      private List<String> selectionParam;
-      private List<Metric> selectionMetrics;
+      private List<ChartResponse> charts;
 
-      private Test selectedTest;
-      private String selectedParam;
+      public List<ChartResponse> getCharts() {
+         return charts;
+      }
 
-      private List<SeriesResponse> series;
-      private SeriesResponse problematicSeries;
+      public void addChart(ChartResponse chart) {
+         if (charts == null) {
+            charts = new ArrayList<ChartResponse>();
+         }
+         charts.add(chart);
+      }
 
       public List<Test> getSelectionTests() {
          return selectionTests;
@@ -185,6 +325,22 @@ public class MetricReportTO {
       public void setSelectionTests(List<Test> selectionTests) {
          this.selectionTests = selectionTests;
       }
+   }
+
+   /**
+    * Chart Response
+    * 
+    */
+   public static class ChartResponse implements Serializable {
+
+      private List<String> selectionParam;
+      private List<Metric> selectionMetrics;
+
+      private Test selectedTest;
+      private String selectedParam;
+
+      private List<SeriesResponse> series = new ArrayList<SeriesResponse>();
+      private List<BaselineResponse> baselines = new ArrayList<BaselineResponse>();
 
       public void setSelectionMetrics(List<Metric> selectionMetric) {
          this.selectionMetrics = selectionMetric;
@@ -222,14 +378,6 @@ public class MetricReportTO {
          this.series = series;
       }
 
-      public SeriesResponse getProblematicSeries() {
-         return problematicSeries;
-      }
-
-      public void setProblematicSeries(SeriesResponse problematicSeries) {
-         this.problematicSeries = problematicSeries;
-      }
-
       public List<String> getSelectionParam() {
          return selectionParam;
       }
@@ -239,12 +387,20 @@ public class MetricReportTO {
       }
 
       public void addSeries(SeriesResponse series) {
-         if (this.series == null) {
-            this.series = new ArrayList<SeriesResponse>();
-         }
          this.series.add(series);
       }
 
+      public List<BaselineResponse> getBaselines() {
+         return baselines;
+      }
+
+      public void setBaselines(List<BaselineResponse> baselines) {
+         this.baselines = baselines;
+      }
+
+      public void addBaseline(BaselineResponse baseline) {
+         this.baselines.add(baseline);
+      }
    }
 
    /**
@@ -299,6 +455,18 @@ public class MetricReportTO {
    }
 
    public static enum SortType {
-      NUMBER, STRING
+
+      EXEC_DATE(false), EXEC_PARAM_STRING(true), EXEC_PARAM_NUMBER(true);
+
+      private boolean needsParam;
+
+      private SortType(boolean needsParam) {
+         this.needsParam = needsParam;
+      }
+
+      public boolean needsParam() {
+         return needsParam;
+      }
+
    }
 }

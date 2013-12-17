@@ -15,7 +15,9 @@
  */
 package org.jboss.qa.perfrepo.service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
@@ -61,12 +63,13 @@ public interface TestService extends Codes {
    List<TestExecution> searchTestExecutions(TestExecutionSearchTO search);
 
    /**
-    * Returns list of TestExecutionss according to criteria defined by TestExecutionSearchTO grouped by job ID
+    * Returns list of TestExecutionss according to criteria defined by TestExecutionSearchTO grouped
+    * by job ID
+    * 
     * @param search
     * @return
     */
    List<TestExecution> searchTestExecutionsGroupedByJobId(TestExecutionSearchTO search);
-
 
    /**
     * Returns list of Tests according to criteria defined by TestSearchTO
@@ -150,6 +153,7 @@ public interface TestService extends Codes {
 
    /**
     * Returns TestExecutions by Test id and job Id
+    * 
     * @param testId
     * @param jobId
     * @return
@@ -363,6 +367,16 @@ public interface TestService extends Codes {
    void deleteUserProperty(UserProperty property) throws ServiceException;
 
    /**
+    * Updates a set of user's properties in one transaction.
+    * 
+    * @param user
+    * @param keysToRemove These properties will be removed
+    * @param toUpdate These will be created or updated.
+    * @throws ServiceException
+    */
+   void multiUpdateProperties(User user, Collection<String> keysToRemove, Map<String, String> toUpdate) throws ServiceException;
+
+   /**
     * Create new user.
     * 
     * @param user
@@ -387,5 +401,25 @@ public interface TestService extends Codes {
     * @return value
     */
    Value getFullValue(Long valueId);
+
+   /**
+    * 
+    * @return lists of tests for selection in UI.
+    */
+   List<Test> getAllSelectionTests();
+
+   /**
+    * 
+    * @param testId
+    * @return All possible execution params for given testId.
+    */
+   List<String> getAllSelectionExecutionParams(Long testId);
+
+   /**
+    * 
+    * @param testId
+    * @return All metrics for given testId
+    */
+   List<Metric> getAllSelectionMetrics(Long testId);
 
 }

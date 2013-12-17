@@ -99,8 +99,12 @@ public class TestExecution implements Entity<TestExecution> {
    @XmlAttribute(name = "locked")
    private Boolean locked;
 
-   @Column(name = "jobId")
+   @Column(name = "job_id")
    private Long jobId;
+
+   @Column(name = "comment")
+   @Size(max = 10239)
+   private String comment;
 
    @XmlTransient
    public Long getId() {
@@ -261,7 +265,7 @@ public class TestExecution implements Entity<TestExecution> {
       }
    }
 
-   @Deprecated //should be moved to util class
+   // TODO: maybe move to util class
    public TestExecutionParameter findParameter(String name) {
       if (parameters == null || parameters.isEmpty()) {
          return null;
@@ -301,13 +305,23 @@ public class TestExecution implements Entity<TestExecution> {
       this.locked = locked;
    }
 
+   // TODO: this is an experimental attribute, might be removed in future versions
+   // please conslut with pdrozd,mlinhard before depending on this
    @XmlAttribute(name = "jobId")
    public Long getJobId() {
-	  return jobId;
+      return jobId;
    }
 
    public void setJobId(Long jobId) {
-	  this.jobId = jobId;
+      this.jobId = jobId;
+   }
+
+   public String getComment() {
+      return comment;
+   }
+
+   public void setComment(String comment) {
+      this.comment = comment;
    }
 
 }

@@ -1,6 +1,6 @@
 <h:form xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich">
-	<rich:popupPanel id="dialogDetailsEdit" modal="true" autosized="true" resizeable="false" domElementAttachment="form"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:r="http://richfaces.org">
+	<r:popupPanel id="dialogDetailsEdit" modal="true" autosized="true" resizeable="false" domElementAttachment="form"
 		show="#{testExecutionController.createForTest != null}">
 		<f:facet name="header">
 			<h:outputText value="Edit execution details" />
@@ -13,18 +13,20 @@
 			</div>
 			<h:outputLabel class="detail-label">Time</h:outputLabel>
 			<div class="detail-value">
-				<rich:calendar value="#{testExecutionController.editedTestExecution.started}" datePattern="yyyy-MM-dd HH:mm" />
+				<r:calendar value="#{testExecutionController.editedTestExecution.started}" datePattern="yyyy-MM-dd HH:mm" />
 			</div>
 			<h:outputLabel class="detail-label">Tags</h:outputLabel>
 			<div class="detail-value">
 				<h:inputText styleClass="input-text" value="#{testExecutionController.rawTags}" />
 			</div>
-			<a4j:commandButton oncomplete="#{rich:component('dialogDetailsEdit')}.hide()" value="#{strings.cancel}" alt="#{strings.cancel}" title="#{strings.cancel}"
+			<h:outputLabel class="detail-label">Comment</h:outputLabel>
+			<r:editor value="#{testExecutionController.editedTestExecution.comment}" toolbar="basic" />
+			<r:commandButton oncomplete="#{rich:component('dialogDetailsEdit')}.hide()" value="#{strings.cancel}" alt="#{strings.cancel}" title="#{strings.cancel}"
 				action="#{testExecutionController.unsetEditedTestExecution()}" />
-			<a4j:commandButton action="#{testExecutionController.updateEditedTestExecution()}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}"
+			<r:commandButton action="#{testExecutionController.updateEditedTestExecution()}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}"
 				oncomplete="#{rich:component('dialogDetailsEdit')}.hide()" render="@form :detailsForm :messagesPanel" />
 		</fieldset>
 
-	</rich:popupPanel>
+	</r:popupPanel>
 </h:form>
 

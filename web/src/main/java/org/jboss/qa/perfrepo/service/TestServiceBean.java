@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -57,10 +59,13 @@ import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.BaselineRequest;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.BaselineResponse;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.ChartRequest;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.ChartResponse;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesRequest;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesResponse;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO.SortType;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
@@ -86,8 +91,6 @@ import com.google.common.collect.Lists;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class TestServiceBean implements TestService {
-
-   private static final int MAX_PROBLEMATIC_DATAPOINTS = 10;
 
    private static final Logger log = Logger.getLogger(TestService.class);
 
@@ -192,7 +195,6 @@ public class TestServiceBean implements TestService {
       return result;
    }
 
-
    public List<TestExecution> getFullTestExecutions(List<Long> ids) {
       List<TestExecution> result = new ArrayList<TestExecution>();
       for (Long id : ids) {
@@ -231,21 +233,21 @@ public class TestServiceBean implements TestService {
    }
 
    public List<TestExecution> searchTestExecutionsGroupedByJobId(TestExecutionSearchTO search) {
-	   List<TestExecution> result = testExecutionDAO.searchTestExecutions(search, testExecutionParameterDAO);
-	   final HashSet<Long> jobIds = new HashSet<Long>();
-	   List<TestExecution> r = Lists.newArrayList(Iterables.filter(result, new Predicate<TestExecution>() {
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(search, testExecutionParameterDAO);
+      final HashSet<Long> jobIds = new HashSet<Long>();
+      List<TestExecution> r = Lists.newArrayList(Iterables.filter(result, new Predicate<TestExecution>() {
 
-		   @Override
-		    public boolean apply(TestExecution te) {
-			   if (jobIds.contains(te.getJobId())) {
-				   return false;
-			   }
-			   jobIds.add(te.getJobId());
-			   TestExecutionDAO.fetchTags(te);
-		       return true;
-		    }
-	   }));
-	   return r;
+         @Override
+         public boolean apply(TestExecution te) {
+            if (jobIds.contains(te.getJobId())) {
+               return false;
+            }
+            jobIds.add(te.getJobId());
+            TestExecutionDAO.fetchTags(te);
+            return true;
+         }
+      }));
+      return r;
    }
 
    @Override
@@ -632,6 +634,7 @@ public class TestServiceBean implements TestService {
       // this is what can be updated here
       execEntity.setName(anExec.getName());
       execEntity.setStarted(anExec.getStarted());
+      execEntity.setComment(anExec.getComment());
       for (String tag : new HashSet<String>(anExec.getTags())) {
          Tag tagEntity = tagDAO.findByName(tag);
          if (tagEntity == null) {
@@ -789,124 +792,97 @@ public class TestServiceBean implements TestService {
       valueDAO.delete(v);
    }
 
-   protected List<Test> getAllSelectionTests() {
+   public List<Test> getAllSelectionTests() {
       return testDAO.findAllReadOnly();
    }
 
-   protected List<Metric> getAllSelectionMetrics(Long testId) {
+   public List<Metric> getAllSelectionMetrics(Long testId) {
       return metricDAO.getMetricByTest(testId);
    }
 
-   protected List<String> getAllSelectionExecutionParams(Long testId) {
+   public List<String> getAllSelectionExecutionParams(Long testId) {
       return testExecutionParameterDAO.getAllSelectionExecutionParams(testId);
    }
 
    public MetricReportTO.Response computeMetricReport(MetricReportTO.Request request) {
       MetricReportTO.Response response = new MetricReportTO.Response();
-      if (request.getTestUid() == null) {
-         // no test is chosen - pick a test
-         response.setSelectionTests(getAllSelectionTests());
-         return response;
-      } else {
-         Test freshTest = testDAO.findByUid(request.getTestUid());
-         if (freshTest == null) {
-            // test uid supplied but doesn't exist - pick another test
-            response.setSelectionTests(getAllSelectionTests());
-            return response;
+      for (ChartRequest chartRequest : request.getCharts()) {
+         ChartResponse chartResponse = new ChartResponse();
+         response.addChart(chartResponse);
+         if (chartRequest.getTestUid() == null) {
+            continue;
          } else {
-            freshTest = freshTest.clone();
-            response.setSelectedTest(freshTest);
-            if (request.getParamName() == null || !testExecutionParameterDAO.hasTestParam(freshTest.getId(), request.getParamName())) {
-               response.setSelectionParam(getAllSelectionExecutionParams(freshTest.getId()));
-               Collections.sort(response.getSelectionParams());
-               return response;
-            }
-            response.setSelectedParam(request.getParamName());
-            if (request.getSeriesSpecs() == null || request.getSeriesSpecs().isEmpty()) {
-               response.setSelectionMetrics(getAllSelectionMetrics(freshTest.getId()));
-               return response;
-            }
-            // selection metrics will be needed in series selectors even on success
-            response.setSelectionMetrics(getAllSelectionMetrics(freshTest.getId()));
-            for (SeriesRequest seriesRequest : request.getSeriesSpecs()) {
-               if (seriesRequest.getName() == null) {
-                  throw new IllegalArgumentException("series has null name");
+            Test freshTest = testDAO.findByUid(chartRequest.getTestUid());
+            if (freshTest == null) {
+               // test uid supplied but doesn't exist - pick another test
+               response.setSelectionTests(getAllSelectionTests());
+               continue;
+            } else {
+               freshTest = freshTest.clone();
+               chartResponse.setSelectedTest(freshTest);
+               if (chartRequest.getSortType().needsParam()
+                     && (chartRequest.getParamName() == null || !testExecutionParameterDAO.hasTestParam(freshTest.getId(), chartRequest.getParamName()))) {
+                  chartResponse.setSelectionParam(getAllSelectionExecutionParams(freshTest.getId()));
+                  Collections.sort(chartResponse.getSelectionParams());
+                  continue;
                }
-               if (seriesRequest.getMetricName() == null) {
-                  return response;
+               chartResponse.setSelectedParam(chartRequest.getParamName());
+               if (chartRequest.getSeries() == null || chartRequest.getSeries().isEmpty()) {
+                  continue;
                }
-               TestMetric testMetric = testMetricDAO.find(freshTest, seriesRequest.getMetricName());
-               if (testMetric == null) {
-                  return response;
-               }
-               List<DataPoint> datapoints = testExecutionDAO.searchValues(freshTest.getId(), seriesRequest.getMetricName(), request.getParamName(),
-                     seriesRequest.getTags());
-               if (datapoints.isEmpty()) {
-                  return response;
-               }
-               SeriesResponse seriesResponse = new SeriesResponse(seriesRequest.getName(), testMetric.getMetric().clone(), null);
-               List<DataPoint> problematicDatapoints = new ArrayList<DataPoint>();
-               if (SortType.NUMBER.equals(request.getSortType())) {
-                  for (DataPoint dp : datapoints) {
-                     try {
-                        dp.param = Long.valueOf((String) dp.param);
-                     } catch (NumberFormatException e) {
-                        dp.value = DataPoint.CONVERSION;
-                        problematicDatapoints.add(dp);
-                        if (problematicDatapoints.size() >= MAX_PROBLEMATIC_DATAPOINTS) {
-                           break;
-                        }
-                     }
+               for (SeriesRequest seriesRequest : chartRequest.getSeries()) {
+                  if (seriesRequest.getName() == null) {
+                     throw new IllegalArgumentException("series has null name");
                   }
-                  if (!problematicDatapoints.isEmpty()) {
-                     response.setSeries(null);
-                     seriesResponse.setDatapoints(problematicDatapoints);
-                     response.setProblematicSeries(seriesResponse);
-                     return response;
-                  } else {
-                     // re-sort as numbers
-                     Collections.sort(datapoints);
+                  SeriesResponse seriesResponse = new SeriesResponse(seriesRequest.getName());
+                  chartResponse.addSeries(seriesResponse);
+                  if (seriesRequest.getMetricName() == null) {
+                     continue;
                   }
-               }
-               // the datapoints are sorted (either by long or string value)
-               // let's find out whether the given test execution parameter was unique between executions
-               for (int i = 1; i < datapoints.size(); i++) {
-                  DataPoint dp = datapoints.get(i);
-                  DataPoint dpPrev = datapoints.get(i - 1);
-                  if (dpPrev.param.equals(dp.param)) {
-                     if (!problematicDatapoints.isEmpty() && problematicDatapoints.get(problematicDatapoints.size() - 1) != dpPrev) {
-                        dpPrev.value = DataPoint.CONFLICT;
-                        problematicDatapoints.add(dpPrev);
-                     }
-                     dp.value = DataPoint.CONFLICT;
-                     problematicDatapoints.add(dp);
-                     if (problematicDatapoints.size() >= MAX_PROBLEMATIC_DATAPOINTS) {
-                        break;
-                     }
+                  TestMetric testMetric = testMetricDAO.find(freshTest, seriesRequest.getMetricName());
+                  if (testMetric == null) {
+                     chartResponse.setSelectionMetrics(getAllSelectionMetrics(freshTest.getId()));
+                     continue;
                   }
-               }
-               if (!problematicDatapoints.isEmpty()) {
-                  response.setSeries(null);
-                  seriesResponse.setDatapoints(problematicDatapoints);
-                  response.setProblematicSeries(seriesResponse);
-                  return response;
-               }
-               if (datapoints.size() > request.getLimitSize()) {
-                  // return only last limitSize points
-                  List<DataPoint> datapointsTail = new ArrayList<DataPoint>();
-                  for (int i = datapoints.size() - request.getLimitSize(); i < datapoints.size(); i++) {
-                     datapointsTail.add(datapoints.get(i));
+                  Metric freshMetric = testMetric.getMetric().clone();
+                  freshMetric.setTestMetrics(null);
+                  freshMetric.setValues(null);
+                  seriesResponse.setSelectedMetric(freshMetric);
+                  List<DataPoint> datapoints = testExecutionDAO.searchValues(freshTest.getId(), seriesRequest.getMetricName(), chartRequest.getParamName(),
+                        seriesRequest.getTags(), chartRequest.getSortType(), request.getLimitSize());
+                  if (datapoints.isEmpty()) {
+                     continue;
                   }
-                  seriesResponse.setDatapoints(datapointsTail);
-               } else {
+                  Collections.reverse(datapoints);
                   seriesResponse.setDatapoints(datapoints);
                }
-               response.addSeries(seriesResponse);
-            }
 
-            return response;
+               for (BaselineRequest baselineRequest : chartRequest.getBaselines()) {
+                  if (baselineRequest.getName() == null) {
+                     throw new IllegalArgumentException("baseline has null name");
+                  }
+                  BaselineResponse baselineResponse = new BaselineResponse(baselineRequest.getName());
+                  chartResponse.addBaseline(baselineResponse);
+                  if (baselineRequest.getMetricName() == null) {
+                     continue;
+                  }
+                  TestMetric testMetric = testMetricDAO.find(freshTest, baselineRequest.getMetricName());
+                  if (testMetric == null) {
+                     chartResponse.setSelectionMetrics(getAllSelectionMetrics(freshTest.getId()));
+                     continue;
+                  }
+                  Metric freshMetric = testMetric.getMetric().clone();
+                  freshMetric.setTestMetrics(null);
+                  freshMetric.setValues(null);
+                  baselineResponse.setSelectedMetric(freshMetric);
+                  baselineResponse.setExecId(baselineRequest.getExecId());
+                  baselineResponse.setValue(testExecutionDAO.getValueForMetric(baselineRequest.getExecId(), baselineRequest.getMetricName()));
+               }
+
+            }
          }
       }
+      return response;
    }
 
    @Override
@@ -930,6 +906,36 @@ public class TestServiceBean implements TestService {
       List<UserProperty> properties = userPropertyDAO.findByUserId(user.getId());
       user.setProperties(EntityUtil.clone(properties));
       return user;
+   }
+
+   public void multiUpdateProperties(User user, Collection<String> keysToRemove, Map<String, String> toUpdate) throws ServiceException {
+      User freshUser = checkThisUser(user);
+      for (String keyToRemove : keysToRemove) {
+         UserProperty propToRemove = userPropertyDAO.findByUserIdAndName(user.getId(), keyToRemove);
+         if (propToRemove == null) {
+            log.warn("Tried to delete non-existent user-property " + keyToRemove + " for user " + freshUser.getUsername());
+         } else {
+            userPropertyDAO.delete(propToRemove);
+         }
+      }
+      for (Entry<String, String> entry : toUpdate.entrySet()) {
+         UserProperty propToUpdate = userPropertyDAO.findByUserIdAndName(user.getId(), entry.getKey());
+         if (propToUpdate == null) {
+            UserProperty propToCreate = createUserProperty(freshUser, entry.getKey(), entry.getValue());
+            userPropertyDAO.create(propToCreate);
+         } else {
+            propToUpdate.setValue((String) entry.getValue());
+            userPropertyDAO.update(propToUpdate);
+         }
+      }
+   }
+
+   private UserProperty createUserProperty(User user, String name, String value) {
+      UserProperty up = new UserProperty();
+      up.setUser(user);
+      up.setName(name);
+      up.setValue(value);
+      return up;
    }
 
    @Override

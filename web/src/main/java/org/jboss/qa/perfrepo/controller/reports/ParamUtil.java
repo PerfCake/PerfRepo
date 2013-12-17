@@ -11,7 +11,7 @@ public class ParamUtil {
          if (query == null) {
             return null;
          }
-         String[] idStrings = query.split("\\|");
+         String[] idStrings = query.split("\\||-");
          List<Long> r = new ArrayList<Long>(idStrings.length);
          for (String idString : idStrings) {
             r.add(new Long(idString));
@@ -28,7 +28,7 @@ public class ParamUtil {
       }
       StringBuffer s = new StringBuffer(execs.get(0).getId().toString());
       for (int i = 1; i < execs.size(); i++) {
-         s.append("|");
+         s.append("-");
          s.append(execs.get(i).getId());
       }
       return s.toString();

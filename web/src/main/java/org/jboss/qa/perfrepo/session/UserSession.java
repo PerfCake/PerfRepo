@@ -1,9 +1,13 @@
 package org.jboss.qa.perfrepo.session;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -43,6 +47,7 @@ public class UserSession extends ControllerBase {
    private List<FavoriteParameter> favoriteParameters = new ArrayList<FavoriteParameter>();
 
    private static final String FAV_PARAM_KEY_PREFIX = "fav.param.";
+   private static final String REPORT_KEY_PREFIX = "report.";
 
    @PostConstruct
    public void init() {
@@ -166,5 +171,106 @@ public class UserSession extends ControllerBase {
 
    public User getUser() {
       return user;
+   }
+
+   private Map<String, String> getUserProperties(User user) {
+      Map<String, String> userProperties = new HashMap<String, String>();
+      for (UserProperty prop : user.getProperties()) {
+         userProperties.put(prop.getName(), prop.getValue());
+      }
+      return userProperties;
+   }
+
+   public Map<String, String> getReportProperties(String userName, String reportId) {
+      User user = testService.getFullUser(userName);
+      if (user == null) {
+         return null;
+      } else {
+         return getReportProperties(getUserProperties(user), reportId);
+      }
+   }
+
+   private List<String> getAllReportIds(Map<String, String> userProperties) {
+      Set<String> rset = new HashSet<String>();
+      List<String> r = new ArrayList<String>();
+      for (Entry<String, String> entry : userProperties.entrySet()) {
+         if (entry.getKey().startsWith(REPORT_KEY_PREFIX)) {
+            String tmpkey = entry.getKey().substring(REPORT_KEY_PREFIX.length());
+            int dotidx = tmpkey.indexOf(".");
+            if (dotidx == -1) {
+               rset.add(tmpkey);
+            } else {
+               rset.add(tmpkey.substring(0, dotidx));
+            }
+         }
+      }
+      r.addAll(rset);
+      return r;
+   }
+
+   public List<String> getAllReportIds() {
+      return getAllReportIds(userProperties);
+   }
+
+   public void removeReport(String reportId) {
+      try {
+         String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
+         Set<String> keysToRemove = new HashSet<String>();
+         for (Entry<String, String> entry : userProperties.entrySet()) {
+            if (entry.getKey().startsWith(reportPrefix)) {
+               keysToRemove.add(entry.getKey());
+            }
+         }
+         testService.multiUpdateProperties(getUser(), keysToRemove, Collections.<String, String> emptyMap());
+         // update userProperties collection if this didn't throw any exception
+         for (String keyToRemove : keysToRemove) {
+            userProperties.remove(keyToRemove);
+         }
+      } catch (ServiceException e) {
+         log.error("Error while removing report " + reportId, e);
+         addMessageFor(e);
+      }
+   }
+
+   public void setReportProperties(String reportId, Map<String, String> props) {
+      try {
+         String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
+         Set<String> keysToRemove = new HashSet<String>();
+         Map<String, String> keysToAdd = new HashMap<String, String>();
+         for (Entry<String, String> entry : userProperties.entrySet()) {
+            if (entry.getKey().startsWith(reportPrefix)) {
+               keysToRemove.add(entry.getKey());
+            }
+         }
+         for (Entry<String, String> entry : props.entrySet()) {
+            String translatedKey = reportPrefix + entry.getKey();
+            keysToRemove.remove(translatedKey); // don't remove this, just update
+            keysToAdd.put(translatedKey, entry.getValue());
+         }
+         testService.multiUpdateProperties(getUser(), keysToRemove, keysToAdd);
+         // update userProperties collection if this didn't throw any exception
+         for (String keyToRemove : keysToRemove) {
+            userProperties.remove(keyToRemove);
+         }
+         userProperties.putAll(keysToAdd);
+      } catch (ServiceException e) {
+         log.error("Error while setting properties for report " + reportId, e);
+         addMessageFor(e);
+      }
+   }
+
+   public Map<String, String> getReportProperties(String reportId) {
+      return getReportProperties(userProperties, reportId);
+   }
+
+   private Map<String, String> getReportProperties(Map<String, String> userProperties, String reportId) {
+      String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
+      Map<String, String> reportProperties = new HashMap<String, String>();
+      for (Entry<String, String> entry : userProperties.entrySet()) {
+         if (entry.getKey().startsWith(reportPrefix)) {
+            reportProperties.put(entry.getKey().substring(reportPrefix.length()), entry.getValue());
+         }
+      }
+      return reportProperties;
    }
 }

@@ -156,7 +156,11 @@ public abstract class ExecutionSort implements Comparator<TestExecution>, Serial
 
       @Override
       protected Long convert(String str) {
-         return new Long(str);
+         try {
+            return new Long(str);
+         } catch (Exception e) {
+            return -1L;
+         }
       }
    }
 
@@ -168,7 +172,11 @@ public abstract class ExecutionSort implements Comparator<TestExecution>, Serial
 
       @Override
       protected Double convert(String str) {
-         return new Double(str);
+         try {
+            return new Double(str);
+         } catch (Exception e) {
+            return Double.NaN;
+         }
       }
    }
 

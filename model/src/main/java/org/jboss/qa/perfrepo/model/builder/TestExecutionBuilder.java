@@ -76,6 +76,17 @@ public class TestExecutionBuilder {
    }
 
    /**
+    * Set execution comment.
+    * 
+    * @param comment
+    * @return this {@link TestExecutionBuilder}
+    */
+   public TestExecutionBuilder comment(String comment) {
+      testExecution.setComment(comment);
+      return this;
+   }
+
+   /**
     * Set locked to false
     * 
     * @param name

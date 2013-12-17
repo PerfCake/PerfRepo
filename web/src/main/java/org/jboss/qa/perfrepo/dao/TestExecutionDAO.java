@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Named;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -40,6 +39,7 @@ import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.SortType;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
@@ -127,15 +127,15 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    }
 
    public List<TestExecution> findByTestAndJob(Long testId, Long jobId) {
-	  Test test = new Test();
-	  test.setId(testId);
-	  CriteriaQuery<TestExecution> criteria = createCriteria();
-	  Root<TestExecution> root = criteria.from(TestExecution.class);
-	  criteria.select(root);
-	  CriteriaBuilder cb = criteriaBuilder();
-	  Predicate p = cb.and(cb.equal(root.get("test"), test), cb.equal(root.get("jobId"), jobId));
-	  criteria.where(p);
-	  return  query(criteria).getResultList();
+      Test test = new Test();
+      test.setId(testId);
+      CriteriaQuery<TestExecution> criteria = createCriteria();
+      Root<TestExecution> root = criteria.from(TestExecution.class);
+      criteria.select(root);
+      CriteriaBuilder cb = criteriaBuilder();
+      Predicate p = cb.and(cb.equal(root.get("test"), test), cb.equal(root.get("jobId"), jobId));
+      criteria.where(p);
+      return query(criteria).getResultList();
    }
 
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, TestExecutionParameterDAO paramDAO) {
@@ -241,10 +241,18 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          for (TestExecution exec : r) {
             List<TestExecutionParameter> paramListForExec = paramsByExecId.get(exec.getId());
             exec.setParameters(paramListForExec == null ? Collections.<TestExecutionParameter> emptyList() : paramListForExec);
+            exec.setTestExecutionTags(EntityUtil.clone(exec.getTestExecutionTags()));
+            for (TestExecutionTag tet : exec.getTestExecutionTags()) {
+               tet.setTag(tet.getTag().clone());
+            }
          }
       } else {
          for (TestExecution exec : r) {
             exec.setParameters(Collections.<TestExecutionParameter> emptyList());
+            exec.setTestExecutionTags(EntityUtil.clone(exec.getTestExecutionTags()));
+            for (TestExecutionTag tet : exec.getTestExecutionTags()) {
+               tet.setTag(tet.getTag().clone());
+            }
          }
       }
       return r;
@@ -255,7 +263,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param request
     * @return All
     */
-   public List<DataPoint> searchValues(Long testId, String metricName, String paramName, List<String> tagList) {
+   public List<DataPoint> searchValues(Long testId, String metricName, String paramName, List<String> tagList, SortType sort, int limitSize) {
       boolean useTags = tagList != null && !tagList.isEmpty();
       CriteriaBuilder cb = criteriaBuilder();
       CriteriaQuery<DataPoint> criteria = cb.createQuery(DataPoint.class);
@@ -264,7 +272,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       // test joined via test exec.
       Join<TestExecution, Test> rTest_Exec = rExec.join("test");
       // test execution parameters
-      Join<TestExecution, TestExecutionParameter> rParam = rExec.join("parameters");
+      Join<TestExecution, TestExecutionParameter> rParam = sort.needsParam() ? rParam = rExec.join("parameters") : null;
       // values
       Join<TestExecution, Value> rValue = rExec.join("values");
       // metrics
@@ -282,24 +290,77 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       }
 
       Predicate pMetricNameFixed = cb.equal(rMetric.get("name"), cb.parameter(String.class, "metricName"));
-      Predicate pParameterNameFixed = cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName"));
+      Predicate pParameterNameFixed = sort.needsParam() ? cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName")) : null;
       Predicate pTestFixed = cb.equal(rTest_Exec.get("id"), cb.parameter(Long.class, "testId"));
       Predicate pMetricFromSameTest = cb.equal(rTest_Metric.get("id"), rTest_Exec.get("id"));
-
-      criteria.where(cb.and(pMetricNameFixed, pParameterNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
-      criteria.select(cb.construct(DataPoint.class, rParam.get("value"), rValue.get("resultValue"), rExec.get("id")));
-      criteria.groupBy(rParam.get("value"), rValue.get("resultValue"), rExec.get("id"));
+      switch (sort) {
+      case EXEC_DATE:
+      default:
+         criteria.select(cb.construct(DataPoint.class, rExec.get("started"), rValue.get("resultValue"), rExec.get("id")));
+         criteria.where(cb.and(pMetricNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
+         criteria.groupBy(rValue.get("resultValue"), rExec.get("id"));
+         criteria.orderBy(cb.desc(rExec.get("started")));
+         break;
+      case EXEC_PARAM_NUMBER:
+         criteria.select(cb.construct(DataPoint.class, cb.function("TO_NUMBER", Long.class, rParam.get("value"), cb.literal("0000000000000000000")),
+               rValue.get("resultValue"), rExec.get("id")));
+         Predicate pValueNumeric = cb.isTrue(cb.function("perfrepo_regexp", Boolean.class, rParam.get("value"), cb.literal("^[0-9]+$")));
+         criteria.where(cb.and(pMetricNameFixed, pParameterNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest, pValueNumeric));
+         criteria.groupBy(rParam.get("value"), rValue.get("resultValue"), rExec.get("id"));
+         criteria.orderBy(cb.desc(cb.function("TO_NUMBER", Long.class, rParam.get("value"), cb.literal("0000000000000000000"))));
+         break;
+      case EXEC_PARAM_STRING:
+         criteria.select(cb.construct(DataPoint.class, rParam.get("value"), rValue.get("resultValue"), rExec.get("id")));
+         criteria.where(cb.and(pMetricNameFixed, pParameterNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
+         criteria.groupBy(rParam.get("value"), rValue.get("resultValue"), rExec.get("id"));
+         criteria.orderBy(cb.desc(rParam.get("value")));
+         break;
+      }
       criteria.having(pHavingAllTagsPresent);
-      criteria.orderBy(cb.asc(rParam.get("value")));
 
       TypedQuery<DataPoint> query = query(criteria);
       query.setParameter("testId", testId);
       query.setParameter("metricName", metricName);
-      query.setParameter("paramName", paramName);
+      if (sort.needsParam()) {
+         query.setParameter("paramName", paramName);
+      }
       if (useTags) {
          query.setParameter("tagList", tagList);
          query.setParameter("tagListSize", new Long(tagList.size()));
       }
+      query.setMaxResults(limitSize);
       return query.getResultList();
+   }
+
+   public Double getValueForMetric(Long execId, String metricName) {
+      CriteriaBuilder cb = criteriaBuilder();
+      CriteriaQuery<Double> criteria = cb.createQuery(Double.class);
+      // test executions
+      Root<TestExecution> rExec = criteria.from(TestExecution.class);
+      // test joined via test exec.
+      Join<TestExecution, Test> rTest_Exec = rExec.join("test");
+      // values
+      Join<TestExecution, Value> rValue = rExec.join("values");
+      // metrics
+      Join<Value, Metric> rMetric = rValue.join("metric");
+      // test joined via metric
+      Join<Metric, Test> rTest_Metric = rMetric.join("testMetrics").join("test");
+
+      Predicate pMetricNameFixed = cb.equal(rMetric.get("name"), cb.parameter(String.class, "metricName"));
+      Predicate pExecFixed = cb.equal(rExec.get("id"), cb.parameter(Long.class, "execId"));
+      Predicate pMetricFromSameTest = cb.equal(rTest_Metric.get("id"), rTest_Exec.get("id"));
+      criteria.multiselect(rValue.get("resultValue"));
+      criteria.where(cb.and(pMetricNameFixed, pExecFixed, pMetricFromSameTest));
+
+      TypedQuery<Double> query = query(criteria);
+      query.setParameter("execId", execId);
+      query.setParameter("metricName", metricName);
+
+      List<Double> r = query.getResultList();
+      if (r.isEmpty()) {
+         return null;
+      } else {
+         return r.get(0);
+      }
    }
 }

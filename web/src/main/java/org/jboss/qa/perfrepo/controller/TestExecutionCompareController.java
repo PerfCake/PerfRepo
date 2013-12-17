@@ -29,7 +29,7 @@ import javax.inject.Named;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
-import org.richfaces.component.SortOrder;
+import org.richfaces.model.SortOrder;
 
 /**
  * 

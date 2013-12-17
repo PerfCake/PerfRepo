@@ -50,18 +50,138 @@ audio,canvas,video {
 }
 
 audio
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 :not
+
+
+
+
+
+
+
+
+
+
  
+
+
+
+
+
+
+
+
+
+
 (
 [
 controls
 ]
+
+
+
+
+
+
+
+
+
+
  
+
+
+
+
+
+
+
+
+
+
 ){
 display
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 :
+
+
+
+
+
+
+
+
+
+
  
+
+
+
+
+
+
+
+
+
+
 none
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
@@ -3314,7 +3434,6 @@ button.btn.btn-mini,input[type="submit"].btn.btn-mini {
 /*.btn-group>.btn-small {
 	font-size: 11.9px
 }*/
-
 .btn-group>.btn-large {
 	font-size: 17.5px
 }
@@ -6082,18 +6201,17 @@ i[class^="icon-"] {
 	border-width: none !important;
 }
 
-.rf-tab-hdr-tabline-vis.rf-tab-hdr-tabline-top {   
-    height: 40px !important;  
-    background-image: none !important;
-    border-bottom: 1px solid #DDDDDD !important;
-    overflow: visible !important;
+.rf-tab-hdr-tabline-vis.rf-tab-hdr-tabline-top {
+	height: 40px !important;
+	background-image: none !important;
+	border-bottom: 1px solid #DDDDDD !important;
+	overflow: visible !important;
 }
 
 .rf-tab-hdr {
 	background: none !important;
 	border-radius: 5px 5px 0 0 !important;
 	border: none !important;
-
 	display: block;
 	height: 23px !important;
 	margin: 0 !important;
@@ -6101,12 +6219,11 @@ i[class^="icon-"] {
 	text-align: center !important;
 	text-decoration: none !important;
 	width: auto !important;
-	
 	line-height: 20px !important;
-    padding-bottom: 8px !important;
-    padding-top: 8px !important;
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
-    font-size: 14px !important;
+	padding-bottom: 8px !important;
+	padding-top: 8px !important;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+	font-size: 14px !important;
 }
 
 .rf-tab-hdr-tabline-vis {
@@ -6142,16 +6259,16 @@ i[class^="icon-"] {
 	border-style: solid !important;
 	border-width: 1px !important;
 	color: #555555 !important;
-	cursor: default !important;	
+	cursor: default !important;
 }
 
 .rf-tab-hdr-inact.rf-tab-hdr-top {
-    color: #2FA4E7;
-    background-image: none !important;
+	color: #2FA4E7;
+	background-image: none !important;
 }
 
 td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
-    background-color: #EEEEEE !important;
+	background-color: #EEEEEE !important;
 }
 
 .rf-tab-hdn {
@@ -6167,13 +6284,12 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
 
 .rf-tab-lbl {
 	border-radius: 4px 4px 0 0 !important;
-    line-height: 20px !important;
-    padding-bottom: 8px !important;
-    padding-top: 8px !important;
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
-    font-size: 14px !important;    
+	line-height: 20px !important;
+	padding-bottom: 8px !important;
+	padding-top: 8px !important;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+	font-size: 14px !important;
 }
-
 
 .rf-tab-cnt {
 	border: 0 !important;
@@ -6185,18 +6301,19 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
 }
 
 .compare_exec_baseline {
-   background: #FFF58A;	
+	background: #FFF58A;
 }
 
 .tetable_values td {
-   text-align: right;
+	text-align: right;
 }
 
 .paramcmp {
 	font-size: 0.8em;
 	width: 940px;
 }
-.smallpad td, .smallpad th {
+
+.smallpad td,.smallpad th {
 	padding: 3px;
 }
 
@@ -6205,19 +6322,20 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
 }
 
 .paramcmp tr.neq {
-   background: #FFE0E4;
+	background: #FFE0E4;
 }
 
-.paramcmp tbody>tr.neq:nth-child(odd)>td,.paramcmp tbody>tr.neq:nth-child(odd)>th {
-   background-color: #F2D3D7;
+.paramcmp tbody>tr.neq:nth-child(odd)>td,.paramcmp tbody>tr.neq:nth-child(odd)>th
+	{
+	background-color: #F2D3D7;
 }
 
 .table-hover tbody tr:hover>td,.table-hover tbody tr:hover>th {
-   background-color: #FFF58A;
+	background-color: #FFF58A;
 }
 
 .table-hover tbody tr.neq:hover>td,.table-hover tbody tr.neq:hover>th {
-   background-color: #FFF58A;
+	background-color: #FFF58A;
 }
 
 td.numvalcolumn {
@@ -6229,8 +6347,9 @@ table.editableEntryTable td {
 }
 
 table.editableEntryTable input {
-   width: inherit;
+	width: inherit;
 }
+
 table.searchResult {
 	width: 940px;
 }
@@ -6238,4 +6357,20 @@ table.searchResult {
 label.fav-param-label a {
 	text-decoration: none;
 	color: #555;
+}
+
+table.savedReports {
+	width: 940px;
+}
+
+table.pointDetails {
+	width: 620px;
+}
+
+table.pointDetails td.pointDetailsLabel {
+	font-weight: bold;
+}
+
+table.pointDetails td.pointDetailsValue {
+	font-weight: normal;
 }

@@ -155,6 +155,18 @@ public class TestExecutionController extends ControllerBase {
       editedTestExecution.setTestExecutionTags(b.build().getTestExecutionTags());
    }
 
+   public boolean isDisplayComment() {
+      return testExecution != null && testExecution.getComment() != null && !testExecution.getComment().equals("");
+   }
+
+   public String getDisplayedComment() {
+      if (isDisplayComment()) {
+         return testExecution.getComment();
+      } else {
+         return "&nbsp;";
+      }
+   }
+
    public void setEditedTestExecution() {
       this.editedTestExecution = testExecution.clone();
    }

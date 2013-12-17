@@ -30,7 +30,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.jboss.qa.perfrepo.service.ServiceException;
-import org.richfaces.component.SortOrder;
+import org.richfaces.model.SortOrder;
 
 /**
  * 

@@ -66,7 +66,17 @@ public class SearchController extends ControllerBase {
    private List<TestExecution> result;
    private List<String> paramColumns;
 
+   private String[] extraColumns = new String[0];
+
    private ExecutionSort sort;
+
+   public String[] getExtraColumns() {
+      return extraColumns;
+   }
+
+   public void setExtraColumns(String[] extraColumns) {
+      this.extraColumns = extraColumns;
+   }
 
    public List<String> getParamColumns() {
       return paramColumns;
@@ -195,5 +205,17 @@ public class SearchController extends ControllerBase {
             comparatorSession.add(id);
          }
       }
+   }
+
+   public boolean isDisplayColumn(String name) {
+      if (extraColumns == null) {
+         return false;
+      }
+      for (String ec : extraColumns) {
+         if (name.equals(ec)) {
+            return true;
+         }
+      }
+      return false;
    }
 }

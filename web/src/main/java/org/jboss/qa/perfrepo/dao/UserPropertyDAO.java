@@ -18,7 +18,14 @@ package org.jboss.qa.perfrepo.dao;
 import java.util.List;
 
 import javax.inject.Named;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
+import org.jboss.qa.perfrepo.model.User;
 import org.jboss.qa.perfrepo.model.UserProperty;
 
 /**
@@ -32,6 +39,29 @@ public class UserPropertyDAO extends DAO<UserProperty, Long> {
 
    public List<UserProperty> findByUserId(Long userId) {
       return findAllByProperty("user", userId);
+   }
+
+   public UserProperty findByUserIdAndName(Long userId, String name) {
+      CriteriaQuery<UserProperty> criteria = createCriteria();
+      CriteriaBuilder cb = criteriaBuilder();
+      Root<UserProperty> rUserProperty = criteria.from(UserProperty.class);
+      Join<UserProperty, User> rUser = rUserProperty.join("user");
+
+      Predicate pUser = cb.equal(rUser.get("id"), cb.parameter(Long.class, "userId"));
+      Predicate pName = cb.equal(rUserProperty.get("name"), cb.parameter(String.class, "name"));
+      criteria.select(rUserProperty);
+      criteria.where(cb.and(pUser, pName));
+
+      TypedQuery<UserProperty> query = query(criteria);
+      query.setParameter("userId", userId);
+      query.setParameter("name", name);
+
+      List<UserProperty> props = query.getResultList();
+      if (props.isEmpty()) {
+         return null;
+      } else {
+         return props.get(0);
+      }
    }
 
 }

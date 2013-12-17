@@ -49,11 +49,11 @@ public class Util {
 
    public static String displayValue(TestExecutionParameter param) {
       if (param == null) {
-         return null;
+         return "&nbsp;";
       }
       String value = param.getValue();
       if (value == null) {
-         return null;
+         return "&nbsp;";
       }
       if (value.startsWith("http://") || value.startsWith("https://")) {
          if (value.length() > 100) {
