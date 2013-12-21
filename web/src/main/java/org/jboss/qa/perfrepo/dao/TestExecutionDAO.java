@@ -298,7 +298,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       default:
          criteria.select(cb.construct(DataPoint.class, rExec.get("started"), rValue.get("resultValue"), rExec.get("id")));
          criteria.where(cb.and(pMetricNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
-         criteria.groupBy(rValue.get("resultValue"), rExec.get("id"));
+         criteria.groupBy(rValue.get("resultValue"), rExec.get("id"), rExec.get("started"));
          criteria.orderBy(cb.desc(rExec.get("started")));
          break;
       case EXEC_PARAM_NUMBER:
