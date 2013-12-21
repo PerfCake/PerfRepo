@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 
 /**
@@ -62,9 +63,9 @@ public class Util {
             return "<a href=\"" + value + "\">" + value + "</a>";
          }
       } else if (value.length() > 100) {
-         return "<a href=\"/repo/param/" + param.getId() + "\">" + value.substring(0, 96) + " ...</a>";
+         return "<a href=\"/repo/param/" + param.getId() + "\">" + StringEscapeUtils.escapeHtml(value.substring(0, 96)) + " ...</a>";
       } else {
-         return value;
+         return StringEscapeUtils.escapeHtml(value);
       }
    }
 
