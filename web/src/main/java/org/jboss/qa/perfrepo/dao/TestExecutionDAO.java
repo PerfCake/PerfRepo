@@ -258,6 +258,33 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       return r;
    }
 
+   public List<TestExecution> getTestExecutions(List<String> tags, List<String> testUIDs) {
+	   CriteriaQuery<TestExecution> criteria = createCriteria();
+	   CriteriaBuilder cb = criteriaBuilder();
+	   Root<TestExecution> rExec = criteria.from(TestExecution.class);
+       Join<TestExecution, Test> rTest = rExec.join("test");
+       Predicate pTestUID = rTest.<String> get("uid").in(cb.parameter(List.class, "testUID"));
+       Join<TestExecution, Tag> rTag = rExec.join("testExecutionTags").join("tag");
+       Predicate pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
+       Predicate pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
+	   criteria.select(rExec);
+	   criteria.where(cb.and(pTagNameInFixedList, pTestUID));
+	   criteria.having(pHavingAllTagsPresent);
+	   criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("locked"), rExec.get("started"), rExec.get("jobId"), rExec.get("comment"));
+	   TypedQuery<TestExecution> query = query(criteria);
+	   query.setParameter("testUID", testUIDs);
+       query.setParameter("tagList", tags);
+       query.setParameter("tagListSize", new Long(tags.size()));
+       List<TestExecution> result = EntityUtil.clone(query.getResultList());
+       for (TestExecution exec : result) {
+          TestExecutionDAO.fetchTest(exec);
+          TestExecutionDAO.fetchParameters(exec);
+          TestExecutionDAO.fetchTags(exec);
+          TestExecutionDAO.fetchValues(exec);
+       }
+       return result;
+   }
+
    /**
     * 
     * @param request

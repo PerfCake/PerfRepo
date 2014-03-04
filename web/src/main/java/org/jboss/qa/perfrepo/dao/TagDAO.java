@@ -18,8 +18,12 @@ package org.jboss.qa.perfrepo.dao;
 import java.util.List;
 
 import javax.inject.Named;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.jboss.qa.perfrepo.model.Tag;
+import org.jboss.qa.perfrepo.model.Test;
 
 /**
  * DAO for {@link Tag}
@@ -37,6 +41,15 @@ public class TagDAO extends DAO<Tag, Long> {
          return tags.get(0);
       }
       return null;
+   }
+
+   public List<Tag> findByPrefix(String prefix) {
+	   CriteriaQuery<Tag> criteria = createCriteria();
+	   Root<Tag> root = criteria.from(Tag.class);
+	   criteria.select(root);
+	   CriteriaBuilder cb = criteriaBuilder();
+	   criteria.where(cb.like(root.<String>get("name"), prefix + "%"));
+	   return findByCustomCriteria(criteria);
    }
 
 }

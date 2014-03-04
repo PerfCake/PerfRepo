@@ -161,6 +161,14 @@ public interface TestService extends Codes {
    public List<TestExecution> getFullTestExecutionsByTestAndJob(Long testId, Long jobId);
 
    /**
+    * Returns TestExecutions by tags and test uids
+    * @param tags
+    * @param testUIDs
+    * @return
+    */
+   public List<TestExecution> getTestExecutions(List<String> tags, List<String> testUIDs);
+
+   /**
     * Add metric to given test.
     * 
     * @param test
@@ -421,5 +429,26 @@ public interface TestService extends Codes {
     * @return All metrics for given testId
     */
    List<Metric> getAllSelectionMetrics(Long testId);
+
+   /**
+    * Returns test uids matching prefix
+    * @param prefix
+    * @return
+    */
+   public List<String> getTestsByPrefix(String prefix);
+
+   /**
+    * Returns tags matching prefix
+    * @param prefix
+    * @return
+    */
+   public List<String> getTagsByPrefix(String prefix);
+
+   /**
+    * Returns test by test uid
+    * @param uid
+    * @return
+    */
+   public Test getTestByUID(String uid);
 
 }

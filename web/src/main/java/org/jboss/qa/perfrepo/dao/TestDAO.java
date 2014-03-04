@@ -90,4 +90,26 @@ public class TestDAO extends DAO<Test, Long> {
       }
       return null;
    }
+
+   public Test betByUID(String uid) {
+	   CriteriaQuery<Test> criteria = createCriteria();
+	   Root<Test> root = criteria.from(Test.class);
+	   criteria.select(root);
+	   CriteriaBuilder cb = criteriaBuilder();
+	   criteria.where(cb.equal(root.get("uid"), uid));
+	   List<Test> tests = findByCustomCriteria(criteria);
+	   if (tests.size() > 0) {
+		   return tests.get(0);
+	   }
+	   return null;
+   }
+
+   public List<Test> findByUIDPrefix(String prefix) {
+	   CriteriaQuery<Test> criteria = createCriteria();
+	   Root<Test> root = criteria.from(Test.class);
+	   criteria.select(root);
+	   CriteriaBuilder cb = criteriaBuilder();
+	   criteria.where(cb.like(root.<String>get("uid"), prefix + "%"));
+	   return findByCustomCriteria(criteria);
+   }
 }

@@ -1,0 +1,54 @@
+<rich:popupPanel id="tagsPopup" modal="true" autosized="true" resizeable="false" domElementAttachment="form" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" onshow="#{rich:component('tagfocus')}.applyFocus();">
+	<f:facet name="header">
+		<h:outputText value="Tags" />
+	</f:facet>
+	<h:form id="tagsForm" class="form-horizontal well-small">
+		<rich:focus id="tagfocus"/>
+		<fieldset>
+			<h5>Add new tag</h5>			
+			<rich:autocomplete id="addTag" tabindex="1" styleClass="input-text" mode="cachedAjax" tokens=" " minChars="2" autofill="false"
+            		autocompleteMethod="#{testGroupReportController.autocompleteTags}" value="#{testGroupReportController.currentTag}" />
+           	<a4j:commandButton styleClass="btn btn-success btn-small" action="#{testGroupReportController.addTag()}" value="Add Tag" alt="Add Tag" title="Add Tag"
+					render="@form :tagsForm" />
+			
+			<br/><br/>
+			<h5>Tags:</h5>
+			<table id="values" class="table table-bordered smallpad">
+				<thead>
+					<tr>
+						<th style="text-align: center; vertical-align: middle">Tag</th>
+						<th style="text-align: center; vertical-align: middle">Alias</th>
+						<th style="text-align: center; vertical-align: middle"> </th>
+					</tr>						
+				</thead>
+				<tbody>
+					<ui:repeat value="#{testGroupReportController.tagsCopy}" var="tag" varStatus="status">
+						<tr>
+							<td style="text-align: left; vertical-align: middle">
+							<ui:repeat value="#{testGroupReportController.parseTags(tag)}" var="tagLocal">
+								<span class="badge badge-success">#{tagLocal}</span>
+							</ui:repeat>
+							</td>
+							<td><rich:inplaceInput layout="block" value="#{testGroupReportController.tagAliasCopy[tag]}" id="tagInplace#{status.index}"/></td>
+							<td style="text-align: left; vertical-align: middle"><a4j:commandLink action="#{testGroupReportController.removeTag(tag)}" render="@form :tagsForm" alt="Delete Tag" title="Delete Tag"><i class="icon-remove"/></a4j:commandLink></td>
+						</tr>
+				    </ui:repeat>
+				</tbody>
+			</table>
+			<div style="text-align:right">				
+				<a4j:commandButton styleClass="btn btn-primary btn-small" action="#{testGroupReportController.storeTags()}" value="OK" alt="OK" title="OK"
+					oncomplete="#{rich:component('tagsPopup')}.hide()" render="@form :testGroupReport :testGroupReportTable" />
+				<a4j:commandButton styleClass="btn btn-primary btn-small" action="#{testGroupReportController.clearTagsCopy()}" oncomplete="#{rich:component('tagsPopup')}.hide()" value="#{strings.cancel}" alt="#{strings.cancel}" title="#{strings.cancel}"/>
+			</div>
+		</fieldset>
+		<rich:hotKey key="enter" handler="#{testGroupReportController.addTag()}" />
+		<rich:hotKey key="Esc">
+        	<rich:componentControl target="tagsPopup" operation="hide" />
+		</rich:hotKey>
+	
+	</h:form>
+
+</rich:popupPanel>
+
+

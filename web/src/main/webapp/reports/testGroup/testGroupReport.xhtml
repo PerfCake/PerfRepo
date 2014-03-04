@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:r="http://richfaces.org"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:body>
+	<f:metadata>
+		<f:viewParam name="reportId" value="#{testGroupReportController.reportId}" />
+	</f:metadata>
+	<ui:composition template="/layout/template.xhtml">	
+		<ui:define name="title">Test group report</ui:define>
+		<ui:define name="content">
+		<ui:include src="/reports/testGroup/tests-popup.xhtml" />
+		<ui:include src="/reports/testGroup/tags-popup.xhtml" />
+		<ui:include src="/reports/testGroup/compare-popup.xhtml" />
+		<ui:include src="/reports/testGroup/copy-popup.xhtml" />
+			<h:form id="testGroupReport">
+			<h4>#{testGroupReportController.reportName}</h4><h6>(#{testGroupReportController.reportId})</h6>
+			<div id="control" style="text-align: right;line-height: 30px;">
+				<span style="margin:5px;"><a4j:commandLink styleClass="text-success" oncomplete="#{rich:component('copyPopup')}.show();" alt="Save New Report" title="Save New Report"><i class="icon-copy"/>Save as</a4j:commandLink></span>
+				<span style="margin:5px;font-weight: bold;"><a4j:commandLink styleClass="text-success" render=":messagesPanel" action="#{testGroupReportController.saveReport()}" alt="Save Report" title="Save Report"><i class="icon-save"/>Save</a4j:commandLink></span>				
+			</div>
+			<div id="control" style="text-align: right;line-height: 30px;">
+				<span style="margin:5px;"><a4j:commandLink render=":testsPopup" oncomplete="#{rich:component('testsPopup')}.show();" alt="Tests" title="Tests"><i class="icon-list"/>Tests</a4j:commandLink></span>
+				<span style="margin:5px;"><a4j:commandLink render=":tagsPopup" oncomplete="#{rich:component('tagsPopup')}.show();" alt="Tags" title="Tags"><i class="icon-tags"/>Tags</a4j:commandLink></span>
+				<span style="margin:5px;"><a4j:commandLink render=":comparePopup" oncomplete="#{rich:component('comparePopup')}.show();" alt="Compare" title="Compare"><i class="icon-exchange"/>Compare</a4j:commandLink></span>
+				<span style="margin:5px;"><a4j:commandLink oncomplete="#" alt="Threshold" title="Threshold"><i class="icon-certificate"/>Threshold</a4j:commandLink></span>
+			</div>			
+			<table id="testGroupReportTable" class="table table-bordered smallpad">
+					<thead>
+						<tr>
+							<th style="text-align: center; vertical-align: middle" rowspan="2">Test</th>						
+							<ui:repeat value="#{testGroupReportController.tags}" var="column">
+								<th style="text-align: center; vertical-align: middle">#{column}</th>
+							</ui:repeat>
+							<ui:repeat value="#{testGroupReportController.comparisonValues}" var="comparisonKey">
+								<th>#{comparisonKey}</th>	
+						    </ui:repeat>							
+						</tr>						
+					</thead>
+					<tbody>
+						<ui:repeat value="#{testGroupReportController.tests}" var="test">
+							<tr>
+								<td>#{test}</td>								
+								<ui:repeat value="#{testGroupReportController.tags}" var="column">
+									<td>#{testGroupReportController.format(testGroupReportController.getValue(test, column).bestValue.resultValue)}</td>	
+								</ui:repeat>
+								<ui:repeat value="#{testGroupReportController.comparisonValues}" var="comparisonKey">
+									<ui:param name="value" value="#{testGroupReportController.compare(test, comparisonKey)}" />
+									<td><span style="color: #{testGroupReportController.getStyle(value)}">#{testGroupReportController.format(value)} %</span></td>	
+								</ui:repeat>														
+							</tr>
+						</ui:repeat>
+					</tbody>
+				</table>
+				<rich:panel id="graph">					
+			        <r:mediaOutput element="img" cacheable="false" session="true" createContent="#{testGroupChart.drawChart}" mimeType="image/gif" value="#{testGroupReportController.dataset}"/>
+				</rich:panel>			
+			</h:form>		
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

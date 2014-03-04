@@ -76,6 +76,12 @@
    </rule>
 
    <rule>
+      <from>^/reports/testGroupReport/([\w_-]+)$</from>
+      <to type="forward" last="true">/reports/testGroup/testGroupReport.jsf?reportId=$1</to>
+      <set name="formActionURL">/reports/testGroupReport/$1</set>
+   </rule>
+
+   <rule>
       <!-- /param/{paramId} -->
       <from>^/param/([\d]+)$</from>
       <to type="forward" last="true">/testExecutionParameter/show.jsf?paramId=$1</to>

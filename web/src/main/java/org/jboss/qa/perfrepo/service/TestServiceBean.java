@@ -16,6 +16,7 @@
 package org.jboss.qa.perfrepo.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -230,6 +231,18 @@ public class TestServiceBean implements TestService {
       }
       List<TestExecution> result = testExecutionDAO.searchTestExecutions(search, testExecutionParameterDAO);
       return result;
+   }
+
+   public Test getTestByUID(String uid) {
+	   return testDAO.betByUID(uid);
+   }
+
+   public List<TestExecution> getTestExecutions(List<String> tags, List<String> testUIDs) {
+	   List<TestExecution> result = new ArrayList<TestExecution>();
+	   for (String tag : tags) {
+		   result.addAll(testExecutionDAO.getTestExecutions(Arrays.asList(tag.split(" ")), testUIDs));
+	   }
+	   return result;
    }
 
    public List<TestExecution> searchTestExecutionsGroupedByJobId(TestExecutionSearchTO search) {
@@ -1003,6 +1016,25 @@ public class TestServiceBean implements TestService {
          throw serviceException(NOT_YOU, "Only logged-in user can change his own properties");
       }
       return oldUser;
+   }
+
+   public List<String> getTestsByPrefix(String prefix) {
+	   List<Test> tests = testDAO.findByUIDPrefix(prefix);
+	   List<String> testuids =  new ArrayList<String>();
+	   for (Test test : tests) {
+		   if (userInfo.isUserInRole(test.getGroupId())) {
+			   testuids.add(test.getUid());
+		   }
+	   }
+	   return testuids;
+   }
+
+   public List<String> getTagsByPrefix(String prefix) {
+	   List<String> tags = new ArrayList<String>();
+	   for (Tag tag : tagDAO.findByPrefix(prefix)) {
+		   tags.add(tag.getName());
+	   }
+	   return tags;
    }
 
 }

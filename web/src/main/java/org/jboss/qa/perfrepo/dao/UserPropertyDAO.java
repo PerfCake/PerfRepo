@@ -64,4 +64,31 @@ public class UserPropertyDAO extends DAO<UserProperty, Long> {
       }
    }
 
+   public List<UserProperty> findByUserName(String userName) {
+	   CriteriaQuery<UserProperty> criteria = createCriteria();
+	   CriteriaBuilder cb = criteriaBuilder();
+	   Root<UserProperty> rUserProperty = criteria.from(UserProperty.class);
+	   Join<UserProperty, User> rUser = rUserProperty.join("user");
+	   Predicate pUser = cb.equal(rUser.get("username"), cb.parameter(String.class, "username"));
+	   criteria.select(rUserProperty);
+	   criteria.where(pUser);
+	   TypedQuery<UserProperty> query = query(criteria);
+	   query.setParameter("username", userName);
+       return query.getResultList();
+   }
+
+   public List<UserProperty> findByUserName(String userName, String propertyPrefix) {
+	   CriteriaQuery<UserProperty> criteria = createCriteria();
+	   CriteriaBuilder cb = criteriaBuilder();
+	   Root<UserProperty> rUserProperty = criteria.from(UserProperty.class);
+	   Join<UserProperty, User> rUser = rUserProperty.join("user");
+	   Predicate pUser = cb.equal(rUser.get("username"), cb.parameter(String.class, "username"));
+	   Predicate pName = cb.like(rUserProperty.<String>get("name"), cb.parameter(String.class, "name"));
+	   criteria.select(rUserProperty);
+	   criteria.where(cb.and(pUser, pName));
+	   TypedQuery<UserProperty> query = query(criteria);
+	   query.setParameter("username", userName);
+	   query.setParameter("name", propertyPrefix+"%");
+       return query.getResultList();
+   }
 }

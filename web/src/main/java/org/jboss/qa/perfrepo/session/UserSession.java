@@ -47,7 +47,7 @@ public class UserSession extends ControllerBase {
    private List<FavoriteParameter> favoriteParameters = new ArrayList<FavoriteParameter>();
 
    private static final String FAV_PARAM_KEY_PREFIX = "fav.param.";
-   private static final String REPORT_KEY_PREFIX = "report.";
+   public static final String REPORT_KEY_PREFIX = "report.";
 
    @PostConstruct
    public void init() {

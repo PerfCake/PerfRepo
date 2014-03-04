@@ -321,7 +321,7 @@ body {
 	margin: 0;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 14px;
-	line-height: 20px;
+	line-height: 16px;
 	color: #555;
 	background-color: #fff
 }
@@ -1080,7 +1080,7 @@ pre code {
 }
 
 form {
-	margin: 0 0 20px
+	--margin: 0 0 20px
 }
 
 fieldset {
@@ -1107,9 +1107,9 @@ legend small {
 }
 
 label,input,button,select,textarea {
-	font-size: 14px;
+	font-size: 12px;
 	font-weight: normal;
-	line-height: 20px
+	line-height: 16px
 }
 
 input,button,select,textarea {
@@ -1124,11 +1124,11 @@ label {
 select,textarea,input[type="text"],input[type="password"],input[type="datetime"],input[type="datetime-local"],input[type="date"],input[type="month"],input[type="time"],input[type="week"],input[type="number"],input[type="email"],input[type="url"],input[type="search"],input[type="tel"],input[type="color"],.uneditable-input
 	{
 	display: inline-block;
-	height: 20px;
+	height: 16px;
 	padding: 4px 6px;
 	margin-bottom: 10px;
-	font-size: 14px;
-	line-height: 20px;
+	font-size: 12px;
+	line-height: 16px;
 	color: #555;
 	vertical-align: middle;
 	-webkit-border-radius: 4px;
@@ -1785,7 +1785,7 @@ legend+.control-group {
 }
 
 .form-horizontal .control-group {
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 	*zoom: 1
 }
 
@@ -2089,11 +2089,16 @@ table td[class*="span"],table th[class*="span"],.row-fluid table td[class*="span
 	background-color: #91d7ee
 }
 
+a [class^="icon-"],[class*=" icon-"] {
+    text-decoration: none;
+}
+
 [class^="icon-"],[class*=" icon-"] {
 	display: inline-block;
 	width: 14px;
 	height: 14px;
 	margin-top: 1px;
+	margin-right: 3px;
 	*margin-right: .3em;
 	line-height: 14px;
 	vertical-align: text-top;
@@ -6373,4 +6378,15 @@ table.pointDetails td.pointDetailsLabel {
 
 table.pointDetails td.pointDetailsValue {
 	font-weight: normal;
+}
+
+.rf-au {
+    border-style: none !important;
+    display: inline !important;
+}
+
+input.rf-au-inp {
+	width:206px !important;
+	border: 1px solid #CCCCCC !important;
+	padding: 4px !important;
 }
