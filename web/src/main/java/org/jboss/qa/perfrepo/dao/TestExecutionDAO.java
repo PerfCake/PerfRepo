@@ -141,7 +141,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, TestExecutionParameterDAO paramDAO) {
       CriteriaQuery<TestExecution> criteria = createCriteria();
       CriteriaBuilder cb = criteriaBuilder();
-      List<String> tags = Util.parseTags(search.getTags());
+      List<String> tags = Util.parseTags(search.getTags() !=null ? search.getTags().toLowerCase() : "");
 
       Root<TestExecution> rExec = criteria.from(TestExecution.class);
 
@@ -162,7 +162,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       }
       if (!tags.isEmpty()) {
          Join<TestExecution, Tag> rTag = rExec.join("testExecutionTags").join("tag");
-         pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
+         pTagNameInFixedList = cb.lower(rTag.<String>get("name")).in(cb.parameter(List.class, "tagList"));
          pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
       }
       if (search.getTestName() != null && !"".equals(search.getTestName())) {
