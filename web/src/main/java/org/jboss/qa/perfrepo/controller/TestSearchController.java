@@ -97,6 +97,10 @@ public class TestSearchController extends ControllerBase {
       return null;
    }
 
+   public List<String> autocompleteTest(String test) {
+		return testService.getTestsByPrefix(test);
+   }
+
    private Test removeById(Long id) {
       for (Test test : result) {
          if (test.getId().equals(id)) {

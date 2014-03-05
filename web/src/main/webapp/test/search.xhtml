@@ -21,7 +21,8 @@
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testUID">#{strings['page.testSearch.prop.testuid']}</h:outputLabel>
 						<div class="controls">
-							<h:inputText class="input-xlarge" id="testUID" value="#{testSearchController.criteria.uid}" />
+							<rich:autocomplete id="testUID" styleClass="input-xlarge" mode="cachedAjax" minChars="2" autofill="false"
+							   autocompleteMethod="#{testSearchController.autocompleteTest}" value="#{testSearchController.criteria.uid}" />
 						</div>
 					</div>
 

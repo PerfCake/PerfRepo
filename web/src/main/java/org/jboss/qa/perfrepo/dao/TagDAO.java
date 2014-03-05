@@ -23,7 +23,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import org.jboss.qa.perfrepo.model.Tag;
-import org.jboss.qa.perfrepo.model.Test;
 
 /**
  * DAO for {@link Tag}
@@ -48,7 +47,7 @@ public class TagDAO extends DAO<Tag, Long> {
 	   Root<Tag> root = criteria.from(Tag.class);
 	   criteria.select(root);
 	   CriteriaBuilder cb = criteriaBuilder();
-	   criteria.where(cb.like(root.<String>get("name"), prefix + "%"));
+	   criteria.where(cb.like(cb.lower(root.<String>get("name")), prefix.toLowerCase() + "%"));
 	   return findByCustomCriteria(criteria);
    }
 

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:r="http://richfaces.org">
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:r="http://richfaces.org" xmlns:rich="http://richfaces.org/rich">
 <h:body>
 	<f:metadata>
-		<f:event type="preRenderView" listener="#{searchController.preRender}" />
+		<f:event type="preRenderView" listener="#{testExecutionSearchController.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="compareAddAll">
 			<li><r:commandLink value=" " alt="Add all current results" title="Add all current results"
-					action="#{searchController.addAllCurrentResultsToComparison()}" render="compareMenuItem :messagesPanel">
+					action="#{testExecutionSearchController.addAllCurrentResultsToComparison()}" render="compareMenuItem :messagesPanel">
 					<i class="icon-copy"></i>
 				</r:commandLink></li>
 		</ui:define>
@@ -23,54 +23,56 @@
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testName">Test Name</h:outputLabel>
 						<div class="controls">
-							<h:inputText type="text" class="input-xlarge" id="testName" value="#{searchController.criteria.testName}" />
+							<h:inputText type="text" class="input-xlarge" id="testName" value="#{testExecutionSearchController.criteria.testName}" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testUID">Test UID</h:outputLabel>
 						<div class="controls">
-							<h:inputText class="input-xlarge" id="testUID" value="#{searchController.criteria.testUID}" />
+						    <rich:autocomplete id="testUID" styleClass="input-xlarge" mode="cachedAjax" minChars="2" autofill="false"
+							   autocompleteMethod="#{testExecutionSearchController.autocompleteTest}" value="#{testExecutionSearchController.criteria.testUID}" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testStartedFrom">Test started from</h:outputLabel>
 						<div class="controls">
-							<r:calendar value="#{searchController.criteria.startedFrom}" datePattern="yyyy-MM-dd HH:mm" id="testStartedFrom" />
+							<r:calendar value="#{testExecutionSearchController.criteria.startedFrom}" datePattern="yyyy-MM-dd HH:mm" id="testStartedFrom" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="testStartedTo">Test started to</h:outputLabel>
 						<div class="controls">
-							<r:calendar value="#{searchController.criteria.startedTo}" datePattern="yyyy-MM-dd HH:mm" id="testStartedTo" />
+							<r:calendar value="#{testExecutionSearchController.criteria.startedTo}" datePattern="yyyy-MM-dd HH:mm" id="testStartedTo" />
 						</div>
 					</div>
 
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="tags">Tags</h:outputLabel>
 						<div class="controls">
-							<h:inputText class="input-xlarge" id="tags" value="#{searchController.criteria.tags}" />
+     						<rich:autocomplete id="tags" styleClass="input-xlarge" mode="cachedAjax" minChars="2" autofill="false" tokens=" "
+     						   autocompleteMethod="#{testExecutionSearchController.autocompleteTags}" value="#{testExecutionSearchController.criteria.tags}" />
 						</div>
 					</div>
 
-					<h:panelGroup rendered="#{searchController.criteria.parameters.isEmpty()}">
+					<h:panelGroup rendered="#{testExecutionSearchController.criteria.parameters.isEmpty()}">
 						<div class="control-group">
 							<h:outputLabel class="control-label">Parameters</h:outputLabel>
 							<div class="controls">
 								<r:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Add parameter criteria" title="Add parameter criteria"
-									action="#{searchController.addParameterCriteria}">
+									action="#{testExecutionSearchController.addParameterCriteria}">
 									<i class="icon-plus"></i>
 								</r:commandLink>
 							</div>
 						</div>
 					</h:panelGroup>
-					<h:panelGroup rendered="#{!searchController.criteria.parameters.isEmpty()}">
+					<h:panelGroup rendered="#{!testExecutionSearchController.criteria.parameters.isEmpty()}">
 						<div class="control-group">
 							<h:outputLabel class="control-label">Parameters</h:outputLabel>
 							<div class="controls">
-								<h:dataTable value="#{searchController.criteria.parameters}" var="item">
+								<h:dataTable value="#{testExecutionSearchController.criteria.parameters}" var="item">
 									<h:column>
 										<f:facet name="header">Name</f:facet>
 										<h:inputText class="input-xlarge" value="#{item.name}" />
@@ -82,12 +84,12 @@
 									<h:column>
 										<f:facet name="header">
 											<r:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Add parameter criteria" title="Add parameter criteria"
-												action="#{searchController.addParameterCriteria}">
+												action="#{testExecutionSearchController.addParameterCriteria}">
 												<i class="icon-plus"></i>
 											</r:commandLink>
 										</f:facet>
 										<r:commandLink styleClass="btn btn-primary btn-small" render="@form" alt="Remove" title="Remove"
-											action="#{searchController.removeParameterCriteria(item)}">
+											action="#{testExecutionSearchController.removeParameterCriteria(item)}">
 											<i class="icon-trash"></i>
 										</r:commandLink>
 									</h:column>
@@ -98,7 +100,7 @@
 					<div class="control-group">
 						<h:outputLabel class="control-label" for="tags">Additional columns</h:outputLabel>
 						<div class="controls">
-							<h:selectManyListbox value="#{searchController.extraColumns}">
+							<h:selectManyListbox value="#{testExecutionSearchController.extraColumns}">
 								<f:selectItem itemValue="execId" itemLabel="Execution Id" />
 								<f:selectItem itemValue="tags" itemLabel="Tags" />
 							</h:selectManyListbox>
@@ -107,9 +109,9 @@
 				</fieldset>
 
 				<div class="form-actions">
-					<r:commandButton action="#{searchController.search}" value="Search" styleClass="btn btn-primary" alt="Search Test Execution" title="Search Test Execution"
+					<r:commandButton action="#{testExecutionSearchController.search}" value="Search" styleClass="btn btn-primary" alt="Search Test Execution" title="Search Test Execution"
 						render="@form :searchResult :messagesPanel">
-						<f:param name="testExecutionSearchTO" value="#{searchController.criteria}" />
+						<f:param name="testExecutionSearchTO" value="#{testExecutionSearchController.criteria}" />
 					</r:commandButton>
 				</div>
 			</h:form>
@@ -118,43 +120,43 @@
 				<table class="rf-dt searchResult">
 					<thead class="rf-dt-thd">
 						<tr class="rf-dt-shdr">
-							<c:if test="#{searchController.isDisplayColumn('execId')}">
-								<th class="rf-dt-shdr-c"><r:commandLink value="ID" render="@form :searchResult :messagesPanel" action="#{searchController.sortBy('id', false)}" /></th>
+							<c:if test="#{testExecutionSearchController.isDisplayColumn('execId')}">
+								<th class="rf-dt-shdr-c"><r:commandLink value="ID" render="@form :searchResult :messagesPanel" action="#{testExecutionSearchController.sortBy('id', false)}" /></th>
 							</c:if>
-							<th class="rf-dt-shdr-c"><r:commandLink value="Name" render="@form :searchResult :messagesPanel" action="#{searchController.sortBy('name', false)}" /></th>
+							<th class="rf-dt-shdr-c"><r:commandLink value="Name" render="@form :searchResult :messagesPanel" action="#{testExecutionSearchController.sortBy('name', false)}" /></th>
 							<th class="rf-dt-shdr-c"><r:commandLink value="Time" render="@form :searchResult :messagesPanel"
-									action="#{searchController.sortBy('started', false)}" /></th>
-							<c:if test="#{searchController.isDisplayColumn('tags')}">
+									action="#{testExecutionSearchController.sortBy('started', false)}" /></th>
+							<c:if test="#{testExecutionSearchController.isDisplayColumn('tags')}">
 								<th class="rf-dt-shdr-c">Tags</th>
 							</c:if>
-							<ui:repeat value="#{searchController.paramColumns}" var="item">
+							<ui:repeat value="#{testExecutionSearchController.paramColumns}" var="item">
 								<th class="rf-dt-shdr-c"><r:commandLink value="#{item}" render="@form :searchResult :messagesPanel"
-										action="#{searchController.sortBy(item, false)}" /> - <r:commandLink value="#" render="@form :searchResult :messagesPanel"
-										action="#{searchController.sortBy(item, true)}" /></th>
+										action="#{testExecutionSearchController.sortBy(item, false)}" /> - <r:commandLink value="#" render="@form :searchResult :messagesPanel"
+										action="#{testExecutionSearchController.sortBy(item, true)}" /></th>
 							</ui:repeat>
 							<th class="rf-dt-shdr-c">Commands</th>
 						</tr>
 					</thead>
 					<tbody class="rf-dt-b">
-						<ui:repeat value="#{searchController.result}" var="item">
+						<ui:repeat value="#{testExecutionSearchController.result}" var="item">
 							<tr class="rf-dt-r rf-dt-fst-r" id="line-#{item.id}">
-								<c:if test="#{searchController.isDisplayColumn('execId')}">
+								<c:if test="#{testExecutionSearchController.isDisplayColumn('execId')}">
 									<td class="rf-dt-c">#{item.id}</td>
 								</c:if>
 								<td class="rf-dt-c"><a href="/repo/exec/#{item.id}">#{item.name}</a></td>
 								<td class="rf-dt-c"><h:outputText value="#{item.started}">
 										<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeStyle="full" />
 									</h:outputText></td>
-								<c:if test="#{searchController.isDisplayColumn('tags')}">
+								<c:if test="#{testExecutionSearchController.isDisplayColumn('tags')}">
 									<td class="rf-dt-c"><ui:repeat value="#{item.sortedTags}" var="item2">
 								 #{item2}
 									</ui:repeat></td>
 								</c:if>
-								<ui:repeat value="#{searchController.paramColumns}" var="item2">
-									<td class="rf-dt-c"><h:outputText value="#{searchController.itemParam(item, item2)}" escape="false" /></td>
+								<ui:repeat value="#{testExecutionSearchController.paramColumns}" var="item2">
+									<td class="rf-dt-c"><h:outputText value="#{testExecutionSearchController.itemParam(item, item2)}" escape="false" /></td>
 								</ui:repeat>
 								<td class="rf-dt-c"><div class="btn-group">
-										<r:commandLink styleClass="btn btn-primary btn-small" action="#{searchController.delete}" alt="#{strings.delete}" title="#{strings.delete}"
+										<r:commandLink styleClass="btn btn-primary btn-small" action="#{testExecutionSearchController.delete}" alt="#{strings.delete}" title="#{strings.delete}"
 											render="@form :criteriaForm :messagesPanel"
 											onclick="if (!confirm('Are you sure you want to delete the test execution (#{item.name})?') ) { return false;}; return true;">
 											<f:param name="idToDelete" value="#{item.id}" />

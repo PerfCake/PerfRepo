@@ -44,7 +44,7 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
  */
 @Named
 @ViewScoped
-public class SearchController extends ControllerBase {
+public class TestExecutionSearchController extends ControllerBase {
 
    private static final long serialVersionUID = 1L;
 
@@ -206,6 +206,14 @@ public class SearchController extends ControllerBase {
          }
       }
    }
+   
+   public List<String> autocompleteTest(String test) {
+		return testService.getTestsByPrefix(test);
+   }
+   
+   public List<String> autocompleteTags(String tag) {
+		return testService.getTagsByPrefix(tag);
+  }
 
    public boolean isDisplayColumn(String name) {
       if (extraColumns == null) {
