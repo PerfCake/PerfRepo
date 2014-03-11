@@ -15,7 +15,7 @@
 				<r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.showConfig}" alt="Show configuration" title="Show configuration"
 					render=":formReportConfig :messagesPanel" rendered="#{!metricReportBean.configVisible}">
 					<i class="icon-cogs"></i> Show configuration
-            </r:commandLink>
+                </r:commandLink>
 				<h:panelGroup rendered="#{metricReportBean.configVisible}">
 					<h2>
 						Report configuration
@@ -25,18 +25,19 @@
 					</h2>
 					<table>
 						<tr>
-							<td><h:outputText value="
-					Report name" /></td>
+							<td><h:outputText value="Report name" /></td>
 							<td><h:inputText value="#{metricReportBean.reportName}">
 									<r:ajax render=":formReportConfig titleGroup :messagesPanel" />
-								</h:inputText></td>
+								</h:inputText>
+                            </td>
 						</tr>
 						<tr>
 							<td><h:outputText value="Report ID" /></td>
-							<td><h:inputText value="#{metricReportBean.reportId}" /> <r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.save}"
-									alt="Save" title="Save">
+							<td><h:inputText value="#{metricReportBean.reportId}" />
+                                <r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.save}" alt="Save" title="Save">
 									<i class="icon-save"></i> Save
-            </r:commandLink></td>
+                                </r:commandLink>
+                            </td>
 						</tr>
 					</table>
 					<h3>Charts</h3>
@@ -52,20 +53,6 @@
 							<h:selectOneMenu value="#{chartItem.selectedTestId}">
 								<f:selectItems value="#{metricReportBean.selectionTests}" var="testItem" itemLabel="#{testItem.name}" itemValue="#{testItem.id}" />
 								<r:ajax render=":formReportConfig :formChart :messagesPanel" listener="#{chartItem.selectedTest}" />
-							</h:selectOneMenu>
-						</h:column>
-						<h:column>
-							<f:facet name="header">Execution ordering</f:facet>
-							<h:selectOneMenu value="#{chartItem.sortType}">
-								<f:selectItems value="#{metricReportBean.sortTypeValues}" var="typeItem" itemLabel="#{metricReportBean.getEnumString(typeItem)}" itemValue="#{typeItem}" />
-								<r:ajax render=":formReportConfig :formChart :messagesPanel" listener="#{chartItem.selectedSortOrder}" />
-							</h:selectOneMenu>
-						</h:column>
-						<h:column>
-							<f:facet name="header">Execution parameter</f:facet>
-							<h:selectOneMenu value="#{chartItem.paramName}" disabled="#{!chartItem.paramSelectionEnabled}">
-								<f:selectItems value="#{chartItem.selectionParam}" var="paramItem" itemLabel="#{paramItem}" itemValue="#{paramItem}" />
-								<r:ajax render=":formReportConfig :formChart :messagesPanel" listener="#{chartItem.selectedParam}" />
 							</h:selectOneMenu>
 						</h:column>
 						<h:column>

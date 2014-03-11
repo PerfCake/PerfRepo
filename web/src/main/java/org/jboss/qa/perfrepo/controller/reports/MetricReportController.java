@@ -45,7 +45,6 @@ import org.jboss.qa.perfrepo.model.to.MetricReportTO.Request;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.Response;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesRequest;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesResponse;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO.SortType;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.UserSession;
 import org.jboss.qa.perfrepo.util.FavoriteParameter;
@@ -100,7 +99,6 @@ public class MetricReportController extends ControllerBase {
       private boolean renderDetails;
       private String chartName;
       private Long selectedTestId;
-      private List<String> selectionParam;
       private ChartRequest request;
       private List<SeriesSpec> chartSeries = new ArrayList<SeriesSpec>();
       private List<BaselineSpec> chartBaselines = new ArrayList<BaselineSpec>();
@@ -109,7 +107,6 @@ public class MetricReportController extends ControllerBase {
       public ChartSpec(String chartName) {
          this.chartName = chartName;
          this.request = new ChartRequest();
-
       }
 
       public boolean isRenderDetails() {
@@ -145,10 +142,6 @@ public class MetricReportController extends ControllerBase {
          request.setTestUid(testUid);
       }
 
-      public List<String> getSelectionParam() {
-         return selectionParam;
-      }
-
       public ChartRequest getRequest() {
          return request;
       }
@@ -181,31 +174,8 @@ public class MetricReportController extends ControllerBase {
          return chartBaselines;
       }
 
-      public SortType getSortType() {
-         return request.getSortType();
-      }
-
-      public void setSortType(SortType sortType) {
-         this.request.setSortType(sortType);
-      }
-
-      public String getParamName() {
-         return request.getParamName();
-      }
-
-      public void setParamName(String paramName) {
-         this.request.setParamName(paramName);
-      }
-
-      // chart config line listener
-      public void selectedSortOrder() {
-         changeParamSelection();
-         updateReport();
-      }
-
       // chart config line listener
       public void selectedTest() {
-         changeParamSelection();
          changeMetricSelection();
          updateReport();
       }
@@ -232,11 +202,6 @@ public class MetricReportController extends ControllerBase {
          return null;
       }
 
-      // chart config line listener
-      public void selectedParam() {
-         updateReport();
-      }
-
       public List<Metric> getSelectionMetrics() {
          return selectionMetrics;
       }
@@ -255,26 +220,6 @@ public class MetricReportController extends ControllerBase {
                }
             }
          }
-      }
-
-      private void changeParamSelection() {
-         if (isParamSelectionEnabled()) {
-            if (selectedTestId != null) {
-               selectionParam = testService.getAllSelectionExecutionParams(selectedTestId);
-               if (!selectionParam.isEmpty()) {
-                  Collections.sort(selectionParam);
-                  request.setParamName(selectionParam.get(0));
-               }
-            } else {
-               selectionParam = Collections.<String> emptyList();
-            }
-         } else {
-            selectionParam = Collections.singletonList("N/A");
-         }
-      }
-
-      public boolean isParamSelectionEnabled() {
-         return request.getSortType().needsParam();
       }
 
       public void chartActionListener(PlotClickEvent event) {
@@ -727,10 +672,6 @@ public class MetricReportController extends ControllerBase {
       }
    }
 
-   public List<SortType> getSortTypeValues() {
-      return Arrays.asList(SortType.values());
-   }
-
    private void generateNewReport() {
       if (selectionTests == null || selectionTests.isEmpty()) {
          addMessage(INFO, "page.metricreport.noTests");
@@ -745,7 +686,6 @@ public class MetricReportController extends ControllerBase {
       chartSpecs = new ArrayList<ChartSpec>();
       ChartSpec chart = new ChartSpec("Chart 1");
       chart.setSelectedTestId(selectionTests.get(0).getId());
-      chart.changeParamSelection();
       chart.changeMetricSelection();
       chartSpecs.add(chart);
       seriesSpecs = new ArrayList<SeriesSpec>();
@@ -770,11 +710,8 @@ public class MetricReportController extends ControllerBase {
          List<ChartSpec> savedChartSpecs = new ArrayList<ChartSpec>();
          while (reportProperties.containsKey(chartPrefix + ".name")) {
             ChartSpec chart = new ChartSpec(reportProperties.get(chartPrefix + ".name"));
-            chart.setSortType(SortType.valueOf(reportProperties.get(chartPrefix + ".sort")));
             chart.setSelectedTestId(Long.valueOf(reportProperties.get(chartPrefix + ".test")));
             chart.changeMetricSelection();
-            chart.changeParamSelection();
-            chart.setParamName(reportProperties.get(chartPrefix + ".param"));
             int j = 0;
             String seriesPrefix = chartPrefix + ".series" + j;
             while (reportProperties.containsKey(seriesPrefix + ".name")) {
@@ -843,13 +780,10 @@ public class MetricReportController extends ControllerBase {
          throw new IllegalStateException("expected " + request.getCharts().size() + " returned " + report.getCharts().size());
       }
       for (ChartSpec chartSpec : chartSpecs) {
-         ChartRequest chartRequest = chartRequests.next();
          ChartResponse chartResponse = chartResponses.next();
          recomputeChartData(chartSpec, chartResponse);
          if (chartResponse.getSelectedTest() == null) {
             addMessage(INFO, "page.metricreport.selectTestUID", chartSpec.getChartName());
-         } else if (chartResponse.getSelectedParam() == null && chartRequest.getSortType().needsParam()) {
-            addMessage(INFO, "page.metricreport.selectExecParam", chartSpec.getChartName());
          }
       }
    }
@@ -878,11 +812,7 @@ public class MetricReportController extends ControllerBase {
          ChartSpec chart = chartSpecs.get(i);
          String chartPrefix = "chart" + i;
          reportProps.put(chartPrefix + ".name", chart.getChartName());
-         if (chart.getParamName() != null) {
-            reportProps.put(chartPrefix + ".param", chart.getParamName());
-         }
          reportProps.put(chartPrefix + ".test", Long.toString(chart.getSelectedTestId()));
-         reportProps.put(chartPrefix + ".sort", chart.getSortType().toString());
          for (int j = 0; j < chart.chartSeries.size(); j++) {
             SeriesSpec series = chart.chartSeries.get(j);
             String seriesPrefix = chartPrefix + ".series" + j;
@@ -942,7 +872,6 @@ public class MetricReportController extends ControllerBase {
    public void addChart() {
       ChartSpec newSpec = new ChartSpec("Chart " + (chartSpecs.size() + 1));
       newSpec.setSelectedTestId(selectionTests.get(0).getId());
-      newSpec.changeParamSelection();
       newSpec.changeMetricSelection();
       chartSpecs.add(newSpec);
    }

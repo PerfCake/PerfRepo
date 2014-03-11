@@ -290,7 +290,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param request
     * @return All
     */
-   public List<DataPoint> searchValues(Long testId, String metricName, String paramName, List<String> tagList, SortType sort, int limitSize) {
+   public List<DataPoint> searchValues(Long testId, String metricName, List<String> tagList, int limitSize) {
       boolean useTags = tagList != null && !tagList.isEmpty();
       CriteriaBuilder cb = criteriaBuilder();
       CriteriaQuery<DataPoint> criteria = cb.createQuery(DataPoint.class);
@@ -298,8 +298,6 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Root<TestExecution> rExec = criteria.from(TestExecution.class);
       // test joined via test exec.
       Join<TestExecution, Test> rTest_Exec = rExec.join("test");
-      // test execution parameters
-      Join<TestExecution, TestExecutionParameter> rParam = sort.needsParam() ? rParam = rExec.join("parameters") : null;
       // values
       Join<TestExecution, Value> rValue = rExec.join("values");
       // metrics
@@ -317,40 +315,21 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       }
 
       Predicate pMetricNameFixed = cb.equal(rMetric.get("name"), cb.parameter(String.class, "metricName"));
-      Predicate pParameterNameFixed = sort.needsParam() ? cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName")) : null;
       Predicate pTestFixed = cb.equal(rTest_Exec.get("id"), cb.parameter(Long.class, "testId"));
       Predicate pMetricFromSameTest = cb.equal(rTest_Metric.get("id"), rTest_Exec.get("id"));
-      switch (sort) {
-      case EXEC_DATE:
-      default:
-         criteria.select(cb.construct(DataPoint.class, rExec.get("started"), rValue.get("resultValue"), rExec.get("id")));
-         criteria.where(cb.and(pMetricNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
-         criteria.groupBy(rValue.get("resultValue"), rExec.get("id"), rExec.get("started"));
-         criteria.orderBy(cb.desc(rExec.get("started")));
-         break;
-      case EXEC_PARAM_NUMBER:
-         criteria.select(cb.construct(DataPoint.class, cb.function("TO_NUMBER", Long.class, rParam.get("value"), cb.literal("0000000000000000000")),
-               rValue.get("resultValue"), rExec.get("id")));
-         Predicate pValueNumeric = cb.isTrue(cb.function("perfrepo_regexp", Boolean.class, rParam.get("value"), cb.literal("^[0-9]+$")));
-         criteria.where(cb.and(pMetricNameFixed, pParameterNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest, pValueNumeric));
-         criteria.groupBy(rParam.get("value"), rValue.get("resultValue"), rExec.get("id"));
-         criteria.orderBy(cb.desc(cb.function("TO_NUMBER", Long.class, rParam.get("value"), cb.literal("0000000000000000000"))));
-         break;
-      case EXEC_PARAM_STRING:
-         criteria.select(cb.construct(DataPoint.class, rParam.get("value"), rValue.get("resultValue"), rExec.get("id")));
-         criteria.where(cb.and(pMetricNameFixed, pParameterNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
-         criteria.groupBy(rParam.get("value"), rValue.get("resultValue"), rExec.get("id"));
-         criteria.orderBy(cb.desc(rParam.get("value")));
-         break;
-      }
+
+      //sort by date
+      criteria.select(cb.construct(DataPoint.class, rExec.get("started"), rValue.get("resultValue"), rExec.get("id")));
+      criteria.where(cb.and(pMetricNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
+      criteria.groupBy(rValue.get("resultValue"), rExec.get("id"), rExec.get("started"));
+      criteria.orderBy(cb.desc(rExec.get("started")));
+
       criteria.having(pHavingAllTagsPresent);
 
       TypedQuery<DataPoint> query = query(criteria);
       query.setParameter("testId", testId);
       query.setParameter("metricName", metricName);
-      if (sort.needsParam()) {
-         query.setParameter("paramName", paramName);
-      }
+
       if (useTags) {
          query.setParameter("tagList", tagList);
          query.setParameter("tagListSize", new Long(tagList.size()));

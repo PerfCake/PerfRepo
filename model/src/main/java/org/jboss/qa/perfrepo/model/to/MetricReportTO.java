@@ -20,24 +20,14 @@ public class MetricReportTO {
     */
    public static class ChartRequest implements Serializable {
       private String testUid;
-      private String paramName;
       private List<SeriesRequest> series = new ArrayList<SeriesRequest>();
       private List<BaselineRequest> baselines = new ArrayList<BaselineRequest>();
-      private SortType sortType = SortType.EXEC_DATE;
 
       public ChartRequest() {
       }
 
       public String getTestUid() {
          return testUid;
-      }
-
-      public String getParamName() {
-         return paramName;
-      }
-
-      public SortType getSortType() {
-         return sortType;
       }
 
       public List<SeriesRequest> getSeries() {
@@ -74,14 +64,6 @@ public class MetricReportTO {
 
       public void clearBaselines() {
          baselines = null;
-      }
-
-      public void setSortType(SortType sortType) {
-         this.sortType = sortType;
-      }
-
-      public void setParamName(String paramName) {
-         this.paramName = paramName;
       }
 
       public void setTestUid(String testUid) {
@@ -333,25 +315,15 @@ public class MetricReportTO {
     */
    public static class ChartResponse implements Serializable {
 
-      private List<String> selectionParam;
       private List<Metric> selectionMetrics;
 
       private Test selectedTest;
-      private String selectedParam;
 
       private List<SeriesResponse> series = new ArrayList<SeriesResponse>();
       private List<BaselineResponse> baselines = new ArrayList<BaselineResponse>();
 
       public void setSelectionMetrics(List<Metric> selectionMetric) {
          this.selectionMetrics = selectionMetric;
-      }
-
-      public List<String> getSelectionParams() {
-         return selectionParam;
-      }
-
-      public void setSelectionParam(List<String> selectionParam) {
-         this.selectionParam = selectionParam;
       }
 
       public Test getSelectedTest() {
@@ -362,24 +334,12 @@ public class MetricReportTO {
          this.selectedTest = selectedTest;
       }
 
-      public String getSelectedParam() {
-         return selectedParam;
-      }
-
-      public void setSelectedParam(String selectedParam) {
-         this.selectedParam = selectedParam;
-      }
-
       public List<SeriesResponse> getSeries() {
          return series;
       }
 
       public void setSeries(List<SeriesResponse> series) {
          this.series = series;
-      }
-
-      public List<String> getSelectionParam() {
-         return selectionParam;
       }
 
       public List<Metric> getSelectionMetrics() {
@@ -452,21 +412,5 @@ public class MetricReportTO {
          String problem = getProblemType();
          return "(" + param + ", " + ("N/A".equals(problem) ? value : "Problem: " + problem) + ", " + execId + ")";
       }
-   }
-
-   public static enum SortType {
-
-      EXEC_DATE(false), EXEC_PARAM_STRING(true), EXEC_PARAM_NUMBER(true);
-
-      private boolean needsParam;
-
-      private SortType(boolean needsParam) {
-         this.needsParam = needsParam;
-      }
-
-      public boolean needsParam() {
-         return needsParam;
-      }
-
    }
 }

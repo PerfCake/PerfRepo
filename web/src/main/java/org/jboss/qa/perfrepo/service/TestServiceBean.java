@@ -833,13 +833,6 @@ public class TestServiceBean implements TestService {
             } else {
                freshTest = freshTest.clone();
                chartResponse.setSelectedTest(freshTest);
-               if (chartRequest.getSortType().needsParam()
-                     && (chartRequest.getParamName() == null || !testExecutionParameterDAO.hasTestParam(freshTest.getId(), chartRequest.getParamName()))) {
-                  chartResponse.setSelectionParam(getAllSelectionExecutionParams(freshTest.getId()));
-                  Collections.sort(chartResponse.getSelectionParams());
-                  continue;
-               }
-               chartResponse.setSelectedParam(chartRequest.getParamName());
                if (chartRequest.getSeries() == null || chartRequest.getSeries().isEmpty()) {
                   continue;
                }
@@ -861,8 +854,8 @@ public class TestServiceBean implements TestService {
                   freshMetric.setTestMetrics(null);
                   freshMetric.setValues(null);
                   seriesResponse.setSelectedMetric(freshMetric);
-                  List<DataPoint> datapoints = testExecutionDAO.searchValues(freshTest.getId(), seriesRequest.getMetricName(), chartRequest.getParamName(),
-                        seriesRequest.getTags(), chartRequest.getSortType(), request.getLimitSize());
+                  List<DataPoint> datapoints = testExecutionDAO.searchValues(freshTest.getId(), seriesRequest.getMetricName(),
+                        seriesRequest.getTags(), request.getLimitSize());
                   if (datapoints.isEmpty()) {
                      continue;
                   }
