@@ -6,6 +6,9 @@
 		<f:event type="preRenderView" listener="#{metricReportBean.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
+        <ui:define name="customJavascript">
+           <h:outputScript library="js" name="metric_history.js" />
+        </ui:define>
 		<ui:define name="title">#{metricReportBean.reportName}</ui:define>
 		<ui:define name="content">
 			<h:form id="formReportConfig">
@@ -141,39 +144,39 @@
 						</h:dataTable>
 					</h:panelGroup>
 
-					<r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addChart}" alt="Add chart" title="Add chart"
+					<r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addChart}" onclick="metricHistoryClear()" alt="Add chart" title="Add chart"
 						render=":formReportConfig :messagesPanel">
 						<i class="icon-plus"></i> Add chart
             </r:commandLink>
-					<r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addSeries}" alt="Add series" title="Add series"
+					<r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addSeries}" onclick="metricHistoryClear()" alt="Add series" title="Add series"
 						render=":formReportConfig :messagesPanel">
 						<i class="icon-plus"></i> Add series
             </r:commandLink>
-					<r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addBaseline}" alt="Add baseline" title="Add baseline"
+					<r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addBaseline}" onclick="metricHistoryClear()" alt="Add baseline" title="Add baseline"
 						render=":formReportConfig :messagesPanel">
 						<i class="icon-plus"></i> Add baseline
             </r:commandLink>
 				</h:panelGroup>
 			</h:form>
 			<h:form id="formChart">
-				<r:repeat value="#{metricReportBean.chartSpecs}" var="chartItem">
+				<r:repeat value="#{metricReportBean.chartSpecs}" var="chartItem" id="repeat">
 					<h2>
 						<h:outputText value="#{chartItem.chartName}" />
 					</h2>
 
-					<r:chart title="#{chartItem.chartName}" plotClickListener="#{chartItem.chartActionListener}">
+					<r:chart title="#{chartItem.chartName}" plotClickListener="#{chartItem.chartActionListener}" onplotclick="metricHistoryPointClick(event)">
 						<r:repeat value="#{chartItem.chartSeries}" var="seriesItem">
 							<r:series label="#{seriesItem.name}" data="#{seriesItem.chartModel}" type="line" />
 						</r:repeat>
 						<r:repeat value="#{chartItem.chartBaselines}" var="baselineItem">
 							<r:series label="#{baselineItem.name}" data="#{baselineItem.chartModel}" type="line" />
 						</r:repeat>
-						<r:ajax event="plotclick" render=":formChart :messagesPanel" />
+						<r:ajax event="plotclick" render=":formChart :messagesPanel" oncomplete="metricHistoryRefresh()" />
 						<r:xaxis label="Test execution" />
 						<r:yaxis label="Metric value" min="0" />
 					</r:chart>
 
-					<h:panelGrid rendered="#{chartItem.renderDetails}">
+                    <h:panelGrid rendered="#{chartItem.renderDetails}" >
 						<table class="pointDetails">
 							<tr>
 								<td class="pointDetailsLabel">Execution ID</td>
@@ -204,7 +207,7 @@
 								</tr>
 							</ui:repeat>
 						</table>
-						<r:commandLink styleClass="btn btn-primary btn-small" action="#{teComparatorSession.add(metricReportBean.pointDetails.execId)}"
+						<r:commandLink styleClass="btn btn-primary btn-small" onclick="metricHistoryPermanentlyHighlight()" oncomplete="metricHistoryRefresh()" action="#{teComparatorSession.add(metricReportBean.pointDetails.execId)}"
 							alt="Add execution to comparison" title="Add execution to comparison" render=":formReportConfig :formChart :headerForm:compareMenuItem :messagesPanel">
 							<i class="icon-plus"></i> Add to comparison
 						</r:commandLink>

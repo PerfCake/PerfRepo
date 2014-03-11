@@ -6368,6 +6368,10 @@ table.savedReports {
 	width: 940px;
 }
 
+table.pointDetailsPanel {
+    /*display: none;*/
+}
+
 table.pointDetails {
 	width: 940px;
 }
