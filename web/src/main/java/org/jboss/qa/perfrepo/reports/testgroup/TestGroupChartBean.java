@@ -62,15 +62,9 @@ public class TestGroupChartBean implements Serializable {
 	}
 
 	public void drawChart(OutputStream out, Object data) throws IOException {
-
-			JFreeChart chart = ChartFactory.createBarChart(
-					((ChartData)data).getTitle(), // chart title
-					"Test", // domain axis label
-					"%", // range axis label
-					processDataSet((ChartData)data), // data
-					PlotOrientation.HORIZONTAL, // orientation
-					false, // include legend
-					true, false);
+		if (data instanceof ChartData) {
+			ChartData chartData = (ChartData)data;
+			JFreeChart chart = ChartFactory.createBarChart(chartData.getTitle(), "Test", "%", processDataSet(chartData), PlotOrientation.HORIZONTAL, false , true, false);
 			chart.addSubtitle(new TextTitle("Comparison", new Font("Dialog",
 					Font.ITALIC, 10)));
 			chart.setBackgroundPaint(Color.white);
@@ -80,11 +74,11 @@ public class TestGroupChartBean implements Serializable {
 			plot.setBackgroundPaint(Color.white);
 			plot.setRangeGridlinePaint(Color.white);
 			plot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
-
 			renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator(
 					"{2}%", NumberFormat.getInstance()));
 			renderer.setBaseItemLabelsVisible(true);
 			renderer.setDrawBarOutline(false);
+			renderer.setMaximumBarWidth(1d/(chartData.getTests().length + 4.0));
 			plot.setRenderer(renderer);
 
 			CategoryAxis categoryAxis = plot.getDomainAxis();
@@ -95,15 +89,16 @@ public class TestGroupChartBean implements Serializable {
 			NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
 			rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 			rangeAxis.setUpperMargin(0.10);
-			BufferedImage buffImg = chart.createBufferedImage(640, 480);
+			BufferedImage buffImg = chart.createBufferedImage(640, chartData.getTests().length * 100 + 100);
 			ImageIO.write(buffImg, "gif", out);
+		}
 	}
 	
 	private CategoryDataset processDataSet(ChartData map) {		
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		for (int i=0; i < map.getTests().length; i++) {
 			dataset.addValue(map.getValues()[i], "", map.getTests()[i]);
-		}			
+		}
 		return dataset;
 	}
 

@@ -265,7 +265,7 @@ public class TestExecution implements Entity<TestExecution> {
       }
    }
 
-   // TODO: maybe move to util class
+   @Deprecated //should be moved to util class
    public TestExecutionParameter findParameter(String name) {
       if (parameters == null || parameters.isEmpty()) {
          return null;

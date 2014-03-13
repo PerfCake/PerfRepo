@@ -10,7 +10,7 @@
 			<rich:autocomplete id="addTag" tabindex="1" styleClass="input-text" mode="cachedAjax" tokens=" " minChars="2" autofill="false"
             		autocompleteMethod="#{testGroupReportController.autocompleteTags}" value="#{testGroupReportController.currentTag}" />
            	<a4j:commandButton styleClass="btn btn-success btn-small" action="#{testGroupReportController.addTag()}" value="Add Tag" alt="Add Tag" title="Add Tag"
-					render="@form :tagsForm" />
+					render="@form :tagsForm :values" />
 			
 			<br/><br/>
 			<h5>Tags:</h5>

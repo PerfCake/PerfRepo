@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +44,7 @@ public class TestGroupReportController extends ControllerBase {
 	@Inject
 	private UserService userService;	
 	
-	public static final String REPORT_PREFIX = UserSession.REPORT_KEY_PREFIX + "testGroupReport";
+	public static final String REPORT_PREFIX = UserSession.REPORT_KEY_PREFIX;
 	
 	/**
 	 * Test name, tag, value
@@ -73,14 +72,13 @@ public class TestGroupReportController extends ControllerBase {
 	//testGroupReport.FSW600CR2.threshold=-5.0
 	//testGroupReport.FSW600CR2.tests=sy-binding-camel-jms,sy-binding-http-get,sy-binding-http-get-throttling
 	
-	
-	private List<String> tags = Lists.newArrayList("600CR1 FSW simple-12","600CR2 FSW simple-12");
+	private List<String> tags = Lists.newArrayList();
 	
 	private Map<String, String> tagAlias = new HashMap<String, String>(); 
 	
-	private List<String> tests = Arrays.asList("sy-binding-camel-jms", "sy-binding-http-get", "sy-binding-http-get-throttling");
+	private List<String> tests = Lists.newArrayList();
 	
-	private List<String> metrics = Arrays.asList("average-throughput");
+	//private List<String> metrics = Lists.newArrayList();
 	
 	private Map<String, List<String>> comparison = new HashMap<String, List<String>>();
 	
@@ -112,6 +110,7 @@ public class TestGroupReportController extends ControllerBase {
 	
 	public void processTestExecutions() {
 		data.clear();
+		reloadSessionMessages();
 		//get TEs 
 		List<TestExecution> testExecutions = testService.getTestExecutions(tags, tests);
 		for(TestExecution te : testExecutions) {
@@ -137,42 +136,44 @@ public class TestGroupReportController extends ControllerBase {
 	@PostConstruct
 	private void readConfiguration() {
 		reportId = getRequestParam("reportId");
-		Map<String, String> properties = userService.getUserProperties(REPORT_PREFIX + "." + reportId + ".");
-		if (!properties.isEmpty()) {
-			//reportname
-			reportName = properties.get("name");
-			//tests
-			String testsProperty = properties.get("tests");
-			tests = new ArrayList<String>();
-			if (testsProperty != null) {
-				tests = Lists.newArrayList(testsProperty.split(", "));
-			}
-			//tags
-			int i = 1;
-			tags = new ArrayList<String>();
-			tagAlias = new HashMap<String, String>();
-			String tag = properties.get("tag." + i);
-			while (tag != null) {
-				tags.add(tag);
-				String ta = properties.get("tag." + i + ".alias");
-				if (ta != null) {
-					tagAlias.put(tag, ta);
+		if (reportId != null && !"".equals(reportId)) {
+			Map<String, String> properties = userService.getUserProperties(REPORT_PREFIX + reportId + ".");
+			if (!properties.isEmpty()) {
+				//reportname
+				reportName = properties.get("name");
+				//tests
+				String testsProperty = properties.get("tests");
+				tests = new ArrayList<String>();
+				if (testsProperty != null) {
+					tests = Lists.newArrayList(testsProperty.split(", "));
 				}
-				tag = properties.get("tag." + ++i);
+				//tags
+				int i = 1;
+				tags = new ArrayList<String>();
+				tagAlias = new HashMap<String, String>();
+				String tag = properties.get("tag." + i);
+				while (tag != null) {
+					tags.add(tag);
+					String ta = properties.get("tag." + i + ".alias");
+					if (ta != null) {
+						tagAlias.put(tag, ta);
+					}
+					tag = properties.get("tag." + ++i);
+				}
+				//comparison
+				i = 1;
+				comparison = new HashMap<String, List<String>>();
+				String compare = properties.get("compare." + i + ".1");
+				while (compare != null) {
+					String c1 = properties.get("compare." + i + ".1");
+					String c2 = properties.get("compare." + i + ".2");
+					String alias = properties.get("compare." + i + ".alias");
+					comparison.put(alias, Lists.newArrayList(c1, c2));
+					compare = properties.get("compare." + ++i + ".1");
+				}
+				//TODO: threshold, metrics
+				processTestExecutions();
 			}
-			//comparison
-			i = 1;
-			comparison = new HashMap<String, List<String>>();
-			String compare = properties.get("compare." + i + ".1");
-			while (compare != null) {
-				String c1 = properties.get("compare." + i + ".1");
-				String c2 = properties.get("compare." + i + ".2");
-				String alias = properties.get("compare." + i + ".alias");			
-				comparison.put(alias, Lists.newArrayList(c1, c2));
-				compare = properties.get("compare." + ++i + ".1");
-			}
-			//TODO: threshold, metrics
-			processTestExecutions();			
 		}
 	}
 			
@@ -183,6 +184,8 @@ public class TestGroupReportController extends ControllerBase {
 	public void saveReport(String reportId, String reportName) {
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put("name", reportName);
+		properties.put("type", "TestGroupReport");
+		properties.put("link", "/repo/reports/testGroupReport/" + reportId);
 		//tests
 		String testsProperty = "";
 		for (String test : tests) {
@@ -206,12 +209,13 @@ public class TestGroupReportController extends ControllerBase {
 			properties.put("compare." + i + ".alias", key);
 			i++;
 		}
-		userService.replacePropertiesWithPrefix(REPORT_PREFIX + "." + reportId + ".", properties);
+		userService.replacePropertiesWithPrefix(REPORT_PREFIX + reportId + ".", properties);
 		addSessionMessage(INFO, "page.reports.testGroup.reportSaved", reportId);
+		reloadSessionMessages();
 	}
 	
-	public void saveReportAs() {
-		if (userService.userPropertiesPrefixExists(REPORT_PREFIX + "." + getNewReportId())) {
+	public void cloneReport() {
+		if (userService.userPropertiesPrefixExists(REPORT_PREFIX + getNewReportId())) {
 			//redirectWithMessage("/reports/testGroupReport/" + getReportId() ,ERROR, "page.reports.testGroup.reportExists", getNewReportId());
 			addSessionMessage(ERROR, "page.reports.testGroup.reportExists", getNewReportId());
 			reloadSessionMessages();
@@ -221,13 +225,26 @@ public class TestGroupReportController extends ControllerBase {
 		}
 	}
 	
+	public void clearTemporaryProperties() {
+		baseline1 = null;
+		baseline2 = null;
+		newReportId = null;
+		newReportName = null;
+		currentTag = null;
+		currentTest = null;
+	}
+
 	public List<String> getTests() {
-		List<String> result = new ArrayList<String>(data.rowKeySet());
+		List<String> result = new ArrayList<String>(tests);
 		Collections.sort(result);
-		return  result;		
+		return  result;
 	}
 	
 	public List<String> getTags() {
+		return tags;
+	}
+
+	public List<String> getTableTags() {
 		return new ArrayList<String>(data.columnKeySet());
 	}
 	
@@ -283,7 +300,11 @@ public class TestGroupReportController extends ControllerBase {
 	}
 	
 	public String format(Object number){
-		return formatter.format(number);
+		if (number != null) {
+			return formatter.format(number);
+		} else {
+			return "";
+		}
 	}
 	
 	public String getTagAlias(String tag) {
@@ -477,7 +498,7 @@ public class TestGroupReportController extends ControllerBase {
 		if (baseline1 != null && baseline2 != null) {
 			List<String> comparison = Lists.newArrayList(baseline1, baseline2);
 			if (!comparisonCopy.containsValue(comparison)) {
-				comparisonCopy.put(baseline1 + " vs. " + baseline2, comparison);
+				comparisonCopy.put(baseline2 + " vs. " + baseline1, comparison);
 			}
 		}		
 	}
@@ -489,8 +510,6 @@ public class TestGroupReportController extends ControllerBase {
 			testList.add(test);
 			valueList.add(Double.valueOf(compare(test, compareKey)));
 		}
-		//String[] tests = new String[] {"sy-binding-camel-jms", "sy-binding-http-get", "sy-binding-http-get-throttling"};
-		//Double[] values = new Double[] {5.51, 2.00, 4.88};		
 		dataset = new TestGroupChartBean.ChartData();
 		dataset.setTests(testList.toArray(new String[0]));
 		dataset.setValues(valueList.toArray(new Double[0]));
@@ -577,6 +596,9 @@ public class TestGroupReportController extends ControllerBase {
 	}
 
 	public class ValueCell implements Serializable {
+
+		private static final long serialVersionUID = 2771413301301479495L;
+
 		private Collection<Value> values = new ArrayList<Value>();
 		
 		private Value bestValue;

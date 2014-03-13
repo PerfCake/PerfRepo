@@ -13,8 +13,7 @@
 			<rich:autocomplete id="addTest" tabindex="1" styleClass="input-text" mode="cachedAjax" tokens=", " minChars="2" autofill="false"
             		autocompleteMethod="#{testGroupReportController.autocompleteTests}" value="#{testGroupReportController.currentTest}" />
            	<a4j:commandButton styleClass="btn btn-success btn-small" action="#{testGroupReportController.addTest()}" value="Add Test" alt="Add Test" title="Add Test"
-					render="@form :testForm" />
-			
+					render="@form :testForm :values" />
 			<br/><br/>
 			<h5>Tests:</h5>
 			<table id="values" class="table table-bordered smallpad">

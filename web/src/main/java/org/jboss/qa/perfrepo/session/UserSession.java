@@ -55,6 +55,7 @@ public class UserSession extends ControllerBase {
    }
 
    public User refreshUser() {
+	  //TODO: do not store full user with all properties
       user = testService.getFullUser(userInfo.getUserName());
       if (user == null) {
          log.error("Couldn't find user \"" + userInfo.getUserName() + "\". Creating new user entry.");
@@ -95,6 +96,7 @@ public class UserSession extends ControllerBase {
       return FAV_PARAM_KEY_PREFIX + testId + "." + paramName;
    }
 
+   @Deprecated //should be moved to UserService
    public void addFavoriteParameter(long testId, String paramName, String label) {
       FavoriteParameter fp = new FavoriteParameter();
       fp.setLabel(label);
@@ -109,6 +111,7 @@ public class UserSession extends ControllerBase {
       }
    }
 
+   @Deprecated //should be moved to UserService
    public void removeFavoriteParameter(long testId, String paramName) {
       FavoriteParameter prev = findFavoriteParameter(testId, paramName);
       if (prev != null) {
@@ -117,6 +120,7 @@ public class UserSession extends ControllerBase {
       setProperty(favPropKey(testId, paramName), null);
    }
 
+   @Deprecated //should be moved to UserService
    public FavoriteParameter findFavoriteParameter(long testId, String paramName) {
       for (FavoriteParameter fp : favoriteParameters) {
          if (fp.getTestId() == testId && paramName.equals(fp.getParameterName())) {
@@ -126,10 +130,12 @@ public class UserSession extends ControllerBase {
       return null;
    }
 
+   @Deprecated //should be moved to UserService
    public String getProperty(String name) {
       return userProperties.get(name);
    }
 
+   @Deprecated //should be moved to UserService
    public void setProperty(String name, String value) {
       if (user != null) {
          try {
@@ -173,6 +179,7 @@ public class UserSession extends ControllerBase {
       return user;
    }
 
+   @Deprecated //should be moved to UserService
    private Map<String, String> getUserProperties(User user) {
       Map<String, String> userProperties = new HashMap<String, String>();
       for (UserProperty prop : user.getProperties()) {
@@ -181,6 +188,7 @@ public class UserSession extends ControllerBase {
       return userProperties;
    }
 
+   @Deprecated //should be moved to UserService
    public Map<String, String> getReportProperties(String userName, String reportId) {
       User user = testService.getFullUser(userName);
       if (user == null) {
@@ -190,6 +198,7 @@ public class UserSession extends ControllerBase {
       }
    }
 
+   @Deprecated //should be moved to UserService
    private List<String> getAllReportIds(Map<String, String> userProperties) {
       Set<String> rset = new HashSet<String>();
       List<String> r = new ArrayList<String>();
@@ -208,10 +217,12 @@ public class UserSession extends ControllerBase {
       return r;
    }
 
+   @Deprecated //should be moved to UserService
    public List<String> getAllReportIds() {
       return getAllReportIds(userProperties);
    }
 
+   @Deprecated //should be moved to UserService
    public void removeReport(String reportId) {
       try {
          String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
@@ -232,6 +243,7 @@ public class UserSession extends ControllerBase {
       }
    }
 
+   @Deprecated //should be moved to UserService
    public void setReportProperties(String reportId, Map<String, String> props) {
       try {
          String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
@@ -259,10 +271,12 @@ public class UserSession extends ControllerBase {
       }
    }
 
+   @Deprecated //should be moved to UserService
    public Map<String, String> getReportProperties(String reportId) {
       return getReportProperties(userProperties, reportId);
    }
 
+   @Deprecated //should be moved to UserService
    private Map<String, String> getReportProperties(Map<String, String> userProperties, String reportId) {
       String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
       Map<String, String> reportProperties = new HashMap<String, String>();
