@@ -56,7 +56,15 @@
      						   autocompleteMethod="#{testExecutionSearchController.autocompleteTags}" value="#{testExecutionSearchController.criteria.tags}" />
 						</div>
 					</div>
-
+					<div class="control-group">
+						<h:outputLabel class="control-label" for="tags">Additional columns</h:outputLabel>
+						<div class="controls">
+							<h:selectManyListbox value="#{testExecutionSearchController.extraColumns}">
+								<f:selectItem itemValue="execId" itemLabel="Execution Id" />
+								<f:selectItem itemValue="test" itemLabel="Test" />
+							</h:selectManyListbox>
+						</div>
+					</div>
 					<h:panelGroup rendered="#{testExecutionSearchController.criteria.parameters.isEmpty()}">
 						<div class="control-group">
 							<h:outputLabel class="control-label">Parameters</h:outputLabel>
@@ -74,11 +82,11 @@
 							<div class="controls">
 								<h:dataTable value="#{testExecutionSearchController.criteria.parameters}" var="item">
 									<h:column>
-										<f:facet name="header">Name</f:facet>
+										<f:facet name="header"><h:outputLabel class="control-label">Name</h:outputLabel></f:facet>
 										<h:inputText class="input-xlarge" value="#{item.name}" />
 									</h:column>
 									<h:column>
-										<f:facet name="header">Value</f:facet>
+										<f:facet name="header"><h:outputLabel class="control-label">Value</h:outputLabel></f:facet>
 										<h:inputText class="input-xlarge" value="#{item.value}" />
 									</h:column>
 									<h:column>
@@ -97,15 +105,6 @@
 							</div>
 						</div>
 					</h:panelGroup>
-					<div class="control-group">
-						<h:outputLabel class="control-label" for="tags">Additional columns</h:outputLabel>
-						<div class="controls">
-							<h:selectManyListbox value="#{testExecutionSearchController.extraColumns}">
-								<f:selectItem itemValue="execId" itemLabel="Execution Id" />
-								<f:selectItem itemValue="tags" itemLabel="Tags" />
-							</h:selectManyListbox>
-						</div>
-					</div>
 				</fieldset>
 
 				<div class="form-actions">
@@ -124,11 +123,12 @@
 								<th class="rf-dt-shdr-c"><r:commandLink value="ID" render="@form :searchResult :messagesPanel" action="#{testExecutionSearchController.sortBy('id', false)}" /></th>
 							</c:if>
 							<th class="rf-dt-shdr-c"><r:commandLink value="Name" render="@form :searchResult :messagesPanel" action="#{testExecutionSearchController.sortBy('name', false)}" /></th>
+							<c:if test="#{testExecutionSearchController.isDisplayColumn('test')}">
+								<th class="rf-dt-shdr-c"><r:commandLink value="Test" render="@form :searchResult :messagesPanel" action="#{testExecutionSearchController.sortBy('test', false)}" /></th>
+							</c:if>
 							<th class="rf-dt-shdr-c"><r:commandLink value="Time" render="@form :searchResult :messagesPanel"
 									action="#{testExecutionSearchController.sortBy('started', false)}" /></th>
-							<c:if test="#{testExecutionSearchController.isDisplayColumn('tags')}">
-								<th class="rf-dt-shdr-c">Tags</th>
-							</c:if>
+							<th class="rf-dt-shdr-c">Tags</th>
 							<ui:repeat value="#{testExecutionSearchController.paramColumns}" var="item">
 								<th class="rf-dt-shdr-c"><r:commandLink value="#{item}" render="@form :searchResult :messagesPanel"
 										action="#{testExecutionSearchController.sortBy(item, false)}" /> - <r:commandLink value="#" render="@form :searchResult :messagesPanel"
@@ -143,15 +143,16 @@
 								<c:if test="#{testExecutionSearchController.isDisplayColumn('execId')}">
 									<td class="rf-dt-c">#{item.id}</td>
 								</c:if>
-								<td class="rf-dt-c"><a href="/repo/exec/#{item.id}">#{item.name}</a></td>
-								<td class="rf-dt-c"><h:outputText value="#{item.started}">
-										<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeStyle="full" />
-									</h:outputText></td>
-								<c:if test="#{testExecutionSearchController.isDisplayColumn('tags')}">
-									<td class="rf-dt-c"><ui:repeat value="#{item.sortedTags}" var="item2">
-								 #{item2}
-									</ui:repeat></td>
+								<td class="rf-dt-c" id="name-#{item.id}"><a href="/repo/exec/#{item.id}">#{item.name}</a></td>
+								<c:if test="#{testExecutionSearchController.isDisplayColumn('test')}">
+									<td class="rf-dt-c"><a href="/repo/test/#{item.test.id}">#{item.test.name}</a></td>
 								</c:if>
+								<td class="rf-dt-c">
+									<h:outputText value="#{item.started}"><f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeStyle="full" /></h:outputText>
+								</td>
+								<td class="rf-dt-c">
+									<ui:repeat value="#{item.sortedTags}" var="item2"><span style="margin-right:5px" class="badge badge-success">#{item2}</span> </ui:repeat>
+								</td>
 								<ui:repeat value="#{testExecutionSearchController.paramColumns}" var="item2">
 									<td class="rf-dt-c"><h:outputText value="#{testExecutionSearchController.itemParam(item, item2)}" escape="false" /></td>
 								</ui:repeat>
@@ -168,7 +169,7 @@
 										</r:commandLink>
 									</div></td>
 							</tr>
-							<r:tooltip target="line-#{item.id}" followMouse="false" direction="topLeft">
+							<r:tooltip target="name-#{item.id}" followMouse="false" direction="topLeft">
 								<span><b>ID:</b> #{item.id}<br /> <b>Test name:</b> <a href="/repo/test/#{item.test.id}">#{item.test.name}</a><br /> <b>Comment:</b><br /> <h:outputText
 										value="#{item.comment}" escape="false" /> </span>
 							</r:tooltip>
