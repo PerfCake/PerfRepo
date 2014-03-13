@@ -524,6 +524,7 @@ public class TestGroupReportController extends ControllerBase {
 		comparison = comparisonCopy;
 		comparisonCopy = null;
 		baseline1 = null; baseline2 = null;
+		processTestExecutions();
 	}
 	
 	public void clearComparisonCopy() {
