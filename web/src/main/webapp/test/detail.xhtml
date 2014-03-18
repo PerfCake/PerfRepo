@@ -34,6 +34,9 @@
 				<a class="btn btn-primary btn-small" href="/repo/test/#{testController.testId}/newExec" title="Create new test execution"> <i class="icon-plus"></i>
 					Create execution
 				</a>
+                <a4j:commandLink styleClass="btn btn-primary btn-small" action="#{testController.listTestExecutions()}" execute="@this">
+                   List test executions
+                </a4j:commandLink>
 			</p>
 			<h3>Metrics</h3>
 			<h:form id="metricList">

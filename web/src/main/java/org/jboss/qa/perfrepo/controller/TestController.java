@@ -26,8 +26,10 @@ import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.qa.perfrepo.session.SearchCriteriaSession;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 /**
@@ -49,6 +51,9 @@ public class TestController extends ControllerBase {
 
    @Inject
    private TestService testService;
+
+   @Inject
+   private SearchCriteriaSession criteriaSession;
 
    private Test test = null;
    private MetricDetails metricDetails = new MetricDetails();
@@ -80,6 +85,18 @@ public class TestController extends ControllerBase {
       }
    }
 
+   public void listTestExecutions() {
+      //clear criterias
+      TestExecutionSearchTO criteriaSession = this.criteriaSession.getExecutionSearchCriteria();
+      criteriaSession.setStartedFrom(null);
+      criteriaSession.setStartedTo(null);
+      criteriaSession.setTags(null);
+      criteriaSession.setTestName(null);
+
+      criteriaSession.setTestUID(test.getUid());
+      redirect("/exec/search");
+   }
+
    public Test getTest() {
       return test;
    }
@@ -107,6 +124,8 @@ public class TestController extends ControllerBase {
    }
 
    public String create() {
+      System.out.println("jsem tay");
+
       if (test == null) {
          throw new IllegalStateException("test is null");
       }
