@@ -1,6 +1,7 @@
 package org.jboss.qa.perfrepo.session;
 
 import java.io.Serializable;
+import java.util.Calendar;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -28,6 +29,19 @@ public class SearchCriteriaSession implements Serializable {
    public TestExecutionSearchTO getExecutionSearchCriteria() {
       if (executionSearchCriteria == null) {
          executionSearchCriteria = new TestExecutionSearchTO();
+
+         //do not leave empty criteria - it would cause load of all test executions
+         //limit the amount by date <-1 week, now>
+         Calendar executedAfter = Calendar.getInstance();
+         executedAfter.add(Calendar.DATE, -7);
+         executedAfter.set(Calendar.HOUR_OF_DAY, 0);
+         executedAfter.set(Calendar.MINUTE, 0);
+         executedAfter.set(Calendar.SECOND, 0);
+
+         Calendar executedBefore = Calendar.getInstance();
+
+         executionSearchCriteria.setStartedFrom(executedAfter.getTime());
+         executionSearchCriteria.setStartedTo(executedBefore.getTime());
       }
       return executionSearchCriteria;
    }

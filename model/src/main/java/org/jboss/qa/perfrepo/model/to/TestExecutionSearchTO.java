@@ -29,7 +29,9 @@ import java.util.List;
  */
 public class TestExecutionSearchTO implements Serializable {
 
+   //means "Test executed after"
    private Date startedFrom;
+   //means "Test executed before"
    private Date startedTo;
    private String tags;
    private String testUID;
@@ -66,6 +68,7 @@ public class TestExecutionSearchTO implements Serializable {
       }
    }
 
+   //means "Test executed after"
    public Date getStartedFrom() {
       return startedFrom;
    }
@@ -74,6 +77,7 @@ public class TestExecutionSearchTO implements Serializable {
       this.startedFrom = startedFrom;
    }
 
+   //means "Test executed before"
    public Date getStartedTo() {
       return startedTo;
    }

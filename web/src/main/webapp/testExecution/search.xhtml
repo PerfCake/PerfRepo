@@ -36,14 +36,14 @@
 					</div>
 
 					<div class="control-group">
-						<h:outputLabel class="control-label" for="testStartedFrom">Test started from</h:outputLabel>
+						<h:outputLabel class="control-label" for="testStartedFrom">Test executed after</h:outputLabel>
 						<div class="controls">
 							<r:calendar value="#{testExecutionSearchController.criteria.startedFrom}" datePattern="yyyy-MM-dd HH:mm" id="testStartedFrom" />
 						</div>
 					</div>
 
 					<div class="control-group">
-						<h:outputLabel class="control-label" for="testStartedTo">Test started to</h:outputLabel>
+						<h:outputLabel class="control-label" for="testStartedTo">Test executed before</h:outputLabel>
 						<div class="controls">
 							<r:calendar value="#{testExecutionSearchController.criteria.startedTo}" datePattern="yyyy-MM-dd HH:mm" id="testStartedTo" />
 						</div>
