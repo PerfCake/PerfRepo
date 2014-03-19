@@ -8,7 +8,7 @@
 		<f:event type="preRenderView" listener="#{testExecutionController.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
-		<ui:define name="title">Test execution</ui:define>
+		<ui:define name="title">#{testExecutionController.testExecution.name} | #{strings['page.exec.title']}</ui:define>
 		<ui:define name="content">
 			<ui:include src="/testExecution/param_edit.xhtml" />
 			<ui:include src="/testExecution/favparam_edit.xhtml" />

@@ -8,7 +8,7 @@
 		<f:event type="preRenderView" listener="#{testController.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
-		<ui:define name="title">#{strings['page.test.title.details']}</ui:define>
+		<ui:define name="title">#{testController.test.name} | #{strings['page.test.title.details']}</ui:define>
 		<ui:define name="content">
 			<c:set target="#{testController}" property="editMode" value="#{false}" />
 			<c:set target="#{testController}" property="createMode" value="#{false}" />
