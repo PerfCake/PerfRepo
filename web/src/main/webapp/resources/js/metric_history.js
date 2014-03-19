@@ -14,26 +14,35 @@ metricHistoryClear();
 function metricHistoryRefresh() {
     for(var i = 0; i < highlightedPointsCounter; i++)  {
         var chart = $(document.getElementById(highlightedPointsChart[i])).chart('getPlotObject');
-        chart.highlight(highlightedPointsSeries[i], highlightedPointsX[i]);
+
+        if(typeof(chart.highlight) === "function") {
+            chart.highlight(highlightedPointsSeries[i], highlightedPointsX[i]);
+        }
     }
 
-    var chart = $(document.getElementById(previousHighlightedPointChart + 'Chart')).chart('getPlotObject');
-    chart.highlight(previousHighlightedPointSeries, previousHighlightedPointX);
+    var chart = $(document.getElementById(previousHighlightedPointChart)).chart('getPlotObject');
+    if(typeof(chart.highlight) === "function") {
+        chart.highlight(previousHighlightedPointSeries, previousHighlightedPointX);
+    }
 }
 
 function metricHistoryPointClick(e) {
-    var chart = $(document.getElementById(e.currentTarget.name + 'Chart')).chart('getPlotObject');
+    var currentChartName = e.currentTarget.name + 'Chart';
+    var chart = $(document.getElementById(currentChartName)).chart('getPlotObject');
 
     if(!previousAdded && previousHighlightedPointChart != null) {
-        var previousChart = $(document.getElementById(previousHighlightedPointChart + 'Chart')).chart('getPlotObject');
-        previousChart.unhighlight(previousHighlightedPointSeries, previousHighlightedPointX);
+        var previousChart = $(document.getElementById(previousHighlightedPointChart)).chart('getPlotObject');
+        if(typeof(previousChart.unhighlight) === "function") {
+            previousChart.unhighlight(previousHighlightedPointSeries, previousHighlightedPointX);
+        }
     }
 
     previousAdded = false;
     previousHighlightedPointX = e.data.x;
     previousHighlightedPointSeries = e.data.seriesIndex;
-    previousHighlightedPointChart = e.currentTarget.name;
+    previousHighlightedPointChart = currentChartName;
 
+    //no need to check because if I clicked on something, it definitely exists :)
     chart.highlight(e.data.seriesIndex, e.data.x);
 }
 
@@ -42,7 +51,7 @@ function metricHistoryPermanentlyHighlight() {
 
     highlightedPointsX[highlightedPointsCounter] = previousHighlightedPointX;
     highlightedPointsSeries[highlightedPointsCounter] = previousHighlightedPointSeries;
-    highlightedPointsChart[highlightedPointsCounter] = previousHighlightedPointChart + 'Chart';
+    highlightedPointsChart[highlightedPointsCounter] = previousHighlightedPointChart;
 
     highlightedPointsCounter++;
 }
