@@ -37,7 +37,7 @@
 
 				<div class="form-actions">
 					<a4j:commandButton action="#{testSearchController.search}" value="#{strings['page.testSearch.buSearch']}" styleClass="btn btn-primary"
-						alt="Search Test Execution" title="Search Test Execution" render="searchResult:searchResultTable">
+						alt="Search Test Execution" title="Search Test Execution" render="searchResultTable">
 					</a4j:commandButton>
 				</div>
 			</h:form>
@@ -45,9 +45,9 @@
 			<a href="/repo/test/new" class="btn btn-primary" title="#{strings['page.testSearch.buCreateNewTest']}"><i class="icon-plus" />
 				#{strings['page.testSearch.buCreateNewTest']}</a>
 
-			<h:form id="searchResult">
+			<h:form>
 				<rich:dataTable id="searchResultTable" styleClass="table table-bordered table-striped table-hover" value="#{testSearchController.result}" var="item">
-					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['id']}" sortBy="#{item.id}">
+					<rich:column sortable="true" sortOrder="#{testSearchController.sortsOrders['id']}" sortBy="#{item.id}">
 						<f:facet name="header">
 							<a4j:commandLink value="#{entityStrings.Test_id}" render="searchResultTable" action="#{testSearchController.sort()}">
 								<f:param name="sortProperty" value="id" />
@@ -56,7 +56,7 @@
 						</f:facet>
 						<h:outputText value="#{item.id}" />
 					</rich:column>
-					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['name']}" sortBy="#{item.name}">
+					<rich:column sortable="true" sortOrder="#{testSearchController.sortsOrders['name']}" sortBy="#{item.name}">
 						<f:facet name="header">
 							<a4j:commandLink value="#{entityStrings.Test_name}" render="searchResultTable" action="#{testSearchController.sort()}">
 								<f:param name="sortProperty" value="name" />
@@ -65,7 +65,7 @@
 						</f:facet>
 						<a href="/repo/test/#{item.id}">#{item.name}</a>
 					</rich:column>
-					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['uid']}" sortBy="#{item.uid}">
+					<rich:column sortable="true" sortOrder="#{testSearchController.sortsOrders['uid']}" sortBy="#{item.uid}">
 						<f:facet name="header">
 							<a4j:commandLink value="#{entityStrings.Test_uid}" render="searchResultTable" action="#{testSearchController.sort()}">
 								<f:param name="sortProperty" value="uid" />
@@ -74,10 +74,10 @@
 						</f:facet>
 						<h:outputText value="#{item.uid}" />
 					</rich:column>
-					<rich:column sortable="true" sortOrder="#{testExecutionController.sortsOrders['groupId']}" sortBy="#{item.groupId}">
+					<rich:column sortable="true" sortOrder="#{testSearchController.sortsOrders['groupId']}" sortBy="#{item.groupId}">
 						<f:facet name="header">
 							<a4j:commandLink value="#{entityStrings.Test_groupid}" render="searchResultTable" action="#{testSearchController.sort()}">
-								<f:param name="sortProperty" value="groupid" />
+								<f:param name="sortProperty" value="groupId" />
 								<f:ajax render="searchResultTable" />
 							</a4j:commandLink>
 						</f:facet>
