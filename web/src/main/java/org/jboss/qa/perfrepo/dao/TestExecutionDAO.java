@@ -39,7 +39,6 @@ import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO.SortType;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
@@ -119,10 +118,12 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     */
    public static TestExecution fetchValues(TestExecution testExecution) {
       List<Value> cloneValues = new ArrayList<Value>();
-      for (Value v : testExecution.getValues()) {
-         cloneValues.add(v.cloneWithParameters());
+      if (testExecution.getValues() != null) {
+	      for (Value v : testExecution.getValues()) {
+	         cloneValues.add(v.cloneWithParameters());
+	      }
+	      testExecution.setValues(cloneValues);
       }
-      testExecution.setValues(cloneValues);
       return testExecution;
    }
 

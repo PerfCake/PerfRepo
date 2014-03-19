@@ -14,33 +14,37 @@
 			<c:set target="#{testController}" property="editMode" value="#{true}" />
 			<h1>#{testController.createMode ? strings['page.test.title.create'] : strings['page.test.title.edit'] }</h1>
 			<h:form>
-				<table class="proptable">
-					<h:panelGroup rendered="#{!testController.createMode}">
-						<tr>
-							<td class="label">ID</td>
-							<td><label>#{testController.test.id}</label></td>
-						</tr>
-					</h:panelGroup>
-					<tr>
-						<td class="label">#{entityStrings.Test_name}</td>
-						<td><h:inputText styleClass="input-text" value="#{testController.test.name}" /></td>
-					</tr>
-					<tr>
-						<td class="label">#{entityStrings.Test_uid}</td>
-						<td><h:inputText styleClass="input-text" value="#{testController.test.uid}" /></td>
-					</tr>
-					<tr>
-						<td class="label">#{entityStrings.Test_groupid}</td>
-						<td><h:inputText styleClass="input-text" value="#{testController.test.groupId}" /></td>
-					</tr>
-				</table>
-
-				<h2>#{entityStrings.Test_description}</h2>
-				<rich:editor value="#{testController.test.description}" toolbar="basic" />
-				<div class="commandbuttons">
-					<h:commandButton action="#{testController.update}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}"
+				<fieldset>
+					<div class="control-group">
+						<h:outputLabel class="control-label">#{entityStrings.Test_name}</h:outputLabel>
+						<div class="controls">
+							<h:inputText styleClass="input-text" value="#{testController.test.name}" />
+						</div>
+					</div>
+					<div class="control-group">
+						<h:outputLabel class="control-label">#{entityStrings.Test_uid}</h:outputLabel>
+						<div class="controls">
+							<h:inputText styleClass="input-text" value="#{testController.test.uid}" />
+						</div>
+					</div>
+					<div class="control-group">
+						<h:outputLabel class="control-label">#{entityStrings.Test_groupid}</h:outputLabel>
+						<div class="controls">
+							<h:inputText styleClass="input-text" value="#{testController.test.groupId}" />
+						</div>
+					</div>
+					<div class="control-group">
+						<h:outputLabel class="control-label">#{entityStrings.Test_description}</h:outputLabel>
+						<div class="controls">
+							<rich:editor value="#{testController.test.description}" toolbar="basic" />
+						</div>
+					</div>
+				</fieldset>
+				<div style="text-align:right">
+					<a class="btn btn-primary" href="#{testController.test.id != null ? '/repo/test/'.concat(testController.test.id) : '/repo/test/search'}">#{strings.cancel}</a>
+					<h:commandButton styleClass="btn btn-primary" action="#{testController.update}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}"
 						rendered="#{!testController.createMode}" />
-					<h:commandButton action="#{testController.create}" value="#{strings['page.test.buCreate']}" alt="#{strings['page.test.buCreate']}"
+					<h:commandButton styleClass="btn btn-primary" action="#{testController.create}" value="#{strings['page.test.buCreate']}" alt="#{strings['page.test.buCreate']}"
 						title="#{strings['page.test.buCreate']}" rendered="#{testController.createMode}" />
 				</div>
 			</h:form>

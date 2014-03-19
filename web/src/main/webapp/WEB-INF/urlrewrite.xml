@@ -35,14 +35,14 @@
    <rule>
       <!-- /test/{testId}/edit -->
       <from>^/test/([\d]+)/edit$</from>
-      <to type="forward" last="true">/test/edit.jsf?testId=$1</to>
+      <to type="forward" last="true" qsappend="true">/test/edit.jsf?testId=$1</to>
       <set name="formActionURL">/test/$1/edit</set>
    </rule>
 
    <rule>
       <!-- /test/{testId}/newExec -->
       <from>^/test/([\d]+)/newExec$</from>
-      <to type="forward" last="true" qsappend="true">/testExecution/detail.jsf?createForTest=$1</to>
+      <to type="forward" last="true" qsappend="true">/testExecution/edit.jsf?createForTest=$1</to>
       <set name="formActionURL">/test/$1/newExec</set>
    </rule>
 
@@ -54,6 +54,13 @@
    </rule>
 
    <rule>
+      <!-- /exec/{testExecutionId} -->
+      <from>^/exec/([\d]+)/edit$</from>
+      <to type="forward" last="true" qsappend="true">/testExecution/edit.jsf?testExecutionId=$1</to>
+      <set name="formActionURL">/exec/$1/edit</set>
+   </rule>
+
+   <rule>
       <from>^/exec/search$</from>
       <to type="forward" last="true">/testExecution/search.jsf</to>
    </rule>
@@ -61,12 +68,6 @@
    <rule>
       <from>^/exec$</from>
       <to type="forward" last="true">/testExecution/search.jsf</to>
-   </rule>
-
-   <rule>
-      <from>^/exec/new$</from>
-      <to type="forward" last="true">/testExecution/detail.jsf?createMode=true</to>
-      <set name="formActionURL">/exec/new</set>
    </rule>
 
    <rule>

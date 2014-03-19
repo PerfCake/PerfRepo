@@ -1,32 +1,55 @@
-<h:form xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:r="http://richfaces.org">
-	<r:popupPanel id="dialogDetailsEdit" modal="true" autosized="true" resizeable="false" domElementAttachment="form"
-		show="#{testExecutionController.createForTest != null}">
-		<f:facet name="header">
-			<h:outputText value="Edit execution details" />
-		</f:facet>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:r="http://richfaces.org">
+<h:body>
+	<f:metadata>
+		<f:viewParam name="createForTest" value="#{testExecutionController.createForTest}" />
+		<f:viewParam name="testExecutionId" value="#{testExecutionController.testExecutionId}" />
+		<f:event type="preRenderView" listener="#{testExecutionController.preRender}" />
+	</f:metadata>
+	<ui:composition template="/layout/template.xhtml">
+		<ui:define name="title">#{testExecutionController.createForTest != null ? strings['page.exec.title.create'] : strings['page.exec.title.edit'] }</ui:define>
+		<ui:define name="content">
 
-		<fieldset>
-			<h:outputLabel class="detail-label">Name</h:outputLabel>
-			<div class="detail-value">
-				<h:inputText styleClass="input-text" value="#{testExecutionController.editedTestExecution.name}" />
-			</div>
-			<h:outputLabel class="detail-label">Time</h:outputLabel>
-			<div class="detail-value">
-				<r:calendar value="#{testExecutionController.editedTestExecution.started}" datePattern="yyyy-MM-dd HH:mm" />
-			</div>
-			<h:outputLabel class="detail-label">Tags</h:outputLabel>
-			<div class="detail-value">
-				<h:inputText styleClass="input-text" value="#{testExecutionController.rawTags}" />
-			</div>
-			<h:outputLabel class="detail-label">Comment</h:outputLabel>
-			<r:editor value="#{testExecutionController.editedTestExecution.comment}" toolbar="basic" />
-			<r:commandButton oncomplete="#{rich:component('dialogDetailsEdit')}.hide()" value="#{strings.cancel}" alt="#{strings.cancel}" title="#{strings.cancel}"
-				action="#{testExecutionController.unsetEditedTestExecution()}" />
-			<r:commandButton action="#{testExecutionController.updateEditedTestExecution()}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}"
-				oncomplete="#{rich:component('dialogDetailsEdit')}.hide()" render="@form :detailsForm :messagesPanel" />
-		</fieldset>
-
-	</r:popupPanel>
-</h:form>
-
+			<h1>#{testExecutionController.createForTest != null ? strings['page.exec.title.create'] : strings['page.exec.title.edit'] }</h1>
+			<h:form>
+				<fieldset>
+					<div class="control-group">
+						<h:outputLabel class="control-label">#{entityStrings.TestExecution_name}</h:outputLabel>
+						<div class="controls">
+							<h:inputText styleClass="input-text" value="#{testExecutionController.editedTestExecution.name}" />
+						</div>
+					</div>
+					<div class="control-group">
+						<h:outputLabel class="control-label">#{entityStrings.TestExecution_started}</h:outputLabel>
+						<div class="controls">
+							<r:calendar value="#{testExecutionController.editedTestExecution.started}" datePattern="yyyy-MM-dd HH:mm" />
+						</div>
+					</div>
+					<div class="control-group">
+						<h:outputLabel class="control-label">#{entityStrings.TestExecution_testExecutionTags}</h:outputLabel>
+						<div class="controls">
+							<h:inputText styleClass="input-text" value="#{testExecutionController.rawTags}" />
+						</div>
+					</div>
+					<div class="control-group">
+						<h:outputLabel class="control-label">#{entityStrings.TestExecution_comment}</h:outputLabel>
+						<div class="controls">
+							<r:editor value="#{testExecutionController.editedTestExecution.comment}" toolbar="basic" />
+						</div>
+					</div>
+					<div style="text-align:right">
+						<h:commandButton styleClass="btn btn-primary" action="#{testExecutionController.unsetEditedTestExecution()}" value="#{strings['cancel']}" alt="#{strings['cancel']}"
+							title="#{strings['page.test.buCreate']}" />
+						<h:commandButton styleClass="btn btn-primary" action="#{testExecutionController.updateEditedTestExecution()}" value="#{strings['page.exec.buCreate']}" alt="" title="#{strings['page.exec.buCreate']}"
+							rendered="#{testExecutionController.createForTest != nul}" />
+						<h:commandButton styleClass="btn btn-primary" action="#{testExecutionController.updateEditedTestExecution()}" value="#{strings.save}" alt="#{strings.save}"
+							title="#{strings.save}" rendered="#{testExecutionController.createForTest == null}" />
+					</div>
+				</fieldset>
+				</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

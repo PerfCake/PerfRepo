@@ -14,7 +14,7 @@
 		<ui:include src="/reports/testGroup/compare-popup.xhtml" />
 		<ui:include src="/reports/testGroup/clone-popup.xhtml" />
 			<h:form id="testGroupReport">
-				<h4><h:outputText value="#{testGroupReportController.reportName}" rendered="#{testGroupReportController.reportName != null}"/></h4><h6><h:outputText value="(#{testGroupReportController.reportId})" rendered="#{testGroupReportController.reportId != null}"/></h6>
+				<h1><h:outputText value="#{testGroupReportController.reportName}" rendered="#{testGroupReportController.reportName != null}"/></h1><h4><h:outputText value="(#{testGroupReportController.reportId})" rendered="#{testGroupReportController.reportId != null}"/></h4>
 				<div id="control" style="text-align: right;line-height: 30px;">
 					<span style="margin:5px;">
 						<a4j:commandLink styleClass="text-success" rendered="#{testGroupReportController.reportId == null}" oncomplete="#{rich:component('clonePopup')}.show();" alt="Save New Report" title="Save New Report"><i class="icon-copy"/>Save Report</a4j:commandLink>

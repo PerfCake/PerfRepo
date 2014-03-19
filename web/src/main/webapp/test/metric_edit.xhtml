@@ -6,24 +6,33 @@
 		<h:outputText value="Edit metric" />
 	</f:facet>
 	<h:form id="dialogMetricEditForm">
-		<table class="proptable">
-			<tr>
-				<td class="label">#{entityStrings.Metric_name}</td>
-				<td><h:inputText styleClass="input-text" value="#{testController.metricDetails.metric.name}" /></td>
-			</tr>
-			<tr>
-				<td class="label">#{entityStrings.Metric_comparator}</td>
-				<td><h:inputText styleClass="input-text" value="#{testController.metricDetails.metric.comparator}" /></td>
-			</tr>
-			<tr>
-				<td class="label">#{entityStrings.Metric_description}</td>
-				<td><rich:editor value="#{testController.metricDetails.metric.description}" toolbar="basic" /></td>
-			</tr>
-		</table>
-
-		<a4j:commandButton action="#{testController.metricDetails.unsetMetric}" oncomplete="#{rich:component('dialogMetricEdit')}.hide()" value="#{strings.cancel}"
-			alt="#{strings.cancel}" title="#{strings.cancel}" />
-
-		<h:commandButton action="#{testController.metricDetails.updateMetric}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}" />
+		<fieldset>
+			<div class="control-group">
+				<h:outputLabel class="control-label">#{entityStrings.Metric_name}</h:outputLabel>
+				<div class="controls">
+					<h:inputText styleClass="input-text" value="#{testController.metricDetails.metric.name}" />
+				</div>
+			</div>
+			<div class="control-group">
+				<h:outputLabel class="control-label">#{entityStrings.Metric_comparator}</h:outputLabel>
+				<div class="controls">
+					<h:inputText styleClass="input-text" value="#{testController.metricDetails.metric.comparator}" />
+				</div>
+			</div>
+			<div class="control-group">
+				<h:outputLabel class="control-label">#{entityStrings.Metric_description}</h:outputLabel>
+				<div class="controls">
+					<rich:editor value="#{testController.metricDetails.metric.description}" toolbar="basic" />
+				</div>
+			</div>
+			<div style="text-align:right">
+				<a4j:commandButton styleClass="btn btn-primary btn-small" action="#{testController.metricDetails.unsetMetric}" oncomplete="#{rich:component('dialogMetricEdit')}.hide()" value="#{strings.cancel}"
+					alt="#{strings.cancel}" title="#{strings.cancel}" />
+				<h:commandButton styleClass="btn btn-primary btn-small" action="#{testController.metricDetails.updateMetric}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}" />
+			</div>
+			<rich:hotKey key="Esc">
+			    <rich:componentControl target="dialogMetricAdd" operation="hide" />
+			</rich:hotKey>
+			</fieldset>
 	</h:form>
 </rich:popupPanel>

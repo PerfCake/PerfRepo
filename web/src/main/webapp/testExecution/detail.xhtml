@@ -14,25 +14,30 @@
 			<ui:include src="/testExecution/favparam_edit.xhtml" />
 			<ui:include src="/testExecution/value_edit.xhtml" />
 			<ui:include src="/testExecution/upload_attachment.xhtml" />
-			<ui:include src="/testExecution/edit.xhtml" />
 			<h:form id="detailsForm">
+				<div style=" overflow: hidden;">
+					<div id="control" style="float: left;opacity: 0.3;overflow: hidden;height:60px;">
+						<h2 class="text-success" style="">Test Execution Detail</h2>
+					</div>
+					<div id="control" style="text-align:right;float: right;line-height: 40px; margin: 10px 0;width:400px;height:40px;">
+						<span style="margin:5px;"><a class="text-success" href="/repo/exec/#{testExecutionController.testExecutionId}/edit"><i class="icon-edit" title="#{strings.edit}" /> Edit</a></span>
+						<span style="margin:5px;">
+							<r:commandLink styleClass="text-success" render="@form :tabForm" action="#{testExecutionController.setExecutionLocked(true)}" value=" " alt="Lock" title="Lock"
+								rendered="#{!testExecutionController.testExecution.isLocked()}">
+								<i class="icon-unlock" title="Lock" /> Lock
+							</r:commandLink>
+						</span>
+						<span style="margin:5px;">
+							<r:commandLink styleClass="text-success" render="@form :tabForm" action="#{testExecutionController.setExecutionLocked(false)}" value=" " alt="Unlock" title="Unlock"
+								rendered="#{testExecutionController.testExecution.isLocked()}">
+								<i class="icon-lock" title="Unlock" /> Unlock
+							</r:commandLink>
+						</span>
+					</div>
+				</div>
+				<hr/>
 				<fieldset>
-					<legend>
-						#{testExecutionController.testExecution.name}
-						<r:commandLink render="dialogDetailsEdit" action="#{testExecutionController.setEditedTestExecution()}"
-							oncomplete="#{rich:component('dialogDetailsEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}"
-							rendered="#{!testExecutionController.testExecution.isLocked()}">
-							<i class="icon-edit" title="#{strings.edit}" />
-						</r:commandLink>
-						<r:commandLink render="@form :tabForm" action="#{testExecutionController.setExecutionLocked(false)}" value=" " alt="Unlock" title="Unlock"
-							rendered="#{testExecutionController.testExecution.isLocked()}">
-							<i class="icon-lock" title="Unlock" />
-						</r:commandLink>
-						<r:commandLink render="@form :tabForm" action="#{testExecutionController.setExecutionLocked(true)}" value=" " alt="Lock" title="Lock"
-							rendered="#{!testExecutionController.testExecution.isLocked()}">
-							<i class="icon-unlock" title="Lock" />
-						</r:commandLink>
-					</legend>
+					<h1>#{testExecutionController.testExecution.name}</h1>
 					<h:outputLabel class="detail-label">ID</h:outputLabel>
 					<div class="detail-value">#{testExecutionController.testExecution.id == null ? '-' : testExecutionController.testExecution.id}</div>
 					<h:outputLabel class="detail-label">#{entityStrings.TestExecution_test}</h:outputLabel>
@@ -90,7 +95,7 @@
 								</r:column>
 								<h:column headerClass="button-header">
 									<f:facet name="header">
-										<r:commandLink styleClass="btn btn-primary btn-small" render="dialogValueEdit" action="#{testExecutionController.createEditedValue}"
+										<r:commandLink render="dialogValueEdit" action="#{testExecutionController.createEditedValue}"
 											oncomplete="#{rich:component('dialogValueEdit')}.show();" value=" " alt="New value" title="New value"
 											rendered="#{!testExecutionController.testExecution.isLocked()}">
 											<i class="icon-plus" />
@@ -138,7 +143,7 @@
 									<h:column headerClass="button-header">
 										<f:facet name="header"></f:facet>
 										<div class="btn-group">
-											<r:commandLink styleClass="btn btn-primary btn-small" render="dialogValueEdit" action="#{testExecutionController.setEditedValue(item.entity)}"
+											<r:commandLink render="dialogValueEdit" action="#{testExecutionController.setEditedValue(item.entity)}"
 												oncomplete="#{rich:component('dialogValueEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}"
 												rendered="#{!testExecutionController.testExecution.isLocked()}">
 												<i class="icon-edit" />
@@ -178,7 +183,7 @@
 								</r:column>
 								<h:column headerClass="button-header">
 									<f:facet name="header">
-										<r:commandLink styleClass="btn btn-primary btn-small" render="dialogParamEdit" action="#{testExecutionController.createEditedParameter}"
+										<r:commandLink render="dialogParamEdit" action="#{testExecutionController.createEditedParameter}"
 											oncomplete="#{rich:component('dialogParamEdit')}.show();" value=" " alt="New parameter" title="New parameter"
 											rendered="#{!testExecutionController.testExecution.isLocked()}">
 											<i class="icon-plus" />
@@ -238,7 +243,7 @@
 
 								<h:column headerClass="button-header">
 									<f:facet name="header">
-										<r:commandLink styleClass="btn btn-primary btn-small" render="dialogUploadAttachment" oncomplete="#{rich:component('dialogUploadAttachment')}.show();"
+										<r:commandLink render="dialogUploadAttachment" oncomplete="#{rich:component('dialogUploadAttachment')}.show();"
 											value=" " alt="Upload attachment" title="Upload attachment" rendered="#{!testExecutionController.testExecution.isLocked()}">
 											<i class="icon-plus" />
 										</r:commandLink>

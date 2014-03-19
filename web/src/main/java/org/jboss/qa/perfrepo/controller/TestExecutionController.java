@@ -176,6 +176,7 @@ public class TestExecutionController extends ControllerBase {
          redirect("/test/" + createForTest);
       } else {
          this.editedTestExecution = null;
+         redirect("/exec/" + testExecution.getId());
       }
    }
 
@@ -192,6 +193,7 @@ public class TestExecutionController extends ControllerBase {
             } else {
                testExecution = testService.updateTestExecution(editedTestExecution);
                showMultiValue(null);
+               redirectWithMessage("/exec/" + testExecution.getId(), INFO, "page.exec.successfullyUpdated", testExecution.getName());
             }
          } catch (ServiceException e) {
             addMessageFor(e);
@@ -252,6 +254,7 @@ public class TestExecutionController extends ControllerBase {
                   values = MultiValue.createFrom(testExecution);
                   favoriteParameters = userSession.getFavoriteParametersFor(test.getId());
                }
+               setEditedTestExecution();
             }
          }
       }
