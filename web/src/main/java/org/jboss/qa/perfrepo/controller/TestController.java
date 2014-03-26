@@ -258,7 +258,6 @@ public class TestController extends ControllerBase {
       public void updateMetric() {
          try {
             testService.updateMetric(test, metric);
-            redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyUpdated", metric.getName());
          } catch (ServiceException e) {
             addSessionMessageFor(e);
             redirect("/test/" + testId);

@@ -6,11 +6,16 @@
 		<h:outputText value="Edit metric" />
 	</f:facet>
 	<h:form id="dialogMetricEditForm">
+		<a4j:outputPanel id="editMetricMessagesPanel">
+			<h:messages errorClass="alert alert-error" infoClass="alert alert-success" fatalClass="alert alert-error" warnClass="alert alert-info" />
+		</a4j:outputPanel>
 		<fieldset>
 			<div class="control-group">
 				<h:outputLabel class="control-label">#{entityStrings.Metric_name}</h:outputLabel>
 				<div class="controls">
-					<h:inputText styleClass="input-text" value="#{testController.metricDetails.metric.name}" />
+					<h:inputText styleClass="input-text" label="#{entityStrings.Metric_name}" value="#{testController.metricDetails.metric.name}">
+						<f:validateRequired/>
+					</h:inputText>
 				</div>
 			</div>
 			<div class="control-group">
@@ -22,13 +27,14 @@
 			<div class="control-group">
 				<h:outputLabel class="control-label">#{entityStrings.Metric_description}</h:outputLabel>
 				<div class="controls">
-					<rich:editor value="#{testController.metricDetails.metric.description}" toolbar="basic" />
+					<rich:editor id="metricDescriprion" value="#{testController.metricDetails.metric.description}" toolbar="basic" validatorMessage="#{entityStrings.Metric_description}: Value is required">
+					</rich:editor>
 				</div>
 			</div>
 			<div style="text-align:right">
-				<a4j:commandButton styleClass="btn btn-primary btn-small" action="#{testController.metricDetails.unsetMetric}" oncomplete="#{rich:component('dialogMetricEdit')}.hide()" value="#{strings.cancel}"
+				<a4j:commandButton styleClass="btn btn-primary btn-small" action="#{testController.metricDetails.unsetMetric}" render="@form :editMetricMessagesPanel" oncomplete="#{rich:component('dialogMetricEdit')}.hide()" value="#{strings.cancel}"
 					alt="#{strings.cancel}" title="#{strings.cancel}" />
-				<h:commandButton styleClass="btn btn-primary btn-small" action="#{testController.metricDetails.updateMetric}" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}" />
+				<a4j:commandButton styleClass="btn btn-primary btn-small" action="#{testController.metricDetails.updateMetric}" render="@form :metricList :editMetricMessagesPanel" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('dialogMetricEdit')}.hide()" value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}" />
 			</div>
 			<rich:hotKey key="Esc">
 			    <rich:componentControl target="dialogMetricAdd" operation="hide" />

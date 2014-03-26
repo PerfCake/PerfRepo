@@ -70,7 +70,7 @@
 									        action="#{testController.metricDetails.deleteMetric(metric)}" render="metricList :messagesPanel">
 									        <i class="icon-trash"></i>
 										</a4j:commandLink>
-								        <a4j:commandLink styleClass="btn btn-primary btn-small" render="dialogMetricEditForm" action="#{testController.metricDetails.setMetricForUpdate(metric)}"
+								        <a4j:commandLink styleClass="btn btn-primary btn-small" render=":dialogMetricEdit :dialogMetricEditForm" action="#{testController.metricDetails.setMetricForUpdate(metric)}"
 									        oncomplete="#{rich:component('dialogMetricEdit')}.show();" value=" " alt="#{strings.edit}" title="#{strings.edit}">
 									        <i class="icon-edit"></i>
 										</a4j:commandLink>
