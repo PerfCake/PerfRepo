@@ -91,7 +91,7 @@
 									<f:facet name="header">Value
 									</f:facet>
 									<h:outputText value="#{item.formattedSimpleValue}" rendered="#{!item.isMultiValue()}" />
-									<r:commandLink value="Multi-value" render="@form" action="#{testExecutionController.showMultiValue(item.metricName)}" rendered="#{item.isMultiValue()}" />
+									<r:commandLink value="Multi-value" render="@form :tabValues :valueForm :multiValue :valueChart" action="#{testExecutionController.showMultiValue(item.metricName)}" rendered="#{item.isMultiValue()}" />
 								</r:column>
 								<h:column headerClass="button-header">
 									<f:facet name="header">
@@ -127,8 +127,10 @@
 									</h:selectOneMenu>
 								</p>
 								<p>
-									<r:mediaOutput element="img" expires="#{now}" cacheable="#{false}" createContent="#{jfreechart.generate}" mimeType="image/png"
+								<r:panel id="valueChart">
+									<r:mediaOutput element="img" expires="#{now}" cacheable="true" createContent="#{jfreechart.generate}" mimeType="image/png"
 										value="#{testExecutionController.chartData}" />
+								</r:panel>
 								</p>
 								<h:dataTable id="multiValueTable" value="#{testExecutionController.selectedMultiValueList}" var="item" columnClasses="numvalcolumn,numvalcolumn"
 									styleClass="table table-bordered table-striped table-hover smallpad">

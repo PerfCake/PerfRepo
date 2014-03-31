@@ -722,7 +722,15 @@ public class TestServiceBean implements TestService {
       }
       checkUserCanChangeTest(exec.getTest());
       checkLocked(exec);
-      Metric metric = metricDAO.find(value.getMetric().getId());
+      Metric metric = null;
+      if (value.getMetric().getId() != null) {
+         metric = metricDAO.find(value.getMetric().getId());
+      } else {
+    	  List<Metric> metrics = metricDAO.getMetricByNameAndGroup(value.getMetric().getName(), exec.getTest().getGroupId());
+    	  if (metrics.size() > 0) {
+    		  metric = metricDAO.find(metrics.get(0).getId());
+    	  }
+      }
       if (metric == null) {
          throw serviceException(METRIC_NOT_FOUND, "Metric not found (id=%s)", value.getMetric().getId());
       }

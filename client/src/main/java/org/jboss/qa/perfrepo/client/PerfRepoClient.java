@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
+import org.jboss.qa.perfrepo.model.Value;
 
 /**
  * 
@@ -124,6 +125,31 @@ public class PerfRepoClient {
       HttpResponse resp = httpClient.execute(post);
       if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED) {
          logHttpError("Error while creating test", post, resp);
+         EntityUtils.consume(resp.getEntity());
+         return null;
+      }
+      Header[] locations = resp.getHeaders(HttpHeaders.LOCATION);
+      if (locations != null && locations.length > 0) {
+         log.debug("Created new test at: " + locations[0].getValue());
+      }
+      Long id = new Long(EntityUtils.toString(resp.getEntity()));
+      EntityUtils.consume(resp.getEntity());
+      return id;
+   }
+
+   /**
+    * Adds value to existing testExecution
+    *
+    * @param value.
+    * @return ID of new value.
+    * @throws Exception
+    */
+   public Long addValue(TestExecution te) throws Exception {
+      HttpPost post = createBasicPost("testExecution/addValue");
+      setPostEntity(post, te);
+      HttpResponse resp = httpClient.execute(post);
+      if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED) {
+         logHttpError("Error while creating value", post, resp);
          EntityUtils.consume(resp.getEntity());
          return null;
       }

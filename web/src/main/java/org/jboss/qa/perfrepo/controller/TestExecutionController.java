@@ -48,6 +48,7 @@ import org.jboss.qa.perfrepo.util.MultiValue.ParamInfo;
 import org.jboss.qa.perfrepo.util.MultiValue.ValueInfo;
 import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
+import org.jfree.data.time.TimeSeries;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.richfaces.event.FileUploadEvent;
@@ -517,7 +518,7 @@ public class TestExecutionController extends ControllerBase {
          return;
       }
       Collections.sort(selectedMultiValueParamSelectionList);
-      if (selectedMultiValueParamSelection == null) {
+      if (selectedMultiValueParamSelection == null || selectedMultiValueParamSelection.isEmpty()) {
          selectedMultiValueParamSelection = selectedMultiValueParamSelectionList.get(0);
       }
       selectedMultiValueList = value.getComplexValueByParamName(selectedMultiValueParamSelection);

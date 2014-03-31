@@ -19,10 +19,14 @@ import org.jfree.data.xy.XYSeriesCollection;
 @RequestScoped
 @Named("jfreechart")
 public class JFreechartBean extends ControllerBase {
+ 
+   private static final long serialVersionUID = -2686748629726538033L;
    private static final Logger log = Logger.getLogger(JFreechartBean.class);
 
    public static class XYLineChartSpec implements Serializable {
-      public String title;
+
+	  private static final long serialVersionUID = -8524132098240009161L;
+	  public String title;
       public String xAxisLabel;
       public String yAxisLabel;
       public XYSeriesCollection dataset;
@@ -32,7 +36,9 @@ public class JFreechartBean extends ControllerBase {
    }
 
    public static class BarChartSpec implements Serializable {
-      public String title;
+
+	  private static final long serialVersionUID = 3162800121652368162L;
+	  public String title;
       public String xAxisLabel;
       public String yAxisLabel;
       public CategoryDataset dataset;

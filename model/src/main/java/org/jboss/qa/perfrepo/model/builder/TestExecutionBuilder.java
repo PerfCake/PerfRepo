@@ -43,6 +43,17 @@ public class TestExecutionBuilder {
    }
 
    /**
+    * Sets the id of the {@link TestExecution}
+    *
+    * @param testExecutionId
+    * @return this {@link TestExecutionBuilder}
+    */
+   public TestExecutionBuilder id(Long id) {
+      testExecution.setId(id);
+      return this;
+   }
+
+   /**
     * Set the name.
     * 
     * @param name
