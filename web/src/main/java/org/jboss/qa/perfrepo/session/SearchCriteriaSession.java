@@ -38,10 +38,7 @@ public class SearchCriteriaSession implements Serializable {
          executedAfter.set(Calendar.MINUTE, 0);
          executedAfter.set(Calendar.SECOND, 0);
 
-         Calendar executedBefore = Calendar.getInstance();
-
          executionSearchCriteria.setStartedFrom(executedAfter.getTime());
-         executionSearchCriteria.setStartedTo(executedBefore.getTime());
       }
       return executionSearchCriteria;
    }
