@@ -58,6 +58,7 @@ import org.richfaces.ui.output.chart.PlotClickEvent;
  * Shows development of metric based on a specific test execution parameter.
  * 
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  * 
  */
 @Named("metricReportBean")
@@ -177,7 +178,6 @@ public class MetricReportController extends ControllerBase {
       // chart config line listener
       public void selectedTest() {
          changeMetricSelection();
-         updateReport();
       }
 
       // chart config line listener
@@ -438,32 +438,6 @@ public class MetricReportController extends ControllerBase {
          return chart.getChartName();
       }
 
-      // chart config line listener
-      public void selectedChart() {
-         updateReport();
-      }
-
-      public void editedSeriesName() {
-         int i = 2;
-         String original = getName();
-         while (findOtherSpec(getName()) != null) {
-            setName(original + (" " + i));
-            i++;
-         }
-         if (!getName().equals(original)) {
-            addMessage(ERROR, "page.metricreport.seriesExists", original);
-         }
-         updateReport();
-      }
-
-      public void selectedMetric() {
-         updateReport();
-      }
-
-      public void editedTags() {
-         updateReport();
-      }
-
       private SeriesSpec findOtherSpec(String name) {
          for (SeriesSpec seriesSpec : chart.chartSeries) {
             if (seriesSpec != this && seriesSpec.getName().equals(name)) {
@@ -565,41 +539,6 @@ public class MetricReportController extends ControllerBase {
 
       public String getChart() {
          return chart.getChartName();
-      }
-
-      // chart config line listener
-      public void selectedChart() {
-         updateReport();
-      }
-
-      public void editedName() {
-         int i = 2;
-         String original = getName();
-         while (findOtherSpec(getName()) != null) {
-            setName(original + (" " + i));
-            i++;
-         }
-         if (!getName().equals(original)) {
-            addMessage(ERROR, "page.metricreport.baselineExists", original);
-         }
-         updateReport();
-      }
-
-      public void selectedMetric() {
-         updateReport();
-      }
-
-      public void editedExecId() {
-         updateReport();
-      }
-
-      private BaselineSpec findOtherSpec(String name) {
-         for (BaselineSpec baselineSpec : chart.chartBaselines) {
-            if (baselineSpec != this && baselineSpec.getName().equals(name)) {
-               return baselineSpec;
-            }
-         }
-         return null;
       }
    }
 
@@ -797,11 +736,17 @@ public class MetricReportController extends ControllerBase {
       return null;
    }
 
+   public void previewReport() {
+      updateReport();
+   }
+
    public void save() {
       if (reportId == null || reportId.isEmpty()) {
          addMessage(ERROR, "page.metricreport.enterReportID");
          return;
       }
+
+      updateReport();
 
       Map<String, String> reportProps = new HashMap<String, String>();
       reportProps.put("name", reportName);
@@ -881,7 +826,6 @@ public class MetricReportController extends ControllerBase {
          seriesToRemove.chart.removeSeries(seriesToRemove);
       }
       seriesSpecs.remove(seriesToRemove);
-      updateReport();
    }
 
    public void removeBaseline(BaselineSpec baselineToRemove) {
@@ -889,7 +833,6 @@ public class MetricReportController extends ControllerBase {
          baselineToRemove.chart.removeBaseline(baselineToRemove);
       }
       baselineSpecs.remove(baselineToRemove);
-      updateReport();
    }
 
    public List<ChartSpec> getChartSpecs() {
