@@ -483,7 +483,8 @@ public class TestServiceBean implements TestService {
          List<Metric> existingMetricsForGroup = metricDAO.getMetricByNameAndGroup(metric.getName(), test.getGroupId());
          for (Metric existingMetric : existingMetricsForGroup) {
             if (existingMetric.getName().equals(metric.getName())) {
-               throw serviceException(METRIC_EXISTS, "Test %s already contains metric %s", test.getUid(), metric.getName());
+               Metric freshMetric = metricDAO.find(existingMetric.getId());
+               return createTestMetric(test, freshMetric);
             }
          }
          Metric freshMetric = metricDAO.create(metric);
