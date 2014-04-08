@@ -67,3 +67,7 @@ function metricHistoryClear() {
     highlightedPointsChart = new Array();
     highlightedPointsCounter = 0;
 }
+
+$(document).ready(function() {
+    $("#clearCompare").click(metricHistoryClear());
+});
