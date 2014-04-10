@@ -27,7 +27,6 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.jboss.qa.perfrepo.controller.JFreechartBean.XYLineChartSpec;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
@@ -89,7 +88,6 @@ public class TestExecutionController extends ControllerBase {
    private List<String> selectedMultiValueParamSelectionList = null;
    private String selectedMultiValueParamSelection = null;
    private ValueInfo selectedMultiValue = null;
-   private XYLineChartSpec chartData = null;
 
    private Long createForTest;
    private Long testExecutionId;
@@ -491,7 +489,6 @@ public class TestExecutionController extends ControllerBase {
          return;
       }
       selectedMultiValueList = selectedMultiValue.getComplexValueByParamName(selectedMultiValueParamSelection);
-      chartData = createChart(selectedMultiValueList, selectedMultiValue);
    }
 
    private void clearSelectedMultiValue() {
@@ -499,7 +496,6 @@ public class TestExecutionController extends ControllerBase {
       selectedMultiValueParamSelection = null;
       selectedMultiValue = null;
       selectedMultiValueList = null;
-      chartData = null;
    }
 
    public void showMultiValue(String metricName) {
@@ -523,40 +519,6 @@ public class TestExecutionController extends ControllerBase {
       }
       selectedMultiValueList = value.getComplexValueByParamName(selectedMultiValueParamSelection);
       selectedMultiValue = value;
-      chartData = createChart(selectedMultiValueList, selectedMultiValue);
-   }
-
-   public XYLineChartSpec getChartData() {
-      return chartData;
-   }
-
-   private XYLineChartSpec createChart(List<ParamInfo> values, ValueInfo mainValue) {
-      if (selectedMultiValueList == null) {
-         return null;
-      }
-      XYSeriesCollection dataset = new XYSeriesCollection();
-      XYSeries series = new XYSeries(selectedMultiValueParamSelection);
-      dataset.addSeries(series);
-      try {
-         for (ParamInfo pinfo : selectedMultiValueList) {
-            Double paramValue = Double.valueOf(pinfo.getParamValue());
-            if (paramValue != null) {
-               series.add(paramValue, pinfo.getValue());
-            }
-         }
-         XYLineChartSpec chartSpec = new XYLineChartSpec();
-         chartSpec.title = "Multi-value for " + mainValue.getMetricName();
-         chartSpec.xAxisLabel = selectedMultiValueParamSelection;
-         chartSpec.yAxisLabel = "Metric value";
-         chartSpec.dataset = dataset;
-         return chartSpec;
-      } catch (NumberFormatException e) {
-         log.error("Can't chart non-numeric values");
-         return null;
-      } catch (Exception e) {
-         log.error("Error while creating chart", e);
-         return null;
-      }
    }
 
    public List<ParamInfo> getSelectedMultiValueList() {

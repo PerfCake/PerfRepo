@@ -30,8 +30,6 @@ import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.ControllerBase;
-import org.jboss.qa.perfrepo.controller.JFreechartBean.BarChartSpec;
-import org.jboss.qa.perfrepo.controller.JFreechartBean.XYLineChartSpec;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
@@ -83,13 +81,11 @@ public class CompareExecutionsController extends ControllerBase {
    private Map<Long, Map<String, ValueInfo>> values = null;
    private Test test = null;
    private TestExecution baselineExecution = null;
-   private BarChartSpec chartData;
 
    private List<String> multiValueCompareList;
    private String multiValueCompareMetric;
    private String multiValueCompareParam;
    private List<String> multiValueCompareParamList;
-   private XYLineChartSpec multiValueCompareChartData = null;
 
    public Test getTest() {
       return test;
@@ -105,7 +101,6 @@ public class CompareExecutionsController extends ControllerBase {
          throw new IllegalStateException("Can't find execution " + execId);
       }
       baselineExecution = baselineExec1;
-      chartData = null;
    }
 
    public void removeFromComparison(Long execId) {
@@ -117,34 +112,10 @@ public class CompareExecutionsController extends ControllerBase {
       if (execToRemove != null && testExecutions != null) {
          testExecutions.remove(execToRemove);
       }
-      chartData = null;
    }
 
    public boolean isBaseline(Long execId) {
       return baselineExecution != null && baselineExecution.getId().equals(execId);
-   }
-
-   public void createChart(String metricName, boolean percents) {
-      if (testExecutions == null || testExecutions.isEmpty()) {
-         return;
-      }
-      chartData = new BarChartSpec();
-      DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-      chartData.dataset = dataset;
-      String seriesName = metricName + (percents ? " % diff" : "");
-      for (TestExecution te : testExecutions) {
-         Double value = percents ? getSimpleBaselineNum(te.getId(), metricName) : getSimpleNum(te.getId(), metricName);
-         if (value != null) {
-            dataset.addValue(value, seriesName, te.getName());
-         }
-      }
-      chartData.xAxisLabel = "Execution";
-      chartData.yAxisLabel = seriesName;
-      chartData.title = "Compare executions";
-   }
-
-   public BarChartSpec getChartData() {
-      return chartData;
    }
 
    public List<String> getMultiValueCompareList() {
@@ -161,10 +132,6 @@ public class CompareExecutionsController extends ControllerBase {
 
    public List<String> getMultiValueCompareParamList() {
       return multiValueCompareParamList;
-   }
-
-   public XYLineChartSpec getMultiValueCompareChartData() {
-      return multiValueCompareChartData;
    }
 
    private Map<Long, Map<String, ValueInfo>> computeValues() {
@@ -340,7 +307,6 @@ public class CompareExecutionsController extends ControllerBase {
       multiValueCompareParam = multiValueCompareParamList.get(0);
       multiValueCompareMetric = metricName;
       updateParamValues(stringSet, infos);
-      multiValueCompareChartData = createChart();
    }
 
    private void updateParamValues(Set<String> stringSet, List<ValueInfo> infos) {
@@ -382,47 +348,6 @@ public class CompareExecutionsController extends ControllerBase {
          return;
       }
       updateParamValues(new HashSet<String>(), findValueInfos(multiValueCompareMetric));
-      multiValueCompareChartData = createChart();
-   }
-
-   private XYLineChartSpec createChart() {
-      try {
-         if (multiValueCompareMetric == null || multiValueCompareParam == null || testExecutions == null) {
-            return null;
-         }
-         XYSeriesCollection dataset = new XYSeriesCollection();
-         for (TestExecution exec : testExecutions) {
-            ValueInfo vi = findValueInfo(exec.getId(), multiValueCompareMetric);
-            if (vi != null) {
-               List<ParamInfo> pinfos = vi.getComplexValueByParamName(multiValueCompareParam);
-               if (pinfos != null) {
-                  XYSeries series = new XYSeries(exec.getName());
-                  dataset.addSeries(series);
-
-                  for (ParamInfo pinfo : pinfos) {
-                     Double paramValue = Double.valueOf(pinfo.getParamValue());
-                     if (paramValue != null) {
-                        series.add(paramValue, pinfo.getValue());
-                     }
-                  }
-
-               }
-            }
-         }
-         XYLineChartSpec chartSpec = new XYLineChartSpec();
-         chartSpec.title = "Multi-value for " + multiValueCompareMetric;
-         chartSpec.xAxisLabel = multiValueCompareParam;
-         chartSpec.yAxisLabel = "Metric value";
-         chartSpec.dataset = dataset;
-         chartSpec.legend = true;
-         return chartSpec;
-      } catch (NumberFormatException e) {
-         log.error("Can't chart non-numeric values");
-         return null;
-      } catch (Exception e) {
-         log.error("Error while creating chart", e);
-         return null;
-      }
    }
 
    public List<Metric> getMetrics() {

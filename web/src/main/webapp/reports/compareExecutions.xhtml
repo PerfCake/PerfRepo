@@ -93,8 +93,7 @@
 					<tbody class="rf-dt-b">
 						<ui:repeat value="#{compareExecutionsController.metrics}" var="metric">
 							<tr class="rf-dt-r rf-dt-fst-r">
-								<td class="rf-dt-c"><h:commandLink value="#{metric.name}" action="#{compareExecutionsController.createChart(metric.name, false)}"
-										title="Compute chart" /></td>
+								<td class="rf-dt-c">#{metric.name}</td>
 								<ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
 									<td class="rf-dt-c #{compareExecutionsController.isBaseline(exec.id) ? 'compare_exec_baseline' : '' }"><h:outputText
 											value="#{compareExecutionsController.getMetricValue(exec.id, metric.name)}"
@@ -123,8 +122,7 @@
 						<tbody class="rf-dt-b">
 							<ui:repeat value="#{compareExecutionsController.metrics}" var="metric">
 								<tr class="rf-dt-r rf-dt-fst-r">
-									<td class="rf-dt-c"><h:commandLink value="#{metric.name}" action="#{compareExecutionsController.createChart(metric.name, true)}"
-											title="Compute chart" /></td>
+									<td class="rf-dt-c">#{metric.name}</td>
 									<ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
 										<td class="rf-dt-c #{compareExecutionsController.isBaseline(exec.id) ? 'compare_exec_baseline' : '' }"><h:outputText
 												value="#{compareExecutionsController.getMetricBaselinedValue(exec.id, metric.name)}"
@@ -149,10 +147,6 @@
 							<f:ajax listener="#{compareExecutionsController.updateParamSelection}" render="@form" />
 						</h:selectOneMenu>
 					</p>
-					<p>
-						<a4j:mediaOutput element="img" expires="#{now}" cacheable="#{false}" createContent="#{jfreechart.generate}" mimeType="image/png"
-							value="#{compareExecutionsController.multiValueCompareChartData}" />
-					</p>
 					<table class="rf-dt tetable_values">
 						<thead class="rf-dt-thd">
 							<tr class="rf-dt-shdr">
@@ -175,14 +169,6 @@
 					</table>
 				</h:panelGroup>
 			</h:form>
-
-			<h:panelGroup id="chartPanel" rendered="#{compareExecutionsController.chartData != null}">
-				<p>
-					<a4j:mediaOutput element="img" expires="#{now}" cacheable="#{false}" createContent="#{jfreechart.generate}" mimeType="image/png"
-						value="#{compareExecutionsController.chartData}" />
-				</p>
-			</h:panelGroup>
-
 		</ui:define>
 	</ui:composition>
 </h:body>
