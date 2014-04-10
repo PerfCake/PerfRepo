@@ -42,6 +42,7 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
  * 
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  * 
  */
 @Named
@@ -49,8 +50,6 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 public class TestExecutionSearchController extends ControllerBase {
 
    private static final long serialVersionUID = 1L;
-
-   //private static final Logger log = Logger.getLogger(SearchController.class);
 
    @Inject
    private TestService testService;
@@ -62,8 +61,6 @@ public class TestExecutionSearchController extends ControllerBase {
    private TEComparatorSession comparatorSession;
 
    private String tag;
-
-   private TestExecutionSearchTO criteria = null;
 
    private List<TestExecution> result;
    private List<String> paramColumns;
@@ -85,15 +82,10 @@ public class TestExecutionSearchController extends ControllerBase {
    }
 
    public void preRender() {
-      if (criteria == null) {
+      if (sort == null) {
          sort = criteriaSession.getExecutionSearchSort();
-         criteria = criteriaSession.getExecutionSearchCriteria();
          search();
       }
-   }
-
-   public TestExecutionSearchTO getCriteria() {
-      return criteria;
    }
 
    public String getTag() {
@@ -105,6 +97,7 @@ public class TestExecutionSearchController extends ControllerBase {
    }
 
    public void search() {
+      TestExecutionSearchTO criteria = criteriaSession.getExecutionSearchCriteria();
       result = testService.searchTestExecutions(criteria);
       paramColumns = new ArrayList<String>(3);
       for (ParamCriteria pc : criteria.getParameters()) {
@@ -120,11 +113,11 @@ public class TestExecutionSearchController extends ControllerBase {
    }
 
    public void addParameterCriteria() {
-      criteria.getParameters().add(new TestExecutionSearchTO.ParamCriteria());
+      criteriaSession.getExecutionSearchCriteria().getParameters().add(new TestExecutionSearchTO.ParamCriteria());
    }
 
    public void removeParameterCriteria(TestExecutionSearchTO.ParamCriteria criteriaToRemove) {
-      criteria.getParameters().remove(criteriaToRemove);
+      criteriaSession.getExecutionSearchCriteria().getParameters().remove(criteriaToRemove);
    }
 
    public String delete() {

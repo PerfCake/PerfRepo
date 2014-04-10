@@ -43,6 +43,10 @@ public class SearchCriteriaSession implements Serializable {
       return executionSearchCriteria;
    }
 
+   public void clearExecutionSearchCriteria() {
+      executionSearchCriteria = new TestExecutionSearchTO();
+   }
+
    public TestSearchTO getTestSearchCriteria() {
       if (testSearchCriteria == null) {
          testSearchCriteria = new TestSearchTO();
