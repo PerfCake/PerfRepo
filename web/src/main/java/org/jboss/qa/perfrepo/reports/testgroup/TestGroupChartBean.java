@@ -109,7 +109,7 @@ public class TestGroupChartBean implements Serializable {
 		public Paint getItemPaint(final int row, final int column) {
 			double value = getPlot().getDataset().getValue(row, column)
 					.doubleValue();
-			return (value < 0) ? Color.red : Color.green;
+			return (value < -5) ? Color.red : (value < 0  ? Color.orange : Color.green);
 		}
 	}
 }

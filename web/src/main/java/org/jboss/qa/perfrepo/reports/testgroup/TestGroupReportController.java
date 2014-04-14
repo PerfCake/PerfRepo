@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class TestGroupReportController extends ControllerBase {
 	/**
 	 * Test name, tag, value
 	 */
-	private HashBasedTable<String, String, ValueCell> data = HashBasedTable.create();
+	private HashBasedTable<String, ColumnKey, ValueCell> data = HashBasedTable.create();
 	
 	/**
 	 * Report properties
@@ -78,7 +79,9 @@ public class TestGroupReportController extends ControllerBase {
 	
 	private List<String> tests = Lists.newArrayList();
 	
-	//private List<String> metrics = Lists.newArrayList();
+	private List<String> metrics = Lists.newArrayList();
+
+	private List<String> selectedMetrics = Lists.newArrayList();
 	
 	private Map<String, List<String>> comparison = new HashMap<String, List<String>>();
 	
@@ -106,8 +109,6 @@ public class TestGroupReportController extends ControllerBase {
 	
 	private String newReportName;	
 	
-	private ChartData dataset;
-	
 	public void processTestExecutions() {
 		data.clear();
 		reloadSessionMessages();
@@ -118,18 +119,26 @@ public class TestGroupReportController extends ControllerBase {
 			if (!tags.contains(tagsKey)) {
 				tags.add(tagsKey);
 			}
-			String columnKey = tagAlias.get(tagsKey) != null ? tagAlias.get(tagsKey) : tagsKey;
-			ValueCell valueCell = data.get(te.getTestUid(), columnKey);
-			//TODO: filter values according to metric
-			if (valueCell == null) {
-				data.put(te.getTestUid(), columnKey, new ValueCell(te.getValues()));
-			} else {
-				valueCell.addValues(te.getValues());
+			String columnKey1 = tagAlias.get(tagsKey) != null ? tagAlias.get(tagsKey) : tagsKey;
+			for (Value value : te.getValues()) {
+				String metricName = value.getMetricName();
+				if (!metrics.contains(metricName)) {
+					metrics.add(metricName);
+				}
+				if (selectedMetrics.isEmpty() || selectedMetrics.contains(metricName)) {
+					ColumnKey columnKeyFull = new ColumnKey(columnKey1, metricName);
+					ValueCell valueCell = data.get(te.getTestUid(), columnKeyFull);
+					//TODO: filter values according to metric
+					if (valueCell == null) {
+						data.put(te.getTestUid(), columnKeyFull, new ValueCell(value));
+					} else {
+						valueCell.addValues(te.getValues());
+					}
+				}
 			}
 		}
-		if (comparison != null && !comparison.isEmpty()) {
-			String compare = (String)comparison.keySet().toArray()[0];
-			createDataset(compare);
+		if (selectedMetrics.isEmpty()) {
+			selectedMetrics.addAll(metrics);
 		}
 	}
 	
@@ -171,12 +180,16 @@ public class TestGroupReportController extends ControllerBase {
 					comparison.put(alias, Lists.newArrayList(c1, c2));
 					compare = properties.get("compare." + ++i + ".1");
 				}
-				//TODO: threshold, metrics
+				String metricsProperty = properties.get("metrics");
+				if (metricsProperty != null) {
+					selectedMetrics.addAll(Lists.newArrayList(metricsProperty.split(", ")));
+				}
+				//TODO: threshold
 				processTestExecutions();
 			}
 		}
 	}
-			
+
 	public void saveReport() {
 		saveReport(reportId, reportName);
 	}
@@ -209,6 +222,11 @@ public class TestGroupReportController extends ControllerBase {
 			properties.put("compare." + i + ".alias", key);
 			i++;
 		}
+		String metricsProperty = "";
+		for (String metric : selectedMetrics) {
+			metricsProperty += metric + ", ";
+		}
+		properties.put("metrics", metricsProperty.substring(0, metricsProperty.length() -2));
 		userService.replacePropertiesWithPrefix(REPORT_PREFIX + reportId + ".", properties);
 		addSessionMessage(INFO, "page.reports.testGroup.reportSaved", reportId);
 		reloadSessionMessages();
@@ -245,11 +263,17 @@ public class TestGroupReportController extends ControllerBase {
 	}
 
 	public List<String> getTableTags() {
-		return new ArrayList<String>(data.columnKeySet());
+		List<String> tags = new ArrayList<String>();
+		for (ColumnKey key : data.columnKeySet()) {
+			if (!tags.contains(key.getTagKey())) {
+				tags.add(key.getTagKey());
+			}
+		}
+		return tags;
 	}
 	
-	public ValueCell getValue(String test, String tags) {
-		return data.get(test, tags);
+	public ValueCell getValue(String test, String tags, String metric) {
+		return data.get(test, new ColumnKey(tags, metric));
 	}
 	
 	public List<String> getComparisonValues() {
@@ -272,11 +296,13 @@ public class TestGroupReportController extends ControllerBase {
 		return null;
 	}	
 	
-	public float compare(String test, String compareKey) {
+	public float compare(String test, String compareKey, String metric) {
 		List<String> compareColumns = comparison.get(compareKey);
-		if (compareColumns != null && compareColumns.size() == 2) {			
-			Value value1 = data.get(test, comparison.get(compareKey).get(0)) != null ? data.get(test, comparison.get(compareKey).get(0)).getBestValue() : null;
-			Value value2 = data.get(test, comparison.get(compareKey).get(1)) != null ? data.get(test, comparison.get(compareKey).get(1)).getBestValue() : null;
+		if (compareColumns != null && compareColumns.size() == 2) {
+			ColumnKey columnKey1 = new ColumnKey(comparison.get(compareKey).get(0), metric);
+			ColumnKey columnKey2 = new ColumnKey(comparison.get(compareKey).get(1), metric);
+			Value value1 = data.get(test, columnKey1) != null ? data.get(test, columnKey1).getBestValue() : null;
+			Value value2 = data.get(test, columnKey2) != null ? data.get(test, columnKey2).getBestValue() : null;
 			if (value1 != null && value2 != null) {
 				return compareValues(value1, value2);
 			}
@@ -455,7 +481,7 @@ public class TestGroupReportController extends ControllerBase {
 	public void setCurrentTest(String currentTest) {
 		this.currentTest = currentTest;
 	}
-	
+
 	
 	public Map<String, List<String>> getComparison() {
 		return comparison;
@@ -503,17 +529,22 @@ public class TestGroupReportController extends ControllerBase {
 		}		
 	}
 	
-	private void createDataset(String compareKey) {
-		List<String> testList = new ArrayList<String>();
-		List<Double> valueList = new ArrayList<Double>();
-		for(String test : data.rowKeySet()) {
-			testList.add(test);
-			valueList.add(Double.valueOf(compare(test, compareKey)));
+	public ChartData dataset(String metric) {
+		if (comparison != null && !comparison.isEmpty()) {
+			String compareKey = (String)comparison.keySet().toArray()[0];
+		    List<String> testList = new ArrayList<String>();
+		    List<Double> valueList = new ArrayList<Double>();
+		    for(String test : data.rowKeySet()) {
+			    testList.add(test);
+			    valueList.add(Double.valueOf(compare(test, compareKey, metric)));
+		    }
+		    ChartData dataset = new TestGroupChartBean.ChartData();
+		    dataset.setTests(testList.toArray(new String[0]));
+		    dataset.setValues(valueList.toArray(new Double[0]));
+		    dataset.setTitle(compareKey + " - " + metric);
+		    return dataset;
 		}
-		dataset = new TestGroupChartBean.ChartData();
-		dataset.setTests(testList.toArray(new String[0]));
-		dataset.setValues(valueList.toArray(new Double[0]));
-		dataset.setTitle(compareKey);
+		return null;
     }
 	
 	public void removeComparison(String label) {
@@ -530,8 +561,20 @@ public class TestGroupReportController extends ControllerBase {
 	public void clearComparisonCopy() {
 		comparisonCopy = null;
 		baseline1 = null; baseline2 = null;
-	}	
+	}
 	
+	public void storeMetrics() {
+		processTestExecutions();
+	}
+
+	public Map<String, Boolean> getSelectedMetricsMap() {
+		return selectedMetricsMap;
+	}
+
+	public void setSelectedMetricsMap(Map<String, Boolean> selectedMetricsMap) {
+		this.selectedMetricsMap = selectedMetricsMap;
+	}
+
 	public String getBaseline1() {
 		return baseline1;
 	}
@@ -588,13 +631,23 @@ public class TestGroupReportController extends ControllerBase {
 		this.newReportName = newReportName;
 	}	
 	
-	public ChartData getDataset() {
-		return dataset;
+	public List<String> getMetrics() {
+		return metrics;
 	}
 
-	public void setDataset(ChartData dataset) {
-		this.dataset = dataset;
+	public void setMetrics(List<String> metrics) {
+		this.metrics = metrics;
 	}
+
+	public List<String> getSelectedMetrics() {
+		return selectedMetrics;
+	}
+
+	public void setSelectedMetrics(List<String> selectedMetrics) {
+		this.selectedMetrics = selectedMetrics;
+	}
+
+
 
 	public class ValueCell implements Serializable {
 
@@ -604,6 +657,10 @@ public class TestGroupReportController extends ControllerBase {
 		
 		private Value bestValue;
 		
+		public ValueCell(Value value) {
+			addValues(Arrays.asList(value));
+		}
+
 		public ValueCell(Collection<Value> values) {
 			addValues(values);
 		}
@@ -635,5 +692,72 @@ public class TestGroupReportController extends ControllerBase {
 			this.bestValue = bestValue;
 		}	
 		
+	}
+
+	public class ColumnKey {
+		private String metricName;
+
+		private String tagKey;
+
+		public ColumnKey(String tagKey, String metricName) {
+			this.tagKey = tagKey;
+			this.metricName = metricName;
+		}
+
+		public String getMetricName() {
+			return metricName;
+		}
+
+		public void setMetricName(String metricName) {
+			this.metricName = metricName;
+		}
+
+		public String getTagKey() {
+			return tagKey;
+		}
+
+		public void setTagKey(String tagKey) {
+			this.tagKey = tagKey;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result
+					+ ((metricName == null) ? 0 : metricName.hashCode());
+			result = prime * result
+					+ ((tagKey == null) ? 0 : tagKey.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ColumnKey other = (ColumnKey) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (metricName == null) {
+				if (other.metricName != null)
+					return false;
+			} else if (!metricName.equals(other.metricName))
+				return false;
+			if (tagKey == null) {
+				if (other.tagKey != null)
+					return false;
+			} else if (!tagKey.equals(other.tagKey))
+				return false;
+			return true;
+		}
+
+		private TestGroupReportController getOuterType() {
+			return TestGroupReportController.this;
+		}
 	}
 }

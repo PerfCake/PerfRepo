@@ -13,6 +13,7 @@
 		<ui:include src="/reports/testGroup/tags-popup.xhtml" />
 		<ui:include src="/reports/testGroup/compare-popup.xhtml" />
 		<ui:include src="/reports/testGroup/clone-popup.xhtml" />
+		<ui:include src="/reports/testGroup/metric-popup.xhtml" />
 			<h:form id="testGroupReport">
 				<h1><h:outputText value="#{testGroupReportController.reportName}" rendered="#{testGroupReportController.reportName != null}"/></h1><h4><h:outputText value="(#{testGroupReportController.reportId})" rendered="#{testGroupReportController.reportId != null}"/></h4>
 				<div id="control" style="text-align: right;line-height: 30px;">
@@ -26,12 +27,14 @@
 					<span style="margin:5px;"><a4j:commandLink render=":testsPopup :testForm" oncomplete="#{rich:component('testsPopup')}.show();" alt="Tests" title="Tests"><i class="icon-list"/>Tests</a4j:commandLink></span>
 					<span style="margin:5px;"><a4j:commandLink render=":tagsPopup :tagsForm" oncomplete="#{rich:component('tagsPopup')}.show();" alt="Tags" title="Tags"><i class="icon-tags"/>Tags</a4j:commandLink></span>
 					<span style="margin:5px;"><a4j:commandLink render=":comparePopup :compareForm" oncomplete="#{rich:component('comparePopup')}.show();" alt="Compare" title="Compare"><i class="icon-exchange"/>Compare</a4j:commandLink></span>
+					<span style="margin:5px;"><a4j:commandLink render=":metricsPopup :metricForm" oncomplete="#{rich:component(':metricsPopup')}.show();" alt="Metric" title="Metric"><i class="icon-list"/>Filter Metrics</a4j:commandLink></span>
 					<span style="margin:5px;"><a4j:commandLink oncomplete="#" alt="Threshold" title="Threshold"><i class="icon-certificate"/>Threshold</a4j:commandLink></span>
 				</div>
 				<table id="testGroupReportTable" class="table table-bordered smallpad">
 					<thead>
 						<tr>
-							<th style="text-align: center; vertical-align: middle" rowspan="2">Test</th>						
+							<th style="text-align: center; vertical-align: middle">Test</th>
+							<th style="text-align: center; vertical-align: middle">Metric</th>
 							<ui:repeat value="#{testGroupReportController.tableTags}" var="column">
 								<th style="text-align: center; vertical-align: middle">#{column}</th>
 							</ui:repeat>
@@ -43,20 +46,26 @@
 					<tbody>
 						<ui:repeat value="#{testGroupReportController.tests}" var="test">
 							<tr>
-								<td>#{test}</td>								
-								<ui:repeat value="#{testGroupReportController.tableTags}" var="column">
-									<td>#{testGroupReportController.format(testGroupReportController.getValue(test, column).bestValue.resultValue)}</td>	
-								</ui:repeat>
-								<ui:repeat value="#{testGroupReportController.comparisonValues}" var="comparisonKey">
-									<ui:param name="value" value="#{testGroupReportController.compare(test, comparisonKey)}" />
-									<td><span style="color: #{testGroupReportController.getStyle(value)}">#{testGroupReportController.format(value)} %</span></td>	
+								<td rowspan="#{testGroupReportController.selectedMetrics.size()}">#{test}</td>
+								<ui:repeat value="#{testGroupReportController.selectedMetrics}" var="metric" varStatus="status">
+									<h:outputText value="#{'&lt;/tr&gt;&lt;tr&gt;'}" rendered="#{status.index > 0}" escape="false" />
+									<td>#{metric}</td>
+									<ui:repeat value="#{testGroupReportController.tableTags}" var="tag">
+										<td>#{testGroupReportController.format(testGroupReportController.getValue(test, tag, metric).bestValue.resultValue)}</td>
+									</ui:repeat>
+									<ui:repeat value="#{testGroupReportController.comparisonValues}" var="comparisonKey">
+										<ui:param name="value" value="#{testGroupReportController.compare(test, comparisonKey, metric)}" />
+										<td><span style="color: #{testGroupReportController.getStyle(value)}">#{testGroupReportController.format(value)} %</span></td>
+									</ui:repeat>
 								</ui:repeat>														
 							</tr>
 						</ui:repeat>
 					</tbody>
 				</table>
 				<rich:panel id="chart">
-			        <r:mediaOutput id="chartimg" element="img" cacheable="false" session="true" createContent="#{testGroupChart.drawChart}" mimeType="image/gif" value="#{testGroupReportController.dataset}"/>
+				    <ui:repeat value="#{testGroupReportController.selectedMetrics}" var="metric">
+						<r:mediaOutput id="chartimg" element="img" cacheable="false" session="true" createContent="#{testGroupChart.drawChart}" mimeType="image/gif" value="#{testGroupReportController.dataset(metric)}"/>
+					</ui:repeat>
 				</rich:panel>
 			</h:form>		
 		</ui:define>
