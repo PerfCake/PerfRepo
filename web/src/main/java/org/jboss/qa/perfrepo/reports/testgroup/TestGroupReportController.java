@@ -567,14 +567,6 @@ public class TestGroupReportController extends ControllerBase {
 		processTestExecutions();
 	}
 
-	public Map<String, Boolean> getSelectedMetricsMap() {
-		return selectedMetricsMap;
-	}
-
-	public void setSelectedMetricsMap(Map<String, Boolean> selectedMetricsMap) {
-		this.selectedMetricsMap = selectedMetricsMap;
-	}
-
 	public String getBaseline1() {
 		return baseline1;
 	}
