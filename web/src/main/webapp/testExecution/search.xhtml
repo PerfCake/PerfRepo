@@ -108,7 +108,7 @@
 				</fieldset>
 
 				<div class="form-actions">
-                    <r:commandButton action="#{searchCriteriaSession.clearExecutionSearchCriteria}" value="Reset" alt="Reset" title="Reset" render="@form" />
+                    <r:commandButton action="#{searchCriteriaSession.clearExecutionSearchCriteria}" value="Reset" styleClass="btn btn-primary" alt="Reset" title="Reset" render="@form" />
 					<r:commandButton action="#{testExecutionSearchController.search}" value="Search" styleClass="btn btn-primary" alt="Search Test Execution" title="Search Test Execution"
 						render="@form :searchResult :messagesPanel">
 						<f:param name="testExecutionSearchTO" value="#{searchCriteriaSession.executionSearchCriteria}" />
