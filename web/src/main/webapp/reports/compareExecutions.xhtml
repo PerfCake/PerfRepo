@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:r="http://richfaces.org">
 <h:body>
 	<f:metadata>
 		<f:event type="preRenderComponent" listener="#{compareExecutionsController.preRender}" />
@@ -141,34 +141,54 @@
 				</h:panelGroup>
 
 				<h:panelGroup rendered="#{compareExecutionsController.multiValueCompareList != null}">
-					<h2>Multi-value comparison</h2>
+					<h2>Multi-value comparison: #{compareExecutionsController.multiValueCompareMetric}</h2>
 					<p>
 						<h:selectOneMenu value="#{compareExecutionsController.multiValueCompareParam}">
 							<f:selectItems styleClass="input-text" value="#{compareExecutionsController.multiValueCompareParamList}" var="item" itemLabel="#{item}"
 								itemValue="#{item}" />
 							<f:ajax listener="#{compareExecutionsController.updateParamSelection}" render="@form" />
 						</h:selectOneMenu>
+
+                        <h:outputText value="&#160;&#160;&#160;" />
+
+                        <a4j:commandLink value="Show in table" render="@form" action="#{compareExecutionsController.setShowMultiValueTable(true)}"
+                                         rendered="#{!compareExecutionsController.showMultiValueTable}" />
+                        <a4j:commandLink value="Show in chart" render="@form" action="#{compareExecutionsController.setShowMultiValueTable(false)}"
+                                   rendered="#{compareExecutionsController.showMultiValueTable}" />
 					</p>
-					<table class="rf-dt tetable_values">
-						<thead class="rf-dt-thd">
-							<tr class="rf-dt-shdr">
-								<th class="rf-dt-shdr-c">#{compareExecutionsController.multiValueCompareParam} \ Execution</th>
-								<ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
-									<th class="rf-dt-shdr-c">#{exec.name}</th>
-								</ui:repeat>
-							</tr>
-						</thead>
-						<tbody class="rf-dt-b">
-							<ui:repeat value="#{compareExecutionsController.multiValueCompareList}" var="item">
-								<tr class="rf-dt-r rf-dt-fst-r">
-									<td class="rf-dt-c">#{item}</td>
-									<ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
-										<td class="rf-dt-c">#{compareExecutionsController.getMultiValueCompare(exec.id, item)}</td>
-									</ui:repeat>
-								</tr>
-							</ui:repeat>
-						</tbody>
-					</table>
+
+                    <h:panelGroup rendered="#{compareExecutionsController.showMultiValueTable}">
+                        <table class="rf-dt tetable_values">
+                            <thead class="rf-dt-thd">
+                                <tr class="rf-dt-shdr">
+                                    <th class="rf-dt-shdr-c">#{compareExecutionsController.multiValueCompareParam} \ Execution</th>
+                                    <ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
+                                        <th class="rf-dt-shdr-c">#{exec.name}</th>
+                                    </ui:repeat>
+                                </tr>
+                            </thead>
+                            <tbody class="rf-dt-b">
+                                <ui:repeat value="#{compareExecutionsController.multiValueCompareList}" var="item">
+                                    <tr class="rf-dt-r rf-dt-fst-r">
+                                        <td class="rf-dt-c">#{item}</td>
+                                        <ui:repeat value="#{compareExecutionsController.testExecutions}" var="exec">
+                                            <td class="rf-dt-c">#{compareExecutionsController.getMultiValueCompare(exec.id, item)}</td>
+                                        </ui:repeat>
+                                    </tr>
+                                </ui:repeat>
+                            </tbody>
+                        </table>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{!compareExecutionsController.showMultiValueTable}">
+                        <r:chart>
+                            <r:repeat value="#{compareExecutionsController.multiValueChart}" var="seriesItem">
+                                <r:series label="#{seriesItem.name}" data="#{seriesItem.data}" type="line" />
+                            </r:repeat>
+                            <r:xaxis label="#{compareExecutionsController.multiValueCompareParam}" />
+                            <r:yaxis label="Metric value" />
+                        </r:chart>
+                   </h:panelGroup>
 				</h:panelGroup>
 			</h:form>
 		</ui:define>

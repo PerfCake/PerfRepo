@@ -41,14 +41,16 @@ import org.jboss.qa.perfrepo.util.MultiValue;
 import org.jboss.qa.perfrepo.util.MultiValue.ParamInfo;
 import org.jboss.qa.perfrepo.util.MultiValue.ValueInfo;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
+
+import org.richfaces.ui.output.chart.ChartDataModel;
+import org.richfaces.ui.output.chart.ChartDataModel.ChartType;
+import org.richfaces.ui.output.chart.NumberChartDataModel;
 
 /**
  * Simple comparison of test execution values.
  * 
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  * 
  */
 @Named
@@ -86,6 +88,9 @@ public class CompareExecutionsController extends ControllerBase {
    private String multiValueCompareMetric;
    private String multiValueCompareParam;
    private List<String> multiValueCompareParamList;
+   private List<ChartSeries> multiValueChart;
+
+   private boolean showMultiValueTable = false;
 
    public Test getTest() {
       return test;
@@ -122,6 +127,10 @@ public class CompareExecutionsController extends ControllerBase {
       return multiValueCompareList;
    }
 
+   public List<ChartSeries> getMultiValueChart() {
+      return multiValueChart;
+   }
+
    public String getMultiValueCompareParam() {
       return multiValueCompareParam;
    }
@@ -132,6 +141,18 @@ public class CompareExecutionsController extends ControllerBase {
 
    public List<String> getMultiValueCompareParamList() {
       return multiValueCompareParamList;
+   }
+
+   public String getMultiValueCompareMetric() {
+      return multiValueCompareMetric;
+   }
+
+   public boolean isShowMultiValueTable() {
+      return showMultiValueTable;
+   }
+
+   public void setShowMultiValueTable(boolean showMultiValueTable) {
+      this.showMultiValueTable = showMultiValueTable;
    }
 
    private Map<Long, Map<String, ValueInfo>> computeValues() {
@@ -321,6 +342,24 @@ public class CompareExecutionsController extends ControllerBase {
       }
       multiValueCompareList = new ArrayList<String>(stringSet);
       Collections.sort(multiValueCompareList, COMPARE_PARAM_VALUE);
+      computeMultiValueChart();
+   }
+
+   private void computeMultiValueChart() {
+      multiValueChart = new ArrayList<ChartSeries>();
+
+      for(TestExecution testExecution: testExecutions) {
+
+         ChartDataModel chartDataModel = new NumberChartDataModel(ChartType.line);
+
+         for(String item: multiValueCompareList) {
+            chartDataModel.put(Integer.parseInt(item), getMultiValueCompare(testExecution.getId(), item));
+         }
+
+         ChartSeries newSeries = new ChartSeries(chartDataModel);
+         newSeries.setName(testExecution.getName());
+         multiValueChart.add(newSeries);
+      }
    }
 
    public String getMultiValueCompare(Long execId, String paramValue) {
@@ -364,6 +403,32 @@ public class CompareExecutionsController extends ControllerBase {
          tag.append(teg.getTag().getName()).append("\n");
       }
       return tag.toString().substring(0, tag.length() - 1);
+   }
+
+   public class ChartSeries {
+
+      private ChartDataModel data;
+      private String name;
+
+      public ChartSeries(ChartDataModel dataModel) {
+         this.data = dataModel;
+      }
+
+      public String getName() {
+         return name;
+      }
+
+      public void setName(String name) {
+         this.name = name;
+      }
+
+      public ChartDataModel getData() {
+         return data;
+      }
+
+      public void setData(ChartDataModel data) {
+         this.data = data;
+      }
    }
 
 }
