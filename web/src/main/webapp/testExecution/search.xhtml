@@ -6,12 +6,6 @@
 		<f:event type="preRenderView" listener="#{testExecutionSearchController.preRender}" />
 	</f:metadata>
 	<ui:composition template="/layout/template.xhtml">
-		<ui:define name="compareAddAll">
-			<li><r:commandLink value=" " alt="Add all current results" title="Add all current results"
-					action="#{testExecutionSearchController.addAllCurrentResultsToComparison()}" render="compareMenuItem :messagesPanel">
-					<i class="icon-copy"></i>
-				</r:commandLink></li>
-		</ui:define>
 		<ui:define name="head">
 			<link href="/repo/rfRes/datatable.ecss.jsf?ln=org.richfaces" rel="stylesheet" type="text/css"></link>
 		</ui:define>
@@ -115,6 +109,12 @@
 					</r:commandButton>
 				</div>
 			</h:form>
+
+            <r:commandLink action="#{testExecutionSearchController.addAllCurrentResultsToComparison()}" render="compareMenuItem :messagesPanel" execute="@this"
+                           styleClass="btn btn-primary btn-small" alt="Add all current results" title="Add all current results" >
+                <i class="icon-copy"></i> Add all current results
+            </r:commandLink>
+            <br /><br />
 
 			<h:form id="searchResult">
 				<table class="rf-dt searchResult">
