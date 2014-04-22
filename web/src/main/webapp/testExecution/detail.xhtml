@@ -119,20 +119,36 @@
 								</h:column>
 							</r:dataTable>
 							<h:panelGroup id="multiValue" rendered="#{testExecutionController.selectedMultiValueList != null}">
+                                <h2>Shown multi-value: #{testExecutionController.selectedMultiValue.metricName}</h2>
+
 								<p>
 									<h:selectOneMenu value="#{testExecutionController.selectedMultiValueParamSelection}">
 										<f:selectItems styleClass="input-text" value="#{testExecutionController.selectedMultiValueParamSelectionList}" var="item" itemLabel="#{item}"
 											itemValue="#{item}" />
 										<f:ajax listener="#{testExecutionController.updateParamSelection}" render="@form :tabForm:tabValues :messagesPanel" />
 									</h:selectOneMenu>
+
+                                    <h:outputText value="&#160;&#160;&#160;" />
+
+                                    <r:commandLink value="Show in table" render="@form" action="#{testExecutionController.setShowMultiValueTable(true)}"
+                                                     rendered="#{!testExecutionController.showMultiValueTable}" />
+                                    <r:commandLink value="Show in chart" render="@form" action="#{testExecutionController.setShowMultiValueTable(false)}"
+                                                     rendered="#{testExecutionController.showMultiValueTable}" />
 								</p>
+
 								<p>
-								<r:panel id="valueChart">
-									<r:mediaOutput element="img" expires="#{now}" cacheable="true" createContent="#{jfreechart.generate}" mimeType="image/png"
-										value="#{testExecutionController.chartData}" />
-								</r:panel>
+                                    <h:panelGroup rendered="#{!testExecutionController.showMultiValueTable}">
+                                        <r:chart>
+                                            <r:repeat value="#{testExecutionController.multiValueChart}" var="seriesItem">
+                                                <r:series label="#{seriesItem.name}" data="#{seriesItem.data}" type="line" />
+                                            </r:repeat>
+                                            <r:xaxis label="#{testExecutionController.selectedMultiValueParamSelection}" />
+                                            <r:yaxis label="Metric value" />
+                                        </r:chart>
+                                    </h:panelGroup>
 								</p>
-								<h:dataTable id="multiValueTable" value="#{testExecutionController.selectedMultiValueList}" var="item" columnClasses="numvalcolumn,numvalcolumn"
+
+								<h:dataTable id="multiValueTable" value="#{testExecutionController.selectedMultiValueList}"  rendered="#{testExecutionController.showMultiValueTable}" var="item" columnClasses="numvalcolumn,numvalcolumn"
 									styleClass="table table-bordered table-striped table-hover smallpad">
 									<h:column>
 										<f:facet name="header">#{testExecutionController.selectedMultiValueParamSelection}</f:facet>

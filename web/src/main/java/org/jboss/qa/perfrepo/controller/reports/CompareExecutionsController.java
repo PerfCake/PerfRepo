@@ -30,6 +30,7 @@ import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.ControllerBase;
+import org.jboss.qa.perfrepo.controller.reports.charts.RfChartSeries;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
@@ -88,7 +89,7 @@ public class CompareExecutionsController extends ControllerBase {
    private String multiValueCompareMetric;
    private String multiValueCompareParam;
    private List<String> multiValueCompareParamList;
-   private List<ChartSeries> multiValueChart;
+   private List<RfChartSeries> multiValueChart;
 
    private boolean showMultiValueTable = false;
 
@@ -127,7 +128,7 @@ public class CompareExecutionsController extends ControllerBase {
       return multiValueCompareList;
    }
 
-   public List<ChartSeries> getMultiValueChart() {
+   public List<RfChartSeries> getMultiValueChart() {
       return multiValueChart;
    }
 
@@ -346,7 +347,7 @@ public class CompareExecutionsController extends ControllerBase {
    }
 
    private void computeMultiValueChart() {
-      multiValueChart = new ArrayList<ChartSeries>();
+      multiValueChart = new ArrayList<RfChartSeries>();
 
       for(TestExecution testExecution: testExecutions) {
 
@@ -356,7 +357,7 @@ public class CompareExecutionsController extends ControllerBase {
             chartDataModel.put(Integer.parseInt(item), getMultiValueCompare(testExecution.getId(), item));
          }
 
-         ChartSeries newSeries = new ChartSeries(chartDataModel);
+         RfChartSeries newSeries = new RfChartSeries(chartDataModel);
          newSeries.setName(testExecution.getName());
          multiValueChart.add(newSeries);
       }
@@ -404,31 +405,4 @@ public class CompareExecutionsController extends ControllerBase {
       }
       return tag.toString().substring(0, tag.length() - 1);
    }
-
-   public class ChartSeries {
-
-      private ChartDataModel data;
-      private String name;
-
-      public ChartSeries(ChartDataModel dataModel) {
-         this.data = dataModel;
-      }
-
-      public String getName() {
-         return name;
-      }
-
-      public void setName(String name) {
-         this.name = name;
-      }
-
-      public ChartDataModel getData() {
-         return data;
-      }
-
-      public void setData(ChartDataModel data) {
-         this.data = data;
-      }
-   }
-
 }

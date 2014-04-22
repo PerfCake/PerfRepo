@@ -27,6 +27,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.jboss.qa.perfrepo.controller.reports.charts.RfChartSeries;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
@@ -47,11 +48,12 @@ import org.jboss.qa.perfrepo.util.MultiValue.ParamInfo;
 import org.jboss.qa.perfrepo.util.MultiValue.ValueInfo;
 import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 import org.richfaces.event.FileUploadEvent;
 import org.richfaces.model.UploadedFile;
+
+import org.richfaces.ui.output.chart.ChartDataModel;
+import org.richfaces.ui.output.chart.ChartDataModel.ChartType;
+import org.richfaces.ui.output.chart.NumberChartDataModel;
 
 /**
  * Details of {@link TestExecution}
@@ -88,6 +90,9 @@ public class TestExecutionController extends ControllerBase {
    private List<String> selectedMultiValueParamSelectionList = null;
    private String selectedMultiValueParamSelection = null;
    private ValueInfo selectedMultiValue = null;
+   private List<RfChartSeries> multiValueChart;
+
+   private boolean showMultiValueTable = false;
 
    private Long createForTest;
    private Long testExecutionId;
@@ -489,6 +494,7 @@ public class TestExecutionController extends ControllerBase {
          return;
       }
       selectedMultiValueList = selectedMultiValue.getComplexValueByParamName(selectedMultiValueParamSelection);
+      computeMultiValueChart();
    }
 
    private void clearSelectedMultiValue() {
@@ -519,6 +525,21 @@ public class TestExecutionController extends ControllerBase {
       }
       selectedMultiValueList = value.getComplexValueByParamName(selectedMultiValueParamSelection);
       selectedMultiValue = value;
+      computeMultiValueChart();
+   }
+
+   private void computeMultiValueChart() {
+      multiValueChart = new ArrayList<RfChartSeries>();
+
+      ChartDataModel chartDataModel = new NumberChartDataModel(ChartType.line);
+
+      for(ParamInfo item: selectedMultiValueList) {
+         chartDataModel.put(Integer.parseInt(item.getParamValue()), Double.parseDouble(item.getFormattedValue()));
+      }
+
+      RfChartSeries newSeries = new RfChartSeries(chartDataModel);
+      newSeries.setName(testExecution.getName());
+      multiValueChart.add(newSeries);
    }
 
    public List<ParamInfo> getSelectedMultiValueList() {
@@ -527,6 +548,10 @@ public class TestExecutionController extends ControllerBase {
 
    public String getSelectedMultiValueParamSelection() {
       return selectedMultiValueParamSelection;
+   }
+
+   public List<RfChartSeries> getMultiValueChart() {
+      return multiValueChart;
    }
 
    public void setSelectedMultiValueParamSelection(String selectedMultiValueParamSelection) {
@@ -543,6 +568,18 @@ public class TestExecutionController extends ControllerBase {
 
    public String displayValueTable(TestExecutionParameter param) {
       return Util.displayValue(param);
+   }
+
+   public boolean isShowMultiValueTable() {
+      return showMultiValueTable;
+   }
+
+   public ValueInfo getSelectedMultiValue() {
+      return selectedMultiValue;
+   }
+
+   public void setShowMultiValueTable(boolean showMultiValueTable) {
+      this.showMultiValueTable = showMultiValueTable;
    }
 
    private FavoriteParameter findFavoriteParameter(String paramName) {
