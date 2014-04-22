@@ -102,6 +102,14 @@
 				</fieldset>
 
 				<div class="form-actions">
+                    <r:status>
+                        <f:facet name="start">
+                            <h:graphicImage value="/resources/images/ajax_active.gif" />
+                        </f:facet>
+                    </r:status>
+
+                    <h:outputText value="&#160;&#160;&#160;" />
+
                     <r:commandButton action="#{searchCriteriaSession.clearExecutionSearchCriteria}" value="Reset" styleClass="btn btn-secondary" alt="Reset" title="Reset" render="@form" />
 					<r:commandButton action="#{testExecutionSearchController.search}" value="Search" styleClass="btn btn-primary" alt="Search Test Execution" title="Search Test Execution"
 						render="@form :searchResult :messagesPanel">

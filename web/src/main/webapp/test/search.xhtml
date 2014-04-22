@@ -36,6 +36,14 @@
 				</fieldset>
 
 				<div class="form-actions">
+                   <a4j:status>
+                      <f:facet name="start">
+                         <h:graphicImage value="/resources/images/ajax_active.gif" />
+                      </f:facet>
+                   </a4j:status>
+
+                   <h:outputText value="&#160;&#160;&#160;" />
+
 					<a4j:commandButton action="#{testSearchController.search}" value="#{strings['page.testSearch.buSearch']}" styleClass="btn btn-primary"
 						alt="Search Test Execution" title="Search Test Execution" render="searchResultTable">
 					</a4j:commandButton>
@@ -44,6 +52,8 @@
 
 			<a href="/repo/test/new" class="btn btn-primary" title="#{strings['page.testSearch.buCreateNewTest']}"><i class="icon-plus" />
 				#{strings['page.testSearch.buCreateNewTest']}</a>
+
+            <br /><br />
 
 			<h:form>
 				<rich:dataTable id="searchResultTable" styleClass="table table-bordered table-striped table-hover" value="#{testSearchController.result}" var="item">
