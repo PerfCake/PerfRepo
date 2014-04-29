@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +32,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Tag;
@@ -143,12 +146,33 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       CriteriaQuery<TestExecution> criteria = createCriteria();
       CriteriaBuilder cb = criteriaBuilder();
       List<String> tags = Util.parseTags(search.getTags() !=null ? search.getTags().toLowerCase() : "");
+      List tmpTags = new ArrayList<String>();
+      List<String> excludedTags = new ArrayList<String>();
+
+      //tags beginning with "-" put into separate list and without into different one, not using
+      //remove() because of UnsupportedOperationException
+      Iterator<String> iterator = tags.iterator();
+      while(iterator.hasNext()) {
+         String value = iterator.next();
+         if(value.isEmpty()) {
+            continue;
+         }
+
+         if(value.startsWith("-")) {
+            excludedTags.add(value.substring(1));
+         }
+         else {
+            tmpTags.add(value);
+         }
+      }
+      tags = tmpTags;
 
       Root<TestExecution> rExec = criteria.from(TestExecution.class);
 
       Predicate pStartedFrom = cb.and();
       Predicate pStartedTo = cb.and();
       Predicate pTagNameInFixedList = cb.and();
+      Predicate pExcludedTags = cb.and();
       Predicate pTestName = cb.and();
       Predicate pTestUID = cb.and();
       Predicate pParamsMatch = cb.and();
@@ -161,10 +185,22 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       if (search.getStartedTo() != null) {
          pStartedTo = cb.lessThanOrEqualTo(rExec.<Date> get("started"), cb.parameter(Date.class, "startedTo"));
       }
-      if (!tags.isEmpty()) {
-         Join<TestExecution, Tag> rTag = rExec.join("testExecutionTags").join("tag");
-         pTagNameInFixedList = cb.lower(rTag.<String>get("name")).in(cb.parameter(List.class, "tagList"));
-         pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
+      if(!tags.isEmpty() || !excludedTags.isEmpty()) {
+         Join<TestExecution, Tag> rTag = rExec.joinCollection("testExecutionTags").join("tag");
+         if (!tags.isEmpty()) {
+            pTagNameInFixedList = cb.lower(rTag.<String>get("name")).in(cb.parameter(List.class, "tagList"));
+            pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
+         }
+
+         if (!excludedTags.isEmpty()) {
+            Subquery<TestExecution> sq = criteria.subquery(TestExecution.class);
+            Root sqRoot = sq.from(TestExecution.class);
+            Join<TestExecution, Tag> sqTag = sqRoot.joinCollection("testExecutionTags").join("tag");
+            sq.select(sqRoot.get("id"));
+            sq.where(cb.lower(sqTag.<String>get("name")).in(cb.parameter(List.class, "excludedTagList")));
+
+            pExcludedTags = cb.not(rExec.get("id").in(sq));
+         }
       }
       if (search.getTestName() != null && !"".equals(search.getTestName())) {
          Join<TestExecution, Test> rTest = rExec.join("test");
@@ -194,7 +230,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
       // construct query
       criteria.select(rExec);
-      criteria.where(cb.and(pStartedFrom, pStartedTo, pTagNameInFixedList, pTestName, pTestUID, pParamsMatch));
+      criteria.where(cb.and(pStartedFrom, pStartedTo, pTagNameInFixedList, pExcludedTags, pTestName, pTestUID, pParamsMatch));
       criteria.having(pHavingAllTagsPresent);
       // this isn't very ellegant, but Postgres 8.4 doesn't allow GROUP BY only with id
       // this feature is allowed only since Postgres 9.1+
@@ -212,6 +248,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          query.setParameter("tagList", tags);
          query.setParameter("tagListSize", new Long(tags.size()));
       }
+      if (!excludedTags.isEmpty()) {
+         query.setParameter("excludedTagList", excludedTags);
+      }
       if (search.getTestName() != null && !"".equals(search.getTestName())) {
          query.setParameter("testName", search.getTestName());
       }
@@ -226,7 +265,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
             pCount++;
          }
       }
-      List<TestExecution> r = EntityUtil.clone(query.getResultList());
+      List<TestExecution> tmp = query.getResultList();
+      List<TestExecution> r = EntityUtil.clone(tmp);
       List<Long> execIds = EntityUtil.extractIds(r);
       if (displayedParams != null && !displayedParams.isEmpty() && !execIds.isEmpty() && paramDAO != null) {
          List<TestExecutionParameter> allParams = paramDAO.find(execIds, displayedParams);
@@ -263,27 +303,31 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 	   CriteriaQuery<TestExecution> criteria = createCriteria();
 	   CriteriaBuilder cb = criteriaBuilder();
 	   Root<TestExecution> rExec = criteria.from(TestExecution.class);
-       Join<TestExecution, Test> rTest = rExec.join("test");
-       Predicate pTestUID = rTest.<String> get("uid").in(cb.parameter(List.class, "testUID"));
-       Join<TestExecution, Tag> rTag = rExec.join("testExecutionTags").join("tag");
-       Predicate pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
-       Predicate pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
+      Join<TestExecution, Test> rTest = rExec.join("test");
+      Predicate pTestUID = rTest.<String> get("uid").in(cb.parameter(List.class, "testUID"));
+      Join<TestExecution, Tag> rTag = rExec.join("testExecutionTags").join("tag");
+      Predicate pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
+      Predicate pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
+
 	   criteria.select(rExec);
 	   criteria.where(cb.and(pTagNameInFixedList, pTestUID));
 	   criteria.having(pHavingAllTagsPresent);
 	   criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("locked"), rExec.get("started"), rExec.get("jobId"), rExec.get("comment"));
-	   TypedQuery<TestExecution> query = query(criteria);
+
+      TypedQuery<TestExecution> query = query(criteria);
 	   query.setParameter("testUID", testUIDs);
-       query.setParameter("tagList", tags);
-       query.setParameter("tagListSize", new Long(tags.size()));
-       List<TestExecution> result = EntityUtil.clone(query.getResultList());
-       for (TestExecution exec : result) {
-          TestExecutionDAO.fetchTest(exec);
-          TestExecutionDAO.fetchParameters(exec);
-          TestExecutionDAO.fetchTags(exec);
-          TestExecutionDAO.fetchValues(exec);
-       }
-       return result;
+      query.setParameter("tagList", tags);
+      query.setParameter("tagListSize", new Long(tags.size()));
+
+      List<TestExecution> result = EntityUtil.clone(query.getResultList());
+      for (TestExecution exec : result) {
+         TestExecutionDAO.fetchTest(exec);
+         TestExecutionDAO.fetchParameters(exec);
+         TestExecutionDAO.fetchTags(exec);
+         TestExecutionDAO.fetchValues(exec);
+      }
+
+      return result;
    }
 
    /**

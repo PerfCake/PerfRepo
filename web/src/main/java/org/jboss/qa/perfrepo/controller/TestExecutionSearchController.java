@@ -207,7 +207,24 @@ public class TestExecutionSearchController extends ControllerBase {
    }
    
    public List<String> autocompleteTags(String tag) {
-		return testService.getTagsByPrefix(tag);
+      String returnPrefix = "";
+      if(tag.startsWith("-")) {
+         tag = tag.substring(1);
+         returnPrefix = "-";
+      }
+
+      List<String> tmp = testService.getTagsByPrefix(tag);
+      List<String> result = new ArrayList<String>(tmp.size());
+      if(!returnPrefix.isEmpty()) {
+         for(String item: tmp) {
+            result.add(returnPrefix + item);
+         }
+      }
+      else {
+         result.addAll(tmp);
+      }
+
+		return result;
   }
 
    public boolean isDisplayColumn(String name) {
