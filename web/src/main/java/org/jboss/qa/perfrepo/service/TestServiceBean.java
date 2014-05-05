@@ -1039,4 +1039,57 @@ public class TestServiceBean implements TestService {
 	   return tags;
    }
 
+   public void addTagsToTestExecutions(Collection<String> tags, Collection<TestExecution> testExecutions) {
+      for(TestExecution testExecutionItem: testExecutions) {
+         TestExecution testExecution = testExecutionDAO.find(testExecutionItem.getId());
+         if(testExecution == null) {
+            continue;
+         }
+
+         List<TestExecutionTag> testExecutionTags = new ArrayList<TestExecutionTag>();
+         testExecutionTags.addAll(testExecution.getTestExecutionTags());
+         for(String tagName: tags) {
+            if(!testExecution.getTags().contains(tagName)) {
+               Tag tag = tagDAO.findByName(tagName);
+               if(tag == null) {
+                  Tag newTag = new Tag();
+                  newTag.setName(tagName);
+                  tag = tagDAO.create(newTag);
+               }
+
+               TestExecutionTag newTestExecutionTag = new TestExecutionTag();
+               newTestExecutionTag.setTag(tag);
+               newTestExecutionTag.setTestExecution(testExecution);
+
+               TestExecutionTag testExecutionTag = testExecutionTagDAO.create(newTestExecutionTag);
+               testExecutionTags.add(testExecutionTag);
+            }
+         }
+
+         testExecutionDAO.update(testExecution);
+      }
+   }
+
+   public void deleteTagsFromTestExecutions(Collection<String> tags, Collection<TestExecution> testExecutions) {
+      for(TestExecution testExecutionItem: testExecutions) {
+         TestExecution testExecution = testExecutionDAO.find(testExecutionItem.getId());
+         if(testExecution == null) {
+            continue;
+         }
+
+         List<TestExecutionTag> testExecutionTags = new ArrayList<TestExecutionTag>();
+         for(TestExecutionTag testExecutionTag: testExecution.getTestExecutionTags()) {
+            if(tags.contains(testExecutionTag.getTagName())) {
+               testExecutionTagDAO.delete(testExecutionTag);
+            }
+            else {
+               testExecutionTags.add(testExecutionTag);
+            }
+         }
+
+         testExecution.setTestExecutionTags(testExecutionTags);
+         testExecutionDAO.update(testExecution);
+      }
+   }
+
 }

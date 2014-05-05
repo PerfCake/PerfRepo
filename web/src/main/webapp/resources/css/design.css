@@ -6424,3 +6424,24 @@ input.rf-au-inp {
 	border: 1px solid #CCCCCC !important;
 	padding: 4px !important;
 }
+
+div #massOperations {
+    clear: both;
+    margin-top: 15px;
+}
+
+div #massOperations table {
+    border-spacing: 5px;
+}
+
+div #massOperations table td {
+   padding: 5px 0 5px 0;
+}
+
+div #massOperations table td.secondColumn {
+    padding-left: 20px;
+}
+
+div #massOperations table td.statusColumn {
+    padding-left: 15px;
+}

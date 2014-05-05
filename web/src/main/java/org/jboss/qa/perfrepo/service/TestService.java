@@ -451,4 +451,21 @@ public interface TestService extends Codes {
     */
    public Test getTestByUID(String uid);
 
+   /**
+    * Perform mass operation. Adds tags to provided test executions.
+    *
+    * @param tags
+    * @param testExecutions
+    */
+   public void addTagsToTestExecutions(Collection<String> tags, Collection<TestExecution> testExecutions);
+
+   /**
+    * Perform mass operation. Deletes tags from provided test executions.
+    *
+    * @param tags
+    * @param testExecutions
+    */
+   public void deleteTagsFromTestExecutions(Collection<String> tags, Collection<TestExecution> testExecutions);
+
+
 }

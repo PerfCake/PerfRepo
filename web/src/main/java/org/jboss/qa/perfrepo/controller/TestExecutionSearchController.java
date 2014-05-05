@@ -67,6 +67,11 @@ public class TestExecutionSearchController extends ControllerBase {
 
    private String[] extraColumns = new String[0];
 
+   private boolean showMassOperations = false;
+   private String massOperationAddTags;
+   private String massOperationDeleteTags;
+   private int massOperationDeleteExecutionsConfirm;
+
    private ExecutionSort sort;
 
    public String[] getExtraColumns() {
@@ -158,6 +163,46 @@ public class TestExecutionSearchController extends ControllerBase {
       this.result = result;
    }
 
+   public boolean isShowMassOperations() {
+      return showMassOperations;
+   }
+
+   public void setShowMassOperations(boolean showMassOperations) {
+      this.showMassOperations = showMassOperations;
+   }
+
+   public void toggleShowMassOperations() {
+      this.showMassOperations = !showMassOperations;
+   }
+
+   public String getMassOperationAddTags() {
+      return massOperationAddTags;
+   }
+
+   public void setMassOperationAddTags(String massOperationAddTags) {
+      this.massOperationAddTags = massOperationAddTags;
+   }
+
+   public String getMassOperationDeleteTags() {
+      return massOperationDeleteTags;
+   }
+
+   public void setMassOperationDeleteTags(String massOperationDeleteTags) {
+      this.massOperationDeleteTags = massOperationDeleteTags;
+   }
+
+   public int getMassOperationDeleteExecutionsConfirm() {
+      return massOperationDeleteExecutionsConfirm;
+   }
+
+   public void setMassOperationDeleteExecutionsConfirm(int massOperationDeleteExecutionsConfirm) {
+      this.massOperationDeleteExecutionsConfirm = massOperationDeleteExecutionsConfirm;
+   }
+
+   public int getResultSize() {
+      return result != null ? result.size() : 0;
+   }
+
    private ExecutionSort.Type getSortType(String what, boolean num) {
       // all sorts are ascending in this phase
       if ("id".equals(what)) {
@@ -237,5 +282,32 @@ public class TestExecutionSearchController extends ControllerBase {
          }
       }
       return false;
+   }
+
+   public void addTagsToFoundTestExecutions() {
+      List<String> tags = Util.parseTags(massOperationAddTags != null ? massOperationAddTags.toLowerCase() : "");
+
+      testService.addTagsToTestExecutions(tags, result);
+      search();
+   }
+
+   public void deleteTagsFromFoundTestExecutions() {
+      List<String> tags = Util.parseTags(massOperationDeleteTags !=null ? massOperationDeleteTags.toLowerCase() : "");
+
+      testService.deleteTagsFromTestExecutions(tags, result);
+      search();
+   }
+
+   public void deleteFoundTestExecutions() {
+      for(TestExecution testExecution: result) {
+         try {
+            testService.deleteTestExecution(testExecution);
+         } catch (ServiceException ex) {
+            //TODO: how to handle this properly?
+            throw new RuntimeException(ex);
+         }
+      }
+
+      search();
    }
 }
