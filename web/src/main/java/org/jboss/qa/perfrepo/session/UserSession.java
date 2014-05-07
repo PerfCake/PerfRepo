@@ -21,6 +21,7 @@ import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.security.UserInfo;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.util.FavoriteParameter;
 
 /**
@@ -46,16 +47,13 @@ public class UserSession extends ControllerBase {
 
    private List<FavoriteParameter> favoriteParameters = new ArrayList<FavoriteParameter>();
 
-   private static final String FAV_PARAM_KEY_PREFIX = "fav.param.";
-   public static final String REPORT_KEY_PREFIX = "report.";
-
    @PostConstruct
    public void init() {
       refreshUser();
    }
 
    public User refreshUser() {
-	  //TODO: do not store full user with all properties
+	   //TODO: do not store full user with all properties
       user = testService.getFullUser(userInfo.getUserName());
       if (user == null) {
          log.error("Couldn't find user \"" + userInfo.getUserName() + "\". Creating new user entry.");
@@ -74,7 +72,7 @@ public class UserSession extends ControllerBase {
       if (user.getProperties() != null) {
          for (UserProperty prop : user.getProperties()) {
             userProperties.put(prop.getName(), prop.getValue());
-            if (prop.getName().startsWith(FAV_PARAM_KEY_PREFIX)) {
+            if (prop.getName().startsWith(UserService.FAV_PARAM_KEY_PREFIX)) {
                favoriteParameters.add(FavoriteParameter.fromString(prop.getValue()));
             }
          }
@@ -92,199 +90,15 @@ public class UserSession extends ControllerBase {
       return r;
    }
 
-   private String favPropKey(long testId, String paramName) {
-      return FAV_PARAM_KEY_PREFIX + testId + "." + paramName;
-   }
-
-   @Deprecated //should be moved to UserService
-   public void addFavoriteParameter(long testId, String paramName, String label) {
-      FavoriteParameter fp = new FavoriteParameter();
-      fp.setLabel(label);
-      fp.setParameterName(paramName);
-      fp.setTestId(testId);
-      setProperty(favPropKey(testId, paramName), fp.toString());
-      FavoriteParameter prev = findFavoriteParameter(testId, paramName);
-      if (prev != null) {
-         prev.setLabel(label);
-      } else {
-         favoriteParameters.add(fp);
-      }
-   }
-
-   @Deprecated //should be moved to UserService
-   public void removeFavoriteParameter(long testId, String paramName) {
-      FavoriteParameter prev = findFavoriteParameter(testId, paramName);
-      if (prev != null) {
-         favoriteParameters.remove(prev);
-      }
-      setProperty(favPropKey(testId, paramName), null);
-   }
-
-   @Deprecated //should be moved to UserService
-   public FavoriteParameter findFavoriteParameter(long testId, String paramName) {
-      for (FavoriteParameter fp : favoriteParameters) {
-         if (fp.getTestId() == testId && paramName.equals(fp.getParameterName())) {
-            return fp;
-         }
-      }
-      return null;
-   }
-
-   @Deprecated //should be moved to UserService
-   public String getProperty(String name) {
-      return userProperties.get(name);
-   }
-
-   @Deprecated //should be moved to UserService
-   public void setProperty(String name, String value) {
-      if (user != null) {
-         try {
-            UserProperty existingProp = user.findProperty(name);
-            if (existingProp == null && value != null) {
-               UserProperty newProp = new UserProperty();
-               newProp.setName(name);
-               newProp.setValue(value);
-               newProp.setUser(user.clone());
-               newProp = testService.updateUserProperty(newProp);
-               if (user.getProperties() == null) {
-                  user.setProperties(new ArrayList<UserProperty>());
-               }
-               user.getProperties().add(newProp);
-            } else {
-               if (value == null) {
-                  UserProperty toDelete = existingProp.clone();
-                  testService.deleteUserProperty(toDelete);
-                  user.getProperties().remove(existingProp);
-               } else if (!value.equals(existingProp.getValue())) {
-                  UserProperty toUpdate = existingProp.clone();
-                  toUpdate.setValue(value);
-                  toUpdate = testService.updateUserProperty(toUpdate);
-                  user.getProperties().remove(existingProp);
-                  user.getProperties().add(toUpdate);
-               }
-            }
-            if (value != null) {
-               userProperties.put(name, value);
-            } else {
-               userProperties.remove(name);
-            }
-         } catch (ServiceException e) {
-            log.error("Error while saving property", e);
-            addMessageFor(e);
-         }
-      }
-   }
-
    public User getUser() {
       return user;
    }
 
-   @Deprecated //should be moved to UserService
-   private Map<String, String> getUserProperties(User user) {
-      Map<String, String> userProperties = new HashMap<String, String>();
-      for (UserProperty prop : user.getProperties()) {
-         userProperties.put(prop.getName(), prop.getValue());
-      }
+   public Map<String, String> getUserProperties() {
       return userProperties;
    }
 
-   @Deprecated //should be moved to UserService
-   public Map<String, String> getReportProperties(String userName, String reportId) {
-      User user = testService.getFullUser(userName);
-      if (user == null) {
-         return null;
-      } else {
-         return getReportProperties(getUserProperties(user), reportId);
-      }
-   }
-
-   @Deprecated //should be moved to UserService
-   private List<String> getAllReportIds(Map<String, String> userProperties) {
-      Set<String> rset = new HashSet<String>();
-      List<String> r = new ArrayList<String>();
-      for (Entry<String, String> entry : userProperties.entrySet()) {
-         if (entry.getKey().startsWith(REPORT_KEY_PREFIX)) {
-            String tmpkey = entry.getKey().substring(REPORT_KEY_PREFIX.length());
-            int dotidx = tmpkey.indexOf(".");
-            if (dotidx == -1) {
-               rset.add(tmpkey);
-            } else {
-               rset.add(tmpkey.substring(0, dotidx));
-            }
-         }
-      }
-      r.addAll(rset);
-      return r;
-   }
-
-   @Deprecated //should be moved to UserService
-   public List<String> getAllReportIds() {
-      return getAllReportIds(userProperties);
-   }
-
-   @Deprecated //should be moved to UserService
-   public void removeReport(String reportId) {
-      try {
-         String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
-         Set<String> keysToRemove = new HashSet<String>();
-         for (Entry<String, String> entry : userProperties.entrySet()) {
-            if (entry.getKey().startsWith(reportPrefix)) {
-               keysToRemove.add(entry.getKey());
-            }
-         }
-         testService.multiUpdateProperties(getUser(), keysToRemove, Collections.<String, String> emptyMap());
-         // update userProperties collection if this didn't throw any exception
-         for (String keyToRemove : keysToRemove) {
-            userProperties.remove(keyToRemove);
-         }
-      } catch (ServiceException e) {
-         log.error("Error while removing report " + reportId, e);
-         addMessageFor(e);
-      }
-   }
-
-   @Deprecated //should be moved to UserService
-   public void setReportProperties(String reportId, Map<String, String> props) {
-      try {
-         String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
-         Set<String> keysToRemove = new HashSet<String>();
-         Map<String, String> keysToAdd = new HashMap<String, String>();
-         for (Entry<String, String> entry : userProperties.entrySet()) {
-            if (entry.getKey().startsWith(reportPrefix)) {
-               keysToRemove.add(entry.getKey());
-            }
-         }
-         for (Entry<String, String> entry : props.entrySet()) {
-            String translatedKey = reportPrefix + entry.getKey();
-            keysToRemove.remove(translatedKey); // don't remove this, just update
-            keysToAdd.put(translatedKey, entry.getValue());
-         }
-         testService.multiUpdateProperties(getUser(), keysToRemove, keysToAdd);
-         // update userProperties collection if this didn't throw any exception
-         for (String keyToRemove : keysToRemove) {
-            userProperties.remove(keyToRemove);
-         }
-         userProperties.putAll(keysToAdd);
-      } catch (ServiceException e) {
-         log.error("Error while setting properties for report " + reportId, e);
-         addMessageFor(e);
-      }
-   }
-
-   @Deprecated //should be moved to UserService
-   public Map<String, String> getReportProperties(String reportId) {
-      return getReportProperties(userProperties, reportId);
-   }
-
-   @Deprecated //should be moved to UserService
-   private Map<String, String> getReportProperties(Map<String, String> userProperties, String reportId) {
-      String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
-      Map<String, String> reportProperties = new HashMap<String, String>();
-      for (Entry<String, String> entry : userProperties.entrySet()) {
-         if (entry.getKey().startsWith(reportPrefix)) {
-            reportProperties.put(entry.getKey().substring(reportPrefix.length()), entry.getValue());
-         }
-      }
-      return reportProperties;
+   public List<FavoriteParameter> getFavoriteParameters() {
+      return favoriteParameters;
    }
 }

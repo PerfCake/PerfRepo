@@ -45,6 +45,8 @@ import org.jboss.qa.perfrepo.model.to.MetricReportTO.Request;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.Response;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesRequest;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesResponse;
+import org.jboss.qa.perfrepo.service.ReportService;
+import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.UserSession;
 import org.jboss.qa.perfrepo.util.FavoriteParameter;
@@ -77,6 +79,9 @@ public class MetricReportController extends ControllerBase {
 
    @Inject
    private UserSession userSession;
+
+   @Inject
+   private ReportService reportService;
 
    private Response report;
    private String reportName;
@@ -616,7 +621,7 @@ public class MetricReportController extends ControllerBase {
          addMessage(INFO, "page.metricreport.noTests");
       }
       reportName = getBundleString("page.metricreport.newReport");
-      List<String> existingIds = userSession.getAllReportIds();
+      List<String> existingIds = reportService.getAllReportIds();
       int i = 1;
       while (existingIds.contains("metric" + Integer.toString(i))) {
          i++;
@@ -640,8 +645,8 @@ public class MetricReportController extends ControllerBase {
 
    private void generateSavedReport(String reportOwnerId, String reportId) {
       try {
-         Map<String, String> reportProperties = reportOwnerId.equals(userSession.getUser().getUsername()) ? userSession.getReportProperties(reportId)
-               : userSession.getReportProperties(reportOwnerId, reportId);
+         Map<String, String> reportProperties = reportOwnerId.equals(userSession.getUser().getUsername()) ? reportService.getReportProperties(reportId)
+               : reportService.getReportProperties(reportOwnerId, reportId);
          this.reportId = reportId;
          this.reportName = reportProperties.get("name");
          int chartIdx = 0;
@@ -774,7 +779,12 @@ public class MetricReportController extends ControllerBase {
          }
       }
 
-      userSession.setReportProperties(reportId, reportProps);
+      try {
+      reportService.setReportProperties(reportId, reportProps);
+      } catch (ServiceException e) {
+         log.error("Error while removing report " + reportId, e);
+         addMessageFor(e);
+      }
    }
 
    public void addSeries() {

@@ -1,8 +1,12 @@
 package org.jboss.qa.perfrepo.service;
 
+import org.jboss.qa.perfrepo.model.User;
+
 import java.util.Map;
 
 public interface UserService {
+
+   public static final String FAV_PARAM_KEY_PREFIX = "fav.param.";
 	
 	/**
 	 * Returns all user properties
@@ -43,5 +47,23 @@ public interface UserService {
 	 * @return
 	 */
 	public boolean userPropertiesPrefixExists(String prefix);
+
+   /**
+    * Adds favorite parameter of user to the test
+    *
+    * @param testId
+    * @param paramName
+    * @param label
+    */
+   public void addFavoriteParameter(long testId, String paramName, String label, User user) throws ServiceException;
+
+   /**
+    * Removes favorite parameter of the test from user
+    *
+    * @param testId
+    * @param paramName
+    * @param user
+    */
+   public void removeFavoriteParameter(long testId, String paramName, User user) throws ServiceException;
 
 }

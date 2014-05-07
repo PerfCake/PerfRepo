@@ -19,6 +19,7 @@ import org.jboss.qa.perfrepo.controller.ControllerBase;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.reports.testgroup.TestGroupChartBean.ChartData;
+import org.jboss.qa.perfrepo.service.ReportService;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.session.UserSession;
@@ -43,9 +44,7 @@ public class TestGroupReportController extends ControllerBase {
 	private TestService testService;
 	
 	@Inject
-	private UserService userService;	
-	
-	public static final String REPORT_PREFIX = UserSession.REPORT_KEY_PREFIX;
+	private UserService userService;
 	
 	/**
 	 * Test name, tag, value
@@ -146,7 +145,7 @@ public class TestGroupReportController extends ControllerBase {
 	private void readConfiguration() {
 		reportId = getRequestParam("reportId");
 		if (reportId != null && !"".equals(reportId)) {
-			Map<String, String> properties = userService.getUserProperties(REPORT_PREFIX + reportId + ".");
+			Map<String, String> properties = userService.getUserProperties(ReportService.REPORT_KEY_PREFIX + reportId + ".");
 			if (!properties.isEmpty()) {
 				//reportname
 				reportName = properties.get("name");
@@ -227,13 +226,13 @@ public class TestGroupReportController extends ControllerBase {
 			metricsProperty += metric + ", ";
 		}
 		properties.put("metrics", metricsProperty.substring(0, metricsProperty.length() -2));
-		userService.replacePropertiesWithPrefix(REPORT_PREFIX + reportId + ".", properties);
+		userService.replacePropertiesWithPrefix(ReportService.REPORT_KEY_PREFIX + reportId + ".", properties);
 		addSessionMessage(INFO, "page.reports.testGroup.reportSaved", reportId);
 		reloadSessionMessages();
 	}
 	
 	public void cloneReport() {
-		if (userService.userPropertiesPrefixExists(REPORT_PREFIX + getNewReportId())) {
+		if (userService.userPropertiesPrefixExists(ReportService.REPORT_KEY_PREFIX + getNewReportId())) {
 			//redirectWithMessage("/reports/testGroupReport/" + getReportId() ,ERROR, "page.reports.testGroup.reportExists", getNewReportId());
 			addSessionMessage(ERROR, "page.reports.testGroup.reportExists", getNewReportId());
 			reloadSessionMessages();

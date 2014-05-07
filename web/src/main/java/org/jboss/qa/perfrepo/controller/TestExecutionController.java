@@ -41,6 +41,7 @@ import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.rest.TestExecutionREST;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
+import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.session.UserSession;
 import org.jboss.qa.perfrepo.util.FavoriteParameter;
 import org.jboss.qa.perfrepo.util.MultiValue;
@@ -73,6 +74,9 @@ public class TestExecutionController extends ControllerBase {
 
    @Inject
    private UserSession userSession;
+
+   @Inject
+   private UserService userService;
 
    private TestExecution testExecution = null;
    private Test test = null;
@@ -122,7 +126,13 @@ public class TestExecutionController extends ControllerBase {
    }
 
    public void saveEditedFavoriteParameter() {
-      userSession.addFavoriteParameter(editedFavoriteParameter.getTestId(), editedFavoriteParameter.getParameterName(), editedFavoriteParameter.getLabel());
+      try {
+         userService.addFavoriteParameter(editedFavoriteParameter.getTestId(), editedFavoriteParameter.getParameterName(), editedFavoriteParameter.getLabel(), userSession.getUser());
+      }
+      catch (ServiceException e) {
+         log.error("Error while saving property", e);
+         addMessageFor(e);
+      }
       favoriteParameters = userSession.getFavoriteParametersFor(test.getId());
    }
 
@@ -131,7 +141,12 @@ public class TestExecutionController extends ControllerBase {
          log.error("incorrect request for removeFromFavorites");
          return;
       }
-      userSession.removeFavoriteParameter(test.getId(), paramName);
+      try {
+         userService.removeFavoriteParameter(test.getId(), paramName, userSession.getUser());
+      } catch (ServiceException e) {
+         log.error("Error while removing favorite parameter.", e);
+         addMessageFor(e);
+      }
       favoriteParameters = userSession.getFavoriteParametersFor(test.getId());
    }
 
