@@ -4,6 +4,7 @@ import org.jboss.qa.perfrepo.dao.UserDAO;
 import org.jboss.qa.perfrepo.dao.UserPropertyDAO;
 import org.jboss.qa.perfrepo.model.User;
 import org.jboss.qa.perfrepo.model.UserProperty;
+import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.security.UserInfo;
 import org.jboss.qa.perfrepo.session.UserSession;
 import org.jboss.qa.perfrepo.util.FavoriteParameter;
@@ -16,6 +17,7 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,30 +38,53 @@ public class UserServiceBean implements UserService {
    private UserInfo userInfo;
 
    @Inject
-   private UserSession userSession;
-
-   @Inject
    private TestService testService;
 
+   @Override
+   public User createUser(User user) throws ServiceException {
+      if (user.getId() != null) {
+         throw new IllegalArgumentException("can't create with id");
+      }
+      if (!user.getUsername().equals(userInfo.getUserName())) {
+         throw new ServiceException(ServiceException.Codes.NOT_YOU, null, "Only logged-in user can change his own properties");
+      }
+      User newUser = userDAO.create(user).clone();
+      newUser.setProperties(new ArrayList<UserProperty>(0));
+      return newUser;
+   }
+
+   @Override
+   public User updateUser(User user) throws ServiceException {
+      User oldUser = checkThisUser(user);
+      // currently you can update only e-mail
+      oldUser.setEmail(user.getEmail());
+      return userDAO.update(oldUser);
+   }
+
+   @Override
    public Map<String, String> getUserProperties() {
       List<UserProperty> ups = userPropertyDAO.findByUserName(userInfo.getUserName());
       return transformToMap(ups);
    }
 
+   @Override
    public boolean userPropertiesPrefixExists(String prefix) {
       List<UserProperty> ups = userPropertyDAO.findByUserName(userInfo.getUserName(), prefix);
       return ups.size() > 0;
    }
 
+   @Override
    public Map<String, String> getUserProperties(String prefix) {
       List<UserProperty> ups = userPropertyDAO.findByUserName(userInfo.getUserName(), prefix);
       return transformToMap(ups, prefix);
    }
 
+   @Override
    public void storeProperties(Map<String, String> properties) {
       storeProperties("", properties);
    }
 
+   @Override
    public void storeProperties(String prefix, Map<String, String> properties) {
       User user = getCurrentUser();
       for (String key : properties.keySet()) {
@@ -77,29 +102,42 @@ public class UserServiceBean implements UserService {
       }
    }
 
-   public void addFavoriteParameter(long testId, String paramName, String label, User user) throws ServiceException{
+   @Override
+   public List<FavoriteParameter> getFavoriteParameters() {
+      List<UserProperty> userProperties = userPropertyDAO.findByUserName(userInfo.getUserName());
+
+      List<FavoriteParameter> favoriteParameters = new ArrayList<FavoriteParameter>();
+      if (userProperties != null) {
+         for (UserProperty prop : userProperties) {
+            if (prop.getName().startsWith(UserService.FAV_PARAM_KEY_PREFIX)) {
+               favoriteParameters.add(FavoriteParameter.fromString(prop.getValue()));
+            }
+         }
+      }
+
+      return favoriteParameters;
+   }
+
+   @Override
+   public void addFavoriteParameter(long testId, String paramName, String label) throws ServiceException {
+      User user = userDAO.findByUsername(userInfo.getUserName());
+
       FavoriteParameter fp = new FavoriteParameter();
       fp.setLabel(label);
       fp.setParameterName(paramName);
       fp.setTestId(testId);
 
+
       setProperty(favPropKey(testId, paramName), fp.toString(), user);
-      FavoriteParameter prev = findFavoriteParameter(testId, paramName, userSession.getFavoriteParameters());
-      if (prev != null) {
-         prev.setLabel(label);
-      } else {
-         userSession.getFavoriteParameters().add(fp);
-      }
    }
 
-   public void removeFavoriteParameter(long testId, String paramName, User user) throws ServiceException{
-      FavoriteParameter prev = findFavoriteParameter(testId, paramName, userSession.getFavoriteParameters());
-      if (prev != null) {
-         userSession.getFavoriteParameters().remove(prev);
-      }
+   @Override
+   public void removeFavoriteParameter(long testId, String paramName) throws ServiceException {
+      User user = userDAO.findByUsername(userInfo.getUserName());
       setProperty(favPropKey(testId, paramName), null, user);
    }
 
+   @Override
    public void replacePropertiesWithPrefix(String prefix, Map<String, String> properties) {
       User user = getCurrentUser();
       List<UserProperty> ups = userPropertyDAO.findByUserName(user.getUsername(), prefix);
@@ -109,6 +147,40 @@ public class UserServiceBean implements UserService {
          }
       }
       storeProperties(prefix, properties);
+   }
+
+   @Override
+   public User getFullUser(String userName) {
+      User user = userDAO.findByUsername(userName);
+      if (user == null) {
+         return null;
+      }
+      user = user.clone();
+      List<UserProperty> properties = userPropertyDAO.findByUserId(user.getId());
+      user.setProperties(EntityUtil.clone(properties));
+      return user;
+   }
+
+   @Override
+   public void multiUpdateProperties(Collection<String> keysToRemove, Map<String, String> toUpdate) throws ServiceException {
+      User user = userDAO.findByUsername(userInfo.getUserName());
+      User freshUser = checkThisUser(user);
+      for (String keyToRemove : keysToRemove) {
+         UserProperty propToRemove = userPropertyDAO.findByUserIdAndName(user.getId(), keyToRemove);
+         if (propToRemove != null) {
+            userPropertyDAO.delete(propToRemove);
+         }
+      }
+      for (Map.Entry<String, String> entry : toUpdate.entrySet()) {
+         UserProperty propToUpdate = userPropertyDAO.findByUserIdAndName(user.getId(), entry.getKey());
+         if (propToUpdate == null) {
+            UserProperty propToCreate = createUserProperty(freshUser, entry.getKey(), entry.getValue());
+            userPropertyDAO.create(propToCreate);
+         } else {
+            propToUpdate.setValue((String) entry.getValue());
+            userPropertyDAO.update(propToUpdate);
+         }
+      }
    }
 
    private Map<String, String> transformToMap(List<UserProperty> ups) {
@@ -137,7 +209,7 @@ public class UserServiceBean implements UserService {
       return FAV_PARAM_KEY_PREFIX + testId + "." + paramName;
    }
 
-   private void setProperty(String name, String value, User user) throws ServiceException{
+   private void setProperty(String name, String value, User user) throws ServiceException {
       if (user != null) {
          UserProperty existingProp = user.findProperty(name);
          if (existingProp == null && value != null) {
@@ -145,7 +217,7 @@ public class UserServiceBean implements UserService {
             newProp.setName(name);
             newProp.setValue(value);
             newProp.setUser(user.clone());
-            newProp = testService.updateUserProperty(newProp);
+            newProp = updateUserProperty(newProp);
             if (user.getProperties() == null) {
                user.setProperties(new ArrayList<UserProperty>());
             }
@@ -153,20 +225,15 @@ public class UserServiceBean implements UserService {
          } else {
             if (value == null) {
                UserProperty toDelete = existingProp.clone();
-               testService.deleteUserProperty(toDelete);
+               deleteUserProperty(toDelete);
                user.getProperties().remove(existingProp);
             } else if (!value.equals(existingProp.getValue())) {
                UserProperty toUpdate = existingProp.clone();
                toUpdate.setValue(value);
-               toUpdate = testService.updateUserProperty(toUpdate);
+               toUpdate = updateUserProperty(toUpdate);
                user.getProperties().remove(existingProp);
                user.getProperties().add(toUpdate);
             }
-         }
-         if (value != null) {
-            userSession.getUserProperties().put(name, value);
-         } else {
-            userSession.getUserProperties().remove(name);
          }
       }
    }
@@ -180,6 +247,43 @@ public class UserServiceBean implements UserService {
       return null;
    }
 
+   private void deleteUserProperty(UserProperty property) throws ServiceException {
+      checkThisUser(property.getUser());
+      UserProperty property2 = userPropertyDAO.find(property.getId());
+      if (property2 != null) {
+         userPropertyDAO.delete(property2);
+      }
+   }
 
+   private UserProperty updateUserProperty(UserProperty property) throws ServiceException {
+      User user = checkThisUser(property.getUser());
+      property.setUser(user);
+      if (property.getId() == null) {
+         return userPropertyDAO.create(property);
+      } else {
+         return userPropertyDAO.update(property);
+      }
+   }
 
+   private UserProperty createUserProperty(User user, String name, String value) {
+      UserProperty up = new UserProperty();
+      up.setUser(user);
+      up.setName(name);
+      up.setValue(value);
+      return up;
+   }
+
+   private User checkThisUser(User user) throws ServiceException {
+      if (user == null || user.getId() == null) {
+         throw new IllegalArgumentException("user id required");
+      }
+      User oldUser = userDAO.find(user.getId());
+      if (oldUser == null) {
+         throw new ServiceException(ServiceException.Codes.USER_NOT_FOUND, null, "Couldn't find user with ID " + user.getId());
+      }
+      if (!oldUser.getUsername().equals(userInfo.getUserName())) {
+         throw new ServiceException(ServiceException.Codes.NOT_YOU, null, "Only logged-in user can change his own properties");
+      }
+      return oldUser;
+   }
 }

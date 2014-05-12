@@ -45,6 +45,7 @@ import org.jboss.qa.perfrepo.model.to.MetricReportTO.Request;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.Response;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesRequest;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesResponse;
+import org.jboss.qa.perfrepo.security.UserInfo;
 import org.jboss.qa.perfrepo.service.ReportService;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
@@ -79,6 +80,9 @@ public class MetricReportController extends ControllerBase {
 
    @Inject
    private UserSession userSession;
+
+   @Inject
+   private UserInfo userInfo;
 
    @Inject
    private ReportService reportService;
@@ -645,7 +649,7 @@ public class MetricReportController extends ControllerBase {
 
    private void generateSavedReport(String reportOwnerId, String reportId) {
       try {
-         Map<String, String> reportProperties = reportOwnerId.equals(userSession.getUser().getUsername()) ? reportService.getReportProperties(reportId)
+         Map<String, String> reportProperties = reportOwnerId.equals(userInfo.getUserName()) ? reportService.getReportProperties(reportId)
                : reportService.getReportProperties(reportOwnerId, reportId);
          this.reportId = reportId;
          this.reportName = reportProperties.get("name");
@@ -698,7 +702,7 @@ public class MetricReportController extends ControllerBase {
       if (reportId == null || reportId.isEmpty() || !PATTERN_REPORT_ID.matcher(reportId).matches()) {
          return "/repo/reports/metric";
       } else {
-         return "/repo/reports/metric/saved/" + userSession.getUser().getUsername() + "/" + reportId;
+         return "/repo/reports/metric/saved/" + userInfo.getUserName() + "/" + reportId;
       }
    }
 

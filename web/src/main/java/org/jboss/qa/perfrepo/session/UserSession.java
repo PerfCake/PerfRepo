@@ -1,13 +1,9 @@
 package org.jboss.qa.perfrepo.session;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -41,7 +37,8 @@ public class UserSession extends ControllerBase {
    @Inject
    private TestService testService;
 
-   private User user;
+   @Inject
+   private UserService userService;
 
    private Map<String, String> userProperties = new HashMap<String, String>();
 
@@ -49,35 +46,12 @@ public class UserSession extends ControllerBase {
 
    @PostConstruct
    public void init() {
-      refreshUser();
+      refresh();
    }
 
-   public User refreshUser() {
-	   //TODO: do not store full user with all properties
-      user = testService.getFullUser(userInfo.getUserName());
-      if (user == null) {
-         log.error("Couldn't find user \"" + userInfo.getUserName() + "\". Creating new user entry.");
-         User newUser = new User();
-         newUser.setUsername(userInfo.getUserName());
-         newUser.setEmail(userInfo.getUserName() + "@example.com");
-         try {
-            user = testService.createUser(newUser);
-         } catch (ServiceException e) {
-            addMessageFor(e);
-         }
-      }
-      if (user == null) {
-         return null;
-      }
-      if (user.getProperties() != null) {
-         for (UserProperty prop : user.getProperties()) {
-            userProperties.put(prop.getName(), prop.getValue());
-            if (prop.getName().startsWith(UserService.FAV_PARAM_KEY_PREFIX)) {
-               favoriteParameters.add(FavoriteParameter.fromString(prop.getValue()));
-            }
-         }
-      }
-      return user;
+   public void refresh() {
+      userProperties = userService.getUserProperties();
+      favoriteParameters = userService.getFavoriteParameters();
    }
 
    public List<FavoriteParameter> getFavoriteParametersFor(long testId) {
@@ -90,15 +64,7 @@ public class UserSession extends ControllerBase {
       return r;
    }
 
-   public User getUser() {
-      return user;
-   }
-
    public Map<String, String> getUserProperties() {
       return userProperties;
-   }
-
-   public List<FavoriteParameter> getFavoriteParameters() {
-      return favoriteParameters;
    }
 }

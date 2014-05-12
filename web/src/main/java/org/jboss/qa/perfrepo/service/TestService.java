@@ -32,7 +32,6 @@ import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
-import org.jboss.qa.perfrepo.service.ServiceException.Codes;
 
 /**
  * 
@@ -41,7 +40,7 @@ import org.jboss.qa.perfrepo.service.ServiceException.Codes;
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
  */
-public interface TestService extends Codes {
+public interface TestService {
 
    /**
     * Stores a new test execution.
@@ -52,7 +51,7 @@ public interface TestService extends Codes {
     * @return Created test execution. Contains database IDs.
     * @throws ServiceException
     */
-   TestExecution createTestExecution(TestExecution testExecution) throws ServiceException;
+   public TestExecution createTestExecution(TestExecution testExecution) throws ServiceException;
 
    /**
     * Returns list of TestExecutionss according to criteria defined by TestExecutionSearchTO
@@ -60,7 +59,7 @@ public interface TestService extends Codes {
     * @param search
     * @return
     */
-   List<TestExecution> searchTestExecutions(TestExecutionSearchTO search);
+   public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search);
 
    /**
     * Returns list of TestExecutionss according to criteria defined by TestExecutionSearchTO grouped
@@ -69,7 +68,7 @@ public interface TestService extends Codes {
     * @param search
     * @return
     */
-   List<TestExecution> searchTestExecutionsGroupedByJobId(TestExecutionSearchTO search);
+   public List<TestExecution> searchTestExecutionsGroupedByJobId(TestExecutionSearchTO search);
 
    /**
     * Returns list of Tests according to criteria defined by TestSearchTO
@@ -77,7 +76,7 @@ public interface TestService extends Codes {
     * @param search
     * @return
     */
-   List<Test> searchTest(TestSearchTO search);
+   public List<Test> searchTest(TestSearchTO search);
 
    /**
     * Get list of full test executions.
@@ -85,15 +84,7 @@ public interface TestService extends Codes {
     * @param ids
     * @return
     */
-   List<TestExecution> getFullTestExecutions(List<Long> ids);
-
-   /**
-    * Get list of full tests.
-    * 
-    * @param ids
-    * @return
-    */
-   List<Test> getFullTests(List<Long> ids);
+   public List<TestExecution> getFullTestExecutions(List<Long> ids);
 
    /**
     * Add attachment to the test execution. The {@link TestExecution} object referred by attachment
@@ -102,7 +93,7 @@ public interface TestService extends Codes {
     * @param attachment
     * @return id of newly created attachment
     */
-   Long addAttachment(TestExecutionAttachment attachment) throws ServiceException;
+   public Long addAttachment(TestExecutionAttachment attachment) throws ServiceException;
 
    /**
     * Delete attachment.
@@ -110,7 +101,7 @@ public interface TestService extends Codes {
     * @param attachment
     * @throws ServiceException
     */
-   void deleteAttachment(TestExecutionAttachment attachment) throws ServiceException;
+   public void deleteAttachment(TestExecutionAttachment attachment) throws ServiceException;
 
    /**
     * Get test execution attachment by id.
@@ -118,18 +109,17 @@ public interface TestService extends Codes {
     * @param id
     * @return
     */
-   TestExecutionAttachment getAttachment(Long id);
+   public TestExecutionAttachment getAttachment(Long id);
 
    /**
-    * Create a new test with collection of metrics. Eech metric will be created with
-    * {@link TestService#storeMetric(Test, Metric)} method. Group id of the new test needs to be one
+    * Create a new test with collection of metrics.Group id of the new test needs to be one
     * of the current user's roles.
     * 
     * @param test
     * @return
     * @throws ServiceException
     */
-   Test createTest(Test test) throws ServiceException;
+   public Test createTest(Test test) throws ServiceException;
 
    /**
     * Delete a test execution with all it's subobjects.
@@ -137,7 +127,7 @@ public interface TestService extends Codes {
     * @param testExecution
     * @throws ServiceException
     */
-   void deleteTestExecution(TestExecution testExecution) throws ServiceException;
+   public void deleteTestExecution(TestExecution testExecution) throws ServiceException;
 
    /**
     * Get {@link TestExecution} with all details.
@@ -145,11 +135,20 @@ public interface TestService extends Codes {
     * @param id
     * @return
     */
-   TestExecution getFullTestExecution(Long id);
+   public TestExecution getFullTestExecution(Long id);
 
-   List<TestExecution> getAllFullTestExecutions();
+   /**
+    * Returns all test executions with all information.
+    * @return
+    */
+   public List<TestExecution> getAllFullTestExecutions();
 
-   List<TestExecution> findExecutionsByTest(Long testId);
+   /**
+    * Returns all test executions of the specified test.
+    * @param testId
+    * @return
+    */
+   public List<TestExecution> findExecutionsByTest(Long testId);
 
    /**
     * Returns TestExecutions by Test id and job Id
@@ -176,7 +175,7 @@ public interface TestService extends Codes {
     * @return
     * @throws ServiceException
     */
-   TestMetric addMetric(Test test, Metric metric) throws ServiceException;
+   public TestMetric addMetric(Test test, Metric metric) throws ServiceException;
 
    /**
     * Update metric.
@@ -186,7 +185,7 @@ public interface TestService extends Codes {
     * @return Updated metric
     * @throws ServiceException
     */
-   Metric updateMetric(Test test, Metric metric) throws ServiceException;
+   public Metric updateMetric(Test test, Metric metric) throws ServiceException;
 
    /**
     * Get test with all metrics but without executions.
@@ -194,7 +193,7 @@ public interface TestService extends Codes {
     * @param testId Test id
     * @return Test
     */
-   Test getFullTest(Long testId);
+   public Test getFullTest(Long testId);
 
    /**
     * Delete a test with all it's sub-objects. Use with caution!
@@ -202,13 +201,22 @@ public interface TestService extends Codes {
     * @param test
     * @throws ServiceException
     */
-   void deleteTest(Test test) throws ServiceException;
+   public void deleteTest(Test test) throws ServiceException;
 
-   Test updateTest(Test test);
+   /**
+    * Updates the test.
+    *
+    * @param test
+    * @return
+    */
+   public Test updateTest(Test test);
 
-   List<Test> getAllFullTests();
-
-   Test getOrCreateTest(Test test) throws ServiceException;
+   /**
+    * Returns all tests with all information.
+    *
+    * @return
+    */
+   public List<Test> getAllFullTests();
 
    /**
     * Get metric with all associated tests (without details).
@@ -216,35 +224,30 @@ public interface TestService extends Codes {
     * @param id
     * @return
     */
-   Metric getFullMetric(Long id);
-
-   List<Metric> getAllFullMetrics();
+   public Metric getFullMetric(Long id);
 
    /**
-    * Returns all metric by name prefix, which belong tests with defined group id
-    * 
-    * @param name
-    * @param test
+    * Returns all metrics with all information.
+    *
     * @return
     */
-   List<Metric> getMetrics(String name, Test test);
+   public List<Metric> getAllFullMetrics();
 
    /**
     * Returns metrics which belong tests with defined group id and are not defined on the defined
     * test
-    * 
-    * @param name
+    *
     * @param test
     * @return
     */
-   List<Metric> getAvailableMetrics(Test test);
+   public List<Metric> getAvailableMetrics(Test test);
 
    /**
     * Returns all metrics, which are defined on the Test
     * 
     * @return
     */
-   List<Metric> getTestMetrics(Test test);
+   public List<Metric> getTestMetrics(Test test);
 
    /**
     * Delete metric from the test.
@@ -253,16 +256,7 @@ public interface TestService extends Codes {
     * @param metric
     * @throws ServiceException
     */
-   void deleteMetric(Test test, Metric metric) throws ServiceException;
-
-   /**
-    * Removes metric from defined test. The method removes only relation between test and metric.
-    * The metric itself is not deleted.
-    * 
-    * @param test
-    * @param metric
-    */
-   void deleteTestMetric(TestMetric tm);
+   public void deleteMetric(Test test, Metric metric) throws ServiceException;
 
    /**
     * Update only attributes name and started and collection of tags.
@@ -271,7 +265,7 @@ public interface TestService extends Codes {
     * @return fresh full test execution
     * @throws ServiceException
     */
-   TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException;
+   public TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException;
 
    /**
     * Lock/unlock test execution.
@@ -281,7 +275,7 @@ public interface TestService extends Codes {
     * @return full test execution
     * @throws ServiceException
     */
-   TestExecution setExecutionLocked(TestExecution anExec, boolean locked) throws ServiceException;
+   public TestExecution setExecutionLocked(TestExecution anExec, boolean locked) throws ServiceException;
 
    /**
     * Updates or creates TestExecutionParameter
@@ -290,7 +284,7 @@ public interface TestService extends Codes {
     * @return
     * @throws ServiceException
     */
-   TestExecutionParameter updateParameter(TestExecutionParameter tep) throws ServiceException;
+   public TestExecutionParameter updateParameter(TestExecutionParameter tep) throws ServiceException;
 
    /**
     * Removes TestExecutionParameter
@@ -299,15 +293,7 @@ public interface TestService extends Codes {
     * @return
     * @throws ServiceException
     */
-   void deleteParameter(TestExecutionParameter tep) throws ServiceException;
-
-   /**
-    * Removes TestExecutionParameter
-    * 
-    * @param tep
-    * @return
-    */
-   void deleteTestExecutionTag(TestExecutionTag teg);
+   public void deleteParameter(TestExecutionParameter tep) throws ServiceException;
 
    /**
     * Creates new value.
@@ -316,7 +302,7 @@ public interface TestService extends Codes {
     * @return
     * @throws ServiceException
     */
-   Value addValue(Value value) throws ServiceException;
+   public Value addValue(Value value) throws ServiceException;
 
    /**
     * Updates Test Execution Value and the set of it's parameters.
@@ -325,7 +311,7 @@ public interface TestService extends Codes {
     * @return
     * @throws ServiceException
     */
-   Value updateValue(Value value) throws ServiceException;
+   public Value updateValue(Value value) throws ServiceException;
 
    /**
     * Removes value from TestExecution
@@ -333,7 +319,7 @@ public interface TestService extends Codes {
     * @param value
     * @throws ServiceException
     */
-   void deleteValue(Value value) throws ServiceException;
+   public void deleteValue(Value value) throws ServiceException;
 
    /**
     * Computes metric report.
@@ -341,7 +327,7 @@ public interface TestService extends Codes {
     * @param request
     * @return response TO
     */
-   MetricReportTO.Response computeMetricReport(MetricReportTO.Request request);
+   public MetricReportTO.Response computeMetricReport(MetricReportTO.Request request);
 
    /**
     * Get parameter and test execution.
@@ -349,86 +335,20 @@ public interface TestService extends Codes {
     * @param paramId
     * @return
     */
-   TestExecutionParameter getFullParameter(Long paramId);
-
-   /**
-    * 
-    * @param userName
-    * @return User with properties.
-    */
-   User getFullUser(String userName);
-
-   /**
-    * Set user property.
-    * 
-    * @param property
-    * @throws ServiceException
-    */
-   UserProperty updateUserProperty(UserProperty property) throws ServiceException;
-
-   /**
-    * Deletes user property.
-    * 
-    * @param property
-    * @throws ServiceException
-    */
-   void deleteUserProperty(UserProperty property) throws ServiceException;
-
-   /**
-    * Updates a set of user's properties in one transaction.
-    * 
-    * @param user
-    * @param keysToRemove These properties will be removed
-    * @param toUpdate These will be created or updated.
-    * @throws ServiceException
-    */
-   void multiUpdateProperties(User user, Collection<String> keysToRemove, Map<String, String> toUpdate) throws ServiceException;
-
-   /**
-    * Create new user.
-    * 
-    * @param user
-    * @return
-    * @throws ServiceException
-    */
-   User createUser(User user) throws ServiceException;
-
-   /**
-    * Update user
-    * 
-    * @param user
-    * @return
-    * @throws ServiceException
-    */
-   User updateUser(User user) throws ServiceException;
-
-   /**
-    * Get value with metric and full execution and test.
-    * 
-    * @param valueId value id
-    * @return value
-    */
-   Value getFullValue(Long valueId);
+   public TestExecutionParameter getFullParameter(Long paramId);
 
    /**
     * 
     * @return lists of tests for selection in UI.
     */
-   List<Test> getAllSelectionTests();
-
-   /**
-    * 
-    * @param testId
-    * @return All possible execution params for given testId.
-    */
-   List<String> getAllSelectionExecutionParams(Long testId);
+   public List<Test> getAllSelectionTests();
 
    /**
     * 
     * @param testId
     * @return All metrics for given testId
     */
-   List<Metric> getAllSelectionMetrics(Long testId);
+   public List<Metric> getAllSelectionMetrics(Long testId);
 
    /**
     * Returns test uids matching prefix
@@ -466,6 +386,5 @@ public interface TestService extends Codes {
     * @param testExecutions
     */
    public void deleteTagsFromTestExecutions(Collection<String> tags, Collection<TestExecution> testExecutions);
-
 
 }

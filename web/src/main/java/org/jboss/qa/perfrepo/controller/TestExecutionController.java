@@ -127,12 +127,13 @@ public class TestExecutionController extends ControllerBase {
 
    public void saveEditedFavoriteParameter() {
       try {
-         userService.addFavoriteParameter(editedFavoriteParameter.getTestId(), editedFavoriteParameter.getParameterName(), editedFavoriteParameter.getLabel(), userSession.getUser());
+         userService.addFavoriteParameter(editedFavoriteParameter.getTestId(), editedFavoriteParameter.getParameterName(), editedFavoriteParameter.getLabel());
       }
       catch (ServiceException e) {
          log.error("Error while saving property", e);
          addMessageFor(e);
       }
+      userSession.refresh();
       favoriteParameters = userSession.getFavoriteParametersFor(test.getId());
    }
 
@@ -142,11 +143,12 @@ public class TestExecutionController extends ControllerBase {
          return;
       }
       try {
-         userService.removeFavoriteParameter(test.getId(), paramName, userSession.getUser());
+         userService.removeFavoriteParameter(test.getId(), paramName);
       } catch (ServiceException e) {
          log.error("Error while removing favorite parameter.", e);
          addMessageFor(e);
       }
+      userSession.refresh();
       favoriteParameters = userSession.getFavoriteParametersFor(test.getId());
    }
 

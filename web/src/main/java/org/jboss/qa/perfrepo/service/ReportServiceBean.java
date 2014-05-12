@@ -36,6 +36,9 @@ public class ReportServiceBean implements ReportService {
    @Inject
    private UserSession userSession;
 
+   @Inject
+   private UserService userService;
+
    @Override
    public List<String> getAllReportIds() {
       return getAllReportIds(userSession.getUserProperties());
@@ -51,13 +54,14 @@ public class ReportServiceBean implements ReportService {
          }
       }
 
-      testService.multiUpdateProperties(userSession.getUser(), keysToRemove, Collections.<String, String> emptyMap());
+      userService.multiUpdateProperties(keysToRemove, Collections.<String, String> emptyMap());
       // update userProperties collection if this didn't throw any exception
       for (String keyToRemove : keysToRemove) {
          userSession.getUserProperties().remove(keyToRemove);
       }
    }
 
+   @Override
    public void setReportProperties(String reportId, Map<String, String> props) throws ServiceException{
       String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
       Set<String> keysToRemove = new HashSet<String>();
@@ -72,7 +76,8 @@ public class ReportServiceBean implements ReportService {
          keysToRemove.remove(translatedKey); // don't remove this, just update
          keysToAdd.put(translatedKey, entry.getValue());
       }
-      testService.multiUpdateProperties(userSession.getUser(), keysToRemove, keysToAdd);
+
+      userService.multiUpdateProperties(keysToRemove, keysToAdd);
       // update userProperties collection if this didn't throw any exception
       for (String keyToRemove : keysToRemove) {
          userSession.getUserProperties().remove(keyToRemove);
@@ -80,12 +85,14 @@ public class ReportServiceBean implements ReportService {
       userSession.getUserProperties().putAll(keysToAdd);
    }
 
+   @Override
    public Map<String, String> getReportProperties(String reportId) {
       return getReportProperties(userSession.getUserProperties(), reportId);
    }
 
+   @Override
    public Map<String, String> getReportProperties(String userName, String reportId) {
-      User user = testService.getFullUser(userName);
+      User user = userService.getFullUser(userName);
       if (user == null) {
          return null;
       } else {

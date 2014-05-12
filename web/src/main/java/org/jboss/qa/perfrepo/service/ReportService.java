@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * // TODO: Document this
  *
- * @author jholusa
+ * @author Jiri Holusa <jholusa@redhat.com>
  * @since 4.0
  */
 public interface ReportService {
