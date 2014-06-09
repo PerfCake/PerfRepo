@@ -69,3 +69,51 @@ CREATE SEQUENCE report_property_sequence
 
 
 ALTER TABLE public.report_property_sequence OWNER TO perfrepo;
+
+--
+-- Migrate script - reports from user_properties to report entities
+--
+
+create or replace function migrate_reports ()
+  RETURNS setof report AS
+'
+DECLARE
+    key text;
+    reportrow report;
+    keyname text;
+    link text;
+    type text;
+    userId integer;
+    reportId integer;
+    reportIdResult integer;
+    upValue text;
+    upCode text;
+    upId integer;
+    upIdResult integer;
+    prop1 text;
+    prop2 text;
+BEGIN
+
+for key in select distinct substring(name, 8, position(''.'' IN substring(name, 8)) -1) as code from user_property where name like ''report.%'' loop
+	execute ''select value from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.name'''''' into keyname;
+	execute ''select value from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.link'''''' into link;
+	execute ''select value from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.type'''''' into type;
+	execute ''select user_id from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.name'''''' into userId;
+	execute ''SELECT nextval(''''REPORT_SEQUENCE'''')'' into reportId;
+	RAISE NOTICE ''report id %'', reportId;
+	execute ''insert into report (id, code, name, link, type, user_id) values ('' || reportId || '', '' || quote_literal(key) || '' , '' || quote_literal(keyname) || '' , '' || quote_literal(link) || '' , '' || quote_literal(type) || '' , '' || userId || '') returning id'' into reportIdResult;	
+  reportrow := (reportIdResult, key,keyname,link,type,userId);
+	return next reportrow;
+	prop1 := ''report.''|| key || ''.%'';
+	prop2 := ''report.'' || key || ''.(link|name|type).*'';
+  for upCode, upValue in select substring(name, 9 + length(key)), value from user_property where name like prop1 and name !~ prop2 and user_id=userId  loop
+     execute ''SELECT nextval(''''REPORT_PROPERTY_SEQUENCE'''')'' into upId;
+     execute ''insert into report_property (id, report_id,  name, value) values (''||upid||'',''||reportIdResult||'',''||quote_literal(upCode)||'',''||quote_literal(upValue)||'') returning id'' into upIdResult;	
+     RAISE NOTICE ''report property id %'', upIdResult;
+  end loop;
+end loop;
+
+return;
+END
+'
+LANGUAGE plpgsql VOLATILE;
