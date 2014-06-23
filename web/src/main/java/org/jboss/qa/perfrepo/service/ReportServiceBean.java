@@ -1,7 +1,10 @@
 package org.jboss.qa.perfrepo.service;
 
+import org.jboss.qa.perfrepo.dao.ReportDAO;
 import org.jboss.qa.perfrepo.model.User;
 import org.jboss.qa.perfrepo.model.UserProperty;
+import org.jboss.qa.perfrepo.model.report.Report;
+import org.jboss.qa.perfrepo.security.UserInfo;
 import org.jboss.qa.perfrepo.session.UserSession;
 
 import javax.ejb.Stateless;
@@ -20,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Implements @lin{ReportService}
+ * Implements @link{ReportService}.
  *
  * @author Jiri Holusa <jholusa@redhat.com>
  */
@@ -31,109 +34,46 @@ import java.util.Set;
 public class ReportServiceBean implements ReportService {
 
    @Inject
-   private TestService testService;
+   private UserInfo userInfo;
 
    @Inject
-   private UserSession userSession;
-
-   @Inject
-   private UserService userService;
+   private ReportDAO reportDAO;
 
    @Override
-   public List<String> getAllReportIds() {
-      return getAllReportIds(userSession.getUserProperties());
+   public List<Report> getAllUsersReports() {
+      return getAllReports(userInfo.getUserName());
    }
 
    @Override
-   public void removeReport(String reportId) throws ServiceException{
-      String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
-      Set<String> keysToRemove = new HashSet<String>();
-      for (Map.Entry<String, String> entry : userSession.getUserProperties().entrySet()) {
-         if (entry.getKey().startsWith(reportPrefix)) {
-            keysToRemove.add(entry.getKey());
-         }
-      }
+   public void removeReport(Long id) throws ServiceException {
+      Report report = reportDAO.find(id);
+      reportDAO.delete(report);
+   }
 
-      userService.multiUpdateProperties(keysToRemove, Collections.<String, String> emptyMap());
-      // update userProperties collection if this didn't throw any exception
-      for (String keyToRemove : keysToRemove) {
-         userSession.getUserProperties().remove(keyToRemove);
-      }
+   private List<Report> getAllReports(String username) {
+      List<Report> result = new ArrayList<Report>();
+      result.addAll(reportDAO.findTestsByUser(username));
+
+      return result;
    }
 
    @Override
-   public void setReportProperties(String reportId, Map<String, String> props) throws ServiceException{
-      String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
-      Set<String> keysToRemove = new HashSet<String>();
-      Map<String, String> keysToAdd = new HashMap<String, String>();
-      for (Map.Entry<String, String> entry : userSession.getUserProperties().entrySet()) {
-         if (entry.getKey().startsWith(reportPrefix)) {
-            keysToRemove.add(entry.getKey());
-         }
-      }
-      for (Map.Entry<String, String> entry : props.entrySet()) {
-         String translatedKey = reportPrefix + entry.getKey();
-         keysToRemove.remove(translatedKey); // don't remove this, just update
-         keysToAdd.put(translatedKey, entry.getValue());
-      }
-
-      userService.multiUpdateProperties(keysToRemove, keysToAdd);
-      // update userProperties collection if this didn't throw any exception
-      for (String keyToRemove : keysToRemove) {
-         userSession.getUserProperties().remove(keyToRemove);
-      }
-      userSession.getUserProperties().putAll(keysToAdd);
+   public Report createReport(Report report) {
+      return reportDAO.create(report);
    }
 
    @Override
-   public Map<String, String> getReportProperties(String reportId) {
-      return getReportProperties(userSession.getUserProperties(), reportId);
+   public Report updateReport(Report report) {
+      return reportDAO.update(report);
    }
 
    @Override
-   public Map<String, String> getReportProperties(String userName, String reportId) {
-      User user = userService.getFullUser(userName);
-      if (user == null) {
-         return null;
-      } else {
-         return getReportProperties(getUserProperties(user), reportId);
-      }
+   public Report getReport(Long id) {
+      return reportDAO.find(id);
    }
 
-   private Map<String, String> getUserProperties(User user) {
-      Map<String, String> userProperties = new HashMap<String, String>();
-      for (UserProperty prop : user.getProperties()) {
-         userProperties.put(prop.getName(), prop.getValue());
-      }
-      return userProperties;
-   }
-
-   private List<String> getAllReportIds(Map<String, String> userProperties) {
-      Set<String> rset = new HashSet<String>();
-      List<String> r = new ArrayList<String>();
-      for (Map.Entry<String, String> entry : userProperties.entrySet()) {
-         if (entry.getKey().startsWith(REPORT_KEY_PREFIX)) {
-            String tmpkey = entry.getKey().substring(REPORT_KEY_PREFIX.length());
-            int dotidx = tmpkey.indexOf(".");
-            if (dotidx == -1) {
-               rset.add(tmpkey);
-            } else {
-               rset.add(tmpkey.substring(0, dotidx));
-            }
-         }
-      }
-      r.addAll(rset);
-      return r;
-   }
-
-   private Map<String, String> getReportProperties(Map<String, String> userProperties, String reportId) {
-      String reportPrefix = REPORT_KEY_PREFIX + reportId + ".";
-      Map<String, String> reportProperties = new HashMap<String, String>();
-      for (Map.Entry<String, String> entry : userProperties.entrySet()) {
-         if (entry.getKey().startsWith(reportPrefix)) {
-            reportProperties.put(entry.getKey().substring(reportPrefix.length()), entry.getValue());
-         }
-      }
-      return reportProperties;
+   @Override
+   public Long getMaxId() {
+      return reportDAO.findMaxId();
    }
 }

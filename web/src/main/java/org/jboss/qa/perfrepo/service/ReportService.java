@@ -1,5 +1,7 @@
 package org.jboss.qa.perfrepo.service;
 
+import org.jboss.qa.perfrepo.model.report.Report;
+
 import java.util.List;
 import java.util.Map;
 
@@ -7,20 +9,18 @@ import java.util.Map;
  * // TODO: Document this
  *
  * @author Jiri Holusa <jholusa@redhat.com>
- * @since 4.0
  */
 public interface ReportService {
 
-   public static final String REPORT_KEY_PREFIX = "report.";
+   public List<Report> getAllUsersReports();
 
-   public List<String> getAllReportIds();
+   public void removeReport(Long id) throws ServiceException;
 
-   public void removeReport(String reportId) throws ServiceException;
+   public Report createReport(Report report);
 
-   public void setReportProperties(String reportId, Map<String, String> props) throws ServiceException;
+   public Report updateReport(Report report);
 
-   public Map<String, String> getReportProperties(String reportId);
+   public Report getReport(Long id);
 
-   public Map<String, String> getReportProperties(String userName, String reportId);
-
+   public Long getMaxId();
 }

@@ -17,14 +17,12 @@ package org.jboss.qa.perfrepo.controller.reports;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -36,6 +34,7 @@ import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
+import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.BaselineRequest;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.BaselineResponse;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.ChartRequest;
@@ -71,9 +70,7 @@ public class MetricReportController extends ControllerBase {
    private static final long serialVersionUID = 1L;
 
    private static final Logger log = Logger.getLogger(MetricReportController.class);
-   //   private static final DecimalFormat FMT = new DecimalFormat("0.000");
    private static final SimpleDateFormat DFMT = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-   private static final Pattern PATTERN_REPORT_ID = Pattern.compile("[a-zA-Z][a-zA-Z0-9_-]*");
 
    @Inject
    private TestService testService;
@@ -89,7 +86,7 @@ public class MetricReportController extends ControllerBase {
 
    private Response report;
    private String reportName;
-   private String reportId;
+   private Long reportId;
    private List<ChartSpec> chartSpecs;
    private List<SeriesSpec> seriesSpecs;
    private List<BaselineSpec> baselineSpecs;
@@ -146,9 +143,11 @@ public class MetricReportController extends ControllerBase {
       public void setSelectedTestId(Long selectedTestId) {
          this.selectedTestId = selectedTestId;
          String testUid = findSelectedTestUID(this.selectedTestId);
+
          if (testUid == null) {
             throw new IllegalStateException("couldn't find test UID for id " + selectedTestId);
          }
+
          request.setTestUid(testUid);
       }
 
@@ -219,6 +218,7 @@ public class MetricReportController extends ControllerBase {
          if (selectedTestId == null) {
             throw new IllegalStateException("can't change metrics with null test ID");
          }
+
          selectionMetrics = testService.getAllSelectionMetrics(selectedTestId);
          if (selectionMetrics.isEmpty()) {
             addMessage(ERROR, "page.metricreport.noMetrics", findSelectedTestUID(selectedTestId));
@@ -235,25 +235,32 @@ public class MetricReportController extends ControllerBase {
          for (ChartSpec c : chartSpecs) {
             c.renderDetails = false;
          }
+
          renderDetails = true;
          if (event.getSeriesIndex() >= chartSeries.size() + chartBaselines.size()) {
             throw new IllegalStateException("series index " + event.getSeriesIndex() + " bigger than or equal to series list size " + chartSeries.size());
          }
+
          pointDetails = new PointDetails();
+
          if (event.getSeriesIndex() >= chartSeries.size()) {
             BaselineSpec baseline = chartBaselines.get(event.getSeriesIndex() - chartSeries.size());
             if (event.getPointIndex() >= 2) {
                throw new IllegalStateException("point index " + event.getPointIndex() + " too big in baseline series");
             }
+
             pointDetails.execId = baseline.getValueExecId();
          } else {
             SeriesSpec series = chartSeries.get(event.getSeriesIndex());
             if (event.getPointIndex() >= series.execIds.size()) {
                throw new IllegalStateException("point index " + event.getPointIndex() + " bigger than or equal to execId list size " + series.execIds.size());
             }
+
             pointDetails.execId = series.execIds.get(event.getPointIndex());
          }
+
          pointDetails.exec = testService.getFullTestExecution(pointDetails.execId);
+
          for (FavoriteParameter fp : userSession.getFavoriteParametersFor(pointDetails.exec.getTest().getId())) {
             pointDetails.favParams.add(new PointDetailsFavParam(fp.getLabel(), pointDetails.exec.findParameter(fp.getParameterName())));
          }
@@ -265,6 +272,7 @@ public class MetricReportController extends ControllerBase {
                return spec;
             }
          }
+
          return null;
       }
 
@@ -274,6 +282,7 @@ public class MetricReportController extends ControllerBase {
                return spec;
             }
          }
+
          return null;
       }
 
@@ -281,14 +290,17 @@ public class MetricReportController extends ControllerBase {
          if (metricName == null) {
             return null;
          }
+
          if (selectionMetrics == null) {
             return null;
          }
+
          for (Metric m : selectionMetrics) {
             if (metricName.equals(m.getName())) {
                return m.getId();
             }
          }
+
          return null;
       }
 
@@ -296,25 +308,30 @@ public class MetricReportController extends ControllerBase {
          if (id == null) {
             return null;
          }
+
          if (selectionMetrics == null) {
             return null;
          }
+
          for (Metric m : selectionMetrics) {
             if (id.equals(m.getId())) {
                return m.getName();
             }
          }
+
          return null;
       }
 
    }
 
    public class PointDetailsFavParam {
+
       private String label;
       private TestExecutionParameter param;
 
       private PointDetailsFavParam(String name, TestExecutionParameter param) {
          super();
+
          this.label = name;
          this.param = param;
       }
@@ -326,7 +343,6 @@ public class MetricReportController extends ControllerBase {
       public TestExecutionParameter getParam() {
          return param;
       }
-
    }
 
    public class PointDetails {
@@ -367,6 +383,7 @@ public class MetricReportController extends ControllerBase {
 
       private SeriesSpec(ChartSpec chart, SeriesRequest request) {
          super();
+
          this.chart = chart;
          this.request = request;
          this.chartModel = new NumberChartDataModel(ChartType.line);
@@ -430,13 +447,16 @@ public class MetricReportController extends ControllerBase {
          if (this.chart != null && chartName.equals(this.chart.chartName)) {
             return;
          }
+
          ChartSpec newSpec = findChartSpecByName(chartName);
          if (newSpec != null) {
             if (this.chart != null) {
                this.chart.removeSeries(this);
             }
+
             newSpec.addSeries(this);
             this.chart = newSpec;
+
             setSelectedMetricId(this.chart.selectionMetrics.isEmpty() ? null : this.chart.selectionMetrics.get(0).getId());
          } else {
             throw new IllegalArgumentException("can't find chart " + chartName);
@@ -453,6 +473,7 @@ public class MetricReportController extends ControllerBase {
                return seriesSpec;
             }
          }
+
          return null;
       }
    }
@@ -467,6 +488,7 @@ public class MetricReportController extends ControllerBase {
 
       private BaselineSpec(ChartSpec chart, BaselineRequest request) {
          super();
+
          this.chart = chart;
          this.request = request;
          this.chartModel = new NumberChartDataModel(ChartType.line);
@@ -533,13 +555,16 @@ public class MetricReportController extends ControllerBase {
          if (this.chart != null && chartName.equals(this.chart.chartName)) {
             return;
          }
+
          ChartSpec newSpec = findChartSpecByName(chartName);
          if (newSpec != null) {
             if (this.chart != null) {
                this.chart.removeBaseline(this);
             }
+
             newSpec.addBaseline(this);
             this.chart = newSpec;
+
             setSelectedMetricId(this.chart.selectionMetrics.isEmpty() ? null : this.chart.selectionMetrics.get(0).getId());
          } else {
             throw new IllegalArgumentException("can't find chart " + chartName);
@@ -567,18 +592,15 @@ public class MetricReportController extends ControllerBase {
       return reportName;
    }
 
-   public String getReportId() {
-      return reportId;
-   }
-
    public void setReportName(String reportName) {
       this.reportName = reportName;
    }
 
-   public void setReportId(String reportId) {
-      if (reportId != null && !PATTERN_REPORT_ID.matcher(reportId).matches()) {
-         addMessage(ERROR, "page.metricreport.reportIdFromat");
-      }
+   public Long getReportId() {
+      return reportId;
+   }
+
+   public void setReportId(Long reportId) {
       this.reportId = reportId;
    }
 
@@ -610,10 +632,10 @@ public class MetricReportController extends ControllerBase {
             }
          });
       }
-      String reportOwnerId = getRequestParam("reportOwnerId");
-      String reportId = getRequestParam("reportId");
-      if (reportOwnerId != null && reportId != null) {
-         generateSavedReport(reportOwnerId, reportId);
+
+      Long reportId = Long.getLong(getRequestParam("reportId"));
+      if (reportId != null) {
+         generateSavedReport(reportId);
       } else {
          configVisible = true;
          generateNewReport();
@@ -624,39 +646,39 @@ public class MetricReportController extends ControllerBase {
       if (selectionTests == null || selectionTests.isEmpty()) {
          addMessage(INFO, "page.metricreport.noTests");
       }
+
       reportName = getBundleString("page.metricreport.newReport");
-      List<String> existingIds = reportService.getAllReportIds();
-      int i = 1;
-      while (existingIds.contains("metric" + Integer.toString(i))) {
-         i++;
-      }
-      reportId = "metric" + Integer.toString(i);
+      Long maxExistingId = reportService.getMaxId();
+      reportId = maxExistingId + 1;
+
       chartSpecs = new ArrayList<ChartSpec>();
       ChartSpec chart = new ChartSpec("Chart 1");
       chart.setSelectedTestId(selectionTests.get(0).getId());
       chart.changeMetricSelection();
       chartSpecs.add(chart);
+
       seriesSpecs = new ArrayList<SeriesSpec>();
       baselineSpecs = new ArrayList<BaselineSpec>();
+
       SeriesSpec series = new SeriesSpec(chart, new SeriesRequest("Series 1"));
       if (chart.getSelectionMetrics() != null && !chart.getSelectionMetrics().isEmpty()) {
          series.setSelectedMetricId(chart.getSelectionMetrics().get(0).getId());
       }
+
       chart.addSeries(series);
       seriesSpecs.add(series);
+
       updateReport();
    }
 
-   private void generateSavedReport(String reportOwnerId, String reportId) {
+   private void generateSavedReport(Long reportId) {
       try {
-         Map<String, String> reportProperties = reportOwnerId.equals(userInfo.getUserName()) ? reportService.getReportProperties(reportId)
-               : reportService.getReportProperties(reportOwnerId, reportId);
-         this.reportId = reportId;
-         this.reportName = reportProperties.get("name");
-         int chartIdx = 0;
-         String chartPrefix = "chart" + chartIdx;
+         Report report = reportService.getReport(reportId);
+         this.reportId = report.getId();
+         this.reportName = report.getName();
+
          List<ChartSpec> savedChartSpecs = new ArrayList<ChartSpec>();
-         while (reportProperties.containsKey(chartPrefix + ".name")) {
+         while(report.getProperties().containsKey(chartPrefix + ".name")) {
             ChartSpec chart = new ChartSpec(reportProperties.get(chartPrefix + ".name"));
             chart.setSelectedTestId(Long.valueOf(reportProperties.get(chartPrefix + ".test")));
             chart.changeMetricSelection();
@@ -699,7 +721,7 @@ public class MetricReportController extends ControllerBase {
    }
 
    public String getLinkToReport() {
-      if (reportId == null || reportId.isEmpty() || !PATTERN_REPORT_ID.matcher(reportId).matches()) {
+      if (reportId == null) {
          return "/repo/reports/metric";
       } else {
          return "/repo/reports/metric/saved/" + userInfo.getUserName() + "/" + reportId;
@@ -750,7 +772,7 @@ public class MetricReportController extends ControllerBase {
    }
 
    public void save() {
-      if (reportId == null || reportId.isEmpty()) {
+      if (reportId == null) {
          addMessage(ERROR, "page.metricreport.enterReportID");
          return;
       }
@@ -784,7 +806,7 @@ public class MetricReportController extends ControllerBase {
       }
 
       try {
-      reportService.setReportProperties(reportId, reportProps);
+         reportService.setReportProperties(reportId, reportProps);
       } catch (ServiceException e) {
          log.error("Error while removing report " + reportId, e);
          addMessageFor(e);

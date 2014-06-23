@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
+import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.service.ReportService;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.session.UserSession;
@@ -34,6 +35,7 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
  * Controller for /repo/reports
  * 
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  * 
  */
 @Named("reportList")
@@ -42,50 +44,12 @@ public class ReportListController extends ControllerBase {
 
    private static final Logger log = Logger.getLogger(ReportListController.class);
 
-   private static final Comparator<ReportItem> COMPARE_NAME = new Comparator<ReportListController.ReportItem>() {
-      @Override
-      public int compare(ReportItem o1, ReportItem o2) {
-         return o1.getName().compareTo(o2.getName());
-      }
-   };
-
-   public class ReportItem {
-      private String id;
-      private String name;
-      private String type;
-      private String link;
-
-      public ReportItem(String id, String name, String type, String link) {
-         super();
-         this.id = id;
-         this.name = name;
-         this.type = type;
-         this.link = link;
-      }
-
-      public String getId() {
-         return id;
-      }
-
-      public String getName() {
-         return name;
-      }
-
-      public String getType() {
-         return type;
-      }
-
-      public String getLink() {
-         return link;
-      }
-   }
-
    @Inject
    private ReportService reportService;
 
-   private List<ReportItem> savedReports;
+   private List<Report> savedReports;
 
-   public List<ReportItem> getSavedReports() {
+   public List<Report> getSavedReports() {
       return savedReports;
    }
 
@@ -100,31 +64,26 @@ public class ReportListController extends ControllerBase {
    }
 
    private void updateSavedReports() {
-      savedReports = new ArrayList<ReportItem>();
-      addMetricReports();
+      savedReports = new ArrayList<Report>();
+
+      savedReports = reportService.getAllUsersReports();
 
       // when all types of reports have been added
-      Collections.sort(savedReports, COMPARE_NAME);
+      Collections.sort(savedReports);
    }
 
-   private void addMetricReports() {
-      for (String reportId : reportService.getAllReportIds()) {
-         Map<String, String> props = reportService.getReportProperties(reportId);
-         savedReports.add(new ReportItem(reportId, props.get("name"), props.get("type"), props.get("link")));
+   public void remove(Report itemToRemove) {
+      if (itemToRemove == null) {
+         throw new IllegalStateException("Item to remove is null");
       }
-   }
 
-   public void remove(ReportItem itemToRemove) {
-      if (itemToRemove != null) {
-         try {
-            reportService.removeReport(itemToRemove.getId());
-         } catch (ServiceException e) {
-            log.error("Error while removing report " + itemToRemove.getId(), e);
-            addMessageFor(e);
-         }
-         updateSavedReports();
-      } else {
-         throw new IllegalStateException("item to remove is null");
+      try {
+         reportService.removeReport(itemToRemove.getId());
+      } catch (ServiceException e) {
+         log.error("Error while removing report " + itemToRemove.getId(), e);
+         addMessageFor(e);
       }
+
+      updateSavedReports();
    }
 }

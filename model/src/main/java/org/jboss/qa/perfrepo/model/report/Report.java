@@ -17,16 +17,7 @@ package org.jboss.qa.perfrepo.model.report;
 
 import java.util.Collection;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -42,9 +33,16 @@ import org.jboss.qa.perfrepo.model.User;
 @javax.persistence.Entity
 @Table(name = "report")
 @XmlRootElement(name = "report")
+@NamedQueries({
+              @NamedQuery(name = Report.FIND_BY_USERNAME, query = "SELECT report from Report report, User user where user.username = :username"),
+              @NamedQuery(name = Report.FIND_MAX_ID, query = "SELECT max(report.id) from Report report")
+              })
 public class Report implements Entity<Report>, Comparable<Report> {
 
 	private static final long serialVersionUID = -2188625358440509257L;
+
+   public static final String FIND_BY_USERNAME = "Report.findByUserName";
+   public static final String FIND_MAX_ID = "Report.findMaxId";
 
 	@Id
 	@SequenceGenerator(name = "REPORT_ID_GENERATOR", sequenceName = "REPORT_SEQUENCE", allocationSize = 1)
@@ -126,7 +124,15 @@ public class Report implements Entity<Report>, Comparable<Report> {
 		this.user = user;
 	}
 
-	@Override
+   public Collection<ReportProperty> getProperties() {
+      return properties;
+   }
+
+   public void setProperties(Collection<ReportProperty> properties) {
+      this.properties = properties;
+   }
+
+   @Override
 	public Report clone() {
 		try {
 			return (Report) super.clone();
@@ -137,7 +143,7 @@ public class Report implements Entity<Report>, Comparable<Report> {
 
 	@Override
 	public int compareTo(Report o) {
-		return this.getCode().compareTo(o.getCode());
+		return this.getName().compareTo(o.getName());
 	}
 
 }

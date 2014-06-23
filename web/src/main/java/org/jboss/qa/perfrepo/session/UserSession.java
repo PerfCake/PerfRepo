@@ -32,12 +32,6 @@ public class UserSession extends ControllerBase {
    private static final Logger log = Logger.getLogger(UserSession.class);
 
    @Inject
-   private UserInfo userInfo;
-
-   @Inject
-   private TestService testService;
-
-   @Inject
    private UserService userService;
 
    private Map<String, String> userProperties = new HashMap<String, String>();
