@@ -45,7 +45,7 @@ public class TestExecutionBuilder {
    /**
     * Sets the id of the {@link TestExecution}
     *
-    * @param testExecutionId
+    * @param id
     * @return this {@link TestExecutionBuilder}
     */
    public TestExecutionBuilder id(Long id) {
@@ -67,7 +67,7 @@ public class TestExecutionBuilder {
    /**
     * Set the started date.
     * 
-    * @param name
+    * @param started
     * @return this {@link TestExecutionBuilder}
     */
    public TestExecutionBuilder started(Date started) {
@@ -77,8 +77,7 @@ public class TestExecutionBuilder {
 
    /**
     * Set locked to true
-    * 
-    * @param name
+    *
     * @return this {@link TestExecutionBuilder}
     */
    public TestExecutionBuilder locked() {
@@ -99,8 +98,7 @@ public class TestExecutionBuilder {
 
    /**
     * Set locked to false
-    * 
-    * @param name
+    *
     * @return this {@link TestExecutionBuilder}
     */
    public TestExecutionBuilder unlocked() {
@@ -153,7 +151,7 @@ public class TestExecutionBuilder {
     * Add a new {@link Tag} to this {@link TestExecution} with given name
     * 
     * @param tag
-    * @return
+    * @return this {@link TestExecutionBuilder}
     */
    public TestExecutionBuilder tag(String tag) {
       addTag(tag);

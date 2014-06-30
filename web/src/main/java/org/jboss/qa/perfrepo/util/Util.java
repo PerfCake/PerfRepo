@@ -115,7 +115,7 @@ public class Util {
     * @param name
     * @param value
     * @param report
-    * @return
+    * @return newly created {@link ReportProperty} object
     */
    public static ReportProperty createReportProperty(String name, String value, Report report) {
       ReportProperty reportProperty = new ReportProperty();

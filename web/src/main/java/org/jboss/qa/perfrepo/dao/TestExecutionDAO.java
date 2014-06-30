@@ -79,8 +79,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    /**
     * Fetch tags via JPA relationships.
     * 
-    * @param exec
-    * @return
+    * @param testExecution
+    * @return TestExecution with fetched tags
     */
    public static TestExecution fetchTags(TestExecution testExecution) {
       Collection<TestExecutionTag> cloneTags = new ArrayList<TestExecutionTag>();
@@ -94,8 +94,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    /**
     * Fetch parameters via JPA relationships.
     * 
-    * @param exec
-    * @return
+    * @param testExecution
+    * @return TestExecution with fetched parameters
     */
    public static TestExecution fetchParameters(TestExecution testExecution) {
       testExecution.setParameters(EntityUtil.clone(testExecution.getParameters()));
@@ -105,8 +105,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    /**
     * Fetch attachments via JPA relationships.
     * 
-    * @param exec
-    * @return
+    * @param testExecution
+    * @return TestExecution with fetched attachments
     */
    public static TestExecution fetchAttachments(TestExecution testExecution) {
       testExecution.setAttachments(EntityUtil.clone(testExecution.getAttachments()));
@@ -116,8 +116,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    /**
     * Fetch values with parameters via JPA relationships.
     * 
-    * @param exec
-    * @return
+    * @param testExecution
+    * @return TestExecution with fetched values
     */
    public static TestExecution fetchValues(TestExecution testExecution) {
       List<Value> cloneValues = new ArrayList<Value>();
@@ -331,9 +331,13 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    }
 
    /**
-    * 
-    * @param request
-    * @return All
+    * Finds all values used for computing MetricHistory report
+    *
+    * @param testId
+    * @param metricName
+    * @param tagList
+    * @param limitSize
+    * @return List of DataPoint objects
     */
    public List<DataPoint> searchValues(Long testId, String metricName, List<String> tagList, int limitSize) {
       boolean useTags = tagList != null && !tagList.isEmpty();

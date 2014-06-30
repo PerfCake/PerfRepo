@@ -177,7 +177,7 @@ public class TestExecutionTable {
 	 * @param compareJobId
 	 * @param metricName
 	 * @param parameters
-	 * @return
+	 * @return computed percentage difference
 	 */
 	public float compareValues(Long compareJobId, String metricName, MultiKey parameters) {
 		Value originValue = getValue(jobId, metricName, parameters);

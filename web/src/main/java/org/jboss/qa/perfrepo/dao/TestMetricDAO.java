@@ -60,7 +60,7 @@ public class TestMetricDAO extends DAO<TestMetric, Long> {
     * 
     * @param test
     * @param metricName
-    * @return
+    * @return metric
     */
    public TestMetric find(Test test, String metricName) {
       Map<String, Object> params = new TreeMap<String, Object>();
@@ -82,7 +82,7 @@ public class TestMetricDAO extends DAO<TestMetric, Long> {
     * 
     * @param test
     * @param metric
-    * @return
+    * @return metric
     */
    public TestMetric find(Test test, Metric metric) {
       Map<String, Object> params = new TreeMap<String, Object>();

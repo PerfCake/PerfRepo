@@ -57,7 +57,7 @@ public interface TestService {
     * Returns list of TestExecutionss according to criteria defined by TestExecutionSearchTO
     * 
     * @param search
-    * @return
+    * @return List of {@link TestExecution}
     */
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search);
 
@@ -66,7 +66,7 @@ public interface TestService {
     * by job ID
     * 
     * @param search
-    * @return
+    * @return List of {@link TestExecution}
     */
    public List<TestExecution> searchTestExecutionsGroupedByJobId(TestExecutionSearchTO search);
 
@@ -74,7 +74,7 @@ public interface TestService {
     * Returns list of Tests according to criteria defined by TestSearchTO
     * 
     * @param search
-    * @return
+    * @return List of {@link Test}
     */
    public List<Test> searchTest(TestSearchTO search);
 
@@ -82,7 +82,7 @@ public interface TestService {
     * Get list of full test executions.
     * 
     * @param ids
-    * @return
+    * @return List of {@link TestExecution}
     */
    public List<TestExecution> getFullTestExecutions(List<Long> ids);
 
@@ -107,7 +107,7 @@ public interface TestService {
     * Get test execution attachment by id.
     * 
     * @param id
-    * @return
+    * @return attachment
     */
    public TestExecutionAttachment getAttachment(Long id);
 
@@ -116,7 +116,7 @@ public interface TestService {
     * of the current user's roles.
     * 
     * @param test
-    * @return
+    * @return newly created test
     * @throws ServiceException
     */
    public Test createTest(Test test) throws ServiceException;
@@ -133,20 +133,20 @@ public interface TestService {
     * Get {@link TestExecution} with all details.
     * 
     * @param id
-    * @return
+    * @return test execution
     */
    public TestExecution getFullTestExecution(Long id);
 
    /**
     * Returns all test executions with all information.
-    * @return
+    * @return List of {@link TestExecution}
     */
    public List<TestExecution> getAllFullTestExecutions();
 
    /**
     * Returns all test executions of the specified test.
     * @param testId
-    * @return
+    * @return List of {@link TestExecution}
     */
    public List<TestExecution> findExecutionsByTest(Long testId);
 
@@ -155,7 +155,7 @@ public interface TestService {
     * 
     * @param testId
     * @param jobId
-    * @return
+    * @return List of {@link TestExecution}
     */
    public List<TestExecution> getFullTestExecutionsByTestAndJob(Long testId, Long jobId);
 
@@ -163,7 +163,7 @@ public interface TestService {
     * Returns TestExecutions by tags and test uids
     * @param tags
     * @param testUIDs
-    * @return
+    * @return test executions
     */
    public List<TestExecution> getTestExecutions(List<String> tags, List<String> testUIDs);
 
@@ -172,7 +172,7 @@ public interface TestService {
     * 
     * @param test
     * @param metric
-    * @return
+    * @return metric
     * @throws ServiceException
     */
    public TestMetric addMetric(Test test, Metric metric) throws ServiceException;
@@ -207,14 +207,14 @@ public interface TestService {
     * Updates the test.
     *
     * @param test
-    * @return
+    * @return test
     */
    public Test updateTest(Test test);
 
    /**
     * Returns all tests with all information.
     *
-    * @return
+    * @return tests
     */
    public List<Test> getAllFullTests();
 
@@ -222,14 +222,14 @@ public interface TestService {
     * Get metric with all associated tests (without details).
     * 
     * @param id
-    * @return
+    * @return metric
     */
    public Metric getFullMetric(Long id);
 
    /**
     * Returns all metrics with all information.
     *
-    * @return
+    * @return metrics
     */
    public List<Metric> getAllFullMetrics();
 
@@ -238,14 +238,14 @@ public interface TestService {
     * test
     *
     * @param test
-    * @return
+    * @return metrics
     */
    public List<Metric> getAvailableMetrics(Test test);
 
    /**
     * Returns all metrics, which are defined on the Test
     * 
-    * @return
+    * @return metrics
     */
    public List<Metric> getTestMetrics(Test test);
 
@@ -281,7 +281,7 @@ public interface TestService {
     * Updates or creates TestExecutionParameter
     * 
     * @param tep TestExecutionParameter to update
-    * @return
+    * @return test execution parameter
     * @throws ServiceException
     */
    public TestExecutionParameter updateParameter(TestExecutionParameter tep) throws ServiceException;
@@ -290,7 +290,6 @@ public interface TestService {
     * Removes TestExecutionParameter
     * 
     * @param tep
-    * @return
     * @throws ServiceException
     */
    public void deleteParameter(TestExecutionParameter tep) throws ServiceException;
@@ -299,7 +298,7 @@ public interface TestService {
     * Creates new value.
     * 
     * @param value
-    * @return
+    * @return value
     * @throws ServiceException
     */
    public Value addValue(Value value) throws ServiceException;
@@ -308,7 +307,7 @@ public interface TestService {
     * Updates Test Execution Value and the set of it's parameters.
     * 
     * @param value
-    * @return
+    * @return value
     * @throws ServiceException
     */
    public Value updateValue(Value value) throws ServiceException;
@@ -325,7 +324,7 @@ public interface TestService {
     * Get parameter and test execution.
     * 
     * @param paramId
-    * @return
+    * @return test execution parameter
     */
    public TestExecutionParameter getFullParameter(Long paramId);
 
@@ -345,21 +344,21 @@ public interface TestService {
    /**
     * Returns test uids matching prefix
     * @param prefix
-    * @return
+    * @return test prefixes
     */
    public List<String> getTestsByPrefix(String prefix);
 
    /**
     * Returns tags matching prefix
     * @param prefix
-    * @return
+    * @return tag prefixes
     */
    public List<String> getTagsByPrefix(String prefix);
 
    /**
     * Returns test by test uid
     * @param uid
-    * @return
+    * @return test
     */
    public Test getTestByUID(String uid);
 

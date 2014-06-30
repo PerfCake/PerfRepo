@@ -16,7 +16,7 @@ public interface UserService {
     * Create new user.
     *
     * @param user
-    * @return
+    * @return user
     * @throws ServiceException
     */
    public User createUser(User user) throws ServiceException;
@@ -25,7 +25,7 @@ public interface UserService {
     * Update user
     *
     * @param user
-    * @return
+    * @return user
     * @throws ServiceException
     */
    public User updateUser(User user) throws ServiceException;
@@ -40,7 +40,8 @@ public interface UserService {
 	
 	/**
 	 * Returns all user properties
-	 * @return
+    *
+	 * @return user properties
 	 */
 	public Map<String, String> getUserProperties();
 
@@ -54,7 +55,7 @@ public interface UserService {
    /**
     * Returns favorite parameters of current user. Therefore parses the UserProperties to FavoriteParameter helper objects.
     *
-    * @return
+    * @return users favorite parameters
     */
    public List<FavoriteParameter> getFavoriteParameters();
 

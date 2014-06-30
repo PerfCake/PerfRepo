@@ -606,7 +606,7 @@ public class MetricReportController extends ControllerBase {
        * Gets series object by name
        *
        * @param name
-       * @return
+       * @return Series object with corresponding name
        */
       public SeriesSpec findSeries(String name) {
          for (SeriesSpec spec : this.chartSeries) {
@@ -622,7 +622,7 @@ public class MetricReportController extends ControllerBase {
        * Gets baseline object by name
        *
        * @param name
-       * @return
+       * @return Baseline object with corresponding name
        */
       public BaselineSpec findBaseline(String name) {
          for (BaselineSpec spec : this.chartBaselines) {
@@ -638,7 +638,7 @@ public class MetricReportController extends ControllerBase {
        * Gets metrics name from id
        *
        * @param id
-       * @return
+       * @return Metric object with corresponding ID
        */
       public String findMetricName(Long id) {
          if (id == null) {

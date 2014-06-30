@@ -38,9 +38,9 @@ public class MetricDAO extends DAO<Metric, Long> {
    /**
     * Returns all metrics by name prefix, which belong tests with defined group id
     * 
-    * @param namePart
-    * @param guid
-    * @return
+    * @param name
+    * @param groupId
+    * @return List of {@link Metric}
     */
    public List<Metric> getMetricByNameAndGroup(String name, String groupId) {
       return findByNamedQuery(Metric.FIND_BY_NAME_GROUPID, true, "groupId", groupId, "name", name);
@@ -49,9 +49,8 @@ public class MetricDAO extends DAO<Metric, Long> {
    /**
     * Returns all metrics which belong tests with defined group id
     * 
-    * @param namePart
-    * @param guid
-    * @return
+    * @param groupId
+    * @return List of {@link Metric}
     */
    public List<Metric> getMetricByGroup(String groupId) {
       return findByNamedQuery(Metric.FIND_BY_GROUPID, true, "groupId", groupId);

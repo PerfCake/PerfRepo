@@ -30,7 +30,7 @@ public class EntityUtil {
     * Clone collection of entities.
     * 
     * @param entities
-    * @return
+    * @return cloned list of entities
     */
    @SuppressWarnings("unchecked")
    public static <T extends Entity<?>> List<T> clone(Collection<T> entities) {
@@ -49,7 +49,7 @@ public class EntityUtil {
     * 
     * @param entities
     * @param id
-    * @return
+    * @return found entity
     */
    public static <T extends Entity<T>> T findById(Collection<T> entities, Long id) {
       if (entities == null) {
@@ -102,7 +102,7 @@ public class EntityUtil {
     * Extract ids from id holders.
     * 
     * @param entities
-    * @return
+    * @return List of extracted IDs
     */
    public static List<Long> extractIds(Collection<? extends Entity<?>> entities) {
       if (entities == null) {

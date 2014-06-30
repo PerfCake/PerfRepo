@@ -75,7 +75,7 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
     * root level, the collections will still be lazy-loadable ones.
     * 
     * @param id
-    * @return
+    * @return Entity that is detached
     */
    public T findReadOnly(final PK id) {
       // TODO: maybe produce some hint for JPA layer
@@ -164,7 +164,7 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
     * @param queryName
     * @param clones Return clones of root objects returned by this query.
     * @param params
-    * @return
+    * @return List of entities corresponding to query
     */
    public List<T> findByNamedQuery(String queryName, boolean clones, Object... params) {
       Map<String, Object> queryParams = new TreeMap<String, Object>();

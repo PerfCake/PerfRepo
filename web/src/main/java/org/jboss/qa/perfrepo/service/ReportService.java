@@ -15,7 +15,7 @@ public interface ReportService {
 
    /**
     * Get all reports that associated (visible) with currently logged user.
-    * @return
+    * @return List of {@link Report}
     */
    public List<Report> getAllUsersReports();
 
@@ -31,7 +31,7 @@ public interface ReportService {
     * Create new report
     *
     * @param report
-    * @return
+    * @return created {@link Report}
     */
    public Report createReport(Report report);
 
@@ -39,14 +39,14 @@ public interface ReportService {
     * Update existing report
     *
     * @param report
-    * @return
+    * @return updated {@link Report}
     */
    public Report updateReport(Report report);
 
    /**
     * Get's the next id that is available for a report
     *
-    * @return
+    * @return next ID
     */
    public Long getMaxId();
 
@@ -62,7 +62,7 @@ public interface ReportService {
     * Get report with all properties
     *
     * @param id
-    * @return
+    * @return {@link Report} with all attributes fetched
     */
    public Report getFullReport(Long id);
 

@@ -30,7 +30,7 @@ public class MultiValue {
     * Finds {@link ValueInfo} for {@link Value} by id.
     * 
     * @param value
-    * @return
+    * @return {@link ValueInfo}
     */
    public static ValueInfo find(List<ValueInfo> valueInfos, Value value) {
       if (valueInfos == null || value == null) {
@@ -57,7 +57,7 @@ public class MultiValue {
     * 
     * @param valueInfos
     * @param metricName
-    * @return
+    * @return {@link ValueInfo}
     */
    public static ValueInfo find(List<ValueInfo> valueInfos, String metricName) {
       if (valueInfos == null || metricName == null) {
@@ -75,7 +75,7 @@ public class MultiValue {
     * Create list of multi-values for single test execution, one for each metric.
     * 
     * @param testExecution
-    * @return
+    * @return List of {@link ValueInfo}
     */
    public static List<ValueInfo> createFrom(TestExecution testExecution) {
       // group by metric

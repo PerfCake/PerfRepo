@@ -140,7 +140,7 @@ public class PerfRepoClient {
    /**
     * Adds value to existing testExecution
     *
-    * @param value.
+    * @param te
     * @return ID of new value.
     * @throws Exception
     */
