@@ -11,14 +11,6 @@
 				<h:messages errorClass="alert alert-error" infoClass="alert alert-success" fatalClass="alert alert-error" warnClass="alert alert-info" />
 			</a4j:outputPanel>
 			<div class="control-group">
-				<h:outputLabel class="control-label" for="newReportId">Report Id</h:outputLabel>
-				<div class="controls">
-					<h:inputText label="Report ID" id="newReportId" value="#{testGroupReportController.newReportId}" validatorMessage="Validation Error: Invalid Report ID (only characeters including special chars '_' and '-' are allowed)">
-						<f:validateRegex pattern="^([\w_-]+)$" ></f:validateRegex>
-					</h:inputText>
-				</div>
-			</div>
-			<div class="control-group">
 				<h:outputLabel class="control-label" for="baseline1">Report name</h:outputLabel>
 				<div class="controls">
 					<h:inputText value="#{testGroupReportController.newReportName}" />

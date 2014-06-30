@@ -36,7 +36,7 @@
 					<tbody>
 						<r:repeat value="#{reportList.savedReports}" var="reportItem">
 							<tr>
-								<td><a href="#{reportItem.link}">#{reportItem.name}</a></td>
+								<td><a href="#{request.contextPath}/reports/#{reportItem.type.toLowerCase()}/#{reportItem.id}">#{reportItem.name}</a></td>
 								<td><h:outputText value="#{reportItem.type}" /></td>
 								<td style="text-align: center"><r:commandLink action="#{reportList.remove(reportItem)}" alt="Remove" title="Remove" render=":formSavedReports :messagesPanel">
 										<i class="icon-remove"/>

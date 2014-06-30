@@ -7,9 +7,7 @@
 --
 CREATE TABLE report (
     id bigint NOT NULL,
-    code character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
-    link character varying(2047) NOT NULL,
     type character varying(255) NOT NULL,
     user_id bigint NOT NULL    
 );

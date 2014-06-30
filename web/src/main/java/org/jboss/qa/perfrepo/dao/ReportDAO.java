@@ -29,22 +29,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO: document this
+ * DAO layer for report entity.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
 @Named
 public class ReportDAO extends DAO<Report, Long> {
 
-   public Report findByCode(String code) {
-      List<Report> reports = findAllByProperty("code", code);
-      if (reports.size() > 0) {
-         return reports.get(0);
-      }
-      return null;
-   }
-
-   public List<Report> findTestsByUser(String username) {
+   public List<Report> findReportsByUser(String username) {
       Map<String, Object> params = new HashMap<String, Object>();
       params.put("username", username);
 
@@ -54,6 +46,6 @@ public class ReportDAO extends DAO<Report, Long> {
    public Long findMaxId() {
       TypedQuery<Long> tq = createNamedQuery(Report.FIND_MAX_ID, Long.class);
 
-      return tq.getSingleResult();
+      return tq.getSingleResult() == null ? 1 : tq.getSingleResult();
    }
 }

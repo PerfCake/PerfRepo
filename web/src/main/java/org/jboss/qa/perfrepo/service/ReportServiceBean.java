@@ -1,9 +1,18 @@
 package org.jboss.qa.perfrepo.service;
 
+import org.jboss.qa.perfrepo.dao.MetricDAO;
 import org.jboss.qa.perfrepo.dao.ReportDAO;
+import org.jboss.qa.perfrepo.dao.TestDAO;
+import org.jboss.qa.perfrepo.dao.TestExecutionDAO;
+import org.jboss.qa.perfrepo.dao.TestMetricDAO;
+import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.TestMetric;
 import org.jboss.qa.perfrepo.model.User;
 import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.model.report.Report;
+import org.jboss.qa.perfrepo.model.report.ReportProperty;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO;
 import org.jboss.qa.perfrepo.security.UserInfo;
 import org.jboss.qa.perfrepo.session.UserSession;
 
@@ -39,6 +48,21 @@ public class ReportServiceBean implements ReportService {
    @Inject
    private ReportDAO reportDAO;
 
+   @Inject
+   private TestService testService;
+
+   @Inject
+   private MetricDAO metricDAO;
+
+   @Inject
+   private TestDAO testDAO;
+
+   @Inject
+   private TestMetricDAO testMetricDAO;
+
+   @Inject
+   private TestExecutionDAO testExecutionDAO;
+
    @Override
    public List<Report> getAllUsersReports() {
       return getAllReports(userInfo.getUserName());
@@ -48,13 +72,6 @@ public class ReportServiceBean implements ReportService {
    public void removeReport(Long id) throws ServiceException {
       Report report = reportDAO.find(id);
       reportDAO.delete(report);
-   }
-
-   private List<Report> getAllReports(String username) {
-      List<Report> result = new ArrayList<Report>();
-      result.addAll(reportDAO.findTestsByUser(username));
-
-      return result;
    }
 
    @Override
@@ -68,12 +85,108 @@ public class ReportServiceBean implements ReportService {
    }
 
    @Override
-   public Report getReport(Long id) {
-      return reportDAO.find(id);
+   public Long getMaxId() {
+      return reportDAO.findMaxId();
    }
 
    @Override
-   public Long getMaxId() {
-      return reportDAO.findMaxId();
+   public Report getFullReport(Long id) {
+      Report report = reportDAO.find(id);
+      if(report == null) {
+         return null;
+      }
+
+      Map<String, ReportProperty> clonedReportProperties = new HashMap<String, ReportProperty>();
+
+      for(String propertyKey: report.getProperties().keySet()) {
+         clonedReportProperties.put(propertyKey, report.getProperties().get(propertyKey).clone());
+      }
+
+      Report result = report.clone();
+      result.setProperties(clonedReportProperties);
+
+      return result;
+   }
+
+   @Override
+   public MetricReportTO.Response computeMetricReport(MetricReportTO.Request request) {
+      MetricReportTO.Response response = new MetricReportTO.Response();
+      for (MetricReportTO.ChartRequest chartRequest : request.getCharts()) {
+         MetricReportTO.ChartResponse chartResponse = new MetricReportTO.ChartResponse();
+         response.addChart(chartResponse);
+         if (chartRequest.getTestUid() == null) {
+            continue;
+         } else {
+            Test freshTest = testDAO.findByUid(chartRequest.getTestUid());
+            if (freshTest == null) {
+               // test uid supplied but doesn't exist - pick another test
+               response.setSelectionTests(testService.getAllSelectionTests());
+               continue;
+            } else {
+               freshTest = freshTest.clone();
+               chartResponse.setSelectedTest(freshTest);
+               if (chartRequest.getSeries() == null || chartRequest.getSeries().isEmpty()) {
+                  continue;
+               }
+               for (MetricReportTO.SeriesRequest seriesRequest : chartRequest.getSeries()) {
+                  if (seriesRequest.getName() == null) {
+                     throw new IllegalArgumentException("series has null name");
+                  }
+                  MetricReportTO.SeriesResponse seriesResponse = new MetricReportTO.SeriesResponse(seriesRequest.getName());
+                  chartResponse.addSeries(seriesResponse);
+                  if (seriesRequest.getMetricName() == null) {
+                     continue;
+                  }
+                  TestMetric testMetric = testMetricDAO.find(freshTest, seriesRequest.getMetricName());
+                  if (testMetric == null) {
+                     chartResponse.setSelectionMetrics(testService.getAllSelectionMetrics(freshTest.getId()));
+                     continue;
+                  }
+                  Metric freshMetric = testMetric.getMetric().clone();
+                  freshMetric.setTestMetrics(null);
+                  freshMetric.setValues(null);
+                  seriesResponse.setSelectedMetric(freshMetric);
+                  List<MetricReportTO.DataPoint> datapoints = testExecutionDAO.searchValues(freshTest.getId(), seriesRequest.getMetricName(),
+                                                                                            seriesRequest.getTags(), request.getLimitSize());
+                  if (datapoints.isEmpty()) {
+                     continue;
+                  }
+                  Collections.reverse(datapoints);
+                  seriesResponse.setDatapoints(datapoints);
+               }
+
+               for (MetricReportTO.BaselineRequest baselineRequest : chartRequest.getBaselines()) {
+                  if (baselineRequest.getName() == null) {
+                     throw new IllegalArgumentException("baseline has null name");
+                  }
+                  MetricReportTO.BaselineResponse baselineResponse = new MetricReportTO.BaselineResponse(baselineRequest.getName());
+                  chartResponse.addBaseline(baselineResponse);
+                  if (baselineRequest.getMetricName() == null) {
+                     continue;
+                  }
+                  TestMetric testMetric = testMetricDAO.find(freshTest, baselineRequest.getMetricName());
+                  if (testMetric == null) {
+                     chartResponse.setSelectionMetrics(testService.getAllSelectionMetrics(freshTest.getId()));
+                     continue;
+                  }
+                  Metric freshMetric = testMetric.getMetric().clone();
+                  freshMetric.setTestMetrics(null);
+                  freshMetric.setValues(null);
+                  baselineResponse.setSelectedMetric(freshMetric);
+                  baselineResponse.setExecId(baselineRequest.getExecId());
+                  baselineResponse.setValue(testExecutionDAO.getValueForMetric(baselineRequest.getExecId(), baselineRequest.getMetricName()));
+               }
+
+            }
+         }
+      }
+      return response;
+   }
+
+   private List<Report> getAllReports(String username) {
+      List<Report> result = new ArrayList<Report>();
+      result.addAll(reportDAO.findReportsByUser(username));
+
+      return result;
    }
 }

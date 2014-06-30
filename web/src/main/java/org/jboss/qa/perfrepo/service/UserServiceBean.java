@@ -68,25 +68,8 @@ public class UserServiceBean implements UserService {
    }
 
    @Override
-   public boolean userPropertiesPrefixExists(String prefix) {
-      List<UserProperty> ups = userPropertyDAO.findByUserName(userInfo.getUserName(), prefix);
-      return ups.size() > 0;
-   }
-
-   @Override
-   public Map<String, String> getUserProperties(String prefix) {
-      List<UserProperty> ups = userPropertyDAO.findByUserName(userInfo.getUserName(), prefix);
-      return transformToMap(ups, prefix);
-   }
-
-   @Override
-   public void storeProperties(Map<String, String> properties) {
-      storeProperties("", properties);
-   }
-
-   @Override
    public void storeProperties(String prefix, Map<String, String> properties) {
-      User user = getCurrentUser();
+      User user = getFullUser(userInfo.getUserName());
       for (String key : properties.keySet()) {
          UserProperty up = userPropertyDAO.findByUserIdAndName(user.getId(), prefix + key);
          if (up != null) {
@@ -138,18 +121,6 @@ public class UserServiceBean implements UserService {
    }
 
    @Override
-   public void replacePropertiesWithPrefix(String prefix, Map<String, String> properties) {
-      User user = getCurrentUser();
-      List<UserProperty> ups = userPropertyDAO.findByUserName(user.getUsername(), prefix);
-      for (UserProperty p : ups) {
-         if (!properties.containsKey(p.getName().substring(prefix.length()))) {
-            userPropertyDAO.delete(p);
-         }
-      }
-      storeProperties(prefix, properties);
-   }
-
-   @Override
    public User getFullUser(String userName) {
       User user = userDAO.findByUsername(userName);
       if (user == null) {
@@ -159,28 +130,6 @@ public class UserServiceBean implements UserService {
       List<UserProperty> properties = userPropertyDAO.findByUserId(user.getId());
       user.setProperties(EntityUtil.clone(properties));
       return user;
-   }
-
-   @Override
-   public void multiUpdateProperties(Collection<String> keysToRemove, Map<String, String> toUpdate) throws ServiceException {
-      User user = userDAO.findByUsername(userInfo.getUserName());
-      User freshUser = checkThisUser(user);
-      for (String keyToRemove : keysToRemove) {
-         UserProperty propToRemove = userPropertyDAO.findByUserIdAndName(user.getId(), keyToRemove);
-         if (propToRemove != null) {
-            userPropertyDAO.delete(propToRemove);
-         }
-      }
-      for (Map.Entry<String, String> entry : toUpdate.entrySet()) {
-         UserProperty propToUpdate = userPropertyDAO.findByUserIdAndName(user.getId(), entry.getKey());
-         if (propToUpdate == null) {
-            UserProperty propToCreate = createUserProperty(freshUser, entry.getKey(), entry.getValue());
-            userPropertyDAO.create(propToCreate);
-         } else {
-            propToUpdate.setValue((String) entry.getValue());
-            userPropertyDAO.update(propToUpdate);
-         }
-      }
    }
 
    private Map<String, String> transformToMap(List<UserProperty> ups) {
@@ -199,10 +148,6 @@ public class UserServiceBean implements UserService {
          }
       }
       return map;
-   }
-
-   private User getCurrentUser() {
-      return userDAO.findByUsername(userInfo.getUserName());
    }
 
    private String favPropKey(long testId, String paramName) {

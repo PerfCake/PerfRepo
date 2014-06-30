@@ -322,14 +322,6 @@ public interface TestService {
    public void deleteValue(Value value) throws ServiceException;
 
    /**
-    * Computes metric report.
-    * 
-    * @param request
-    * @return response TO
-    */
-   public MetricReportTO.Response computeMetricReport(MetricReportTO.Request request);
-
-   /**
     * Get parameter and test execution.
     * 
     * @param paramId

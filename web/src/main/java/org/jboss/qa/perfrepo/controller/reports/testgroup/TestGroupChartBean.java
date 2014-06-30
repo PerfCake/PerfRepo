@@ -1,4 +1,4 @@
-package org.jboss.qa.perfrepo.reports.testgroup;
+package org.jboss.qa.perfrepo.controller.reports.testgroup;
 
 import java.awt.Color;
 import java.awt.Font;

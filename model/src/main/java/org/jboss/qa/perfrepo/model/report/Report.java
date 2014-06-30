@@ -16,6 +16,7 @@
 package org.jboss.qa.perfrepo.model.report;
 
 import java.util.Collection;
+import java.util.Map;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -49,32 +50,24 @@ public class Report implements Entity<Report>, Comparable<Report> {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "REPORT_ID_GENERATOR")
 	private Long id;
 
-	@Column(name = "code")
-	@Size(max = 255)
-	private String code;
-
 	@Column(name = "name")
 	@NotNull
 	@Size(max = 255)
 	private String name;
-
-	@Column(name = "link")
-	@NotNull
-	@Size(max = 2047)
-	private String link;
 
 	@Column(name = "type")
 	@NotNull
 	@Size(max = 255)
 	private String type;
 
-	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+	@ManyToOne(optional = false, cascade = CascadeType.MERGE)
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	@NotNull
 	private User user;
 	
-	@OneToMany(mappedBy = "report")
-	private Collection<ReportProperty> properties;
+	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
+   @MapKey(name = "name")
+	private Map<String, ReportProperty> properties;
 
 	public Long getId() {
 		return id;
@@ -84,28 +77,12 @@ public class Report implements Entity<Report>, Comparable<Report> {
 		this.id = id;
 	}
 
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getLink() {
-		return link;
-	}
-
-	public void setLink(String link) {
-		this.link = link;
 	}
 
 	public String getType() {
@@ -124,11 +101,11 @@ public class Report implements Entity<Report>, Comparable<Report> {
 		this.user = user;
 	}
 
-   public Collection<ReportProperty> getProperties() {
+   public Map<String, ReportProperty> getProperties() {
       return properties;
    }
 
-   public void setProperties(Collection<ReportProperty> properties) {
+   public void setProperties(Map<String, ReportProperty> properties) {
       this.properties = properties;
    }
 
@@ -145,5 +122,4 @@ public class Report implements Entity<Report>, Comparable<Report> {
 	public int compareTo(Report o) {
 		return this.getName().compareTo(o.getName());
 	}
-
 }
