@@ -35,7 +35,7 @@ import org.jboss.qa.perfrepo.model.User;
 @Table(name = "report")
 @XmlRootElement(name = "report")
 @NamedQueries({
-              @NamedQuery(name = Report.FIND_BY_USERNAME, query = "SELECT report from Report report, User user where user.username = :username"),
+              @NamedQuery(name = Report.FIND_BY_USERNAME, query = "SELECT report from Report report join report.user user where user.username = :username"),
               @NamedQuery(name = Report.FIND_MAX_ID, query = "SELECT max(report.id) from Report report")
               })
 public class Report implements Entity<Report>, Comparable<Report> {

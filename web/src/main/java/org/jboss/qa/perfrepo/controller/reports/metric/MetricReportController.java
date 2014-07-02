@@ -205,8 +205,8 @@ public class MetricReportController extends ControllerBase {
       report.setProperties(reportProperties);
       reportService.updateReport(report);
 
-      //addSessionMessage(INFO, "page.reports.testGroup.reportSaved", reportId);
-      //reloadSessionMessages();
+      addSessionMessage(INFO, "page.reports.metric.reportSaved");
+      reloadSessionMessages();
    }
 
    public void addSeries() {
