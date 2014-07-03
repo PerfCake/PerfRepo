@@ -22,10 +22,10 @@ import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.report.ReportProperty;
 import org.jboss.qa.perfrepo.controller.reports.testgroup.TestGroupChartBean.ChartData;
-import org.jboss.qa.perfrepo.security.UserInfo;
 import org.jboss.qa.perfrepo.service.ReportService;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.UserService;
+import org.jboss.qa.perfrepo.session.UserSession;
 import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.util.ValueComparator;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
@@ -54,7 +54,7 @@ public class TestGroupReportController extends ControllerBase {
    private ReportService reportService;
 
    @Inject
-   private UserInfo userInfo;
+   private UserSession userSession;
 	
 	/**
 	 * Test name, tag, value
@@ -212,7 +212,7 @@ public class TestGroupReportController extends ControllerBase {
 	private void saveReport(String reportName) {
       Report report = null;
 
-      User user = userService.getFullUser(userInfo.getUserName());
+      User user = userService.getFullUser(userSession.getUser().getId());
 
       if(reportId != null) {
          report = reportService.getFullReport(reportId);

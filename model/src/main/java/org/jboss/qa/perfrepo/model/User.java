@@ -49,6 +49,9 @@ public class User implements Entity<User>, Comparable<User> {
    @OneToMany(mappedBy = "user")
    private Collection<UserProperty> properties;
 
+   @OneToMany(mappedBy = "user")
+   private Collection<FavoriteParameter> favoriteParameters;
+
    public Long getId() {
       return id;
    }
@@ -79,6 +82,14 @@ public class User implements Entity<User>, Comparable<User> {
 
    public void setProperties(Collection<UserProperty> properties) {
       this.properties = properties;
+   }
+
+   public Collection<FavoriteParameter> getFavoriteParameters() {
+      return favoriteParameters;
+   }
+
+   public void setFavoriteParameters(Collection<FavoriteParameter> favoriteParameters) {
+      this.favoriteParameters = favoriteParameters;
    }
 
    @Override

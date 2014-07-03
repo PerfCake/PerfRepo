@@ -1,5 +1,6 @@
 package org.jboss.qa.perfrepo.session;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,12 +14,9 @@ import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.ControllerBase;
 import org.jboss.qa.perfrepo.model.User;
-import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.security.UserInfo;
-import org.jboss.qa.perfrepo.service.ServiceException;
-import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.UserService;
-import org.jboss.qa.perfrepo.util.FavoriteParameter;
+import org.jboss.qa.perfrepo.model.FavoriteParameter;
 
 /**
  * Holds information about user.
@@ -28,15 +26,15 @@ import org.jboss.qa.perfrepo.util.FavoriteParameter;
  */
 @Named(value = "userSession")
 @SessionScoped
-public class UserSession extends ControllerBase {
-   private static final Logger log = Logger.getLogger(UserSession.class);
+public class UserSession implements Serializable{
 
    @Inject
    private UserService userService;
 
-   private Map<String, String> userProperties = new HashMap<String, String>();
+   @Inject
+   private UserInfo userInfo;
 
-   private List<FavoriteParameter> favoriteParameters = new ArrayList<FavoriteParameter>();
+   private User user;
 
    @PostConstruct
    public void init() {
@@ -44,21 +42,10 @@ public class UserSession extends ControllerBase {
    }
 
    public void refresh() {
-      userProperties = userService.getUserProperties();
-      favoriteParameters = userService.getFavoriteParameters();
+      user = userService.getFullUser(userInfo.getUserId());
    }
 
-   public List<FavoriteParameter> getFavoriteParametersFor(long testId) {
-      List<FavoriteParameter> r = new ArrayList<FavoriteParameter>();
-      for (FavoriteParameter fp : favoriteParameters) {
-         if (fp.getTestId() == testId) {
-            r.add(fp);
-         }
-      }
-      return r;
-   }
-
-   public Map<String, String> getUserProperties() {
-      return userProperties;
+   public User getUser() {
+      return user;
    }
 }

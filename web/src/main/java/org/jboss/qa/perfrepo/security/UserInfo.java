@@ -15,6 +15,9 @@
  */
 package org.jboss.qa.perfrepo.security;
 
+import org.jboss.qa.perfrepo.dao.UserDAO;
+import org.jboss.qa.perfrepo.service.UserService;
+
 import java.security.Principal;
 import java.util.List;
 
@@ -25,6 +28,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
@@ -36,9 +40,16 @@ public class UserInfo {
    @Resource
    private SessionContext sessionContext;
 
+   @Inject
+   private UserDAO userDAO;
+
    public String getUserName() {
       Principal principal = sessionContext.getCallerPrincipal();
       return principal == null ? null : principal.getName();
+   }
+
+   public Long getUserId() {
+      return userDAO.findByUsername(getUserName()).getId();
    }
 
    public boolean isUserInRole(String guid) {

@@ -28,14 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.reports.charts.RfChartSeries;
-import org.jboss.qa.perfrepo.model.Metric;
-import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.model.TestExecution;
-import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
-import org.jboss.qa.perfrepo.model.TestExecutionParameter;
-import org.jboss.qa.perfrepo.model.TestExecutionTag;
-import org.jboss.qa.perfrepo.model.Value;
-import org.jboss.qa.perfrepo.model.ValueParameter;
+import org.jboss.qa.perfrepo.model.*;
 import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.rest.TestExecutionREST;
@@ -43,7 +36,6 @@ import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.session.UserSession;
-import org.jboss.qa.perfrepo.util.FavoriteParameter;
 import org.jboss.qa.perfrepo.util.MultiValue;
 import org.jboss.qa.perfrepo.util.MultiValue.ParamInfo;
 import org.jboss.qa.perfrepo.util.MultiValue.ValueInfo;
@@ -60,6 +52,7 @@ import org.richfaces.ui.output.chart.NumberChartDataModel;
  * Details of {@link TestExecution}
  * 
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  * 
  */
 @Named
@@ -111,7 +104,13 @@ public class TestExecutionController extends ControllerBase {
 
    public void setEditedFavoriteParameter(String paramName) {
       editedFavoriteParameter = new FavoriteParameter();
-      editedFavoriteParameter.setTestId(test.getId());
+
+      Test testEntity = testService.getTest(test.getId());
+      editedFavoriteParameter.setTest(testEntity);
+
+      User user = userService.getUser(userSession.getUser().getId());
+      editedFavoriteParameter.setUser(user);
+
       editedFavoriteParameter.setParameterName(paramName);
       FavoriteParameter fp = findFavoriteParameter(paramName);
       if (fp != null) {
@@ -127,14 +126,14 @@ public class TestExecutionController extends ControllerBase {
 
    public void saveEditedFavoriteParameter() {
       try {
-         userService.addFavoriteParameter(editedFavoriteParameter.getTestId(), editedFavoriteParameter.getParameterName(), editedFavoriteParameter.getLabel());
+         userService.addFavoriteParameter(editedFavoriteParameter.getTest(), editedFavoriteParameter.getParameterName(), editedFavoriteParameter.getLabel());
       }
       catch (ServiceException e) {
          log.error("Error while saving property", e);
          addMessageFor(e);
       }
       userSession.refresh();
-      favoriteParameters = userSession.getFavoriteParametersFor(test.getId());
+      favoriteParameters = userService.getFavoriteParametersForTest(test);
    }
 
    public void removeFromFavorites(String paramName) {
@@ -143,13 +142,13 @@ public class TestExecutionController extends ControllerBase {
          return;
       }
       try {
-         userService.removeFavoriteParameter(test.getId(), paramName);
+         userService.removeFavoriteParameter(test, paramName);
       } catch (ServiceException e) {
          log.error("Error while removing favorite parameter.", e);
          addMessageFor(e);
       }
       userSession.refresh();
-      favoriteParameters = userSession.getFavoriteParametersFor(test.getId());
+      favoriteParameters = userService.getFavoriteParametersForTest(test);
    }
 
    public Long getCreateForTest() {
@@ -273,7 +272,7 @@ public class TestExecutionController extends ControllerBase {
                   redirectWithMessage("/", ERROR, "page.test.errorTestNotFound", testExecution.getTest().getId());
                } else {
                   values = MultiValue.createFrom(testExecution);
-                  favoriteParameters = userSession.getFavoriteParametersFor(test.getId());
+                  favoriteParameters = userService.getFavoriteParametersForTest(test);
                }
                setEditedTestExecution();
             }

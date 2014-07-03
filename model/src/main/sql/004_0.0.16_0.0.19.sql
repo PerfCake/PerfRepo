@@ -69,6 +69,42 @@ CREATE SEQUENCE report_property_sequence
 ALTER TABLE public.report_property_sequence OWNER TO perfrepo;
 
 --
+-- Name: favorite_parameter; Type: TABLE; Schema: public; Owner: perfrepo; Tablespace:
+--
+
+CREATE TABLE favorite_parameter (
+  id bigint NOT NULL,
+  user_id bigint NOT NULL,
+  test_id bigint NOT NULL,
+  label character varying(2047) NOT NULL,
+  parameter_name character varying(2047) NOT NULL
+);
+
+
+ALTER TABLE public.favorite_parameter OWNER TO perfrepo;
+ALTER TABLE ONLY public.favorite_parameter
+ADD CONSTRAINT favorite_parameter_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.favorite_parameter
+ADD CONSTRAINT favorite_parameter_user_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+ALTER TABLE ONLY public.favorite_parameter
+ADD CONSTRAINT favorite_parameter_test_fkey FOREIGN KEY (test_id) REFERENCES "test"(id);
+CREATE INDEX favorite_parameter_user_id ON favorite_parameter(user_id);
+
+--
+-- Name: favorite_parameter_sequence; Type: SEQUENCE; Schema: public; Owner: perfrepo
+--
+
+CREATE SEQUENCE favorite_parameter_sequence
+START WITH 1
+INCREMENT BY 1
+NO MAXVALUE
+NO MINVALUE
+CACHE 1;
+
+
+ALTER TABLE public.favorite_parameter_sequence OWNER TO perfrepo;
+
+--
 -- Migrate script - reports from user_properties to report entities
 --
 

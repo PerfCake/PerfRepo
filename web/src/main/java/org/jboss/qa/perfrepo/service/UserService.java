@@ -1,16 +1,13 @@
 package org.jboss.qa.perfrepo.service;
 
+import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.User;
-import org.jboss.qa.perfrepo.service.ServiceException.Codes;
-import org.jboss.qa.perfrepo.util.FavoriteParameter;
+import org.jboss.qa.perfrepo.model.FavoriteParameter;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public interface UserService {
-
-   public static final String FAV_PARAM_KEY_PREFIX = "fav.param.";
 
    /**
     * Create new user.
@@ -31,13 +28,29 @@ public interface UserService {
    public User updateUser(User user) throws ServiceException;
 
    /**
+    * Retrieves managed entity of user
+    *
+    * @param id
+    * @return user
+    */
+   public User getUser(Long id);
+
+   /**
     * Return all information about user as detached entity (e.g. cloned)
     *
     * @param userName
     * @return User with properties.
     */
-   User getFullUser(String userName);
-	
+   public User getFullUser(String userName);
+
+   /**
+    * Return all information about user as detached entity (e.g. cloned)
+    *
+    * @param id
+    * @return User with properties.
+    */
+   public User getFullUser(Long id);
+
 	/**
 	 * Returns all user properties
     *
@@ -53,27 +66,28 @@ public interface UserService {
 	public void storeProperties(String prefix, Map<String, String> properties);
 
    /**
-    * Returns favorite parameters of current user. Therefore parses the UserProperties to FavoriteParameter helper objects.
-    *
-    * @return users favorite parameters
-    */
-   public List<FavoriteParameter> getFavoriteParameters();
-
-   /**
     * Adds favorite parameter of user to the test
     *
-    * @param testId
+    * @param test
     * @param paramName
     * @param label
     */
-   public void addFavoriteParameter(long testId, String paramName, String label) throws ServiceException;
+   public void addFavoriteParameter(Test test, String paramName, String label) throws ServiceException;
 
    /**
     * Removes favorite parameter of the test from user
     *
-    * @param testId
+    * @param test
     * @param paramName
     */
-   public void removeFavoriteParameter(long testId, String paramName) throws ServiceException;
+   public void removeFavoriteParameter(Test test, String paramName) throws ServiceException;
+
+   /**
+    * Returns list of favorite parameters that has current user selected to specific test
+    *
+    * @param test
+    * @return list of favorite parameters
+    */
+   public List<FavoriteParameter> getFavoriteParametersForTest(Test test);
 
 }

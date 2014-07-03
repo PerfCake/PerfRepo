@@ -771,6 +771,11 @@ public class TestServiceBean implements TestService {
       }
    }
 
+   @Override
+   public Test getTest(Long id) {
+      return testDAO.find(id);
+   }
+
    // works with fresh test loaded from database + checked access rights
    private TestMetric addMetricInternal(Test test, Metric metric) throws ServiceException {
       if (metric.getId() != null) {

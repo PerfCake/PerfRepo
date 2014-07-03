@@ -378,4 +378,12 @@ public interface TestService {
     */
    public void deleteTagsFromTestExecutions(Collection<String> tags, Collection<TestExecution> testExecutions);
 
+   /**
+    * Retrieves test by id
+    *
+    * @param id
+    * @return test
+    */
+   public Test getTest(Long id);
+
 }

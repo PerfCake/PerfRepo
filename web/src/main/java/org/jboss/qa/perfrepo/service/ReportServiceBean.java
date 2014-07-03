@@ -8,14 +8,10 @@ import org.jboss.qa.perfrepo.dao.TestMetricDAO;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestMetric;
-import org.jboss.qa.perfrepo.model.User;
-import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.report.ReportProperty;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
 import org.jboss.qa.perfrepo.security.UserInfo;
-import org.jboss.qa.perfrepo.session.UserSession;
-
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -26,10 +22,8 @@ import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Implements @link{ReportService}.
@@ -49,13 +43,10 @@ public class ReportServiceBean implements ReportService {
    private ReportDAO reportDAO;
 
    @Inject
-   private TestService testService;
+   private TestDAO testDAO;
 
    @Inject
    private MetricDAO metricDAO;
-
-   @Inject
-   private TestDAO testDAO;
 
    @Inject
    private TestMetricDAO testMetricDAO;
@@ -120,7 +111,7 @@ public class ReportServiceBean implements ReportService {
             Test freshTest = testDAO.findByUid(chartRequest.getTestUid());
             if (freshTest == null) {
                // test uid supplied but doesn't exist - pick another test
-               response.setSelectionTests(testService.getAllSelectionTests());
+               response.setSelectionTests(testDAO.findAllReadOnly());
                continue;
             } else {
                freshTest = freshTest.clone();
@@ -139,7 +130,7 @@ public class ReportServiceBean implements ReportService {
                   }
                   TestMetric testMetric = testMetricDAO.find(freshTest, seriesRequest.getMetricName());
                   if (testMetric == null) {
-                     chartResponse.setSelectionMetrics(testService.getAllSelectionMetrics(freshTest.getId()));
+                     chartResponse.setSelectionMetrics(metricDAO.getMetricByTest(freshTest.getId()));
                      continue;
                   }
                   Metric freshMetric = testMetric.getMetric().clone();
@@ -166,7 +157,7 @@ public class ReportServiceBean implements ReportService {
                   }
                   TestMetric testMetric = testMetricDAO.find(freshTest, baselineRequest.getMetricName());
                   if (testMetric == null) {
-                     chartResponse.setSelectionMetrics(testService.getAllSelectionMetrics(freshTest.getId()));
+                     chartResponse.setSelectionMetrics(metricDAO.getMetricByTest(freshTest.getId()));
                      continue;
                   }
                   Metric freshMetric = testMetric.getMetric().clone();

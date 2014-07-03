@@ -1,13 +1,15 @@
 package org.jboss.qa.perfrepo.service;
 
+import org.jboss.qa.perfrepo.dao.FavoriteParameterDAO;
+import org.jboss.qa.perfrepo.dao.TestDAO;
 import org.jboss.qa.perfrepo.dao.UserDAO;
 import org.jboss.qa.perfrepo.dao.UserPropertyDAO;
+import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.User;
 import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.security.UserInfo;
-import org.jboss.qa.perfrepo.session.UserSession;
-import org.jboss.qa.perfrepo.util.FavoriteParameter;
+import org.jboss.qa.perfrepo.model.FavoriteParameter;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -38,14 +40,17 @@ public class UserServiceBean implements UserService {
    private UserInfo userInfo;
 
    @Inject
-   private TestService testService;
+   private TestDAO testDAO;
+
+   @Inject
+   private FavoriteParameterDAO favoriteParameterDAO;
 
    @Override
    public User createUser(User user) throws ServiceException {
       if (user.getId() != null) {
          throw new IllegalArgumentException("can't create with id");
       }
-      if (!user.getUsername().equals(userInfo.getUserName())) {
+      if (!user.getId().equals(userInfo.getUserId())) {
          throw new ServiceException(ServiceException.Codes.NOT_YOU, null, "Only logged-in user can change his own properties");
       }
       User newUser = userDAO.create(user).clone();
@@ -63,13 +68,13 @@ public class UserServiceBean implements UserService {
 
    @Override
    public Map<String, String> getUserProperties() {
-      List<UserProperty> ups = userPropertyDAO.findByUserName(userInfo.getUserName());
+      List<UserProperty> ups = userPropertyDAO.findByUserId(userInfo.getUserId());
       return transformToMap(ups);
    }
 
    @Override
    public void storeProperties(String prefix, Map<String, String> properties) {
-      User user = getFullUser(userInfo.getUserName());
+      User user = getFullUser(userInfo.getUserId());
       for (String key : properties.keySet()) {
          UserProperty up = userPropertyDAO.findByUserIdAndName(user.getId(), prefix + key);
          if (up != null) {
@@ -86,38 +91,30 @@ public class UserServiceBean implements UserService {
    }
 
    @Override
-   public List<FavoriteParameter> getFavoriteParameters() {
-      List<UserProperty> userProperties = userPropertyDAO.findByUserName(userInfo.getUserName());
+   public void addFavoriteParameter(Test test, String paramName, String label) throws ServiceException {
+      User user = userDAO.find(userInfo.getUserId());
+      Test testEntity = testDAO.find(test.getId());
 
-      List<FavoriteParameter> favoriteParameters = new ArrayList<FavoriteParameter>();
-      if (userProperties != null) {
-         for (UserProperty prop : userProperties) {
-            if (prop.getName().startsWith(UserService.FAV_PARAM_KEY_PREFIX)) {
-               favoriteParameters.add(FavoriteParameter.fromString(prop.getValue()));
-            }
-         }
+      FavoriteParameter fp = favoriteParameterDAO.findByTestAndParamName(paramName, test.getId(), userInfo.getUserId());
+      if(fp == null) {
+         fp = new FavoriteParameter();
       }
 
-      return favoriteParameters;
-   }
-
-   @Override
-   public void addFavoriteParameter(long testId, String paramName, String label) throws ServiceException {
-      User user = userDAO.findByUsername(userInfo.getUserName());
-
-      FavoriteParameter fp = new FavoriteParameter();
       fp.setLabel(label);
       fp.setParameterName(paramName);
-      fp.setTestId(testId);
+      fp.setTest(testEntity);
+      fp.setUser(user);
 
-
-      setProperty(favPropKey(testId, paramName), fp.toString(), user);
+      favoriteParameterDAO.create(fp);
    }
 
    @Override
-   public void removeFavoriteParameter(long testId, String paramName) throws ServiceException {
-      User user = userDAO.findByUsername(userInfo.getUserName());
-      setProperty(favPropKey(testId, paramName), null, user);
+   public void removeFavoriteParameter(Test test, String paramName) throws ServiceException {
+      FavoriteParameter fp = favoriteParameterDAO.findByTestAndParamName(paramName, test.getId(), userInfo.getUserId());
+
+      if(fp != null) {
+         favoriteParameterDAO.delete(fp);
+      }
    }
 
    @Override
@@ -126,10 +123,50 @@ public class UserServiceBean implements UserService {
       if (user == null) {
          return null;
       }
-      user = user.clone();
+
       List<UserProperty> properties = userPropertyDAO.findByUserId(user.getId());
-      user.setProperties(EntityUtil.clone(properties));
+      Collection<FavoriteParameter> favoriteParameters = user.getFavoriteParameters();
+
+      User clonedUser = user.clone();
+      clonedUser.setProperties(EntityUtil.clone(properties));
+      clonedUser.setFavoriteParameters(EntityUtil.clone(favoriteParameters));
+
       return user;
+   }
+
+   @Override
+   public User getUser(Long id) {
+      return userDAO.find(id);
+   }
+
+   @Override
+   public User getFullUser(Long id) {
+      User user = userDAO.find(id);
+      if (user == null) {
+         return null;
+      }
+
+      List<UserProperty> properties = userPropertyDAO.findByUserId(user.getId());
+      Collection<FavoriteParameter> favoriteParameters = user.getFavoriteParameters();
+
+      User clonedUser = user.clone();
+      clonedUser.setProperties(EntityUtil.clone(properties));
+      clonedUser.setFavoriteParameters(EntityUtil.clone(favoriteParameters));
+
+      return user;
+   }
+
+   @Override
+   public List<FavoriteParameter> getFavoriteParametersForTest(Test test) {
+      User user = getUser(userInfo.getUserId());
+      List<FavoriteParameter> result = new ArrayList<FavoriteParameter>();
+      for(FavoriteParameter favoriteParameter: user.getFavoriteParameters()) {
+         if(favoriteParameter.getTest().getId().equals(test.getId())) {
+            result.add(favoriteParameter);
+         }
+      }
+
+      return result;
    }
 
    private Map<String, String> transformToMap(List<UserProperty> ups) {
@@ -138,20 +175,6 @@ public class UserServiceBean implements UserService {
          map.put(up.getName(), up.getValue());
       }
       return map;
-   }
-
-   private Map<String, String> transformToMap(List<UserProperty> ups, String namePrefix) {
-      Map<String, String> map = new HashMap<String, String>();
-      for (UserProperty up : ups) {
-         if (up.getName().startsWith(namePrefix)) {
-            map.put(up.getName().substring(namePrefix.length(), up.getName().length()), up.getValue());
-         }
-      }
-      return map;
-   }
-
-   private String favPropKey(long testId, String paramName) {
-      return FAV_PARAM_KEY_PREFIX + testId + "." + paramName;
    }
 
    private void setProperty(String name, String value, User user) throws ServiceException {
@@ -181,15 +204,6 @@ public class UserServiceBean implements UserService {
             }
          }
       }
-   }
-
-   private FavoriteParameter findFavoriteParameter(long testId, String paramName, List<FavoriteParameter> favoriteParameters) {
-      for (FavoriteParameter fp : favoriteParameters) {
-         if (fp.getTestId() == testId && paramName.equals(fp.getParameterName())) {
-            return fp;
-         }
-      }
-      return null;
    }
 
    private void deleteUserProperty(UserProperty property) throws ServiceException {
@@ -226,7 +240,7 @@ public class UserServiceBean implements UserService {
       if (oldUser == null) {
          throw new ServiceException(ServiceException.Codes.USER_NOT_FOUND, null, "Couldn't find user with ID " + user.getId());
       }
-      if (!oldUser.getUsername().equals(userInfo.getUserName())) {
+      if (!oldUser.getId().equals(userInfo.getUserId())) {
          throw new ServiceException(ServiceException.Codes.NOT_YOU, null, "Only logged-in user can change his own properties");
       }
       return oldUser;

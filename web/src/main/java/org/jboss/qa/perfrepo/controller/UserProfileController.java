@@ -4,8 +4,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.User;
-import org.jboss.qa.perfrepo.security.UserInfo;
-import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.session.UserSession;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
@@ -24,7 +22,7 @@ public class UserProfileController extends ControllerBase {
    private UserService userService;
 
    @Inject
-   private UserInfo userInfo;
+   private UserSession userSession;
 
    private User user;
 
@@ -33,7 +31,7 @@ public class UserProfileController extends ControllerBase {
     */
    public void preRender() throws Exception {
       reloadSessionMessages();
-      user = userService.getFullUser(userInfo.getUserName());
+      user = userService.getFullUser(userSession.getUser().getId());
    }
 
    public User getUser() {

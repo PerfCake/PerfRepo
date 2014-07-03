@@ -17,6 +17,7 @@ package org.jboss.qa.perfrepo.controller.reports.metric;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -46,12 +47,11 @@ import org.jboss.qa.perfrepo.model.to.MetricReportTO.Request;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.Response;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesRequest;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesResponse;
-import org.jboss.qa.perfrepo.security.UserInfo;
 import org.jboss.qa.perfrepo.service.ReportService;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.session.UserSession;
-import org.jboss.qa.perfrepo.util.FavoriteParameter;
+import org.jboss.qa.perfrepo.model.FavoriteParameter;
 import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 import org.richfaces.ui.output.chart.ChartDataModel.ChartType;
@@ -82,13 +82,12 @@ public class MetricReportController extends ControllerBase {
    private UserSession userSession;
 
    @Inject
-   private UserInfo userInfo;
-
-   @Inject
    private ReportService reportService;
 
    @Inject
    private UserService userService;
+
+   private User user;
 
    private Response report;
    private String reportName;
@@ -150,6 +149,8 @@ public class MetricReportController extends ControllerBase {
     * called on preRenderView
     */
    public void preRender() {
+      user = userService.getFullUser(userSession.getUser().getId());
+
       reloadSessionMessages();
    }
 
@@ -160,7 +161,7 @@ public class MetricReportController extends ControllerBase {
    public void save() {
       updateReport();
 
-      User user = userService.getFullUser(userInfo.getUserName());
+      User user = userService.getFullUser(userSession.getUser().getId());
       Report report = reportService.getFullReport(reportId);
       if(report == null) {
          report = new Report();
@@ -597,7 +598,7 @@ public class MetricReportController extends ControllerBase {
 
          pointDetails.exec = testService.getFullTestExecution(pointDetails.execId);
 
-         for (FavoriteParameter fp : userSession.getFavoriteParametersFor(pointDetails.exec.getTest().getId())) {
+         for (FavoriteParameter fp : userService.getFavoriteParametersForTest(pointDetails.exec.getTest())) {
             pointDetails.favParams.add(new PointDetailsFavParam(fp.getLabel(), pointDetails.exec.findParameter(fp.getParameterName())));
          }
       }
