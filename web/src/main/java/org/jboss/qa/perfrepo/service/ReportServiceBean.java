@@ -1,5 +1,19 @@
 package org.jboss.qa.perfrepo.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.jboss.qa.perfrepo.dao.MetricDAO;
 import org.jboss.qa.perfrepo.dao.ReportDAO;
 import org.jboss.qa.perfrepo.dao.TestDAO;
@@ -11,19 +25,6 @@ import org.jboss.qa.perfrepo.model.TestMetric;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.report.ReportProperty;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
-import org.jboss.qa.perfrepo.security.UserInfo;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Implements @link{ReportService}.
@@ -35,9 +36,6 @@ import java.util.Map;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class ReportServiceBean implements ReportService {
-
-   @Inject
-   private UserInfo userInfo;
 
    @Inject
    private ReportDAO reportDAO;
@@ -54,9 +52,12 @@ public class ReportServiceBean implements ReportService {
    @Inject
    private TestExecutionDAO testExecutionDAO;
 
+   @Inject
+   private UserService userService;
+
    @Override
    public List<Report> getAllUsersReports() {
-      return getAllReports(userInfo.getUserName());
+      return getAllReports(userService.getLoggedUserName());
    }
 
    @Override

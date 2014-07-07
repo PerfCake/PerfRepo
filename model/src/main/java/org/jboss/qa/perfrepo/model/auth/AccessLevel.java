@@ -1,6 +1,6 @@
 package org.jboss.qa.perfrepo.model.auth;
 
-public enum Level {
+public enum AccessLevel {
 	
 	/**
 	 * User Level

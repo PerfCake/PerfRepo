@@ -32,6 +32,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+
 @javax.persistence.Entity
 @Table(name = "value_parameter")
 @NamedQueries({
@@ -43,9 +46,12 @@ import javax.xml.bind.annotation.XmlTransient;
       @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_VALUE_ASC, query = "SELECT x FROM ValueParameter x ORDER BY x.paramValue ASC"),
       @NamedQuery(name = ValueParameter.FIND_ALL_SORTED_BY_VALUE_DESC, query = "SELECT x FROM ValueParameter x ORDER BY x.paramValue DESC"),
       @NamedQuery(name = ValueParameter.FIND_BY_ID, query = "SELECT x from ValueParameter x WHERE x.id = :" + ValueParameter.NQ_ID),
-      @NamedQuery(name = ValueParameter.FIND_TEST_ID, query = "SELECT test from ValueParameter vp inner join vp.value v inner join v.testExecution te inner join te.test test where vp.id= :entity") })
+      @NamedQuery(name = ValueParameter.GET_TEST, query = "SELECT test from ValueParameter vp inner join vp.value v inner join v.testExecution te inner join te.test test where vp= :entity") })
 @XmlRootElement(name = "valueParameter")
+@SecuredEntity(type=EntityType.TEST)
 public class ValueParameter implements Entity<ValueParameter>, Comparable<ValueParameter> {
+
+   private static final long serialVersionUID = 1673366421709715346L;
 
    public static final String FIND_ALL = "ValueParameter.findAll";
 
@@ -56,7 +62,7 @@ public class ValueParameter implements Entity<ValueParameter>, Comparable<ValueP
    public static final String FIND_ALL_SORTED_BY_VALUE_ASC = "ValueParameter.findAllSortedByValueAsc";
    public static final String FIND_ALL_SORTED_BY_VALUE_DESC = "ValueParameter.findAllSortedByValueDesc";
 
-   public static final String FIND_TEST_ID = "ValueParameter.findTestId";
+   public static final String GET_TEST = "ValueParameter.getTest";
 
    public static final String FIND_BY_ID = "ValueParameter.findById";
    public static final String NQ_ID = "valueParameterId";

@@ -29,13 +29,19 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+
 @javax.persistence.Entity
 @Table(name = "test_execution_tag")
-@NamedQueries({ @NamedQuery(name = TestExecutionTag.FIND_TEST_ID, query = "SELECT test from TestExecutionTag teg inner join teg.testExecution te inner join te.test test WHERE teg = :entity") })
+@NamedQueries({ @NamedQuery(name = TestExecutionTag.GET_TEST, query = "SELECT test from TestExecutionTag teg inner join teg.testExecution te inner join te.test test WHERE teg = :entity") })
 @XmlRootElement(name = "testExecutionTag")
+@SecuredEntity(type=EntityType.TEST)
 public class TestExecutionTag implements Entity<TestExecutionTag> {
 
-   public static final String FIND_TEST_ID = "TestExecutionTag.findTestId";
+   private static final long serialVersionUID = 1L;
+
+   public static final String GET_TEST = "TestExecutionTag.getTest";
 
    @Id
    @SequenceGenerator(name = "TEST_EXECUTION_TAG_ID_GENERATOR", sequenceName = "TEST_EXECUTION_TAG_SEQUENCE", allocationSize = 1)

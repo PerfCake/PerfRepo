@@ -16,9 +16,10 @@
 package org.jboss.qa.perfrepo.dao;
 
 import org.jboss.qa.perfrepo.model.FavoriteParameter;
-import org.jboss.qa.perfrepo.model.User;
+import org.jboss.qa.perfrepo.model.user.User;
 
 import javax.inject.Named;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

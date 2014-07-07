@@ -40,6 +40,9 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.jboss.qa.perfrepo.model.auth.Permission;
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
 import org.jboss.qa.perfrepo.model.builder.TestBuilder;
 
 /**
@@ -50,17 +53,14 @@ import org.jboss.qa.perfrepo.model.builder.TestBuilder;
  */
 @javax.persistence.Entity
 @Table(name = "test")
+@SecuredEntity(type=EntityType.TEST)
 @NamedQueries({
-      @NamedQuery(name = Test.FIND_TEST_ID, query = "SELECT test from Test test where test = :entity"),
       @NamedQuery(name = Test.FIND_TESTS_USING_METRIC, query = "SELECT test from Test test, TestMetric tm, Metric m where test = tm.test and tm.metric = m and m.id = :metric") })
 @XmlRootElement(name = "test")
 public class Test implements Entity<Test> {
 
    private static final long serialVersionUID = 2936849220074718535L;
 
-   public static final String FIND_ALL = "Test.findAll";
-
-   public static final String FIND_TEST_ID = "Test.findTestId";
    public static final String FIND_TESTS_USING_METRIC = "Test.findTestsUsingMetric";
 
    @Id

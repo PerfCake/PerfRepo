@@ -3,7 +3,7 @@ package org.jboss.qa.perfrepo.controller;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jboss.qa.perfrepo.model.User;
+import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.session.UserSession;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;

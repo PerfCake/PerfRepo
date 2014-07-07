@@ -105,6 +105,138 @@ CACHE 1;
 ALTER TABLE public.favorite_parameter_sequence OWNER TO perfrepo;
 
 --
+-- Name: group; Type: TABLE; Schema: public; Owner: perfrepo; Tablespace:
+--
+
+CREATE TABLE "group" (
+    id bigint NOT NULL,
+    name character varying(100) NOT NULL
+);
+
+ALTER TABLE public.group OWNER TO perfrepo;
+ALTER TABLE ONLY public.group
+    ADD CONSTRAINT group_pkey PRIMARY KEY (id);
+
+--
+-- Name: group_sequence; Type: SEQUENCE; Schema: public; Owner: perfrepo
+--
+
+CREATE SEQUENCE group_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+ALTER TABLE public.group_sequence OWNER TO perfrepo;
+
+--
+-- Name: user_group; Type: TABLE; Schema: public; Owner: perfrepo; Tablespace:
+--
+
+CREATE TABLE user_group (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    group_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.user_group OWNER TO perfrepo;
+ALTER TABLE ONLY public.user_group
+    ADD CONSTRAINT user_group_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.user_group
+    ADD CONSTRAINT user_group_group_fkey FOREIGN KEY (group_id) REFERENCES "group"(id);
+ALTER TABLE ONLY public.user_group
+    ADD CONSTRAINT user_group_user_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+--
+-- Name: user_group_sequence; Type: SEQUENCE; Schema: public; Owner: perfrepo
+--
+
+CREATE SEQUENCE user_group_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.user_group_sequence OWNER TO perfrepo;
+
+
+
+
+--
+-- Name: permission; Type: TABLE; Schema: public; Owner: perfrepo; Tablespace:
+--
+
+CREATE TABLE permission (
+    id bigint NOT NULL,
+    access_type character varying(20) NOT NULL,
+    access_level character varying(20) NOT NULL,
+    group_id bigint,
+    user_id bigint
+);
+
+
+ALTER TABLE public.permission OWNER TO perfrepo;
+ALTER TABLE ONLY public.permission
+    ADD CONSTRAINT permission_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.permission
+    ADD CONSTRAINT permission_group_fkey FOREIGN KEY (group_id) REFERENCES "group"(id);
+ALTER TABLE ONLY public.permission
+    ADD CONSTRAINT permission_user_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+ALTER TABLE ONLY public.permission
+	ADD CONSTRAINT CheckGroupOrUserIsFilled CHECK ((CASE WHEN group_id IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN user_id IS NOT NULL THEN 1 ELSE 0 END) = 1);
+
+--
+-- Name: permission_sequence; Type: SEQUENCE; Schema: public; Owner: perfrepo
+--
+
+CREATE SEQUENCE permission_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.permission_sequence OWNER TO perfrepo;
+
+--
+-- Name: report_permission; Type: TABLE; Schema: public; Owner: perfrepo; Tablespace:
+--
+
+CREATE TABLE report_permission (
+    id bigint NOT NULL,
+    report_id bigint NOT NULL,
+    permission_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.report_permission OWNER TO perfrepo;
+ALTER TABLE ONLY public.report_permission
+    ADD CONSTRAINT report_permission_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.report_permission
+    ADD CONSTRAINT report_permission_report_fkey FOREIGN KEY (report_id) REFERENCES "report"(id);
+ALTER TABLE ONLY public.report_permission
+    ADD CONSTRAINT report_permission_permission_fkey FOREIGN KEY (permission_id) REFERENCES "permission"(id);
+
+--
+-- Name: report_permission_sequence; Type: SEQUENCE; Schema: public; Owner: perfrepo
+--
+
+CREATE SEQUENCE report_permission_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.report_permission_sequence OWNER TO perfrepo;
+
+--
 -- Migrate script - reports from user_properties to report entities
 --
 

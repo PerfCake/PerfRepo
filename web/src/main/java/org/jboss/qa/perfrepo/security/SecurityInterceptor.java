@@ -19,39 +19,29 @@ import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-import javax.persistence.Entity;
 
-import org.jboss.qa.perfrepo.dao.TestDAO;
-import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.auth.AuthorizationService;
+import org.jboss.qa.perfrepo.model.Entity;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
 
 @Secure
 @Interceptor
 public class SecurityInterceptor {
 
-   @Inject
-   private TestDAO testDAO;
+	@Inject
+	private AuthorizationService authorizationService;
 
-   @Inject
-   private UserInfo userInfo;
-
-   @AroundInvoke
-   public Object invoke(InvocationContext ctx) throws Exception {
-      Object[] params = ctx.getParameters();
-      for (Object param : params) {
-         if (param.getClass().getAnnotation(Entity.class) != null) {
-            String guid = getGroupId(param);
-            if (guid != null) {
-               if (!userInfo.isUserInRole(guid)) {
-                  throw new SecurityException();
-               }
-            }
-         }
-      }
-      return ctx.proceed();
-   }
-
-   private String getGroupId(Object entity) throws Exception {
-      Test test = testDAO.findTestForEntity(entity);
-      return test == null ? null : test.getGroupId();
-   }
+	@AroundInvoke
+	public Object invoke(InvocationContext ctx) throws Exception {
+		Object[] params = ctx.getParameters();
+		Secure secureAnnotation = ctx.getMethod().getAnnotation(Secure.class);
+		for (Object param : params) {
+			if (param.getClass().getAnnotation(SecuredEntity.class) != null && param instanceof Entity<?>) {
+				if (!authorizationService.isUserAuthorizedFor(secureAnnotation.accessType(), (Entity<?>)param)) {
+					throw new SecurityException();
+				}
+			}
+		}
+		return ctx.proceed();
+	}
 }

@@ -26,15 +26,20 @@ import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+
 @javax.persistence.Entity
 @Table(name = "test_metric")
 @NamedQueries({
-      @NamedQuery(name = TestMetric.FIND_TEST_ID, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm.id= :entity"),
+      @NamedQuery(name = TestMetric.GET_TEST, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm= :entity"),
       @NamedQuery(name = TestMetric.FIND_TEST_METRIC, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test and m.id= :metric"),
       @NamedQuery(name = TestMetric.FIND_TEST_METRIC_BY_NAME, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test AND m.name= :metricName") })
+@SecuredEntity(type=EntityType.TEST)
 public class TestMetric implements Entity<TestMetric> {
 
-   public static final String FIND_TEST_ID = "TestMetric.findTestId";
+   private static final long serialVersionUID = 4140777839186789812L;
+   public static final String GET_TEST = "TestMetric.getTest";
    public static final String FIND_TEST_METRIC = "TestMetric.findTestMetric";
    public static final String FIND_TEST_METRIC_BY_NAME = "TestMetric.findTestMetricByName";
 

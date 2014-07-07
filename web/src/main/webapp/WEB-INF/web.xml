@@ -1,114 +1,143 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-   <display-name>p-repo</display-name>
-   <welcome-file-list>
-      <welcome-file>index.xhtml</welcome-file>
-   </welcome-file-list>
-   <!-- RESTEasy -->
-   <servlet>
-      <servlet-name>Resteasy</servlet-name>
-      <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
-   </servlet>
-   <servlet-mapping>
-      <servlet-name>Resteasy</servlet-name>
-      <url-pattern>/rest/*</url-pattern>
-   </servlet-mapping>
-   <context-param>
-      <param-name>javax.ws.rs.Application</param-name>
-      <param-value>org.jboss.qa.perfrepo.rest.app.PerfRepoRESTApplication</param-value>
-   </context-param>
-   <context-param>
-      <param-name>resteasy.servlet.mapping.prefix</param-name>
-      <param-value>/rest</param-value>
-   </context-param>
-   <context-param>
-      <param-name>javax.faces.PARTIAL_STATE_SAVING</param-name>
-      <param-value>true</param-value>
-   </context-param>
-   <context-param>
-      <param-name>facelets.LIBRARIES</param-name>
-      <param-value>/WEB-INF/confirmation-taglib.xml</param-value>
-   </context-param>
-   <context-param>
-      <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
-      <param-value>true</param-value>
-   </context-param>
-   <context-param>
-      <param-name>repo.endpoint.host</param-name>
-      <param-value>${repo.endpoint.host}</param-value>
-   </context-param>
-   <context-param>
-      <param-name>repo.endpoint.port</param-name>
-      <param-value>${repo.endpoint.port}</param-value>
-   </context-param>
-
-   <listener>
-      <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
-   </listener>
-
-   <servlet>
-      <servlet-name>Faces Servlet</servlet-name>
-      <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-      <load-on-startup>1</load-on-startup>
-   </servlet>
-   <servlet-mapping>
-      <servlet-name>Faces Servlet</servlet-name>
-      <url-pattern>*.xhtml</url-pattern>
-      <url-pattern>*.jsf</url-pattern>
-      <url-pattern>*.faces</url-pattern>
-      <url-pattern>/faces/*</url-pattern>
-   </servlet-mapping>
-   <filter>
-      <filter-name>UrlRewriteFilter</filter-name>
-      <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
-   </filter>
-   <filter-mapping>
-      <filter-name>UrlRewriteFilter</filter-name>
-      <url-pattern>/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-   </filter-mapping>
-   <context-param>
-      <param-name>javax.face.PROJECT_STAGE</param-name>
-      <param-value>Development</param-value>
-   </context-param>
-   <context-param>
-      <param-name>org.richfaces.skin</param-name>
-      <param-value>perfrepo</param-value>
-   </context-param>
-   <context-param>
-      <param-name>org.richfaces.enableControlSkinning</param-name>
-      <param-value>false</param-value>
-   </context-param>
-   <context-param>
-      <param-name>org.to.enableControlSkinningClasses</param-name>
-      <param-value>false</param-value>
-   </context-param>
-   <!-- Security -->
-   <security-constraint>
-      <display-name>${security.realm.name}</display-name>
-      <web-resource-collection>
-         <web-resource-name>repo</web-resource-name>
-         <description />
-         <url-pattern>/*</url-pattern>
-      </web-resource-collection>
-      <auth-constraint>
-         <description />
-         <role-name>perfrepouser</role-name>
-         <role-name>perfrepoadmin</role-name>
-      </auth-constraint>
-   </security-constraint>
-   <login-config>
-      <auth-method>BASIC</auth-method>
-      <realm-name>${security.realm.name}</realm-name>
-   </login-config>
-   <security-role>
-      <description />
-      <role-name>perfrepouser</role-name>
-   </security-role>
-   <security-role>
-      <description />
-      <role-name>perfrepoadmin</role-name>
-   </security-role>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+	<display-name>p-repo</display-name>
+	<welcome-file-list>
+		<welcome-file>index.xhtml</welcome-file>
+	</welcome-file-list>
+	<!-- RESTEasy -->
+	<servlet>
+		<servlet-name>Resteasy</servlet-name>
+		<servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Resteasy</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+	<context-param>
+		<param-name>javax.ws.rs.Application</param-name>
+		<param-value>org.jboss.qa.perfrepo.rest.app.PerfRepoRESTApplication</param-value>
+	</context-param>
+	<context-param>
+		<param-name>resteasy.servlet.mapping.prefix</param-name>
+		<param-value>/rest</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.PARTIAL_STATE_SAVING</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>facelets.LIBRARIES</param-name>
+		<param-value>/WEB-INF/confirmation-taglib.xml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>repo.endpoint.host</param-name>
+		<param-value>${repo.endpoint.host}</param-value>
+	</context-param>
+	<context-param>
+		<param-name>repo.endpoint.port</param-name>
+		<param-value>${repo.endpoint.port}</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+	</listener>
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.xhtml</url-pattern>
+		<url-pattern>*.jsf</url-pattern>
+		<url-pattern>*.faces</url-pattern>
+		<url-pattern>/faces/*</url-pattern>
+	</servlet-mapping>
+	<filter>
+		<filter-name>RestAuthenticationFilter</filter-name>
+		<filter-class>org.jboss.qa.perfrepo.rest.app.RestAuthenticationFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>RestAuthenticationFilter</filter-name>
+		<url-pattern>/rest/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<context-param>
+		<param-name>javax.face.PROJECT_STAGE</param-name>
+		<param-value>Development</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.richfaces.skin</param-name>
+		<param-value>perfrepo</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.richfaces.enableControlSkinning</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.to.enableControlSkinningClasses</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<!-- Security -->
+	<security-constraint>
+		<display-name>${security.realm.name}</display-name>
+		<web-resource-collection>
+			<web-resource-name>repo</web-resource-name>
+			<description />
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<description />
+			<role-name>perfrepoadmin</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint><!--Exclude css and images here -->
+		<web-resource-collection>
+			<web-resource-name>Exclude from Security</web-resource-name>
+			<url-pattern>/resources/images/*</url-pattern><!-- No security for images -->
+			<url-pattern>/resources/css/*</url-pattern><!-- No security for css -->
+			<url-pattern>/resources/font/*</url-pattern>
+			<url-pattern>/resources/js/*</url-pattern>
+			<url-pattern>/org.richfaces.resources/*</url-pattern>
+			<url-pattern>/javax.faces.resource/*</url-pattern>
+		</web-resource-collection>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Rest</web-resource-name>
+			<description>Web resources for REST Services</description>
+			<url-pattern>/rest/*</url-pattern>
+		</web-resource-collection>
+	</security-constraint>
+	<login-config>
+		<auth-method>FORM</auth-method>
+		<form-login-config>
+			<form-login-page>/login.xhtml</form-login-page>
+			<form-error-page>/login.xhtml</form-error-page>
+		</form-login-config>
+	</login-config>
+	<!-- <security-role> -->
+	<!-- <description /> -->
+	<!-- <role-name>perfrepouser</role-name> -->
+	<!-- </security-role> -->
+	<!-- <security-role> -->
+	<!-- <description /> -->
+	<!-- <role-name>perfrepoadmin</role-name> -->
+	<!-- </security-role> -->
 </web-app>

@@ -19,7 +19,7 @@ import java.util.List;
 
 import javax.inject.Named;
 
-import org.jboss.qa.perfrepo.model.User;
+import org.jboss.qa.perfrepo.model.user.User;
 
 /**
  * DAO for {@link User}

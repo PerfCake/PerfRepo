@@ -24,8 +24,14 @@ import java.lang.annotation.Target;
 
 import javax.interceptor.InterceptorBinding;
 
+import org.jboss.qa.perfrepo.model.auth.AccessType;
+
 
 @Retention(RUNTIME)
 @Target({METHOD, TYPE})
 @InterceptorBinding
-public @interface Secure {}
+public @interface Secure {
+
+    AccessType accessType() default AccessType.W;
+
+}

@@ -13,23 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.qa.perfrepo.model;
+package org.jboss.qa.perfrepo.model.user;
 
 import java.util.Collection;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.jboss.qa.perfrepo.model.Entity;
+import org.jboss.qa.perfrepo.model.FavoriteParameter;
+import org.jboss.qa.perfrepo.model.UserProperty;
+
 @javax.persistence.Entity
 @Table(name = "\"user\"")
 public class User implements Entity<User>, Comparable<User> {
+
+   private static final long serialVersionUID = 4616015836066622075L;
 
    @Id
    @SequenceGenerator(name = "USER_ID_GENERATOR", sequenceName = "USER_SEQUENCE", allocationSize = 1)
@@ -51,6 +62,12 @@ public class User implements Entity<User>, Comparable<User> {
 
    @OneToMany(mappedBy = "user")
    private Collection<FavoriteParameter> favoriteParameters;
+
+   @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+   @JoinTable(name = "user_group", joinColumns = {
+      @JoinColumn(name = "user_id", nullable = false, updatable = false) },
+	  inverseJoinColumns = { @JoinColumn(name = "group_id", nullable = false, updatable = false)})
+   private Collection<Group> groups;
 
    public Long getId() {
       return id;
@@ -106,7 +123,15 @@ public class User implements Entity<User>, Comparable<User> {
       }
    }
 
-   public UserProperty findProperty(String name) {
+   public Collection<Group> getGroups() {
+	  return groups;
+   }
+
+   public void setGroups(Collection<Group> groups) {
+	  this.groups = groups;
+   }
+
+public UserProperty findProperty(String name) {
       if (properties == null) {
          return null;
       }

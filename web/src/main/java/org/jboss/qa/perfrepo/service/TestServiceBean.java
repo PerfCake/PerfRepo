@@ -22,8 +22,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -43,8 +41,6 @@ import org.jboss.qa.perfrepo.dao.TestExecutionDAO;
 import org.jboss.qa.perfrepo.dao.TestExecutionParameterDAO;
 import org.jboss.qa.perfrepo.dao.TestExecutionTagDAO;
 import org.jboss.qa.perfrepo.dao.TestMetricDAO;
-import org.jboss.qa.perfrepo.dao.UserDAO;
-import org.jboss.qa.perfrepo.dao.UserPropertyDAO;
 import org.jboss.qa.perfrepo.dao.ValueDAO;
 import org.jboss.qa.perfrepo.dao.ValueParameterDAO;
 import org.jboss.qa.perfrepo.model.Metric;
@@ -55,25 +51,14 @@ import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.TestMetric;
-import org.jboss.qa.perfrepo.model.User;
-import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO.BaselineRequest;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO.BaselineResponse;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO.ChartRequest;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO.ChartResponse;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesRequest;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO.SeriesResponse;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.model.util.EntityUtil.UpdateSet;
 import org.jboss.qa.perfrepo.security.Secure;
-import org.jboss.qa.perfrepo.security.UserInfo;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -126,7 +111,7 @@ public class TestServiceBean implements TestService {
    private TestMetricDAO testMetricDAO;
 
    @Inject
-   private UserInfo userInfo;
+   private UserService userService;
 
    @Override
    public TestExecution createTestExecution(TestExecution testExecution) throws ServiceException {
@@ -225,7 +210,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public Test getTestByUID(String uid) {
-	   return testDAO.betByUID(uid);
+	   return testDAO.getByUID(uid);
    }
 
    @Override
@@ -292,8 +277,8 @@ public class TestServiceBean implements TestService {
 
    @Override
    public Test createTest(Test test) throws ServiceException {
-      if (!userInfo.isUserInRole(test.getGroupId())) {
-         throw cantCreateTest(userInfo.getUserName(), test.getGroupId());
+      if (!userService.isLoggedUserInGroup(test.getGroupId())) {
+         throw cantCreateTest(userService.getLoggedUserName(), test.getGroupId());
       }
       if (testDAO.findByUid(test.getUid()) != null) {
          throw serviceException(ServiceException.Codes.TEST_UID_EXISTS, "Test with UID \"%s\" exists.", test.getUid());
@@ -700,7 +685,7 @@ public class TestServiceBean implements TestService {
 	   List<Test> tests = testDAO.findByUIDPrefix(prefix);
 	   List<String> testuids =  new ArrayList<String>();
 	   for (Test test : tests) {
-		   if (userInfo.isUserInRole(test.getGroupId())) {
+		   if (userService.isLoggedUserInGroup(test.getGroupId())) {
 			   testuids.add(test.getUid());
 		   }
 	   }
@@ -886,8 +871,8 @@ public class TestServiceBean implements TestService {
          throw new IllegalArgumentException("Can't find test, id or uid needs to be supplied");
       }
       // user can only insert test executions for tests pertaining to his group
-      if (!userInfo.isUserInRole(freshTest.getGroupId())) {
-         throw notInGroup(userInfo.getUserName(), freshTest.getGroupId(), freshTest.getName(), freshTest.getUid());
+      if (!userService.isLoggedUserInGroup(freshTest.getGroupId())) {
+         throw notInGroup(userService.getLoggedUserName(), freshTest.getGroupId(), freshTest.getName(), freshTest.getUid());
       }
       return freshTest;
    }

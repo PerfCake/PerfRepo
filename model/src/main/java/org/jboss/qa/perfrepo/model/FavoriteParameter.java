@@ -3,6 +3,9 @@ package org.jboss.qa.perfrepo.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.jboss.qa.perfrepo.model.user.User;
+
 import java.io.Serializable;
 
 /**

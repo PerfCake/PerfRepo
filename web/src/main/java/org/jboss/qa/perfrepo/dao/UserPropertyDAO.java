@@ -25,8 +25,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.jboss.qa.perfrepo.model.User;
 import org.jboss.qa.perfrepo.model.UserProperty;
+import org.jboss.qa.perfrepo.model.user.User;
 
 /**
  * DAO for {@link UserProperty}

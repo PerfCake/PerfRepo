@@ -1,8 +1,8 @@
 package org.jboss.qa.perfrepo.service;
 
 import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.model.User;
 import org.jboss.qa.perfrepo.model.FavoriteParameter;
+import org.jboss.qa.perfrepo.model.user.User;
 
 import java.util.List;
 import java.util.Map;
@@ -34,6 +34,31 @@ public interface UserService {
     * @return user
     */
    public User getUser(Long id);
+
+   /**
+    * Retrieves managed entity of currently logged user
+    * @return user
+    */
+   public User getLoggedUser();
+
+   /**
+    * Retrieves id of currently logged user
+    * @return userId
+    */
+   public Long getLoggedUserId();
+
+   /**
+    * Retrieves name of currently logged user
+    * @return username
+    */
+   public String getLoggedUserName();
+
+   /**
+    * Retrieves if user is assign in defined group
+    * @param guid
+    * @return boolean
+    */
+   public boolean isLoggedUserInGroup(String guid);
 
    /**
     * Return all information about user as detached entity (e.g. cloned)

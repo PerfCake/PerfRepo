@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.reports.charts.RfChartSeries;
 import org.jboss.qa.perfrepo.model.*;
 import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
+import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.rest.TestExecutionREST;
 import org.jboss.qa.perfrepo.service.ServiceException;
@@ -43,7 +44,6 @@ import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 import org.richfaces.event.FileUploadEvent;
 import org.richfaces.model.UploadedFile;
-
 import org.richfaces.ui.output.chart.ChartDataModel;
 import org.richfaces.ui.output.chart.ChartDataModel.ChartType;
 import org.richfaces.ui.output.chart.NumberChartDataModel;

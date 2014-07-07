@@ -32,17 +32,23 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+
 @javax.persistence.Entity
 @Table(name = "test_execution_parameter")
+@SecuredEntity(type=EntityType.TEST)
 @NamedQueries({
-      @NamedQuery(name = TestExecutionParameter.FIND_TEST_ID, query = "SELECT test from Test test inner join test.testExecutions te inner join te.parameters tep where tep.id = :entity"),
+      @NamedQuery(name = TestExecutionParameter.GET_TEST, query = "SELECT test from Test test inner join test.testExecutions te inner join te.parameters tep where tep = :entity"),
       @NamedQuery(name = TestExecutionParameter.FIND_BY_TEST_ID, query = "SELECT DISTINCT p.name FROM TestExecutionParameter p, TestExecution e WHERE p.testExecution.id = e.id AND e.test.id = :testId") })
 @XmlRootElement(name = "testExecutionParameter")
 public class TestExecutionParameter implements Entity<TestExecutionParameter>, Comparable<TestExecutionParameter> {
 
+   private static final long serialVersionUID = -5534543562306898358L;
+
    public static final String FIND_ALL = "TestExecutionParameter.findAll";
 
-   public static final String FIND_TEST_ID = "TestExecutionParameter.findTestId";
+   public static final String GET_TEST = "TestExecutionParameter.getTest";
    public static final String FIND_BY_TEST_ID = "TestExecutionParameter.findByTestId";
 
    @Id

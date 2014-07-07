@@ -34,6 +34,9 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+
 /**
  * 
  * A binary file that can be attached to test execution.
@@ -43,9 +46,16 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @javax.persistence.Entity
 @Table(name = "test_execution_attachment")
-@NamedQueries({ @NamedQuery(name = TestExecutionAttachment.FIND_BY_EXECUTION, query = "SELECT new TestExecutionAttachment(a.id, a.filename, a.mimetype) from TestExecutionAttachment a WHERE a.testExecution.id = :exec") })
+@NamedQueries({
+	@NamedQuery(name = TestExecutionAttachment.FIND_BY_EXECUTION, query = "SELECT new TestExecutionAttachment(a.id, a.filename, a.mimetype) from TestExecutionAttachment a WHERE a.testExecution.id = :exec"),
+	@NamedQuery(name = TestExecutionAttachment.GET_TEST, query = "SELECT test from Test test inner join test.testExecutions te inner join te.attachments tea where tea = :entity")
+})
 @XmlRootElement(name = "attachment")
+@SecuredEntity(type=EntityType.TEST)
 public class TestExecutionAttachment implements Entity<TestExecutionAttachment> {
+
+   private static final long serialVersionUID = -3358483095886229881L;
+   public static final String GET_TEST = "TestExecutionAttachment.getTest";
    public static final String FIND_BY_EXECUTION = "TestExecutionAttachment.findByExecution";
 
    /**

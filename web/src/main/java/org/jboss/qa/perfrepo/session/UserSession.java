@@ -1,22 +1,15 @@
 package org.jboss.qa.perfrepo.session;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.log4j.Logger;
-import org.jboss.qa.perfrepo.controller.ControllerBase;
-import org.jboss.qa.perfrepo.model.User;
-import org.jboss.qa.perfrepo.security.UserInfo;
+import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.service.UserService;
-import org.jboss.qa.perfrepo.model.FavoriteParameter;
 
 /**
  * Holds information about user.
@@ -28,11 +21,10 @@ import org.jboss.qa.perfrepo.model.FavoriteParameter;
 @SessionScoped
 public class UserSession implements Serializable{
 
-   @Inject
-   private UserService userService;
+   private static final long serialVersionUID = 1487959021438612784L;
 
    @Inject
-   private UserInfo userInfo;
+   private UserService userService;
 
    private User user;
 
@@ -42,10 +34,16 @@ public class UserSession implements Serializable{
    }
 
    public void refresh() {
-      user = userService.getFullUser(userInfo.getUserId());
+      user = userService.getFullUser(userService.getLoggedUserId());
    }
 
    public User getUser() {
       return user;
    }
+
+   public String logout() {
+	  FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+	  return "HomeRedirect";
+   }
+
 }

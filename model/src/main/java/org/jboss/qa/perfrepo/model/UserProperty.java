@@ -27,6 +27,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.jboss.qa.perfrepo.model.user.User;
+
 @javax.persistence.Entity
 @Table(name = "user_property")
 public class UserProperty implements Entity<UserProperty>, Comparable<UserProperty> {

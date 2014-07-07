@@ -29,6 +29,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -38,6 +39,8 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
 import org.jboss.qa.perfrepo.model.builder.MetricBuilder;
 
 /**
@@ -49,16 +52,17 @@ import org.jboss.qa.perfrepo.model.builder.MetricBuilder;
 @javax.persistence.Entity
 @Table(name = "metric")
 @NamedQueries({
-      @NamedQuery(name = Metric.FIND_TEST_ID, query = "SELECT test from TestMetric tm inner join tm.test test inner join tm.metric m where m= :entity"),
+      @NamedQuery(name = Metric.GET_TEST_ID, query = "SELECT test from TestMetric tm inner join tm.test test inner join tm.metric m where m= :entity"),
       @NamedQuery(name = Metric.FIND_BY_NAME_GROUPID, query = "SELECT m from TestMetric tm inner join tm.metric m inner join tm.test test where test.groupId= :groupId and m.name= :name"),
       @NamedQuery(name = Metric.FIND_BY_GROUPID, query = "SELECT DISTINCT m from Metric m, TestMetric tm, Test t WHERE t.groupId= :groupId AND tm.test.id = t.id AND tm.metric.id = m.id ORDER BY m.name"),
       @NamedQuery(name = Metric.FIND_BY_TESTID, query = "SELECT m from Metric m, TestMetric tm WHERE tm.test.id = :testId AND tm.metric.id = m.id") })
 @XmlRootElement(name = "metric")
+@SecuredEntity(type=EntityType.TEST)
 public class Metric implements Entity<Metric>, Comparable<Metric> {
 
    private static final long serialVersionUID = -5234628391341278215L;
 
-   public static final String FIND_TEST_ID = "Metric.findTestId";
+   public static final String GET_TEST_ID = "Metric.getTestId";
    public static final String FIND_BY_NAME_GROUPID = "Metric.findByNameGroupId";
    public static final String FIND_BY_GROUPID = "Metric.findByGroupId";
    public static final String FIND_BY_TESTID = "Metric.findByTestId";

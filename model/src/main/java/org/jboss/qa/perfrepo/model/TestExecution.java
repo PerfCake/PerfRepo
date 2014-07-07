@@ -44,6 +44,8 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
 import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
 
 /**
@@ -56,13 +58,14 @@ import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
  */
 @javax.persistence.Entity
 @Table(name = "test_execution")
-@NamedQueries({ @NamedQuery(name = TestExecution.FIND_TEST_ID, query = "SELECT te.test from TestExecution te inner join te.test where te= :entity") })
+@SecuredEntity(type=EntityType.TEST)
+@NamedQueries({ @NamedQuery(name = TestExecution.GET_TEST, query = "SELECT te.test from TestExecution te inner join te.test where te= :entity") })
 @XmlRootElement(name = "testExecution")
 public class TestExecution implements Entity<TestExecution> {
 
    private static final long serialVersionUID = -2956845045583534606L;
 
-   public static final String FIND_TEST_ID = "TestExecution.findTestId";
+   public static final String GET_TEST = "TestExecution.getTest";
 
    @Id
    @SequenceGenerator(name = "TEST_EXECUTION_ID_GENERATOR", sequenceName = "TEST_EXECUTION_SEQUENCE", allocationSize = 1)

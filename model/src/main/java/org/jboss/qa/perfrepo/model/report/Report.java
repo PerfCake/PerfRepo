@@ -24,7 +24,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jboss.qa.perfrepo.model.Entity;
-import org.jboss.qa.perfrepo.model.User;
+import org.jboss.qa.perfrepo.model.user.User;
 
 /**
  * Represents a report entity.

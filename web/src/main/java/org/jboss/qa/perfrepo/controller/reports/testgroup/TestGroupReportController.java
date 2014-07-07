@@ -17,10 +17,10 @@ import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.controller.ControllerBase;
 import org.jboss.qa.perfrepo.model.TestExecution;
-import org.jboss.qa.perfrepo.model.User;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.report.ReportProperty;
+import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.controller.reports.testgroup.TestGroupChartBean.ChartData;
 import org.jboss.qa.perfrepo.service.ReportService;
 import org.jboss.qa.perfrepo.service.TestService;

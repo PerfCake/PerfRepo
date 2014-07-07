@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+	<f:metadata>
+		<f:event type="preRenderView" listener="#{homeController.preRender}" />
+	</f:metadata>
+	<ui:composition template="/layout/template.xhtml">
+		<ui:define name="title">#{strings['page.index.title']}</ui:define>
+		<ui:define name="content">
+			<h1>Login to Performance repository</h1>
+			<div style="width:500px">
+				<form method="POST" action="j_security_check" name="loginForm"> 
+					<fieldset>
+						<div class="control-group">
+							<h:outputLabel class="control-label">#{strings.userName}</h:outputLabel>
+							<div class="controls">
+								<input id="username" type="text" name="j_username"/>
+							</div>
+						</div>
+						<div class="control-group">
+							<h:outputLabel class="control-label">#{strings.password}</h:outputLabel>
+							<div class="controls">
+								<input id="password" type="password" name="j_password"/>
+							</div>
+						</div>
+					</fieldset>               
+	                <div style="text-align:right">  
+	                	<h:commandButton type="submit" value="Login" styleClass="btn btn-primary"/>
+	                </div>
+	              </form>
+              </div>			
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>
