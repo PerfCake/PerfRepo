@@ -104,6 +104,7 @@
 		</web-resource-collection>
 		<auth-constraint>
 			<description />
+			<role-name>perfrepouser</role-name>
 			<role-name>perfrepoadmin</role-name>
 		</auth-constraint>
 	</security-constraint>
