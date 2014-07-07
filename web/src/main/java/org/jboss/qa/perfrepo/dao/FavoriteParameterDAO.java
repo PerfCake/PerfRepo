@@ -43,5 +43,4 @@ public class FavoriteParameterDAO extends DAO<FavoriteParameter, Long> {
       return !result.isEmpty() ? result.get(0) : null;
    }
 
-
 }

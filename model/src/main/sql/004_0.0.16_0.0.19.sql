@@ -18,8 +18,6 @@ ALTER TABLE ONLY public.report
     ADD CONSTRAINT report_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.report
     ADD CONSTRAINT report_user_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
-ALTER TABLE ONLY public.report
-    ADD CONSTRAINT report_unique_name UNIQUE (name, user_id);
 CREATE INDEX report_user_id ON report(user_id);
 
 --
@@ -262,7 +260,6 @@ BEGIN
 
 for key in select distinct substring(name, 8, position(''.'' IN substring(name, 8)) -1) as code from user_property where name like ''report.%'' loop
 	execute ''select value from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.name'''''' into keyname;
-	/*execute ''select value from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.link'''''' into link;*/
 	execute ''select value from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.type'''''' into type;
 	execute ''select user_id from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.name'''''' into userId;
 	execute ''SELECT nextval(''''REPORT_SEQUENCE'''')'' into reportId;
@@ -283,3 +280,42 @@ return;
 END
 '
 LANGUAGE plpgsql VOLATILE;
+
+--
+-- Migrate script - favorite parameters from user_properties to favorite parameters entities
+--
+
+create or replace function migrate_favorite_parameters ()
+  RETURNS setof favorite_parameter AS
+  '
+  DECLARE
+      key text;
+      favparamrow favorite_parameter;
+      favparamIdResult integer;
+      value text;
+      label text;
+      parameterName text;
+      favparamId integer;
+      userId integer;
+      testId integer;
+  BEGIN
+
+  for key in select id from user_property where name like ''fav.param.%'' loop
+      execute ''select trim(both ''''|'''' from substring(value from ''''^[^\|]*\|'''')) from user_property where id = '' || key into testId;
+      execute ''select trim(both ''''|'''' from substring(value from ''''\|[^\|]*\|'''')) from user_property where id = '' || key into parameterName;
+      execute ''select trim(both ''''|'''' from substring(value from ''''\|[^\|]*$'''')) from user_property where id = '' || key into label;
+      execute ''select user_id from user_property where id = '' || key into userId;
+
+      execute ''SELECT nextval(''''FAVORITE_PARAMETER_SEQUENCE'''')'' into favparamId;
+
+      RAISE NOTICE ''User property with ID % migrated'', key;
+      execute ''insert into favorite_parameter (id, label, parameter_name, user_id, test_id) values ('' || favparamId || '', '' || quote_literal(label) || '' , '' || quote_literal(parameterName) || '' , '' || userId || '', '' || testId || '') returning id'' into favparamIdResult;
+      favparamrow := (favparamIdResult,userId,testId,label,parameterName);
+      return next favparamrow;
+  end loop;
+
+  return;
+  END
+  '
+LANGUAGE plpgsql VOLATILE;
+
