@@ -12,7 +12,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @javax.persistence.Entity
-@Table(name = "group")
+@Table(name = "\"group\"")
 public class Group {
 
 	@Id
