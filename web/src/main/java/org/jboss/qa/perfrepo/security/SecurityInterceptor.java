@@ -23,6 +23,7 @@ import javax.interceptor.InvocationContext;
 import org.jboss.qa.perfrepo.auth.AuthorizationService;
 import org.jboss.qa.perfrepo.model.Entity;
 import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+import org.jboss.qa.perfrepo.util.MessageUtils;
 
 @Secure
 @Interceptor
@@ -38,7 +39,7 @@ public class SecurityInterceptor {
 		for (Object param : params) {
 			if (param.getClass().getAnnotation(SecuredEntity.class) != null && param instanceof Entity<?>) {
 				if (!authorizationService.isUserAuthorizedFor(secureAnnotation.accessType(), (Entity<?>)param)) {
-					throw new SecurityException();
+					throw new SecurityException(MessageUtils.getMessage("securityException.101"));
 				}
 			}
 		}

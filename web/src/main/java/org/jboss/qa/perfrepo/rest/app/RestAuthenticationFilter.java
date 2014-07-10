@@ -11,6 +11,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 
+import org.jboss.qa.perfrepo.util.MessageUtils;
 import org.jboss.resteasy.util.Base64;
 
 /**
@@ -35,26 +36,23 @@ public class RestAuthenticationFilter implements Filter {
 	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-			ServletException {
-		try {
-			HttpServletRequest req = (HttpServletRequest) request;
-			//TODO: use some library to parse basic authentication header
-			String basicLogin = req.getHeader("Authorization");
-			String username = null;
-			String password = null;
-			if ((basicLogin != null) && (basicLogin.indexOf("Basic") != -1)) {
-				String loginPassword = new String(Base64.decode(basicLogin.substring("Basic ".length()).trim()));
-				username = loginPassword.substring(0, loginPassword.indexOf(":"));
-				password = loginPassword.substring(loginPassword.indexOf(":") + 1);
-				try {
-					req.login(username, password);
-					chain.doFilter(request, response);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
+		ServletException {
+		HttpServletRequest req = (HttpServletRequest) request;
+		String basicLogin = req.getHeader("Authorization");
+		String username = null;
+		String password = null;
+		if ((basicLogin != null) && (basicLogin.indexOf("Basic") != -1)) {
+			String loginPassword = new String(Base64.decode(basicLogin.substring("Basic ".length()).trim()));
+			username = loginPassword.substring(0, loginPassword.indexOf(":"));
+			password = loginPassword.substring(loginPassword.indexOf(":") + 1);
+			try {
+				req.login(username, password);
+				chain.doFilter(request, response);
+			} catch (Exception ex) {
+				throw new SecurityException(MessageUtils.getMessage("securityException.100"), ex);
 			}
-		} catch (Exception e) {
-			throw new SecurityException(e);
+		} else {
+			throw new SecurityException(MessageUtils.getMessage("securityException.100"));
 		}
 	}
 
