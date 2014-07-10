@@ -60,17 +60,5 @@ public class ValueDAO extends DAO<Value, Long> {
       query.setParameter("metricId", metricId);
       query.setParameter("execId", execId);
       return query.getResultList();
-
-      //      Map<Long, Value> cloneValues = new HashMap<Long, Value>();
-      //      for (Value result : results) {
-      //         Value uniqueValue = cloneValues.get(result.getId());
-      //         if (uniqueValue == null) {
-      //            uniqueValue = result.clone();
-      //            uniqueValue.setp
-      //            cloneValues.put(result.getId(), uniqueValue);
-      //         }
-      //         
-      //      }
-
    }
 }

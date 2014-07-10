@@ -15,7 +15,9 @@
  */
 package org.jboss.qa.perfrepo.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Named;
 
@@ -43,7 +45,10 @@ public class MetricDAO extends DAO<Metric, Long> {
     * @return List of {@link Metric}
     */
    public List<Metric> getMetricByNameAndGroup(String name, String groupId) {
-      return findByNamedQuery(Metric.FIND_BY_NAME_GROUPID, true, "groupId", groupId, "name", name);
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("groupId", groupId);
+      params.put("name", name);
+      return findByNamedQuery(Metric.FIND_BY_NAME_GROUPID, params, true);
    }
 
    /**
@@ -53,7 +58,9 @@ public class MetricDAO extends DAO<Metric, Long> {
     * @return List of {@link Metric}
     */
    public List<Metric> getMetricByGroup(String groupId) {
-      return findByNamedQuery(Metric.FIND_BY_GROUPID, true, "groupId", groupId);
+      Map<String, Object> params = new HashMap();
+      params.put("groupId", groupId);
+      return findByNamedQuery(Metric.FIND_BY_GROUPID, params, true);
    }
 
    /**
@@ -62,7 +69,9 @@ public class MetricDAO extends DAO<Metric, Long> {
     * @return All metrics under given test id.
     */
    public List<Metric> getMetricByTest(Long testId) {
-      return findByNamedQuery(Metric.FIND_BY_TESTID, true, "testId", testId);
+      Map<String, Object> params = new HashMap();
+      params.put("testId", testId);
+      return findByNamedQuery(Metric.FIND_BY_TESTID, params, true);
    }
 
 }

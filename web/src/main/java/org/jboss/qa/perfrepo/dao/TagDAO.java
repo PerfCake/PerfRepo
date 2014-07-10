@@ -48,7 +48,7 @@ public class TagDAO extends DAO<Tag, Long> {
 	   criteria.select(root);
 	   CriteriaBuilder cb = criteriaBuilder();
 	   criteria.where(cb.like(cb.lower(root.<String>get("name")), prefix.toLowerCase() + "%"));
-	   return findByCustomCriteria(criteria);
+	   return query(criteria).getResultList();
    }
 
 }

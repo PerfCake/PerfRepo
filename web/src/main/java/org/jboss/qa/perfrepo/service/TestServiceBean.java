@@ -210,7 +210,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public Test getTestByUID(String uid) {
-	   return testDAO.getByUID(uid);
+	   return testDAO.findByUid(uid);
    }
 
    @Override
@@ -295,10 +295,11 @@ public class TestServiceBean implements TestService {
 
    @Override
    public Test getFullTest(Long id) {
-      Test test = testDAO.findReadOnly(id);
+      Test test = testDAO.find(id);
       if (test == null) {
          return null;
       }
+      test = test.clone();
       // TODO: return by named query, with optimized fetching
       Collection<TestMetric> tms = test.getTestMetrics();
       if (tms != null) {
@@ -387,10 +388,11 @@ public class TestServiceBean implements TestService {
 
    @Override
    public Metric getFullMetric(Long id) {
-      Metric metric = metricDAO.findReadOnly(id);
+      Metric metric = metricDAO.find(id);
       if (metric == null) {
          return null;
       }
+      metric = metric.clone();
       // TODO: read by named query with join fetches
       Collection<TestMetric> testMetrics = metric.getTestMetrics();
       List<Test> tests = new ArrayList<Test>();
@@ -661,7 +663,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public List<Test> getAllSelectionTests() {
-      return testDAO.findAllReadOnly();
+      return testDAO.findAll();
    }
 
    @Override

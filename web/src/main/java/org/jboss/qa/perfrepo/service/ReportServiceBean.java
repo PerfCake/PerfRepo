@@ -112,7 +112,7 @@ public class ReportServiceBean implements ReportService {
             Test freshTest = testDAO.findByUid(chartRequest.getTestUid());
             if (freshTest == null) {
                // test uid supplied but doesn't exist - pick another test
-               response.setSelectionTests(testDAO.findAllReadOnly());
+               response.setSelectionTests(testDAO.findAll());
                continue;
             } else {
                freshTest = freshTest.clone();

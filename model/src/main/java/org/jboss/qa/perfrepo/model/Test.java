@@ -55,13 +55,16 @@ import org.jboss.qa.perfrepo.model.builder.TestBuilder;
 @Table(name = "test")
 @SecuredEntity(type=EntityType.TEST)
 @NamedQueries({
-      @NamedQuery(name = Test.FIND_TESTS_USING_METRIC, query = "SELECT test from Test test, TestMetric tm, Metric m where test = tm.test and tm.metric = m and m.id = :metric") })
+      @NamedQuery(name = Test.FIND_TESTS_USING_METRIC, query = "SELECT test from Test test, TestMetric tm, Metric m where test = tm.test and tm.metric = m and m.id = :metric"),
+      @NamedQuery(name = Test.FIND_BY_UID, query = "SELECT test FROM Test test WHERE test.uid = :uid")
+              })
 @XmlRootElement(name = "test")
 public class Test implements Entity<Test> {
 
    private static final long serialVersionUID = 2936849220074718535L;
 
    public static final String FIND_TESTS_USING_METRIC = "Test.findTestsUsingMetric";
+   public static final String FIND_BY_UID = "Test.findByUid";
 
    @Id
    @SequenceGenerator(name = "TEST_ID_GENERATOR", sequenceName = "TEST_SEQUENCE", allocationSize = 1)

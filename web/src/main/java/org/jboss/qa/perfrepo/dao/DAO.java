@@ -39,6 +39,7 @@ import org.jboss.qa.perfrepo.model.Entity;
  * Common ancestor for DAO objects
  * 
  * @author Pavel Drozd
+ * @author Jiri Holusa (jholusa@redhat.com)
  * 
  * @param <T> entity type
  * @param <PK> primary key type
@@ -70,57 +71,6 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
       return em.find(type, id);
    }
 
-   /**
-    * Find an entity and return an unmanaged read-only version - this will be unmanaged only on the
-    * root level, the collections will still be lazy-loadable ones.
-    * 
-    * @param id
-    * @return Entity that is detached
-    */
-   public T findReadOnly(final PK id) {
-      // TODO: maybe produce some hint for JPA layer
-      T obj = em.find(type, id);
-      return obj == null ? null : obj.clone();
-   }
-
-   public List<T> findAll() {
-      CriteriaQuery<T> criteria = createCriteria();
-      Root<T> root = criteria.from(type);
-      criteria.select(root);
-      return em.createQuery(criteria).getResultList();
-   }
-
-   public List<T> findAllReadOnly() {
-      CriteriaQuery<T> criteria = createCriteria();
-      Root<T> root = criteria.from(type);
-      criteria.select(root);
-      List<T> result1 = em.createQuery(criteria).getResultList();
-      if (result1.isEmpty()) {
-         return result1;
-      }
-      List<T> result2 = new ArrayList<T>(result1.size());
-      for (T item : result1) {
-         result2.add(item.clone());
-      }
-      return result2;
-   }
-
-   public List<T> findAllByProperty(final String propertyName, final Object value) {
-      CriteriaQuery<T> criteria = createCriteria();
-      Root<T> root = criteria.from(type);
-      criteria.select(root);
-      criteria.where(em.getCriteriaBuilder().equal(root.get(propertyName), value));
-      return em.createQuery(criteria).getResultList();
-   }
-
-   public <T1> List<T1> findByCustomCriteria(final CriteriaQuery<T1> criteria) {
-      return em.createQuery(criteria).getResultList();
-   }
-
-   public T findByCustomCriteriaSingle(final CriteriaQuery<T> criteria) {
-      return em.createQuery(criteria).getSingleResult();
-   }
-
    public T update(final T entity) {
       T stored = em.merge(entity);
       em.flush();
@@ -131,7 +81,6 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
       em.persist(entity);
       em.flush();
       return entity;
-
    }
 
    public void delete(final T entity) {
@@ -139,45 +88,47 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
       em.flush();
    }
 
-   protected <T1> TypedQuery<T1> query(CriteriaQuery<T1> criteria) {
-      return em.createQuery(criteria);
-   }
-
-   public List<T> findByQuery(String query, Map<String, Object> queryParams) {
-      TypedQuery<T> tq = em.createQuery(query, type);
-      for (Entry<String, Object> entry : queryParams.entrySet()) {
-         tq.setParameter(entry.getKey(), entry.getValue());
-      }
-      return tq.getResultList();
-   }
-
-   public List<T> findByNamedQuery(String queryName, Map<String, Object> queryParams) {
-      TypedQuery<T> tq = em.createNamedQuery(queryName, type);
-      for (Entry<String, Object> entry : queryParams.entrySet()) {
-         tq.setParameter(entry.getKey(), entry.getValue());
-      }
-      return tq.getResultList();
+   /**
+    * Finds all entities of current type
+    *
+    * @return all entities
+    */
+   public List<T> findAll() {
+      CriteriaQuery<T> criteria = createCriteria();
+      Root<T> root = criteria.from(type);
+      criteria.select(root);
+      return em.createQuery(criteria).getResultList();
    }
 
    /**
-    * 
+    * Finds all entities of current type with restriction to one property
+    *
+    * @param propertyName
+    * @param value
+    * @return all entities with selected property
+    */
+   public List<T> findAllByProperty(final String propertyName, final Object value) {
+      CriteriaQuery<T> criteria = createCriteria();
+      Root<T> root = criteria.from(type);
+      criteria.select(root);
+      criteria.where(em.getCriteriaBuilder().equal(root.get(propertyName), value));
+      return em.createQuery(criteria).getResultList();
+   }
+
+   /**
+    * Return result of named query
+    *
     * @param queryName
     * @param clones Return clones of root objects returned by this query.
-    * @param params
+    * @param queryParams
     * @return List of entities corresponding to query
     */
-   public List<T> findByNamedQuery(String queryName, boolean clones, Object... params) {
-      Map<String, Object> queryParams = new TreeMap<String, Object>();
-      if (params.length % 2 != 0) {
-         throw new IllegalArgumentException("even number of params needed");
-      }
-      for (int i = 0; i < params.length; i += 2) {
-         queryParams.put((String) params[i], params[i + 1]);
-      }
+   public List<T> findByNamedQuery(String queryName, Map<String, Object> queryParams, boolean clones) {
       TypedQuery<T> tq = em.createNamedQuery(queryName, type);
       for (Entry<String, Object> entry : queryParams.entrySet()) {
          tq.setParameter(entry.getKey(), entry.getValue());
       }
+
       List<T> result1 = tq.getResultList();
       if (!clones || result1.isEmpty()) {
          return result1;
@@ -190,12 +141,15 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
       }
    }
 
-   protected CriteriaQuery<T> createCriteria() {
-      return em.getCriteriaBuilder().createQuery(type);
-   }
-
-   protected CriteriaBuilder criteriaBuilder() {
-      return em.getCriteriaBuilder();
+   /**
+    * Alias for findByNamedQuery(queryName, queryParams, false)
+    *
+    * @param queryName
+    * @param queryParams
+    * @return List of entities corresponding to named query
+    */
+   public List<T> findByNamedQuery(String queryName, Map<String, Object> queryParams) {
+      return findByNamedQuery(queryName, queryParams, false);
    }
 
    public T findWithDepth(Object id, String... fetchRelations) {
@@ -212,13 +166,23 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
       return getSingleOrNoneResult(em.createQuery(criteriaQuery));
    }
 
-   private T getSingleOrNoneResult(TypedQuery<T> query) {
-      query.setMaxResults(1);
-      List<T> result = query.getResultList();
-      if (result.isEmpty()) {
-         return null;
-      }
-      return result.get(0);
+   /**
+    * Creates a typed query from criteria query
+    *
+    * @param criteria
+    * @param <T1>
+    * @return typed query
+    */
+   protected <T1> TypedQuery<T1> query(CriteriaQuery<T1> criteria) {
+      return em.createQuery(criteria);
+   }
+
+   protected CriteriaQuery<T> createCriteria() {
+      return em.getCriteriaBuilder().createQuery(type);
+   }
+
+   protected CriteriaBuilder criteriaBuilder() {
+      return em.getCriteriaBuilder();
    }
 
    protected Query createNamedQuery(String name) {
@@ -227,5 +191,14 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
 
    protected <QueryType> TypedQuery<QueryType> createNamedQuery(String name, Class<QueryType> clazz) {
       return em.createNamedQuery(name, clazz);
+   }
+
+   private T getSingleOrNoneResult(TypedQuery<T> query) {
+      query.setMaxResults(1);
+      List<T> result = query.getResultList();
+      if (result.isEmpty()) {
+         return null;
+      }
+      return result.get(0);
    }
 }

@@ -17,7 +17,9 @@ package org.jboss.qa.perfrepo.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Named;
 import javax.persistence.Query;
@@ -43,14 +45,14 @@ import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 @Named
 public class TestDAO extends DAO<Test, Long> {
 
-   private static final Logger log = Logger.getLogger(TestDAO.class);
-
-   private static final String FIND_TEST_ID = "FIND_TEST_ID";
-
    public Test findByUid(String uid) {
-      List<Test> tests = findAllByProperty("uid", uid);
-      if (tests.size() > 0)
-         return tests.get(0);
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("uid", uid);
+
+      List<Test> result = findByNamedQuery(Test.FIND_BY_UID, params);
+      if (result.size() > 0) {
+         return result.get(0);
+      }
       return null;
    }
 
@@ -72,26 +74,13 @@ public class TestDAO extends DAO<Test, Long> {
       if (predicates.size() > 0) {
          criteria.where(predicates.toArray(new Predicate[0]));
       }
-      return findByCustomCriteria(criteria);
-   }
-
-   public Test getByUID(String uid) {
-      CriteriaQuery<Test> criteria = createCriteria();
-      Root<Test> root = criteria.from(Test.class);
-      criteria.select(root);
-      CriteriaBuilder cb = criteriaBuilder();
-      criteria.where(cb.equal(root.get("uid"), uid));
-      List<Test> tests = findByCustomCriteria(criteria);
-      if (tests.size() > 0) {
-          return tests.get(0);
-      }
-      return null;
+      return query(criteria).getResultList();
    }
 
    public Test getTestByRelation(Entity<?> entity) {
       Query q = createNamedQuery(entity.getClass().getName() + ".getTest");
-	  q.setParameter("entity", entity);
-	  return ((Test) q.getSingleResult());
+	   q.setParameter("entity", entity);
+	   return ((Test) q.getSingleResult());
    }
 
    public List<Test> findByUIDPrefix(String prefix) {
@@ -100,6 +89,6 @@ public class TestDAO extends DAO<Test, Long> {
 	   criteria.select(root);
 	   CriteriaBuilder cb = criteriaBuilder();
 	   criteria.where(cb.like(root.<String>get("uid"), prefix + "%"));
-	   return findByCustomCriteria(criteria);
+	   return query(criteria).getResultList();
    }
 }
