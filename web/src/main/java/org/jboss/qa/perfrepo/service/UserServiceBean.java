@@ -24,6 +24,7 @@ import org.jboss.qa.perfrepo.dao.UserPropertyDAO;
 import org.jboss.qa.perfrepo.model.FavoriteParameter;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.UserProperty;
+import org.jboss.qa.perfrepo.model.user.Group;
 import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
 
@@ -172,7 +173,11 @@ public class UserServiceBean implements UserService {
    public boolean isLoggedUserInGroup(String guid) {
 	   User user = getLoggedUser();
 	   if (user != null && user.getGroups() != null) {
-		   return user.getGroups().contains(guid);
+         for(Group group: user.getGroups()) {
+            if(group.getName().equals(guid)) {
+               return true;
+            }
+         }
 	   }
 	   return false;
    }
