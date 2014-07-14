@@ -104,8 +104,7 @@
 		</web-resource-collection>
 		<auth-constraint>
 			<description />
-			<role-name>perfrepouser</role-name>
-			<role-name>perfrepoadmin</role-name>
+			<role-name>*</role-name>
 		</auth-constraint>
 	</security-constraint>
 	<security-constraint><!--Exclude css and images here -->
@@ -133,12 +132,8 @@
 			<form-error-page>/login.xhtml</form-error-page>
 		</form-login-config>
 	</login-config>
-	<!-- <security-role> -->
-	<!-- <description /> -->
-	<!-- <role-name>perfrepouser</role-name> -->
-	<!-- </security-role> -->
-	<!-- <security-role> -->
-	<!-- <description /> -->
-	<!-- <role-name>perfrepoadmin</role-name> -->
-	<!-- </security-role> -->
+	<security-role>
+		<description />
+		<role-name>*</role-name>
+	</security-role>	
 </web-app>

@@ -235,6 +235,36 @@ CREATE SEQUENCE report_permission_sequence
 ALTER TABLE public.report_permission_sequence OWNER TO perfrepo;
 
 --
+-- Name: user, add password column
+--
+
+ALTER TABLE public.user
+	ADD COLUMN password character varying(300);
+
+
+--
+-- User/Group data
+--
+
+update 'user' set password='lP17jm/z+qOOyDBlcMZVnQ==' where username='teamsoa';
+update 'user' set password='nPNCv/fN+SBVjmDHRrpBmg==' where username='teamjdg';
+update 'user' set password='hqOsT74gt4HDT5aMBb4lBQ==' where username='teamseam';
+update 'user' set password='TOVFEodr0QUICxsy9IzvMg==' where username='teambrms';
+update 'user' set password='/+aGXwHMbhcz5HDdSx9FRg==' where username='perfrepouser';
+
+insert into public.group (id, name) values (nextVal('group_sequence'), 'soa');
+insert into public.group (id, name) values (nextVal('group_sequence'), 'jdg');
+insert into public.group (id, name) values (nextVal('group_sequence'), 'seam');
+insert into public.group (id, name) values (nextVal('group_sequence'), 'brms');
+insert into public.group (id, name) values (nextVal('group_sequence'), 'perfrepouser');
+
+insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='teamsoa'), (select id from public.group where name='soa'));
+insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='teamjdg'), (select id from public.group where name='jdg'));
+insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='teamseam'), (select id from public.group where name='seam'));
+insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='teambrms'), (select id from public.group where name='brms'));
+insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='perfrepouser'), (select id from public.group where name='perfrepouser'));
+
+--
 -- Migrate script - reports from user_properties to report entities
 --
 
