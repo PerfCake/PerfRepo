@@ -252,16 +252,16 @@ update public.user set password='hqOsT74gt4HDT5aMBb4lBQ==' where username='teams
 update public.user set password='TOVFEodr0QUICxsy9IzvMg==' where username='teambrms';
 update public.user set password='/+aGXwHMbhcz5HDdSx9FRg==' where username='perfrepouser';
 
-insert into public.group (id, name) values (nextVal('group_sequence'), 'soa');
-insert into public.group (id, name) values (nextVal('group_sequence'), 'jdg');
-insert into public.group (id, name) values (nextVal('group_sequence'), 'seam');
-insert into public.group (id, name) values (nextVal('group_sequence'), 'brms');
+insert into public.group (id, name) values (nextVal('group_sequence'), 'teamsoa');
+insert into public.group (id, name) values (nextVal('group_sequence'), 'teamjdg');
+insert into public.group (id, name) values (nextVal('group_sequence'), 'teamseam');
+insert into public.group (id, name) values (nextVal('group_sequence'), 'teambrms');
 insert into public.group (id, name) values (nextVal('group_sequence'), 'perfrepouser');
 
-insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='teamsoa'), (select id from public.group where name='soa'));
-insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='teamjdg'), (select id from public.group where name='jdg'));
-insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='teamseam'), (select id from public.group where name='seam'));
-insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='teambrms'), (select id from public.group where name='brms'));
+insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='teamsoa'), (select id from public.group where name='teamsoa'));
+insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='teamjdg'), (select id from public.group where name='teamjdg'));
+insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='teamseam'), (select id from public.group where name='teamseam'));
+insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='teambrms'), (select id from public.group where name='teambrms'));
 insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='perfrepouser'), (select id from public.group where name='perfrepouser'));
 
 --
