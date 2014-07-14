@@ -246,11 +246,11 @@ ALTER TABLE public.user
 -- User/Group data
 --
 
-update 'user' set password='lP17jm/z+qOOyDBlcMZVnQ==' where username='teamsoa';
-update 'user' set password='nPNCv/fN+SBVjmDHRrpBmg==' where username='teamjdg';
-update 'user' set password='hqOsT74gt4HDT5aMBb4lBQ==' where username='teamseam';
-update 'user' set password='TOVFEodr0QUICxsy9IzvMg==' where username='teambrms';
-update 'user' set password='/+aGXwHMbhcz5HDdSx9FRg==' where username='perfrepouser';
+update public.user set password='lP17jm/z+qOOyDBlcMZVnQ==' where username='teamsoa';
+update public.user set password='nPNCv/fN+SBVjmDHRrpBmg==' where username='teamjdg';
+update public.user set password='hqOsT74gt4HDT5aMBb4lBQ==' where username='teamseam';
+update public.user set password='TOVFEodr0QUICxsy9IzvMg==' where username='teambrms';
+update public.user set password='/+aGXwHMbhcz5HDdSx9FRg==' where username='perfrepouser';
 
 insert into public.group (id, name) values (nextVal('group_sequence'), 'soa');
 insert into public.group (id, name) values (nextVal('group_sequence'), 'jdg');
