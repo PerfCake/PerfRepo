@@ -31,6 +31,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -327,7 +328,7 @@ public class PerfRepoClient {
 
    /**
     * Add attachment to an existing test execution.
-    * 
+    *
     * @param testExecutionId Test execution id
     * @param file File to upload
     * @param mimeType Mime type
@@ -336,11 +337,29 @@ public class PerfRepoClient {
     * @throws Exception
     */
    public Long uploadAttachment(Long testExecutionId, File file, String mimeType, String fileNameInRepo) throws Exception {
+      InputStreamEntity entity = new InputStreamEntity(new FileInputStream(file), file.length());
+      return uploadAttachment(testExecutionId, entity, mimeType, fileNameInRepo);
+   }
+
+   /**
+    * Add attachment to an existing test execution.
+    *
+    * @param testExecutionId Test execution id
+    * @param content File content to upload
+    * @param mimeType Mime type
+    * @param fileNameInRepo The name the attachment will have in the perf repo.
+    * @return Id of the new attachment
+    * @throws Exception
+    */
+   public Long uploadAttachment(Long testExecutionId, byte[] content, String mimeType, String fileNameInRepo) throws Exception {
+      return uploadAttachment(testExecutionId, new ByteArrayEntity(content), mimeType, fileNameInRepo);
+   }
+
+   private Long uploadAttachment(Long testExecutionId, AbstractHttpEntity entity, String mimeType, String fileNameInRepo) throws Exception {
       HttpPost post = new HttpPost(restUrl("testExecution/%s/addAttachment", testExecutionId));
       post.setHeader(HttpHeaders.CONTENT_TYPE, mimeType);
       post.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + this.basicAuthHash);
       post.setHeader("filename", fileNameInRepo);
-      InputStreamEntity entity = new InputStreamEntity(new FileInputStream(file), file.length());
       post.setEntity(entity);
       HttpResponse resp = httpClient.execute(post);
       if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED) {
