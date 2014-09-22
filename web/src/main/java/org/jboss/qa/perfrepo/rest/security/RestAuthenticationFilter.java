@@ -1,4 +1,4 @@
-package org.jboss.qa.perfrepo.rest.app;
+package org.jboss.qa.perfrepo.rest.security;
 
 import java.io.IOException;
 

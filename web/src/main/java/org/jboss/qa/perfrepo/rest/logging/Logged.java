@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.qa.perfrepo.rest;
+package org.jboss.qa.perfrepo.rest.logging;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

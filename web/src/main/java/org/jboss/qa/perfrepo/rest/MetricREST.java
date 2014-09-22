@@ -29,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.rest.logging.Logged;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 

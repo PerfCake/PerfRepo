@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.qa.perfrepo.rest.app;
+package org.jboss.qa.perfrepo.rest;
 
 import java.util.HashSet;
 import java.util.Set;

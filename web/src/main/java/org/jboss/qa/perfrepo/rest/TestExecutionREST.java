@@ -41,6 +41,7 @@ import javax.ws.rs.core.UriInfo;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.model.Value;
+import org.jboss.qa.perfrepo.rest.logging.Logged;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 
