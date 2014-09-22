@@ -31,7 +31,7 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
  */
 @Named
 @ViewScoped
-public class ParameterShowController extends ControllerBase {
+public class ParameterShowController extends BaseController {
 
    private static final long serialVersionUID = 370202307562230671L;
    private static final Logger log = Logger.getLogger(ParameterShowController.class);

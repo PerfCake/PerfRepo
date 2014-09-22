@@ -27,7 +27,7 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
  */
 @Named
 @ViewScoped
-public class HomeController extends ControllerBase {
+public class HomeController extends BaseController {
 
    /**
     * called on preRenderView

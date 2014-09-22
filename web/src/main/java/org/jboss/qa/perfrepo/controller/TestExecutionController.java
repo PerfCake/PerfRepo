@@ -57,7 +57,7 @@ import org.richfaces.ui.output.chart.NumberChartDataModel;
  */
 @Named
 @ViewScoped
-public class TestExecutionController extends ControllerBase {
+public class TestExecutionController extends BaseController {
 
    private static final long serialVersionUID = 3012075520261954430L;
    private static final Logger log = Logger.getLogger(TestExecutionController.class);

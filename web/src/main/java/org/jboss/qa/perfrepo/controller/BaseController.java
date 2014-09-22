@@ -39,7 +39,7 @@ import org.richfaces.model.SortOrder;
  * @author Michal Linhard (mlinhard@redhat.com)
  * 
  */
-public class ControllerBase implements Serializable {
+public class BaseController implements Serializable {
 
    private static final long serialVersionUID = -1616863465068425778L;
 

@@ -15,7 +15,6 @@
  */
 package org.jboss.qa.perfrepo.controller.reports;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.keyvalue.MultiKey;
 import org.apache.log4j.Logger;
-import org.jboss.qa.perfrepo.controller.ControllerBase;
+import org.jboss.qa.perfrepo.controller.BaseController;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
@@ -48,7 +47,7 @@ import com.google.common.collect.Lists;
  */
 @Named
 @ViewScoped
-public class ParametrizedTestExecutionController extends ControllerBase {
+public class ParametrizedTestExecutionController extends BaseController {
 
 	private static final long serialVersionUID = 3012075520261954430L;
 	

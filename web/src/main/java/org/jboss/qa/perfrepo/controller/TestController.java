@@ -40,7 +40,7 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
  */
 @Named
 @ViewScoped
-public class TestController extends ControllerBase {
+public class TestController extends BaseController {
 
    private static final long serialVersionUID = 370202307562230671L;
    private static final Logger log = Logger.getLogger(TestController.class);

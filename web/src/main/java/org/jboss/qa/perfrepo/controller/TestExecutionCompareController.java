@@ -38,7 +38,7 @@ import org.richfaces.model.SortOrder;
  */
 @Named
 @RequestScoped
-public class TestExecutionCompareController extends ControllerBase {
+public class TestExecutionCompareController extends BaseController {
 
    private static final long serialVersionUID = 1L;
 

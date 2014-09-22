@@ -16,7 +16,7 @@ import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
 
 import org.apache.log4j.Logger;
-import org.jboss.qa.perfrepo.controller.ControllerBase;
+import org.jboss.qa.perfrepo.controller.BaseController;
 
 /**
  * Exception handler.
@@ -52,10 +52,10 @@ public class PerfRepoExceptionHandler extends ExceptionHandlerWrapper {
             log.error("Unhandled exception", e);
             Map<String, Object> sm = ec.getSessionMap();
             @SuppressWarnings("unchecked")
-            List<FacesMessage> sessionMsgs = (List<FacesMessage>) sm.get(ControllerBase.SESSION_MESSAGES_KEY);
+            List<FacesMessage> sessionMsgs = (List<FacesMessage>) sm.get(BaseController.SESSION_MESSAGES_KEY);
             if (sessionMsgs == null) {
                sessionMsgs = new ArrayList<FacesMessage>();
-               sm.put(ControllerBase.SESSION_MESSAGES_KEY, sessionMsgs);
+               sm.put(BaseController.SESSION_MESSAGES_KEY, sessionMsgs);
             }
             sessionMsgs.add(new FacesMessage(FacesMessage.SEVERITY_FATAL, e.getMessage(), e.getMessage()));
             try {

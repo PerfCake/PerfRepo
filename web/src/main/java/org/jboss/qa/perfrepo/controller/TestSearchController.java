@@ -36,7 +36,7 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
  */
 @Named
 @ViewScoped
-public class TestSearchController extends ControllerBase {
+public class TestSearchController extends BaseController {
 
    private static final long serialVersionUID = 1L;
 

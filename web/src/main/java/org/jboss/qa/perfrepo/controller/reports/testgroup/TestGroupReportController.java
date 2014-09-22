@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jboss.qa.perfrepo.controller.ControllerBase;
+import org.jboss.qa.perfrepo.controller.BaseController;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.report.Report;
@@ -37,7 +37,7 @@ import com.google.common.collect.Maps;
 
 @Named
 @ViewScoped
-public class TestGroupReportController extends ControllerBase {
+public class TestGroupReportController extends BaseController {
 
 	/**
 	 * Serial Version UID

@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
-import org.jboss.qa.perfrepo.controller.ControllerBase;
+import org.jboss.qa.perfrepo.controller.BaseController;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
@@ -45,7 +45,7 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
  */
 @Named
 @ViewScoped
-public class CompareParametersController extends ControllerBase {
+public class CompareParametersController extends BaseController {
 
    private static Logger log = Logger.getLogger(CompareParametersController.class);
 

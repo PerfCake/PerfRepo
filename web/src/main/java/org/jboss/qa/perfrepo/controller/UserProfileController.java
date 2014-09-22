@@ -16,7 +16,7 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
  */
 @Named
 @ViewScoped
-public class UserProfileController extends ControllerBase {
+public class UserProfileController extends BaseController {
 
    @Inject
    private UserService userService;

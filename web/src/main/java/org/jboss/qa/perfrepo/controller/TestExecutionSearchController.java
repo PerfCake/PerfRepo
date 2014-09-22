@@ -16,9 +16,7 @@
 package org.jboss.qa.perfrepo.controller;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -47,7 +45,7 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
  */
 @Named
 @ViewScoped
-public class TestExecutionSearchController extends ControllerBase {
+public class TestExecutionSearchController extends BaseController {
 
    private static final long serialVersionUID = 1L;
 

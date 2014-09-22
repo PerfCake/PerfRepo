@@ -17,9 +17,7 @@ package org.jboss.qa.perfrepo.controller;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,7 +26,6 @@ import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.service.ReportService;
 import org.jboss.qa.perfrepo.service.ServiceException;
-import org.jboss.qa.perfrepo.session.UserSession;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 /**
@@ -40,7 +37,7 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
  */
 @Named("reportList")
 @ViewScoped
-public class ReportListController extends ControllerBase {
+public class ReportListController extends BaseController {
 
    private static final Logger log = Logger.getLogger(ReportListController.class);
 

@@ -17,7 +17,6 @@ package org.jboss.qa.perfrepo.controller.reports.metric;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,7 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
-import org.jboss.qa.perfrepo.controller.ControllerBase;
+import org.jboss.qa.perfrepo.controller.BaseController;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
@@ -67,7 +66,7 @@ import org.richfaces.ui.output.chart.PlotClickEvent;
  */
 @Named("metricReportBean")
 @ViewScoped
-public class MetricReportController extends ControllerBase {
+public class MetricReportController extends BaseController {
    private static final long serialVersionUID = 1L;
 
    private static final Logger log = Logger.getLogger(MetricReportController.class);
