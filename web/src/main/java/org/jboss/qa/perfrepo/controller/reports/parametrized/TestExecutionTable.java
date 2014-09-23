@@ -1,4 +1,4 @@
-package org.jboss.qa.perfrepo.util;
+package org.jboss.qa.perfrepo.controller.reports.parametrized;
 
 import java.util.ArrayList;
 import java.util.Collections;

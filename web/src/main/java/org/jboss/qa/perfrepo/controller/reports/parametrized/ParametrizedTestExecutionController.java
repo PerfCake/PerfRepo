@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.qa.perfrepo.controller.reports;
+package org.jboss.qa.perfrepo.controller.reports.parametrized;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +34,6 @@ import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.service.TestService;
-import org.jboss.qa.perfrepo.util.TestExecutionTable;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 import com.google.common.collect.Lists;
