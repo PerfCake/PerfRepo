@@ -16,16 +16,17 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.controller.BaseController;
+import org.jboss.qa.perfrepo.controller.reports.testgroup.TestGroupChartBean.ChartData;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.report.ReportProperty;
 import org.jboss.qa.perfrepo.model.user.User;
-import org.jboss.qa.perfrepo.controller.reports.testgroup.TestGroupChartBean.ChartData;
 import org.jboss.qa.perfrepo.service.ReportService;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.session.UserSession;
+import org.jboss.qa.perfrepo.util.ReportUtils;
 import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.util.ValueComparator;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
@@ -235,14 +236,14 @@ public class TestGroupReportController extends BaseController {
 		for (String test : tests) {
 			testsProperty += test + ", ";
 		}
-		Util.createOrUpdateReportPropertyInMap(properties, "tests", testsProperty.substring(0, testsProperty.length()-2), report);
+		ReportUtils.createOrUpdateReportPropertyInMap(properties, "tests", testsProperty.substring(0, testsProperty.length()-2), report);
 
 		//tags
 		int i =1;
 		for (String tag : tags) {
-         Util.createOrUpdateReportPropertyInMap(properties, "tag." + i, tag, report);
+			ReportUtils.createOrUpdateReportPropertyInMap(properties, "tag." + i, tag, report);
 			if (tagAlias.get(tag) != null) {
-            Util.createOrUpdateReportPropertyInMap(properties, "tag." + i + ".alias", tagAlias.get(tag), report);
+				ReportUtils.createOrUpdateReportPropertyInMap(properties, "tag." + i + ".alias", tagAlias.get(tag), report);
 			}
 			i++;
 		}
@@ -250,9 +251,9 @@ public class TestGroupReportController extends BaseController {
 		//comparison
 		i = 1;
 		for (String key : comparison.keySet()) {
-         Util.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".1", comparison.get(key).get(0), report);
-         Util.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".2", comparison.get(key).get(1), report);
-         Util.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".alias", key, report);
+			ReportUtils.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".1", comparison.get(key).get(0), report);
+			ReportUtils.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".2", comparison.get(key).get(1), report);
+			ReportUtils.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".alias", key, report);
 			i++;
 		}
 
@@ -261,7 +262,7 @@ public class TestGroupReportController extends BaseController {
 			metricsProperty += metric + ", ";
 		}
 
-      Util.createOrUpdateReportPropertyInMap(properties, "metrics", metricsProperty.substring(0, metricsProperty.length()-2), report);
+		ReportUtils.createOrUpdateReportPropertyInMap(properties, "metrics", metricsProperty.substring(0, metricsProperty.length()-2), report);
       report.setProperties(properties);
       reportService.updateReport(report);
 

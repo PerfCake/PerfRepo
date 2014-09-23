@@ -30,6 +30,7 @@ import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.BaseController;
+import org.jboss.qa.perfrepo.model.FavoriteParameter;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
@@ -50,7 +51,8 @@ import org.jboss.qa.perfrepo.service.ReportService;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.session.UserSession;
-import org.jboss.qa.perfrepo.model.FavoriteParameter;
+import org.jboss.qa.perfrepo.util.ReportUtils;
+import org.jboss.qa.perfrepo.util.TagUtils;
 import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 import org.richfaces.ui.output.chart.ChartDataModel.ChartType;
@@ -182,23 +184,23 @@ public class MetricReportController extends BaseController {
       for (int i = 0; i < chartSpecs.size(); i++) {
          ChartSpec chart = chartSpecs.get(i);
          String chartPrefix = CHART_KEY_PREFIX + i;
-         Util.createOrUpdateReportPropertyInMap(reportProperties, chartPrefix + ".name", chart.getChartName(), report);
-         Util.createOrUpdateReportPropertyInMap(reportProperties, chartPrefix + ".test", Long.toString(chart.getSelectedTestId()), report);
+         ReportUtils.createOrUpdateReportPropertyInMap(reportProperties, chartPrefix + ".name", chart.getChartName(), report);
+         ReportUtils.createOrUpdateReportPropertyInMap(reportProperties, chartPrefix + ".test", Long.toString(chart.getSelectedTestId()), report);
 
          for (int j = 0; j < chart.chartSeries.size(); j++) {
             SeriesSpec series = chart.chartSeries.get(j);
             String seriesPrefix = chartPrefix + ".series" + j;
-            Util.createOrUpdateReportPropertyInMap(reportProperties, seriesPrefix + ".name", series.getName(), report);
-            Util.createOrUpdateReportPropertyInMap(reportProperties, seriesPrefix + ".metric", Long.toString(series.getSelectedMetricId()), report);
-            Util.createOrUpdateReportPropertyInMap(reportProperties, seriesPrefix + ".tags", series.getSelectedTags(), report);
+            ReportUtils.createOrUpdateReportPropertyInMap(reportProperties, seriesPrefix + ".name", series.getName(), report);
+            ReportUtils.createOrUpdateReportPropertyInMap(reportProperties, seriesPrefix + ".metric", Long.toString(series.getSelectedMetricId()), report);
+            ReportUtils.createOrUpdateReportPropertyInMap(reportProperties, seriesPrefix + ".tags", series.getSelectedTags(), report);
          }
 
          for (int j = 0; j < chart.chartBaselines.size(); j++) {
             BaselineSpec baseline = chart.chartBaselines.get(j);
             String baselinePrefix = chartPrefix + ".baseline" + j;
-            Util.createOrUpdateReportPropertyInMap(reportProperties, baselinePrefix + ".name", baseline.getName(), report);
-            Util.createOrUpdateReportPropertyInMap(reportProperties, baselinePrefix + ".metric", Long.toString(baseline.getSelectedMetricId()), report);
-            Util.createOrUpdateReportPropertyInMap(reportProperties, baselinePrefix + ".execId", Long.toString(baseline.getExecId()), report);
+            ReportUtils.createOrUpdateReportPropertyInMap(reportProperties, baselinePrefix + ".name", baseline.getName(), report);
+            ReportUtils.createOrUpdateReportPropertyInMap(reportProperties, baselinePrefix + ".metric", Long.toString(baseline.getSelectedMetricId()), report);
+            ReportUtils.createOrUpdateReportPropertyInMap(reportProperties, baselinePrefix + ".execId", Long.toString(baseline.getExecId()), report);
          }
       }
 
@@ -801,7 +803,7 @@ public class MetricReportController extends BaseController {
 
       public void setSelectedTags(String selectedTags) {
          this.selectedTags = selectedTags;
-         this.request.setTags(Util.parseTags(selectedTags));
+         this.request.setTags(TagUtils.parseTags(selectedTags));
       }
 
       public String getMetricName() {

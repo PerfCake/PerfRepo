@@ -58,7 +58,7 @@ import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.model.util.EntityUtil.UpdateSet;
-import org.jboss.qa.perfrepo.security.Secure;
+import org.jboss.qa.perfrepo.security.Secured;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -324,7 +324,7 @@ public class TestServiceBean implements TestService {
       return rcopy;
    }
 
-   @Secure
+   @Secured
    @Override
    public Test updateTest(Test test) {
       return testDAO.update(test);

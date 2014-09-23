@@ -28,7 +28,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.reports.charts.RfChartSeries;
-import org.jboss.qa.perfrepo.model.*;
+import org.jboss.qa.perfrepo.model.FavoriteParameter;
+import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.TestExecution;
+import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
+import org.jboss.qa.perfrepo.model.TestExecutionParameter;
+import org.jboss.qa.perfrepo.model.TestExecutionTag;
+import org.jboss.qa.perfrepo.model.Value;
+import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
 import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
@@ -40,6 +48,7 @@ import org.jboss.qa.perfrepo.session.UserSession;
 import org.jboss.qa.perfrepo.util.MultiValue;
 import org.jboss.qa.perfrepo.util.MultiValue.ParamInfo;
 import org.jboss.qa.perfrepo.util.MultiValue.ValueInfo;
+import org.jboss.qa.perfrepo.util.TagUtils;
 import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 import org.richfaces.event.FileUploadEvent;
@@ -160,14 +169,14 @@ public class TestExecutionController extends BaseController {
    }
 
    public String getRawTags() {
-      return Util.rawTags(editedTestExecution == null ? null : editedTestExecution.getSortedTags());
+      return TagUtils.rawTags(editedTestExecution == null ? null : editedTestExecution.getSortedTags());
    }
 
    public void setRawTags(String rawTags) {
       if (editedTestExecution == null) {
          return;
       }
-      List<String> tags = Util.parseTags(rawTags);
+      List<String> tags = TagUtils.parseTags(rawTags);
       TestExecutionBuilder b = TestExecution.builder();
       for (String tag : tags) {
          b.tag(tag);

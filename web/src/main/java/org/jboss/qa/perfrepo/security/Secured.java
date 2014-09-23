@@ -30,7 +30,7 @@ import org.jboss.qa.perfrepo.model.auth.AccessType;
 @Retention(RUNTIME)
 @Target({METHOD, TYPE})
 @InterceptorBinding
-public @interface Secure {
+public @interface Secured {
 
     AccessType accessType() default AccessType.W;
 

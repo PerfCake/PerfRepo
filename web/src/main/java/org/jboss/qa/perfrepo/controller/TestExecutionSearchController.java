@@ -32,6 +32,7 @@ import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.SearchCriteriaSession;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
+import org.jboss.qa.perfrepo.util.TagUtils;
 import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
@@ -283,14 +284,14 @@ public class TestExecutionSearchController extends BaseController {
    }
 
    public void addTagsToFoundTestExecutions() {
-      List<String> tags = Util.parseTags(massOperationAddTags != null ? massOperationAddTags.toLowerCase() : "");
+      List<String> tags = TagUtils.parseTags(massOperationAddTags != null ? massOperationAddTags.toLowerCase() : "");
 
       testService.addTagsToTestExecutions(tags, result);
       search();
    }
 
    public void deleteTagsFromFoundTestExecutions() {
-      List<String> tags = Util.parseTags(massOperationDeleteTags !=null ? massOperationDeleteTags.toLowerCase() : "");
+      List<String> tags = TagUtils.parseTags(massOperationDeleteTags !=null ? massOperationDeleteTags.toLowerCase() : "");
 
       testService.deleteTagsFromTestExecutions(tags, result);
       search();

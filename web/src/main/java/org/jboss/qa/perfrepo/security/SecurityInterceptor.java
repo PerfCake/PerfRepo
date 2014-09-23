@@ -25,7 +25,7 @@ import org.jboss.qa.perfrepo.model.Entity;
 import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
 import org.jboss.qa.perfrepo.util.MessageUtils;
 
-@Secure
+@Secured
 @Interceptor
 public class SecurityInterceptor {
 
@@ -35,7 +35,7 @@ public class SecurityInterceptor {
 	@AroundInvoke
 	public Object invoke(InvocationContext ctx) throws Exception {
 		Object[] params = ctx.getParameters();
-		Secure secureAnnotation = ctx.getMethod().getAnnotation(Secure.class);
+		Secured secureAnnotation = ctx.getMethod().getAnnotation(Secured.class);
 		for (Object param : params) {
 			if (param.getClass().getAnnotation(SecuredEntity.class) != null && param instanceof Entity<?>) {
 				if (!authorizationService.isUserAuthorizedFor(secureAnnotation.accessType(), (Entity<?>)param)) {

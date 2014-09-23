@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +44,7 @@ import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
-import org.jboss.qa.perfrepo.util.Util;
+import org.jboss.qa.perfrepo.util.TagUtils;
 
 /**
  * DAO for {@link TestExecution}
@@ -145,8 +144,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, TestExecutionParameterDAO paramDAO) {
       CriteriaQuery<TestExecution> criteria = createCriteria();
       CriteriaBuilder cb = criteriaBuilder();
-      List<String> tags = Util.parseTags(search.getTags() !=null ? search.getTags().toLowerCase() : "");
-      List tmpTags = new ArrayList<String>();
+      List<String> tags = TagUtils.parseTags(search.getTags() !=null ? search.getTags().toLowerCase() : "");
+      List<String> tmpTags = new ArrayList<String>();
       List<String> excludedTags = new ArrayList<String>();
 
       //tags beginning with "-" put into separate list and without into different one, not using

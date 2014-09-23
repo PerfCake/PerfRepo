@@ -16,7 +16,7 @@ import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.builder.TestBuilder;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
-import org.jboss.qa.perfrepo.security.Secure;
+import org.jboss.qa.perfrepo.security.Secured;
 import org.jboss.qa.perfrepo.service.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.TestServiceBean;
@@ -47,7 +47,7 @@ public class TestServiceBeanTest {
       WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
       war.addPackage(DAO.class.getPackage());
       war.addPackage(TestService.class.getPackage());
-      war.addPackage(Secure.class.getPackage());
+      war.addPackage(Secured.class.getPackage());
       war.addPackage(TEComparatorSession.class.getPackage());
       war.addPackage(Test.class.getPackage());
       war.addPackage(TestBuilder.class.getPackage());
