@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.jboss.qa.perfrepo.model.auth.EntityType;
 import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
-import org.jboss.qa.perfrepo.model.util.EntityUtil;
+import org.jboss.qa.perfrepo.model.util.EntityUtils;
 
 /**
  * 
@@ -158,7 +158,7 @@ public class Value implements Entity<Value> {
 
    public Value cloneWithParameters() {
       Value cloneValue = clone();
-      cloneValue.setParameters(EntityUtil.clone(cloneValue.getParameters()));
+      cloneValue.setParameters(EntityUtils.clone(cloneValue.getParameters()));
       if (cloneValue.getParameters() != null) {
          for (ValueParameter pClone : cloneValue.getParameters()) {
             pClone.setValue(cloneValue);

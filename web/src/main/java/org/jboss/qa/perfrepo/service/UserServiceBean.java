@@ -26,7 +26,7 @@ import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.model.user.Group;
 import org.jboss.qa.perfrepo.model.user.User;
-import org.jboss.qa.perfrepo.model.util.EntityUtil;
+import org.jboss.qa.perfrepo.model.util.EntityUtils;
 import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 
 @Named
@@ -133,8 +133,8 @@ public class UserServiceBean implements UserService {
       Collection<FavoriteParameter> favoriteParameters = user.getFavoriteParameters();
 
       User clonedUser = user.clone();
-      clonedUser.setProperties(EntityUtil.clone(properties));
-      clonedUser.setFavoriteParameters(EntityUtil.clone(favoriteParameters));
+      clonedUser.setProperties(EntityUtils.clone(properties));
+      clonedUser.setFavoriteParameters(EntityUtils.clone(favoriteParameters));
 
       return user;
    }
@@ -194,8 +194,8 @@ public class UserServiceBean implements UserService {
       Collection<FavoriteParameter> favoriteParameters = user.getFavoriteParameters();
 
       User clonedUser = user.clone();
-      clonedUser.setProperties(EntityUtil.clone(properties));
-      clonedUser.setFavoriteParameters(EntityUtil.clone(favoriteParameters));
+      clonedUser.setProperties(EntityUtils.clone(properties));
+      clonedUser.setFavoriteParameters(EntityUtils.clone(favoriteParameters));
 
       return user;
    }

@@ -15,7 +15,7 @@ import org.jboss.qa.perfrepo.model.Entity;
  * @author Michal Linhard (mlinhard@redhat.com)
  * 
  */
-public class EntityUtil {
+public class EntityUtils {
 
    public static class UpdateSet<T extends Entity<T>> {
       public Collection<T> toRemove = new ArrayList<T>();

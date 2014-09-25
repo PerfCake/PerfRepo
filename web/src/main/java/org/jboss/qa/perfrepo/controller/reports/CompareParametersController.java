@@ -31,7 +31,7 @@ import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
-import org.jboss.qa.perfrepo.model.util.EntityUtil;
+import org.jboss.qa.perfrepo.model.util.EntityUtils;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
 import org.jboss.qa.perfrepo.util.ViewUtils;
@@ -85,7 +85,7 @@ public class CompareParametersController extends BaseController {
 
    public void removeFromComparison(Long execId) {
       teComparator.remove(execId);
-      TestExecution execToRemove = EntityUtil.findById(testExecutions, execId);
+      TestExecution execToRemove = EntityUtils.findById(testExecutions, execId);
       if (execToRemove != null && testExecutions != null) {
          testExecutions.remove(execToRemove);
       }
@@ -115,7 +115,7 @@ public class CompareParametersController extends BaseController {
       reloadSessionMessages();
       if (testExecutions != null) {
          Set<Long> idsInComparator = new HashSet<Long>(teComparator.getExecIds());
-         Set<Long> idsDisplayed = new HashSet<Long>(EntityUtil.extractIds(testExecutions));
+         Set<Long> idsDisplayed = new HashSet<Long>(EntityUtils.extractIds(testExecutions));
          if (!idsInComparator.equals(idsDisplayed)) {
             testExecutions = null;
             test = null;

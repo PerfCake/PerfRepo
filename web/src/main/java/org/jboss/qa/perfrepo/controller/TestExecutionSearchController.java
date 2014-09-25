@@ -25,7 +25,7 @@ import javax.inject.Named;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
-import org.jboss.qa.perfrepo.model.util.EntityUtil;
+import org.jboss.qa.perfrepo.model.util.EntityUtils;
 import org.jboss.qa.perfrepo.model.util.ExecutionSort;
 import org.jboss.qa.perfrepo.model.util.ExecutionSort.ParamExecutionSort;
 import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
@@ -238,7 +238,7 @@ public class TestExecutionSearchController extends BaseController {
    }
 
    public void addAllCurrentResultsToComparison() {
-      List<Long> ids = EntityUtil.extractIds(result);
+      List<Long> ids = EntityUtils.extractIds(result);
       if (ids != null) {
          for (Long id : ids) {
             comparatorSession.add(id);

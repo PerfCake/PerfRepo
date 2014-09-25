@@ -35,7 +35,7 @@ import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
-import org.jboss.qa.perfrepo.model.util.EntityUtil;
+import org.jboss.qa.perfrepo.model.util.EntityUtils;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
 import org.jboss.qa.perfrepo.util.MultiValue;
@@ -102,7 +102,7 @@ public class CompareExecutionsController extends BaseController {
    }
 
    public void setAsBaseline(Long execId) {
-      TestExecution baselineExec1 = EntityUtil.findById(testExecutions, execId);
+      TestExecution baselineExec1 = EntityUtils.findById(testExecutions, execId);
       if (baselineExec1 == null) {
          throw new IllegalStateException("Can't find execution " + execId);
       }
@@ -111,7 +111,7 @@ public class CompareExecutionsController extends BaseController {
 
    public void removeFromComparison(Long execId) {
       teComparator.remove(execId);
-      TestExecution execToRemove = EntityUtil.findById(testExecutions, execId);
+      TestExecution execToRemove = EntityUtils.findById(testExecutions, execId);
       if (baselineExecution == execToRemove) {
          baselineExecution = null;
       }
@@ -258,7 +258,7 @@ public class CompareExecutionsController extends BaseController {
       reloadSessionMessages();
       if (testExecutions != null) {
          Set<Long> idsInComparator = new HashSet<Long>(teComparator.getExecIds());
-         Set<Long> idsDisplayed = new HashSet<Long>(EntityUtil.extractIds(testExecutions));
+         Set<Long> idsDisplayed = new HashSet<Long>(EntityUtils.extractIds(testExecutions));
          if (!idsInComparator.equals(idsDisplayed)) {
             testExecutions = null;
             test = null;

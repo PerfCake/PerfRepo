@@ -56,8 +56,8 @@ import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
-import org.jboss.qa.perfrepo.model.util.EntityUtil;
-import org.jboss.qa.perfrepo.model.util.EntityUtil.UpdateSet;
+import org.jboss.qa.perfrepo.model.util.EntityUtils;
+import org.jboss.qa.perfrepo.model.util.EntityUtils.UpdateSet;
 import org.jboss.qa.perfrepo.security.Secured;
 
 import com.google.common.base.Predicate;
@@ -411,7 +411,7 @@ public class TestServiceBean implements TestService {
    @Override
    public List<Metric> getAvailableMetrics(Test test) {
       Test t = testDAO.find(test.getId());
-      return EntityUtil.removeAllById(metricDAO.getMetricByGroup(t.getGroupId()), t.getMetrics());
+      return EntityUtils.removeAllById(metricDAO.getMetricByGroup(t.getGroupId()), t.getMetrics());
    }
 
    @Override
@@ -626,7 +626,7 @@ public class TestServiceBean implements TestService {
       freshValueClone.setMetric(freshValue.getMetric().clone());
       freshValueClone.getMetric().setTestMetrics(null);
       freshValueClone.getMetric().setValues(null);
-      UpdateSet<ValueParameter> updateSet = EntityUtil.updateSet(oldValue.getParameters(), value.getParameters());
+      UpdateSet<ValueParameter> updateSet = EntityUtils.updateSet(oldValue.getParameters(), value.getParameters());
       if (!updateSet.removed.isEmpty()) {
          throw serviceException(ServiceException.Codes.STALE_COLLECTION, "Collection of value parameters contains stale ids: %s", updateSet.removed);
       }

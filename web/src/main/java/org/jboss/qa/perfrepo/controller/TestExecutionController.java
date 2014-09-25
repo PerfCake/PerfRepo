@@ -39,7 +39,7 @@ import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
 import org.jboss.qa.perfrepo.model.user.User;
-import org.jboss.qa.perfrepo.model.util.EntityUtil;
+import org.jboss.qa.perfrepo.model.util.EntityUtils;
 import org.jboss.qa.perfrepo.rest.TestExecutionREST;
 import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
@@ -369,7 +369,7 @@ public class TestExecutionController extends BaseController {
       if (param != null) {
          try {
             testService.deleteParameter(param);
-            EntityUtil.removeById(testExecution.getParameters(), param.getId());
+            EntityUtils.removeById(testExecution.getParameters(), param.getId());
          } catch (Exception e) {
             throw new RuntimeException(e);
          }
@@ -383,7 +383,7 @@ public class TestExecutionController extends BaseController {
          editedParameter.setTestExecution(idHolder);
          try {
             TestExecutionParameter freshParam = testService.updateParameter(editedParameter);
-            EntityUtil.removeById(testExecution.getParameters(), freshParam.getId());
+            EntityUtils.removeById(testExecution.getParameters(), freshParam.getId());
             testExecution.getParameters().add(freshParam);
             editedParameter = null;
          } catch (ServiceException e) {
@@ -451,7 +451,7 @@ public class TestExecutionController extends BaseController {
          try {
             Value freshValue = null;
             if (editedValue.getId() == null) {
-               Metric selectedMetric = EntityUtil.findById(test.getMetrics(), editedValueMetricSelectionId);
+               Metric selectedMetric = EntityUtils.findById(test.getMetrics(), editedValueMetricSelectionId);
                if (selectedMetric == null) {
                   addMessage(ERROR, "page.exec.errorMetricMandatory");
                   return;
@@ -460,7 +460,7 @@ public class TestExecutionController extends BaseController {
                freshValue = testService.addValue(editedValue);
             } else {
                freshValue = testService.updateValue(editedValue);
-               EntityUtil.removeById(testExecution.getValues(), freshValue.getId());
+               EntityUtils.removeById(testExecution.getValues(), freshValue.getId());
             }
             testExecution.getValues().add(freshValue);
             editedValue = null;
@@ -487,7 +487,7 @@ public class TestExecutionController extends BaseController {
          value.setTestExecution(idHolder);
          try {
             testService.deleteValue(value);
-            EntityUtil.removeById(testExecution.getValues(), value.getId());
+            EntityUtils.removeById(testExecution.getValues(), value.getId());
             ValueInfo prevValueInfo = MultiValue.find(values, value);
             values = MultiValue.createFrom(testExecution);
             showMultiValue(prevValueInfo.getMetricName());

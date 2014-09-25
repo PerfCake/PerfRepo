@@ -43,7 +43,7 @@ import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
-import org.jboss.qa.perfrepo.model.util.EntityUtil;
+import org.jboss.qa.perfrepo.model.util.EntityUtils;
 import org.jboss.qa.perfrepo.util.TagUtils;
 
 /**
@@ -97,7 +97,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @return TestExecution with fetched parameters
     */
    public static TestExecution fetchParameters(TestExecution testExecution) {
-      testExecution.setParameters(EntityUtil.clone(testExecution.getParameters()));
+      testExecution.setParameters(EntityUtils.clone(testExecution.getParameters()));
       return testExecution;
    }
 
@@ -108,7 +108,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @return TestExecution with fetched attachments
     */
    public static TestExecution fetchAttachments(TestExecution testExecution) {
-      testExecution.setAttachments(EntityUtil.clone(testExecution.getAttachments()));
+      testExecution.setAttachments(EntityUtils.clone(testExecution.getAttachments()));
       return testExecution;
    }
 
@@ -265,8 +265,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          }
       }
       List<TestExecution> tmp = query.getResultList();
-      List<TestExecution> r = EntityUtil.clone(tmp);
-      List<Long> execIds = EntityUtil.extractIds(r);
+      List<TestExecution> r = EntityUtils.clone(tmp);
+      List<Long> execIds = EntityUtils.extractIds(r);
       if (displayedParams != null && !displayedParams.isEmpty() && !execIds.isEmpty() && paramDAO != null) {
          List<TestExecutionParameter> allParams = paramDAO.find(execIds, displayedParams);
          Map<Long, List<TestExecutionParameter>> paramsByExecId = new HashMap<Long, List<TestExecutionParameter>>();
@@ -281,7 +281,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          for (TestExecution exec : r) {
             List<TestExecutionParameter> paramListForExec = paramsByExecId.get(exec.getId());
             exec.setParameters(paramListForExec == null ? Collections.<TestExecutionParameter> emptyList() : paramListForExec);
-            exec.setTestExecutionTags(EntityUtil.clone(exec.getTestExecutionTags()));
+            exec.setTestExecutionTags(EntityUtils.clone(exec.getTestExecutionTags()));
             for (TestExecutionTag tet : exec.getTestExecutionTags()) {
                tet.setTag(tet.getTag().clone());
             }
@@ -289,7 +289,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       } else {
          for (TestExecution exec : r) {
             exec.setParameters(Collections.<TestExecutionParameter> emptyList());
-            exec.setTestExecutionTags(EntityUtil.clone(exec.getTestExecutionTags()));
+            exec.setTestExecutionTags(EntityUtils.clone(exec.getTestExecutionTags()));
             for (TestExecutionTag tet : exec.getTestExecutionTags()) {
                tet.setTag(tet.getTag().clone());
             }
@@ -318,7 +318,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       query.setParameter("tagList", tags);
       query.setParameter("tagListSize", new Long(tags.size()));
 
-      List<TestExecution> result = EntityUtil.clone(query.getResultList());
+      List<TestExecution> result = EntityUtils.clone(query.getResultList());
       for (TestExecution exec : result) {
          TestExecutionDAO.fetchTest(exec);
          TestExecutionDAO.fetchParameters(exec);
