@@ -25,7 +25,7 @@ import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.service.ReportService;
-import org.jboss.qa.perfrepo.service.ServiceException;
+import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 /**

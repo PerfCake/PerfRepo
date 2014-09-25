@@ -27,6 +27,7 @@ import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.model.user.Group;
 import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
+import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 
 @Named
 @Stateless

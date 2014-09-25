@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.qa.perfrepo.service;
+package org.jboss.qa.perfrepo.service.exceptions;
 
 import javax.ejb.ApplicationException;
 

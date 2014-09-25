@@ -17,21 +17,17 @@ package org.jboss.qa.perfrepo.service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
-import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.TestMetric;
-import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.model.Value;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
-import org.jboss.qa.perfrepo.model.user.User;
+import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 
 /**
  * 
@@ -49,7 +45,7 @@ public interface TestService {
     * 
     * @param testExecution New test execution.
     * @return Created test execution. Contains database IDs.
-    * @throws ServiceException
+    * @throws org.jboss.qa.perfrepo.service.exceptions.ServiceException
     */
    public TestExecution createTestExecution(TestExecution testExecution) throws ServiceException;
 

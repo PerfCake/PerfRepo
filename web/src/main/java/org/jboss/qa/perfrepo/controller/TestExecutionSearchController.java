@@ -28,7 +28,7 @@ import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.model.util.ExecutionSort;
 import org.jboss.qa.perfrepo.model.util.ExecutionSort.ParamExecutionSort;
-import org.jboss.qa.perfrepo.service.ServiceException;
+import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.SearchCriteriaSession;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;

@@ -63,6 +63,7 @@ import org.jboss.qa.perfrepo.security.Secured;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 
 /**
  * 

@@ -17,7 +17,7 @@ import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.builder.TestBuilder;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.security.Secured;
-import org.jboss.qa.perfrepo.service.ServiceException;
+import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.TestServiceBean;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;

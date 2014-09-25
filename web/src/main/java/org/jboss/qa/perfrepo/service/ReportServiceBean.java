@@ -25,6 +25,7 @@ import org.jboss.qa.perfrepo.model.TestMetric;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.report.ReportProperty;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
+import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 
 /**
  * Implements @link{ReportService}.

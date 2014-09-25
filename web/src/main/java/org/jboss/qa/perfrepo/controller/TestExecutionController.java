@@ -41,7 +41,7 @@ import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
 import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.rest.TestExecutionREST;
-import org.jboss.qa.perfrepo.service.ServiceException;
+import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.session.UserSession;

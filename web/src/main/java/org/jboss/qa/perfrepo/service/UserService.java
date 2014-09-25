@@ -3,6 +3,7 @@ package org.jboss.qa.perfrepo.service;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.FavoriteParameter;
 import org.jboss.qa.perfrepo.model.user.User;
+import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ public interface UserService {
     *
     * @param user
     * @return user
-    * @throws ServiceException
+    * @throws org.jboss.qa.perfrepo.service.exceptions.ServiceException
     */
    public User createUser(User user) throws ServiceException;
 

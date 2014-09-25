@@ -22,7 +22,7 @@ import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
-import org.jboss.qa.perfrepo.service.ServiceException;
+import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.SearchCriteriaSession;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;

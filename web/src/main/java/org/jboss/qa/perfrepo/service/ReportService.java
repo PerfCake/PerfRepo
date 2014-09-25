@@ -2,9 +2,9 @@ package org.jboss.qa.perfrepo.service;
 
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
+import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Service layer for all operations related to reports.
@@ -23,7 +23,7 @@ public interface ReportService {
     * Removes report
     *
     * @param id
-    * @throws ServiceException
+    * @throws org.jboss.qa.perfrepo.service.exceptions.ServiceException
     */
    public void removeReport(Long id) throws ServiceException;
 
