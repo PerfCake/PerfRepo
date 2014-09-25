@@ -48,13 +48,4 @@ public class MetricREST {
       return Response.ok(testService.getFullMetric(metricId)).build();
    }
 
-   @GET
-   @Produces(MediaType.TEXT_XML)
-   @Path("/all")
-   @Logged
-   @Wrapped(element = "metrics")
-   public Response all() {
-      return Response.ok(new GenericEntity<List<Metric>>(new ArrayList<Metric>(testService.getAllFullMetrics())) {
-      }).build();
-   }
 }

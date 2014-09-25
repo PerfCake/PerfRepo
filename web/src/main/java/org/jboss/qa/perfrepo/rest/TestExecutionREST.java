@@ -78,16 +78,6 @@ public class TestExecutionREST {
       return Response.ok(testService.getFullTestExecution(testExecutionId)).build();
    }
 
-   @GET
-   @Produces(MediaType.TEXT_XML)
-   @Path("/all")
-   @Logged
-   @Wrapped(element = "testExecutions")
-   public Response all() {
-      return Response.ok(new GenericEntity<List<TestExecution>>(new ArrayList<TestExecution>(testService.getAllFullTestExecutions())) {
-      }).build();
-   }
-
    @POST()
    @Path("/create")
    @Consumes(MediaType.TEXT_XML)

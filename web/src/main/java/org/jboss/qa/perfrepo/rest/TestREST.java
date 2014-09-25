@@ -73,16 +73,6 @@ public class TestREST {
       return Response.ok(testService.getFullTest(testId)).build();
    }
 
-   @GET
-   @Produces(MediaType.TEXT_XML)
-   @Path("/all")
-   @Logged
-   @Wrapped(element = "tests")
-   public Response all() {
-      return Response.ok(new GenericEntity<List<Test>>(new ArrayList<Test>(testService.getAllFullTests())) {
-      }).build();
-   }
-
    @POST
    @Path("/create")
    @Consumes(MediaType.TEXT_XML)
@@ -111,15 +101,5 @@ public class TestREST {
       test.setId(testId);
       Long id = testService.addMetric(test, metric).getId();
       return Response.created(uriInfo.getBaseUriBuilder().path(MetricREST.class).path(GET_METRIC_METHOD).build(id)).entity(id).build();
-   }
-
-   @GET
-   @Produces("text/xml")
-   @Path("/{testId}/executions")
-   @Logged
-   @Wrapped(element = "testExecutions")
-   public Response executions(@PathParam("testId") Long testId) {
-      return Response.ok(new GenericEntity<List<TestExecution>>(new ArrayList<TestExecution>(testService.findExecutionsByTest(testId))) {
-      }).build();
    }
 }
