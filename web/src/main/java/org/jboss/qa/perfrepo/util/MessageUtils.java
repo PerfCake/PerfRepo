@@ -4,7 +4,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Util class for creating localized messages by the message code
+ * MessageUtils class for creating localized messages by the message code
  * @author Pavel Drozd
  *
  */

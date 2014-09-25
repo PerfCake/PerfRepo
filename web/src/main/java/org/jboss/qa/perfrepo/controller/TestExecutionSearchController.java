@@ -33,7 +33,7 @@ import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.SearchCriteriaSession;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
 import org.jboss.qa.perfrepo.util.TagUtils;
-import org.jboss.qa.perfrepo.util.Util;
+import org.jboss.qa.perfrepo.util.ViewUtils;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 /**
@@ -113,7 +113,7 @@ public class TestExecutionSearchController extends BaseController {
    }
 
    public String itemParam(TestExecution exec, String paramName) {
-      return Util.displayValue(exec.findParameter(paramName));
+      return ViewUtils.displayValue(exec.findParameter(paramName));
    }
 
    public void addParameterCriteria() {

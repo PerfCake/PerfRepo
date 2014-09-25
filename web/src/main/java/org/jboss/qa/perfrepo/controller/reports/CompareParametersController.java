@@ -34,7 +34,7 @@ import org.jboss.qa.perfrepo.model.TestExecutionTag;
 import org.jboss.qa.perfrepo.model.util.EntityUtil;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.session.TEComparatorSession;
-import org.jboss.qa.perfrepo.util.Util;
+import org.jboss.qa.perfrepo.util.ViewUtils;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 
 /**
@@ -149,7 +149,7 @@ public class CompareParametersController extends BaseController {
    }
 
    public String getParamValue(TestExecution exec, String paramName) {
-      return Util.displayValue(exec.findParameter(paramName));
+      return ViewUtils.displayValue(exec.findParameter(paramName));
    }
 
    public boolean paramsEqual(String paramName) {

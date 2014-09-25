@@ -53,7 +53,7 @@ import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.session.UserSession;
 import org.jboss.qa.perfrepo.util.ReportUtils;
 import org.jboss.qa.perfrepo.util.TagUtils;
-import org.jboss.qa.perfrepo.util.Util;
+import org.jboss.qa.perfrepo.util.ViewUtils;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 import org.richfaces.ui.output.chart.ChartDataModel.ChartType;
 import org.richfaces.ui.output.chart.NumberChartDataModel;
@@ -481,7 +481,7 @@ public class MetricReportController extends BaseController {
    }
 
    public String getDisplayValueFavParam(PointDetailsFavParam favParam) {
-      return Util.displayValue(favParam.getParam());
+      return ViewUtils.displayValue(favParam.getParam());
    }
 
    public Long getReportId() {

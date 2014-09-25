@@ -27,7 +27,6 @@ import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.session.UserSession;
 import org.jboss.qa.perfrepo.util.ReportUtils;
-import org.jboss.qa.perfrepo.util.Util;
 import org.jboss.qa.perfrepo.util.ValueComparator;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 

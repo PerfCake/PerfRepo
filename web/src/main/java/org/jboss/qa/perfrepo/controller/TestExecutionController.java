@@ -49,7 +49,7 @@ import org.jboss.qa.perfrepo.util.MultiValue;
 import org.jboss.qa.perfrepo.util.MultiValue.ParamInfo;
 import org.jboss.qa.perfrepo.util.MultiValue.ValueInfo;
 import org.jboss.qa.perfrepo.util.TagUtils;
-import org.jboss.qa.perfrepo.util.Util;
+import org.jboss.qa.perfrepo.util.ViewUtils;
 import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 import org.richfaces.event.FileUploadEvent;
 import org.richfaces.model.UploadedFile;
@@ -592,7 +592,7 @@ public class TestExecutionController extends BaseController {
    }
 
    public String displayValueTable(TestExecutionParameter param) {
-      return Util.displayValue(param);
+      return ViewUtils.displayValue(param);
    }
 
    public boolean isShowMultiValueTable() {
