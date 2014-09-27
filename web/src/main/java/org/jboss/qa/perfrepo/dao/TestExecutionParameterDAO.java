@@ -33,17 +33,20 @@ import org.jboss.qa.perfrepo.model.TestExecutionParameter;
  * 
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  * 
  */
 @Named
 public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long> {
 
-   public List<String> getAllSelectionExecutionParams(Long testId) {
-      TypedQuery<String> q = createNamedQuery(TestExecutionParameter.FIND_BY_TEST_ID, String.class);
-      q.setParameter("testId", testId);
-      return q.getResultList();
-   }
-
+   /**
+    * Discovers if test execution already has the parameter associated with the test, in other word
+    * if it breaks the unique (testId, name) constraint
+    *
+    * @param testId
+    * @param paramName
+    * @return true if there's already test execution parameter with same pair (testId, param_name)
+    */
    public boolean hasTestParam(Long testId, String paramName) {
       CriteriaBuilder cb = criteriaBuilder();
       CriteriaQuery<Long> criteria = cb.createQuery(Long.class);

@@ -538,15 +538,12 @@ public class TestServiceBean implements TestService {
       }
       checkUserCanChangeTest(exec.getTest());
       checkLocked(exec);
-      try {
-         return testExecutionParameterDAO.update(tep);
-      } catch (PersistenceException e) {
-         if (isUniqueConstraintException(e, "test_execution_parameter_unique_name")) {
-            throw serviceException(ServiceException.Codes.PARAMETER_EXISTS, "parameter with name \"%s\" exists.", tep.getName());
-         } else {
-            throw e;
-         }
+
+      if(testExecutionParameterDAO.hasTestParam(exec.getTest().getId(), tep.getName())) {
+         throw serviceException(ServiceException.Codes.PARAMETER_EXISTS, "parameter with name \"%s\" exists.", tep.getName());
       }
+
+      return testExecutionParameterDAO.update(tep);
    }
 
    @Override
@@ -884,11 +881,5 @@ public class TestServiceBean implements TestService {
       if (exec.isLocked()) {
          serviceException(ServiceException.Codes.EXECUTION_LOCKED, "Test execution (id=%s) is locked.", exec.getId());
       }
-   }
-
-   private boolean isUniqueConstraintException(PersistenceException e, String constraintName) {
-      // this is a heuristic for finding out whether the lower layer thrown unique constraint exception at us
-      return e.getCause() != null && e.getCause().getClass().getName().equals("org.hibernate.exception.ConstraintViolationException")
-            && e.getCause().getMessage() != null && e.getCause().getMessage().contains(constraintName);
    }
 }
