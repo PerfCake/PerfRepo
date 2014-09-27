@@ -67,7 +67,7 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
     * @param id Primary key
     * @return Entity
     */
-   public T find(final PK id) {
+   public T get(final PK id) {
       return em.find(type, id);
    }
 
@@ -83,7 +83,7 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
       return entity;
    }
 
-   public void delete(final T entity) {
+   public void remove(final T entity) {
       em.remove(entity);
       em.flush();
    }
@@ -93,7 +93,7 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
     *
     * @return all entities
     */
-   public List<T> findAll() {
+   public List<T> getAll() {
       CriteriaQuery<T> criteria = createCriteria();
       Root<T> root = criteria.from(type);
       criteria.select(root);
@@ -107,7 +107,7 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
     * @param value
     * @return all entities with selected property
     */
-   public List<T> findAllByProperty(final String propertyName, final Object value) {
+   public List<T> getAllByProperty(final String propertyName, final Object value) {
       CriteriaQuery<T> criteria = createCriteria();
       Root<T> root = criteria.from(type);
       criteria.select(root);

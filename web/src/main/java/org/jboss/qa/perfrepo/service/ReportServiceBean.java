@@ -63,8 +63,8 @@ public class ReportServiceBean implements ReportService {
 
    @Override
    public void removeReport(Long id) throws ServiceException {
-      Report report = reportDAO.find(id);
-      reportDAO.delete(report);
+      Report report = reportDAO.get(id);
+      reportDAO.remove(report);
    }
 
    @Override
@@ -84,7 +84,7 @@ public class ReportServiceBean implements ReportService {
 
    @Override
    public Report getFullReport(Long id) {
-      Report report = reportDAO.find(id);
+      Report report = reportDAO.get(id);
       if(report == null) {
          return null;
       }
@@ -113,7 +113,7 @@ public class ReportServiceBean implements ReportService {
             Test freshTest = testDAO.findByUid(chartRequest.getTestUid());
             if (freshTest == null) {
                // test uid supplied but doesn't exist - pick another test
-               response.setSelectionTests(testDAO.findAll());
+               response.setSelectionTests(testDAO.getAll());
                continue;
             } else {
                freshTest = freshTest.clone();

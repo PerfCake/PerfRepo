@@ -34,7 +34,7 @@ import org.jboss.qa.perfrepo.model.Metric;
 public class MetricDAO extends DAO<Metric, Long> {
 
    public List<Metric> getMetrics() {
-      return findAll();
+      return getAll();
    }
 
    /**

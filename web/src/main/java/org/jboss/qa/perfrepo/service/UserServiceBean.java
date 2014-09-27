@@ -71,8 +71,8 @@ public class UserServiceBean implements UserService {
 
    @Override
    public void addFavoriteParameter(Test test, String paramName, String label) throws ServiceException {
-      User user = userDAO.find(getLoggedUser().getId());
-      Test testEntity = testDAO.find(test.getId());
+      User user = userDAO.get(getLoggedUser().getId());
+      Test testEntity = testDAO.get(test.getId());
 
       FavoriteParameter fp = favoriteParameterDAO.findByTestAndParamName(paramName, test.getId(), getLoggedUser().getId());
       if(fp == null) {
@@ -92,7 +92,7 @@ public class UserServiceBean implements UserService {
       FavoriteParameter fp = favoriteParameterDAO.findByTestAndParamName(paramName, test.getId(), getLoggedUser().getId());
 
       if(fp != null) {
-         favoriteParameterDAO.delete(fp);
+         favoriteParameterDAO.remove(fp);
       }
    }
 
@@ -115,7 +115,7 @@ public class UserServiceBean implements UserService {
 
    @Override
    public User getUser(Long id) {
-      return userDAO.find(id);
+      return userDAO.get(id);
    }
 
    @Override
@@ -143,7 +143,7 @@ public class UserServiceBean implements UserService {
 
    @Override
    public User getFullUser(Long id) {
-      User user = userDAO.find(id);
+      User user = userDAO.get(id);
       if (user == null) {
          return null;
       }

@@ -38,7 +38,7 @@ import org.jboss.qa.perfrepo.model.user.User;
 public class UserPropertyDAO extends DAO<UserProperty, Long> {
 
    public List<UserProperty> findByUserId(Long userId) {
-      return findAllByProperty("user", userId);
+      return getAllByProperty("user", userId);
    }
 
    public UserProperty findByUserIdAndName(Long userId, String name) {

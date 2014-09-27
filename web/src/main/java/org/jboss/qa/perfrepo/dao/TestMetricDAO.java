@@ -41,7 +41,7 @@ public class TestMetricDAO extends DAO<TestMetric, Long> {
     * @return collection of metrics
     */
    public List<TestMetric> findByTest(Test test) {
-      return findAllByProperty("test", test);
+      return getAllByProperty("test", test);
    }
 
    /**
@@ -51,7 +51,7 @@ public class TestMetricDAO extends DAO<TestMetric, Long> {
     * @return collection of tests
     */
    public List<TestMetric> findByMetric(Metric metric) {
-      return findAllByProperty("metric", metric);
+      return getAllByProperty("metric", metric);
    }
 
    /**

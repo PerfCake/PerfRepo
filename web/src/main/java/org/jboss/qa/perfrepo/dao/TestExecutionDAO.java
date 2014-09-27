@@ -59,7 +59,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    public List<TestExecution> findByTest(Long testId) {
       Test test = new Test();
       test.setId(testId);
-      return findAllByProperty("test", test);
+      return getAllByProperty("test", test);
    }
 
    /**

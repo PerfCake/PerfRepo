@@ -35,7 +35,7 @@ import org.jboss.qa.perfrepo.model.Tag;
 public class TagDAO extends DAO<Tag, Long> {
 
    public Tag findByName(String name) {
-      List<Tag> tags = findAllByProperty("name", name);
+      List<Tag> tags = getAllByProperty("name", name);
       if (tags.size() > 0) {
          return tags.get(0);
       }

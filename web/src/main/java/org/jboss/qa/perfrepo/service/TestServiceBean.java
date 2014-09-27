@@ -30,7 +30,6 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.PersistenceException;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.dao.MetricDAO;
@@ -244,7 +243,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public Long addAttachment(TestExecutionAttachment attachment) throws ServiceException {
-      TestExecution exec = testExecutionDAO.find(attachment.getTestExecution().getId());
+      TestExecution exec = testExecutionDAO.get(attachment.getTestExecution().getId());
       if (exec == null) {
          throw serviceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, "Trying to add attachment to non-existent test execution (id=%s)", attachment.getTestExecution()
                .getId());
@@ -258,22 +257,22 @@ public class TestServiceBean implements TestService {
 
    @Override
    public void deleteAttachment(TestExecutionAttachment attachment) throws ServiceException {
-      TestExecution exec = testExecutionDAO.find(attachment.getTestExecution().getId());
+      TestExecution exec = testExecutionDAO.get(attachment.getTestExecution().getId());
       if (exec == null) {
          throw serviceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, "Trying to delete attachment of non-existent test execution (id=%s)", attachment.getTestExecution()
                .getId());
       }
       checkUserCanChangeTest(exec.getTest());
       checkLocked(exec);
-      TestExecutionAttachment freshAttachment = testExecutionAttachmentDAO.find(attachment.getId());
+      TestExecutionAttachment freshAttachment = testExecutionAttachmentDAO.get(attachment.getId());
       if (freshAttachment != null) {
-         testExecutionAttachmentDAO.delete(freshAttachment);
+         testExecutionAttachmentDAO.remove(freshAttachment);
       }
    }
 
    @Override
    public TestExecutionAttachment getAttachment(Long id) {
-      return testExecutionAttachmentDAO.find(id);
+      return testExecutionAttachmentDAO.get(id);
    }
 
    @Override
@@ -296,7 +295,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public Test getFullTest(Long id) {
-      Test test = testDAO.find(id);
+      Test test = testDAO.get(id);
       if (test == null) {
          return null;
       }
@@ -317,7 +316,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public List<Test> getAllFullTests() {
-      List<Test> r = testDAO.findAll();
+      List<Test> r = testDAO.getAll();
       List<Test> rcopy = new ArrayList<Test>(r.size());
       for (Test t : r) {
          rcopy.add(getFullTest(t.getId()));
@@ -344,52 +343,52 @@ public class TestServiceBean implements TestService {
          List<Test> testsUsingMetric = testDAO.findByNamedQuery(Test.FIND_TESTS_USING_METRIC,
                Collections.<String, Object> singletonMap("metric", metric.getId()));
          allTestMetrics.remove();
-         testMetricDAO.delete(testMetric);
+         testMetricDAO.remove(testMetric);
          if (testsUsingMetric.size() == 0) {
             throw new IllegalStateException();
          } else if (testsUsingMetric.size() == 1) {
             if (testsUsingMetric.get(0).getId().equals(test.getId())) {
-               metricDAO.delete(metric);
+               metricDAO.remove(metric);
             } else {
                throw new IllegalStateException();
             }
          }
       }
-      testDAO.delete(freshTest);
+      testDAO.remove(freshTest);
    }
 
    @Override
    public void deleteTestExecution(TestExecution testExecution) throws ServiceException {
-      TestExecution freshTestExecution = testExecutionDAO.find(testExecution.getId());
+      TestExecution freshTestExecution = testExecutionDAO.get(testExecution.getId());
       if (freshTestExecution == null) {
          throw serviceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, "Test execution with id %s doesn't exist", testExecution.getId());
       }
       checkUserCanChangeTest(freshTestExecution.getTest());
       for (TestExecutionParameter testExecutionParameter : freshTestExecution.getParameters()) {
-         testExecutionParameterDAO.delete(testExecutionParameter);
+         testExecutionParameterDAO.remove(testExecutionParameter);
       }
       for (Value value : freshTestExecution.getValues()) {
          for (ValueParameter valueParameter : value.getParameters()) {
-            valueParameterDAO.delete(valueParameter);
+            valueParameterDAO.remove(valueParameter);
          }
-         valueDAO.delete(value);
+         valueDAO.remove(value);
       }
       Iterator<TestExecutionTag> allTestExecutionTags = freshTestExecution.getTestExecutionTags().iterator();
       while (allTestExecutionTags.hasNext()) {
-         testExecutionTagDAO.delete(allTestExecutionTags.next());
+         testExecutionTagDAO.remove(allTestExecutionTags.next());
          allTestExecutionTags.remove();
       }
       Iterator<TestExecutionAttachment> allTestExecutionAttachments = freshTestExecution.getAttachments().iterator();
       while (allTestExecutionAttachments.hasNext()) {
-         testExecutionAttachmentDAO.delete(allTestExecutionAttachments.next());
+         testExecutionAttachmentDAO.remove(allTestExecutionAttachments.next());
          allTestExecutionAttachments.remove();
       }
-      testExecutionDAO.delete(freshTestExecution);
+      testExecutionDAO.remove(freshTestExecution);
    }
 
    @Override
    public Metric getFullMetric(Long id) {
-      Metric metric = metricDAO.find(id);
+      Metric metric = metricDAO.get(id);
       if (metric == null) {
          return null;
       }
@@ -410,7 +409,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public List<Metric> getAvailableMetrics(Test test) {
-      Test t = testDAO.find(test.getId());
+      Test t = testDAO.get(test.getId());
       return EntityUtils.removeAllById(metricDAO.getMetricByGroup(t.getGroupId()), t.getMetrics());
    }
 
@@ -432,7 +431,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public List<Metric> getTestMetrics(Test test) {
-      Test t = testDAO.find(test.getId());
+      Test t = testDAO.get(test.getId());
       return t.getSortedMetrics();
    }
 
@@ -458,22 +457,22 @@ public class TestServiceBean implements TestService {
          if (!freshMetric.getValues().isEmpty()) {
             throw serviceException(ServiceException.Codes.METRIC_HAS_VALUES, "Can't delete metric %s, some values still refer to it", freshMetric.getName());
          } else {
-            testMetricDAO.delete(freshTestMetric);
-            metricDAO.delete(freshMetric);
+            testMetricDAO.remove(freshTestMetric);
+            metricDAO.remove(freshMetric);
          }
       } else {
-         testMetricDAO.delete(freshTestMetric);
+         testMetricDAO.remove(freshTestMetric);
       }
    }
 
    @Override
    public TestExecution getFullTestExecution(Long id) {
-      return cloneAndFetch(testExecutionDAO.find(id), true, true, true, true, true);
+      return cloneAndFetch(testExecutionDAO.get(id), true, true, true, true, true);
    }
 
    @Override
    public List<TestExecution> getAllFullTestExecutions() {
-      List<TestExecution> r = testExecutionDAO.findAll();
+      List<TestExecution> r = testExecutionDAO.getAll();
       List<TestExecution> rcopy = new ArrayList<TestExecution>(r.size());
       for (TestExecution exec : r) {
          rcopy.add(getFullTestExecution(exec.getId()));
@@ -488,14 +487,14 @@ public class TestServiceBean implements TestService {
 
    @Override
    public TestExecution updateTestExecution(TestExecution anExec) throws ServiceException {
-      TestExecution execEntity = testExecutionDAO.find(anExec.getId());
+      TestExecution execEntity = testExecutionDAO.get(anExec.getId());
       if (execEntity == null) {
          throw serviceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", anExec.getId());
       }
       checkUserCanChangeTest(execEntity.getTest());
       checkLocked(execEntity);
       for (TestExecutionTag interObj : execEntity.getTestExecutionTags()) {
-         testExecutionTagDAO.delete(interObj);
+         testExecutionTagDAO.remove(interObj);
       }
       execEntity.getTestExecutionTags().clear();
       // this is what can be updated here
@@ -521,7 +520,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public TestExecution setExecutionLocked(TestExecution anExec, boolean locked) throws ServiceException {
-      TestExecution execEntity = testExecutionDAO.find(anExec.getId());
+      TestExecution execEntity = testExecutionDAO.get(anExec.getId());
       if (execEntity == null) {
          throw serviceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", anExec.getId());
       }
@@ -532,7 +531,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public TestExecutionParameter updateParameter(TestExecutionParameter tep) throws ServiceException {
-      TestExecution exec = testExecutionDAO.find(tep.getTestExecution().getId());
+      TestExecution exec = testExecutionDAO.get(tep.getTestExecution().getId());
       if (exec == null) {
          throw serviceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", tep.getTestExecution().getId());
       }
@@ -548,19 +547,19 @@ public class TestServiceBean implements TestService {
 
    @Override
    public void deleteParameter(TestExecutionParameter tep) throws ServiceException {
-      TestExecution exec = testExecutionDAO.find(tep.getTestExecution().getId());
+      TestExecution exec = testExecutionDAO.get(tep.getTestExecution().getId());
       if (exec == null) {
          throw serviceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", tep.getTestExecution().getId());
       }
       checkUserCanChangeTest(exec.getTest());
       checkLocked(exec);
-      TestExecutionParameter tepRemove = testExecutionParameterDAO.find(tep.getId());
-      testExecutionParameterDAO.delete(tepRemove);
+      TestExecutionParameter tepRemove = testExecutionParameterDAO.get(tep.getId());
+      testExecutionParameterDAO.remove(tepRemove);
    }
 
    @Override
    public Value addValue(Value value) throws ServiceException {
-      TestExecution exec = testExecutionDAO.find(value.getTestExecution().getId());
+      TestExecution exec = testExecutionDAO.get(value.getTestExecution().getId());
       if (exec == null) {
          throw serviceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
       }
@@ -568,11 +567,11 @@ public class TestServiceBean implements TestService {
       checkLocked(exec);
       Metric metric = null;
       if (value.getMetric().getId() != null) {
-         metric = metricDAO.find(value.getMetric().getId());
+         metric = metricDAO.get(value.getMetric().getId());
       } else {
     	  List<Metric> metrics = metricDAO.getMetricByNameAndGroup(value.getMetric().getName(), exec.getTest().getGroupId());
     	  if (metrics.size() > 0) {
-    		  metric = metricDAO.find(metrics.get(0).getId());
+    		  metric = metricDAO.get(metrics.get(0).getId());
     	  }
       }
       if (metric == null) {
@@ -608,13 +607,13 @@ public class TestServiceBean implements TestService {
 
    @Override
    public Value updateValue(Value value) throws ServiceException {
-      TestExecution exec = testExecutionDAO.find(value.getTestExecution().getId());
+      TestExecution exec = testExecutionDAO.get(value.getTestExecution().getId());
       if (exec == null) {
          throw serviceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
       }
       checkUserCanChangeTest(exec.getTest());
       checkLocked(exec);
-      Value oldValue = valueDAO.find(value.getId());
+      Value oldValue = valueDAO.get(value.getId());
       if (oldValue == null) {
          throw serviceException(ServiceException.Codes.VALUE_NOT_FOUND, "Value doesn't exist (id=%s)", value.getId());
       }
@@ -638,7 +637,7 @@ public class TestServiceBean implements TestService {
          newParams.get(newParams.size() - 1).setValue(freshValueClone);
       }
       for (ValueParameter vp : updateSet.toRemove) {
-         valueParameterDAO.delete(vp);
+         valueParameterDAO.remove(vp);
       }
       freshValueClone.setParameters(newParams.isEmpty() ? null : newParams);
       return freshValueClone;
@@ -646,22 +645,22 @@ public class TestServiceBean implements TestService {
 
    @Override
    public void deleteValue(Value value) throws ServiceException {
-      TestExecution exec = testExecutionDAO.find(value.getTestExecution().getId());
+      TestExecution exec = testExecutionDAO.get(value.getTestExecution().getId());
       if (exec == null) {
          throw serviceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, "Test execution doesn't exist (id=%s)", value.getTestExecution().getId());
       }
       checkUserCanChangeTest(exec.getTest());
       checkLocked(exec);
-      Value v = valueDAO.find(value.getId());
+      Value v = valueDAO.get(value.getId());
       for (ValueParameter vp : v.getParameters()) {
-         valueParameterDAO.delete(vp);
+         valueParameterDAO.remove(vp);
       }
-      valueDAO.delete(v);
+      valueDAO.remove(v);
    }
 
    @Override
    public List<Test> getAllSelectionTests() {
-      return testDAO.findAll();
+      return testDAO.getAll();
    }
 
    @Override
@@ -671,7 +670,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    public TestExecutionParameter getFullParameter(Long paramId) {
-      TestExecutionParameter p = testExecutionParameterDAO.find(paramId);
+      TestExecutionParameter p = testExecutionParameterDAO.get(paramId);
       if (p == null) {
          return null;
       }
@@ -704,7 +703,7 @@ public class TestServiceBean implements TestService {
    @Override
    public void addTagsToTestExecutions(Collection<String> tags, Collection<TestExecution> testExecutions) {
       for(TestExecution testExecutionItem: testExecutions) {
-         TestExecution testExecution = testExecutionDAO.find(testExecutionItem.getId());
+         TestExecution testExecution = testExecutionDAO.get(testExecutionItem.getId());
          if(testExecution == null) {
             continue;
          }
@@ -736,7 +735,7 @@ public class TestServiceBean implements TestService {
    @Override
    public void deleteTagsFromTestExecutions(Collection<String> tags, Collection<TestExecution> testExecutions) {
       for(TestExecution testExecutionItem: testExecutions) {
-         TestExecution testExecution = testExecutionDAO.find(testExecutionItem.getId());
+         TestExecution testExecution = testExecutionDAO.get(testExecutionItem.getId());
          if(testExecution == null) {
             continue;
          }
@@ -744,7 +743,7 @@ public class TestServiceBean implements TestService {
          List<TestExecutionTag> testExecutionTags = new ArrayList<TestExecutionTag>();
          for(TestExecutionTag testExecutionTag: testExecution.getTestExecutionTags()) {
             if(tags.contains(testExecutionTag.getTagName())) {
-               testExecutionTagDAO.delete(testExecutionTag);
+               testExecutionTagDAO.remove(testExecutionTag);
             }
             else {
                testExecutionTags.add(testExecutionTag);
@@ -758,14 +757,14 @@ public class TestServiceBean implements TestService {
 
    @Override
    public Test getTest(Long id) {
-      return testDAO.find(id);
+      return testDAO.get(id);
    }
 
    // works with fresh test loaded from database + checked access rights
    private TestMetric addMetricInternal(Test test, Metric metric) throws ServiceException {
       if (metric.getId() != null) {
          // associating an existing metric with the test
-         Metric freshMetric = metricDAO.find(metric.getId());
+         Metric freshMetric = metricDAO.get(metric.getId());
          if (freshMetric == null) {
             throw serviceException(ServiceException.Codes.METRIC_NOT_FOUND, "Metric %s doesn't exist anymore", metric.getId());
          }
@@ -788,7 +787,7 @@ public class TestServiceBean implements TestService {
          List<Metric> existingMetricsForGroup = metricDAO.getMetricByNameAndGroup(metric.getName(), test.getGroupId());
          for (Metric existingMetric : existingMetricsForGroup) {
             if (existingMetric.getName().equals(metric.getName())) {
-               Metric freshMetric = metricDAO.find(existingMetric.getId());
+               Metric freshMetric = metricDAO.get(existingMetric.getId());
                return createTestMetric(test, freshMetric);
             }
          }
@@ -798,7 +797,7 @@ public class TestServiceBean implements TestService {
    }
 
    private TestMetric createTestMetric(Test test, Metric metric) {
-      Metric existingMetric = metricDAO.find(metric.getId());
+      Metric existingMetric = metricDAO.get(metric.getId());
       TestMetric tm = new TestMetric();
       tm.setMetric(existingMetric);
       tm.setTest(test);
@@ -858,7 +857,7 @@ public class TestServiceBean implements TestService {
       }
       Test freshTest = null;
       if (test.getId() != null) {
-         freshTest = testDAO.find(test.getId());
+         freshTest = testDAO.get(test.getId());
          if (freshTest == null) {
             throw serviceException(ServiceException.Codes.TEST_NOT_FOUND, "Test with id=%s, doesn't exist.", test.getId());
          }

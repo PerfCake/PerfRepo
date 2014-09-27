@@ -31,7 +31,7 @@ import org.jboss.qa.perfrepo.model.user.User;
 public class UserDAO extends DAO<User, Long> {
 
    public User findByUsername(String name) {
-      List<User> users = findAllByProperty("username", name);
+      List<User> users = getAllByProperty("username", name);
       if (users.size() > 0) {
          return users.get(0);
       }
