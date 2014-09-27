@@ -58,7 +58,7 @@ public class ReportServiceBean implements ReportService {
 
    @Override
    public List<Report> getAllUsersReports() {
-      return getAllReports(userService.getLoggedUserName());
+      return getAllReports(userService.getLoggedUser().getUsername());
    }
 
    @Override

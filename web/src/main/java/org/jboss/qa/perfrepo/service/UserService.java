@@ -20,15 +20,6 @@ public interface UserService {
    public User createUser(User user) throws ServiceException;
 
    /**
-    * Update user
-    *
-    * @param user
-    * @return user
-    * @throws ServiceException
-    */
-   public User updateUser(User user) throws ServiceException;
-
-   /**
     * Retrieves managed entity of user
     *
     * @param id
@@ -37,22 +28,11 @@ public interface UserService {
    public User getUser(Long id);
 
    /**
-    * Retrieves managed entity of currently logged user
-    * @return user
+    * Retrieves currently logged user
+    *
+    * @return
     */
    public User getLoggedUser();
-
-   /**
-    * Retrieves id of currently logged user
-    * @return userId
-    */
-   public Long getLoggedUserId();
-
-   /**
-    * Retrieves name of currently logged user
-    * @return username
-    */
-   public String getLoggedUserName();
 
    /**
     * Retrieves if user is assign in defined group
@@ -83,13 +63,6 @@ public interface UserService {
 	 * @return user properties
 	 */
 	public Map<String, String> getUserProperties();
-
-	/**
-	 * Creates or updates userProperties with given prefix
-	 * @param prefix
-	 * @param properties
-	 */
-	public void storeProperties(String prefix, Map<String, String> properties);
 
    /**
     * Adds favorite parameter of user to the test

@@ -60,6 +60,6 @@ public class AuthorizationService {
 	}
 
 	public boolean isUserAuthorizedFor(AccessType accessType, Entity<?> entity) {
-		return isUserAuthorizedFor(userService.getLoggedUserId(), accessType, entity);
+		return isUserAuthorizedFor(userService.getLoggedUser().getId(), accessType, entity);
 	}
 }

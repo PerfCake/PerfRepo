@@ -279,7 +279,7 @@ public class TestServiceBean implements TestService {
    @Override
    public Test createTest(Test test) throws ServiceException {
       if (!userService.isLoggedUserInGroup(test.getGroupId())) {
-         throw cantCreateTest(userService.getLoggedUserName(), test.getGroupId());
+         throw cantCreateTest(userService.getLoggedUser().getUsername(), test.getGroupId());
       }
       if (testDAO.findByUid(test.getUid()) != null) {
          throw serviceException(ServiceException.Codes.TEST_UID_EXISTS, "Test with UID \"%s\" exists.", test.getUid());
@@ -872,7 +872,7 @@ public class TestServiceBean implements TestService {
       }
       // user can only insert test executions for tests pertaining to his group
       if (!userService.isLoggedUserInGroup(freshTest.getGroupId())) {
-         throw notInGroup(userService.getLoggedUserName(), freshTest.getGroupId(), freshTest.getName(), freshTest.getUid());
+         throw notInGroup(userService.getLoggedUser().getUsername(), freshTest.getGroupId(), freshTest.getName(), freshTest.getUid());
       }
       return freshTest;
    }
