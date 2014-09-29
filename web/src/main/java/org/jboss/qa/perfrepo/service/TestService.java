@@ -197,21 +197,6 @@ public interface TestService {
    public List<Test> getAllFullTests();
 
    /**
-    * Get metric with all associated tests (without details).
-    * 
-    * @param id
-    * @return metric
-    */
-   public Metric getFullMetric(Long id);
-
-   /**
-    * Returns all metrics with all information.
-    *
-    * @return metrics
-    */
-   public List<Metric> getAllFullMetrics();
-
-   /**
     * Returns metrics which belong tests with defined group id and are not defined on the defined
     * test
     *
@@ -297,14 +282,6 @@ public interface TestService {
     * @throws ServiceException
     */
    public void removeValue(Value value) throws ServiceException;
-
-   /**
-    * Get parameter and test execution.
-    * 
-    * @param paramId
-    * @return test execution parameter
-    */
-   public TestExecutionParameter getFullParameter(Long paramId);
 
    /**
     * 

@@ -359,27 +359,6 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
-	public Metric getFullMetric(Long id) {
-		Metric metric = metricDAO.get(id);
-		if (metric == null) {
-			return null;
-		}
-		metric = metric.clone();
-		// TODO: read by named query with join fetches
-		Collection<TestMetric> testMetrics = metric.getTestMetrics();
-		List<Test> tests = new ArrayList<Test>();
-		if (testMetrics != null) {
-			for (TestMetric testMetric : testMetrics) {
-				Test test = testMetric.getTest().clone();
-				test.setTestMetrics(null);
-				tests.add(test);
-			}
-		}
-		metric.setTests(tests);
-		return metric;
-	}
-
-	@Override
 	public List<Metric> getAvailableMetrics(Test test) {
 		Test t = testDAO.get(test.getId());
 		return EntityUtils.removeAllById(metricDAO.getMetricByGroup(t.getGroupId()), t.getMetrics());
@@ -441,16 +420,6 @@ public class TestServiceBean implements TestService {
 	public List<Metric> getTestMetrics(Test test) {
 		Test t = testDAO.get(test.getId());
 		return t.getSortedMetrics();
-	}
-
-	@Override
-	public List<Metric> getAllFullMetrics() {
-		List<Metric> r = metricDAO.getMetrics();
-		List<Metric> rcopy = new ArrayList<Metric>(r.size());
-		for (Metric m : r) {
-			rcopy.add(getFullMetric(m.getId()));
-		}
-		return rcopy;
 	}
 
 	@Override
@@ -690,17 +659,6 @@ public class TestServiceBean implements TestService {
 	@Override
 	public List<Metric> getAllMetrics(Long testId) {
 		return metricDAO.getMetricByTest(testId);
-	}
-
-	@Override
-	public TestExecutionParameter getFullParameter(Long paramId) {
-		TestExecutionParameter p = testExecutionParameterDAO.get(paramId);
-		if (p == null) {
-			return null;
-		}
-		TestExecutionParameter pclone = p.clone();
-		pclone.setTestExecution(p.getTestExecution().clone());
-		return pclone;
 	}
 
 	@Override

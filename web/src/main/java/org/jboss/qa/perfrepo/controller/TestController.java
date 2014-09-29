@@ -124,8 +124,6 @@ public class TestController extends BaseController {
    }
 
    public String create() {
-      System.out.println("jsem tay");
-
       if (test == null) {
          throw new IllegalStateException("test is null");
       }
