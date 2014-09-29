@@ -56,7 +56,7 @@ import org.jboss.qa.perfrepo.util.TagUtils;
 @Named
 public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
-   public List<TestExecution> findByTest(Long testId) {
+   public List<TestExecution> getByTest(Long testId) {
       Test test = new Test();
       test.setId(testId);
       return getAllByProperty("test", test);
@@ -127,18 +127,6 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 	      testExecution.setValues(cloneValues);
       }
       return testExecution;
-   }
-
-   public List<TestExecution> findByTestAndJob(Long testId, Long jobId) {
-      Test test = new Test();
-      test.setId(testId);
-      CriteriaQuery<TestExecution> criteria = createCriteria();
-      Root<TestExecution> root = criteria.from(TestExecution.class);
-      criteria.select(root);
-      CriteriaBuilder cb = criteriaBuilder();
-      Predicate p = cb.and(cb.equal(root.get("test"), test), cb.equal(root.get("jobId"), jobId));
-      criteria.where(p);
-      return query(criteria).getResultList();
    }
 
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, TestExecutionParameterDAO paramDAO) {

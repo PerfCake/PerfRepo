@@ -58,15 +58,6 @@ public interface TestService {
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search);
 
    /**
-    * Returns list of TestExecutionss according to criteria defined by TestExecutionSearchTO grouped
-    * by job ID
-    * 
-    * @param search
-    * @return List of {@link TestExecution}
-    */
-   public List<TestExecution> searchTestExecutionsGroupedByJobId(TestExecutionSearchTO search);
-
-   /**
     * Returns list of Tests according to criteria defined by TestSearchTO
     * 
     * @param search
@@ -97,7 +88,7 @@ public interface TestService {
     * @param attachment
     * @throws ServiceException
     */
-   public void deleteAttachment(TestExecutionAttachment attachment) throws ServiceException;
+   public void removeAttachment(TestExecutionAttachment attachment) throws ServiceException;
 
    /**
     * Get test execution attachment by id.
@@ -123,7 +114,7 @@ public interface TestService {
     * @param testExecution
     * @throws ServiceException
     */
-   public void deleteTestExecution(TestExecution testExecution) throws ServiceException;
+   public void removeTestExecution(TestExecution testExecution) throws ServiceException;
 
    /**
     * Get {@link TestExecution} with all details.
@@ -144,16 +135,7 @@ public interface TestService {
     * @param testId
     * @return List of {@link TestExecution}
     */
-   public List<TestExecution> findExecutionsByTest(Long testId);
-
-   /**
-    * Returns TestExecutions by Test id and job Id
-    * 
-    * @param testId
-    * @param jobId
-    * @return List of {@link TestExecution}
-    */
-   public List<TestExecution> getFullTestExecutionsByTestAndJob(Long testId, Long jobId);
+   public List<TestExecution> getExecutionsByTest(Long testId);
 
    /**
     * Returns TestExecutions by tags and test uids
@@ -197,7 +179,7 @@ public interface TestService {
     * @param test
     * @throws ServiceException
     */
-   public void deleteTest(Test test) throws ServiceException;
+   public void removeTest(Test test) throws ServiceException;
 
    /**
     * Updates the test.
@@ -252,7 +234,7 @@ public interface TestService {
     * @param metric
     * @throws ServiceException
     */
-   public void deleteMetric(Test test, Metric metric) throws ServiceException;
+   public void removeMetric(Test test, Metric metric) throws ServiceException;
 
    /**
     * Update only attributes name and started and collection of tags.
@@ -288,7 +270,7 @@ public interface TestService {
     * @param tep
     * @throws ServiceException
     */
-   public void deleteParameter(TestExecutionParameter tep) throws ServiceException;
+   public void removeParameter(TestExecutionParameter tep) throws ServiceException;
 
    /**
     * Creates new value.
@@ -314,7 +296,7 @@ public interface TestService {
     * @param value
     * @throws ServiceException
     */
-   public void deleteValue(Value value) throws ServiceException;
+   public void removeValue(Value value) throws ServiceException;
 
    /**
     * Get parameter and test execution.
@@ -328,14 +310,14 @@ public interface TestService {
     * 
     * @return lists of tests for selection in UI.
     */
-   public List<Test> getAllSelectionTests();
+   public List<Test> getAllTests();
 
    /**
     * 
     * @param testId
     * @return All metrics for given testId
     */
-   public List<Metric> getAllSelectionMetrics(Long testId);
+   public List<Metric> getAllMetrics(Long testId);
 
    /**
     * Returns test uids matching prefix
@@ -372,7 +354,7 @@ public interface TestService {
     * @param tags
     * @param testExecutions
     */
-   public void deleteTagsFromTestExecutions(Collection<String> tags, Collection<TestExecution> testExecutions);
+   public void removeTagsFromTestExecutions(Collection<String> tags, Collection<TestExecution> testExecutions);
 
    /**
     * Retrieves test by id

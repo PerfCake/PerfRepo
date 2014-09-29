@@ -74,7 +74,7 @@ public class TestServiceBeanTest {
                @Override
                public Void run() {
                   try {
-                     testService.deleteTest(test);
+                     testService.removeTest(test);
                   } catch (ServiceException e) {
                      log.error("Error while removing test", e);
                   }
@@ -125,7 +125,7 @@ public class TestServiceBeanTest {
             Test createdTest = testService.createTest(test("test1").description("this is a test test").metric("metric1", "0", "this is a test metric 1")
                   .metric("metric2", "1", "this is a test metric 2").metric("multimetric", "1", "this is a metric with multiple values").build());
             assert testService.getAllFullTests().contains(createdTest);
-            testService.deleteTest(createdTest);
+            testService.removeTest(createdTest);
             assert testService.getAllFullTests().isEmpty();
             return null;
          }

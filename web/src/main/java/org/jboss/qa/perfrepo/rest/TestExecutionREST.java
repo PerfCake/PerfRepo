@@ -106,7 +106,7 @@ public class TestExecutionREST {
    public Response delete(@PathParam("testExecutionId") Long testExecutionId) throws Exception {
       TestExecution idHolder = new TestExecution();
       idHolder.setId(testExecutionId);
-      testService.deleteTestExecution(idHolder);
+      testService.removeTestExecution(idHolder);
       return Response.noContent().build();
    }
 

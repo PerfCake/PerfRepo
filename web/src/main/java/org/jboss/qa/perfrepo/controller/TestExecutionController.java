@@ -357,7 +357,7 @@ public class TestExecutionController extends BaseController {
          objectToDelete.setId(new Long(getRequestParam("testExecutionId")));
       }
       try {
-         testService.deleteTestExecution(objectToDelete);
+         testService.removeTestExecution(objectToDelete);
       } catch (Exception e) {
          // TODO: how to handle web-layer exceptions ?
          throw new RuntimeException(e);
@@ -368,7 +368,7 @@ public class TestExecutionController extends BaseController {
    public void deleteParameter(TestExecutionParameter param) {
       if (param != null) {
          try {
-            testService.deleteParameter(param);
+            testService.removeParameter(param);
             EntityUtils.removeById(testExecution.getParameters(), param.getId());
          } catch (Exception e) {
             throw new RuntimeException(e);
@@ -486,7 +486,7 @@ public class TestExecutionController extends BaseController {
          idHolder.setId(testExecutionId);
          value.setTestExecution(idHolder);
          try {
-            testService.deleteValue(value);
+            testService.removeValue(value);
             EntityUtils.removeById(testExecution.getValues(), value.getId());
             ValueInfo prevValueInfo = MultiValue.find(values, value);
             values = MultiValue.createFrom(testExecution);
@@ -644,7 +644,7 @@ public class TestExecutionController extends BaseController {
       try {
          attachment.setTestExecution(new TestExecution());
          attachment.getTestExecution().setId(testExecutionId);
-         testService.deleteAttachment(attachment);
+         testService.removeAttachment(attachment);
          testExecution = testService.getFullTestExecution(testExecutionId);
          showMultiValue(null);
       } catch (ServiceException e) {

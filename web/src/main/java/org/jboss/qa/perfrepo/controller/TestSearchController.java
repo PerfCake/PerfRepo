@@ -87,7 +87,7 @@ public class TestSearchController extends BaseController {
             throw new IllegalStateException("Bad request, missing idToDelete");
          } else {
             try {
-               testService.deleteTest(testToRemove);
+               testService.removeTest(testToRemove);
                addMessage(INFO, "page.testSearch.testDeleted", testToRemove.getName());
             } catch (ServiceException e) {
                addMessageFor(e);

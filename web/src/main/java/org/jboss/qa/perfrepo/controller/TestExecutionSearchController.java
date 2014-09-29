@@ -134,7 +134,7 @@ public class TestExecutionSearchController extends BaseController {
             throw new IllegalStateException("Bad request, missing idToDelete");
          } else {
             try {
-               testService.deleteTestExecution(execToRemove);
+               testService.removeTestExecution(execToRemove);
                addMessage(INFO, "page.execSearch.execSucessfullyDeleted", execToRemove.getName());
             } catch (ServiceException e) {
                addMessageFor(e);
@@ -293,14 +293,14 @@ public class TestExecutionSearchController extends BaseController {
    public void deleteTagsFromFoundTestExecutions() {
       List<String> tags = TagUtils.parseTags(massOperationDeleteTags !=null ? massOperationDeleteTags.toLowerCase() : "");
 
-      testService.deleteTagsFromTestExecutions(tags, result);
+      testService.removeTagsFromTestExecutions(tags, result);
       search();
    }
 
    public void deleteFoundTestExecutions() {
       for(TestExecution testExecution: result) {
          try {
-            testService.deleteTestExecution(testExecution);
+            testService.removeTestExecution(testExecution);
          } catch (ServiceException ex) {
             //TODO: how to handle this properly?
             throw new RuntimeException(ex);

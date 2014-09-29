@@ -87,7 +87,7 @@ public class ParametrizedTestExecutionController extends BaseController {
 		jobId = getRequestParamLong("jobId");
 		if (testId != null && jobId != null) {
 			test = testService.getFullTest(testId);
-			testExecutions = testService.getFullTestExecutionsByTestAndJob(testId, jobId);
+			//testExecutions = testService.getFullTestExecutionsByTestAndJob(testId, jobId);
 			table.process(jobId, testExecutions);
 			renderedParam = new HashMap<String, String>();
 			//<a4j:mediaOutput element="img" expires="#{now}" cacheable="#{false}" createContent="#{jfreechart.generate}" mimeType="image/png"
@@ -111,7 +111,7 @@ public class ParametrizedTestExecutionController extends BaseController {
 		if (table.getCompareJobIds() == null || table.getCompareJobIds().size() == 0) {
 			compareJobId = jobId;
 		}
-		List<TestExecution> compareTestExecutions = testService.getFullTestExecutionsByTestAndJob(testId, jobId);
+		List<TestExecution> compareTestExecutions = null;// = testService.getFullTestExecutionsByTestAndJob(testId, jobId);
 		table.addTestExecutions(jobId, compareTestExecutions);
 	}
 	
@@ -186,7 +186,7 @@ public class ParametrizedTestExecutionController extends BaseController {
 	
 	public void searchTEs() {
 		search.setTestUID(test.getUid());
-		result = testService.searchTestExecutionsGroupedByJobId(search);
+		//result = testService.searchTestExecutionsGroupedByJobId(search);
 	}
 	
 	

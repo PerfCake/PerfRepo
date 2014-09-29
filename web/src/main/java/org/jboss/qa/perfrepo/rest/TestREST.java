@@ -88,7 +88,7 @@ public class TestREST {
    public Response delete(@PathParam("testId") Long testId) throws Exception {
       Test test = new Test();
       test.setId(testId);
-      testService.deleteTest(test);
+      testService.removeTest(test);
       return Response.noContent().build();
    }
 

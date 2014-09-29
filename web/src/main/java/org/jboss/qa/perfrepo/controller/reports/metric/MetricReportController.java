@@ -111,7 +111,7 @@ public class MetricReportController extends BaseController {
    @PostConstruct
    protected void init() {
       if (selectionTests == null) {
-         selectionTests = testService.getAllSelectionTests();
+         selectionTests = testService.getAllTests();
          Collections.sort(selectionTests, new Comparator<Test>() {
             @Override
             public int compare(Test o1, Test o2) {
@@ -670,7 +670,7 @@ public class MetricReportController extends BaseController {
             throw new IllegalStateException("can't change metrics with null test ID");
          }
 
-         selectionMetrics = testService.getAllSelectionMetrics(selectedTestId);
+         selectionMetrics = testService.getAllMetrics(selectedTestId);
          if (selectionMetrics.isEmpty()) {
             addMessage(ERROR, "page.metricreport.noMetrics", findSelectedTestUID(selectedTestId));
          } else if (seriesSpecs != null) {

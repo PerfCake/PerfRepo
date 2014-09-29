@@ -26,39 +26,46 @@ import javax.ejb.ApplicationException;
 @ApplicationException(rollback = true)
 public class ServiceException extends Exception {
 
-   public interface Codes {
-      static final int TEST_UID_EXISTS = 100;
-      static final int TEST_EXECUTION_NOT_FOUND = 200;
-      static final int METRIC_NOT_IN_TEST = 300;
-      static final int METRIC_NOT_FOUND = 400;
-      static final int METRIC_SHARING_ONLY_IN_GROUP = 500;
-      static final int METRIC_EXISTS = 600;
-      static final int TEST_NOT_FOUND = 700;
-      static final int TEST_UID_NOT_FOUND = 800;
-      static final int METRIC_HAS_VALUES = 900;
-      static final int VALUE_NOT_FOUND = 1000;
-      static final int STALE_COLLECTION = 1100;
-      static final int UNPARAMETRIZED_MULTI_VALUE = 1200;
-      static final int EXECUTION_LOCKED = 1300;
-      static final int PARAMETER_EXISTS = 1400;
-      static final int USER_NOT_FOUND = 1500;
-      static final int NOT_YOU = 1600;
-   }
+	private static final long serialVersionUID = 4888320719223847688L;
 
-   private int code;
-   private Object[] params;
+	public interface Codes {
+		static final int TEST_UID_EXISTS = 100;
+		static final int TEST_EXECUTION_NOT_FOUND = 200;
+		static final int METRIC_NOT_IN_TEST = 300;
+		static final int METRIC_NOT_FOUND = 400;
+		static final int METRIC_SHARING_ONLY_IN_GROUP = 500;
+		static final int METRIC_EXISTS = 600;
+		static final int TEST_NOT_FOUND = 700;
+		static final int TEST_UID_NOT_FOUND = 800;
+		static final int METRIC_HAS_VALUES = 900;
+		static final int VALUE_NOT_FOUND = 1000;
+		static final int STALE_COLLECTION = 1100;
+		static final int UNPARAMETRIZED_MULTI_VALUE = 1200;
+		static final int EXECUTION_LOCKED = 1300;
+		static final int PARAMETER_EXISTS = 1400;
+		static final int USER_NOT_FOUND = 1500;
+		static final int NOT_YOU = 1600;
+	}
 
-   public ServiceException(int code, Object[] params, String message) {
-      super(message);
-      this.code = code;
-      this.params = params;
-   }
+	private int code;
+	private Object[] params;
 
-   public Object[] getParams() {
-      return params;
-   }
+	public ServiceException(int code, Object[] params, String message) {
+		super(message);
+		this.code = code;
+		this.params = params;
+	}
 
-   public int getCode() {
-      return code;
-   }
+	public ServiceException(int code, String message) {
+		super(message);
+		this.code = code;
+	}
+
+	public Object[] getParams() {
+		return params;
+	}
+
+	public int getCode() {
+		return code;
+	}
 }

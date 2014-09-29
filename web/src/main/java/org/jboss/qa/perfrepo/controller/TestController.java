@@ -266,7 +266,7 @@ public class TestController extends BaseController {
 
       public void deleteMetric(Metric metricToDelete) {
          try {
-            testService.deleteMetric(test, metricToDelete);
+            testService.removeMetric(test, metricToDelete);
             redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyDeleted", metricToDelete.getName());
          } catch (ServiceException e) {
             addSessionMessageFor(e);
