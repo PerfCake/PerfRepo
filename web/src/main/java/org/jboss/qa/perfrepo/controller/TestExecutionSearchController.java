@@ -137,7 +137,7 @@ public class TestExecutionSearchController extends BaseController {
                testService.removeTestExecution(execToRemove);
                addMessage(INFO, "page.execSearch.execSucessfullyDeleted", execToRemove.getName());
             } catch (ServiceException e) {
-               addMessageFor(e);
+               addMessage(e);
             }
          }
       }

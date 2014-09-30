@@ -30,7 +30,10 @@ public class ServiceException extends Exception {
 
 	public interface Codes {
 		static final int TEST_UID_EXISTS = 100;
+		static final int TEST_NOT_NULL = 110;
 		static final int TEST_EXECUTION_NOT_FOUND = 200;
+		static final int TEST_EXECUTION_NOT_FOUND_ADD_ATTACHMENT = 210;
+		static final int TEST_EXECUTION_NOT_FOUND_REMOVE_ATTACHMENT = 220;
 		static final int METRIC_NOT_IN_TEST = 300;
 		static final int METRIC_NOT_FOUND = 400;
 		static final int METRIC_SHARING_ONLY_IN_GROUP = 500;
@@ -50,15 +53,9 @@ public class ServiceException extends Exception {
 	private int code;
 	private Object[] params;
 
-	public ServiceException(int code, Object[] params, String message) {
-		super(message);
+	public ServiceException(int code, Object...params) {
 		this.code = code;
 		this.params = params;
-	}
-
-	public ServiceException(int code, String message) {
-		super(message);
-		this.code = code;
 	}
 
 	public Object[] getParams() {

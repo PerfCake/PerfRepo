@@ -144,8 +144,7 @@ public class TestServiceBean implements TestService {
 				}
 				TestMetric testMetric = testMetricDAO.find(test, value.getMetricName());
 				if (testMetric == null) {
-					throw new ServiceException(ServiceException.Codes.METRIC_NOT_IN_TEST, MessageUtils.getMessage(
-							"serviceException.300", test.getName(), test.getId(), value.getMetricName()));
+					throw new ServiceException(ServiceException.Codes.METRIC_NOT_IN_TEST, test.getName(), test.getId(), value.getMetricName());
 				}
 				value.setMetric(testMetric.getMetric());
 				valueDAO.create(value);
@@ -212,9 +211,7 @@ public class TestServiceBean implements TestService {
 	public Long addAttachment(TestExecutionAttachment attachment) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(attachment.getTestExecution().getId());
 		if (exec == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.210", attachment.getTestExecution()
-							.getId()));
+			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND_ADD_ATTACHMENT, attachment.getTestExecution().getId());
 		}
 		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
@@ -227,9 +224,7 @@ public class TestServiceBean implements TestService {
 	public void removeAttachment(TestExecutionAttachment attachment) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(attachment.getTestExecution().getId());
 		if (exec == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.220", attachment.getTestExecution()
-							.getId()));
+			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND_REMOVE_ATTACHMENT, attachment.getTestExecution().getId());
 		}
 		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
@@ -251,8 +246,7 @@ public class TestServiceBean implements TestService {
 					.getUsername(), test.getGroupId()));
 		}
 		if (testDAO.findByUid(test.getUid()) != null) {
-			throw new ServiceException(ServiceException.Codes.TEST_UID_EXISTS, MessageUtils.getMessage(
-					"serviceException.100", test.getUid()));
+			throw new ServiceException(ServiceException.Codes.TEST_UID_EXISTS, test.getUid());
 		}
 		Test createdTest = testDAO.create(test);
 		//store metrics
@@ -332,8 +326,7 @@ public class TestServiceBean implements TestService {
 	public void removeTestExecution(TestExecution testExecution) throws ServiceException {
 		TestExecution freshTestExecution = testExecutionDAO.get(testExecution.getId());
 		if (freshTestExecution == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.200", testExecution.getId()));
+			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, testExecution.getId());
 		}
 		checkUserCanChangeTest(freshTestExecution.getTest());
 		for (TestExecutionParameter testExecutionParameter : freshTestExecution.getParameters()) {
@@ -371,17 +364,14 @@ public class TestServiceBean implements TestService {
 			// associating an existing metric with the test
 			Metric freshMetric = metricDAO.get(metric.getId());
 			if (freshMetric == null) {
-				throw new ServiceException(ServiceException.Codes.METRIC_NOT_FOUND, MessageUtils.getMessage(
-						"serviceException.400", metric.getId()));
+				throw new ServiceException(ServiceException.Codes.METRIC_NOT_FOUND, metric.getId());
 			}
 			for (Test testForMetric : freshMetric.getTests()) {
 				if (!testForMetric.getGroupId().equals(freshTest.getGroupId())) {
-					throw new ServiceException(ServiceException.Codes.METRIC_SHARING_ONLY_IN_GROUP,
-							MessageUtils.getMessage("serviceException.500"));
+					throw new ServiceException(ServiceException.Codes.METRIC_SHARING_ONLY_IN_GROUP);
 				}
 				if (testForMetric.getId().equals(freshTest.getId())) {
-					throw new ServiceException(ServiceException.Codes.METRIC_EXISTS, MessageUtils.getMessage(
-							"serviceException.600", freshTest.getUid(), freshMetric.getName()));
+					throw new ServiceException(ServiceException.Codes.METRIC_EXISTS, freshTest.getUid(), freshMetric.getName());
 				}
 			}
 			return createTestMetric(freshTest, freshMetric);
@@ -410,8 +400,7 @@ public class TestServiceBean implements TestService {
 		Test freshTest = checkUserCanChangeTest(test);
 		TestMetric freshTestMetric = testMetricDAO.find(freshTest, metric);
 		if (freshTestMetric == null) {
-			throw new ServiceException(ServiceException.Codes.METRIC_NOT_IN_TEST, MessageUtils.getMessage(
-					"serviceException.300", freshTest.getName(), freshTest.getId(), metric.getName()));
+			throw new ServiceException(ServiceException.Codes.METRIC_NOT_IN_TEST, freshTest.getName(), freshTest.getId(), metric.getName());
 		}
 		return metricDAO.update(metric);
 	}
@@ -426,15 +415,13 @@ public class TestServiceBean implements TestService {
 	public void removeMetric(Test test, Metric metric) throws ServiceException {
 		Test freshTest = checkUserCanChangeTest(test);
 		if (freshTest == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.700", test.getId()));
+			throw new ServiceException(ServiceException.Codes.TEST_NOT_FOUND, test.getId());
 		}
 		TestMetric freshTestMetric = testMetricDAO.find(freshTest, metric.getName());
 		Metric freshMetric = freshTestMetric.getMetric();
 		if (freshMetric.getTestMetrics().size() == 1) {
 			if (!freshMetric.getValues().isEmpty()) {
-				throw new ServiceException(ServiceException.Codes.METRIC_HAS_VALUES, MessageUtils.getMessage(
-						"serviceException.900", freshMetric.getName()));
+				throw new ServiceException(ServiceException.Codes.METRIC_HAS_VALUES, freshMetric.getName());
 			} else {
 				testMetricDAO.remove(freshTestMetric);
 				metricDAO.remove(freshMetric);
@@ -468,8 +455,7 @@ public class TestServiceBean implements TestService {
 	public TestExecution updateTestExecution(TestExecution anExec) throws ServiceException {
 		TestExecution execEntity = testExecutionDAO.get(anExec.getId());
 		if (execEntity == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.200", anExec.getId()));
+			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, anExec.getId());
 		}
 		checkUserCanChangeTest(execEntity.getTest());
 		checkLocked(execEntity);
@@ -502,8 +488,7 @@ public class TestServiceBean implements TestService {
 	public TestExecution setExecutionLocked(TestExecution anExec, boolean locked) throws ServiceException {
 		TestExecution execEntity = testExecutionDAO.get(anExec.getId());
 		if (execEntity == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.200", anExec.getId()));
+			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, anExec.getId());
 		}
 		checkUserCanChangeTest(execEntity.getTest());
 		execEntity.setLocked(locked);
@@ -514,15 +499,13 @@ public class TestServiceBean implements TestService {
 	public TestExecutionParameter updateParameter(TestExecutionParameter tep) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(tep.getTestExecution().getId());
 		if (exec == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.200", tep.getTestExecution().getId()));
+			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, tep.getTestExecution().getId());
 		}
 		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
 
-		if (testExecutionParameterDAO.hasTestParam(exec.getTest().getId(), tep.getName())) {
-			throw new ServiceException(ServiceException.Codes.PARAMETER_EXISTS, MessageUtils.getMessage(
-					"serviceException.1400", tep.getName()));
+		if (testExecutionParameterDAO.hasTestParam(exec.getId(), tep.getName())) {
+			throw new ServiceException(ServiceException.Codes.PARAMETER_EXISTS, tep.getName());
 		}
 
 		return testExecutionParameterDAO.update(tep);
@@ -532,8 +515,7 @@ public class TestServiceBean implements TestService {
 	public void removeParameter(TestExecutionParameter tep) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(tep.getTestExecution().getId());
 		if (exec == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.200", tep.getTestExecution().getId()));
+			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, tep.getTestExecution().getId());
 		}
 		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
@@ -545,8 +527,7 @@ public class TestServiceBean implements TestService {
 	public Value addValue(Value value) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(value.getTestExecution().getId());
 		if (exec == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.200", value.getTestExecution().getId()));
+			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, value.getTestExecution().getId());
 		}
 		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
@@ -561,8 +542,7 @@ public class TestServiceBean implements TestService {
 			}
 		}
 		if (metric == null) {
-			throw new ServiceException(ServiceException.Codes.METRIC_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.400", value.getMetric().getId()));
+			throw new ServiceException(ServiceException.Codes.METRIC_NOT_FOUND, value.getMetric().getId());
 		}
 		value.setTestExecution(exec);
 		value.setMetric(metric);
@@ -571,13 +551,11 @@ public class TestServiceBean implements TestService {
 		if (!existingValuesForMetric.isEmpty()) {
 			for (Value v : existingValuesForMetric) {
 				if (!v.hasParameters()) {
-					throw new ServiceException(ServiceException.Codes.UNPARAMETRIZED_MULTI_VALUE,
-							MessageUtils.getMessage("serviceException.1200"));
+					throw new ServiceException(ServiceException.Codes.UNPARAMETRIZED_MULTI_VALUE);
 				}
 			}
 			if (!value.hasParameters()) {
-				throw new ServiceException(ServiceException.Codes.UNPARAMETRIZED_MULTI_VALUE,
-						MessageUtils.getMessage("serviceException.1200"));
+				throw new ServiceException(ServiceException.Codes.UNPARAMETRIZED_MULTI_VALUE);
 			}
 		}
 		Value freshValue = valueDAO.create(value);
@@ -598,15 +576,13 @@ public class TestServiceBean implements TestService {
 	public Value updateValue(Value value) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(value.getTestExecution().getId());
 		if (exec == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.200", value.getTestExecution().getId()));
+			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, value.getTestExecution().getId());
 		}
 		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
 		Value oldValue = valueDAO.get(value.getId());
 		if (oldValue == null) {
-			throw new ServiceException(ServiceException.Codes.VALUE_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.1000", value.getId()));
+			throw new ServiceException(ServiceException.Codes.VALUE_NOT_FOUND, value.getId());
 		}
 		Value freshValue = valueDAO.update(value);
 		Value freshValueClone = freshValue.clone();
@@ -615,8 +591,7 @@ public class TestServiceBean implements TestService {
 		freshValueClone.getMetric().setValues(null);
 		UpdateSet<ValueParameter> updateSet = EntityUtils.updateSet(oldValue.getParameters(), value.getParameters());
 		if (!updateSet.removed.isEmpty()) {
-			throw new ServiceException(ServiceException.Codes.STALE_COLLECTION, MessageUtils.getMessage(
-					"serviceException.1100", updateSet.removed));
+			throw new ServiceException(ServiceException.Codes.STALE_COLLECTION, updateSet.removed);
 		}
 		List<ValueParameter> newParams = new ArrayList<ValueParameter>();
 		for (ValueParameter vp : updateSet.toAdd) {
@@ -639,8 +614,7 @@ public class TestServiceBean implements TestService {
 	public void removeValue(Value value) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(value.getTestExecution().getId());
 		if (exec == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, MessageUtils.getMessage(
-					"serviceException.200", value.getTestExecution().getId()));
+			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, value.getTestExecution().getId());
 		}
 		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
@@ -788,20 +762,18 @@ public class TestServiceBean implements TestService {
 	private Test checkUserCanChangeTest(Test test) throws ServiceException {
 		// The test referred by test execution has to be an existing test
 		if (test == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_NOT_FOUND, MessageUtils.getMessage("serviceException.101"));
+			throw new ServiceException(ServiceException.Codes.TEST_NOT_NULL);
 		}
 		Test freshTest = null;
 		if (test.getId() != null) {
 			freshTest = testDAO.get(test.getId());
 			if (freshTest == null) {
-				throw new ServiceException(ServiceException.Codes.TEST_NOT_FOUND, MessageUtils.getMessage(
-						"serviceException.200", test.getId()));
+				throw new ServiceException(ServiceException.Codes.TEST_NOT_FOUND, test.getId());
 			}
 		} else if (test.getUid() != null) {
 			freshTest = testDAO.findByUid(test.getUid());
 			if (freshTest == null) {
-				throw new ServiceException(ServiceException.Codes.TEST_UID_NOT_FOUND, MessageUtils.getMessage(
-						"serviceException.800", test.getUid()));
+				throw new ServiceException(ServiceException.Codes.TEST_UID_NOT_FOUND, test.getUid());
 			}
 		} else {
 			throw new IllegalArgumentException("Can't find test, id or uid needs to be supplied");
@@ -816,8 +788,7 @@ public class TestServiceBean implements TestService {
 
 	private void checkLocked(TestExecution exec) throws ServiceException {
 		if (exec.isLocked()) {
-			throw new ServiceException(ServiceException.Codes.EXECUTION_LOCKED, MessageUtils.getMessage(
-					"serviceException.1300", exec.getId()));
+			throw new ServiceException(ServiceException.Codes.EXECUTION_LOCKED, exec.getId());
 		}
 	}
 }

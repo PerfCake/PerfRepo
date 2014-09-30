@@ -25,7 +25,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 
 /**
@@ -40,28 +40,28 @@ import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long> {
 
    /**
-    * Discovers if test execution already has the parameter associated with the test, in other word
-    * if it breaks the unique (testId, name) constraint
+    * Discovers if test execution already has the parameter, in other word
+    * if it breaks the unique (testExecutionId, name) constraint
     *
     * @param testId
     * @param paramName
-    * @return true if there's already test execution parameter with same pair (testId, param_name)
+    * @return true if there's already test execution parameter with same pair (testExecutionId, param_name)
     */
-   public boolean hasTestParam(Long testId, String paramName) {
+   public boolean hasTestParam(Long testExecutionId, String paramName) {
       CriteriaBuilder cb = criteriaBuilder();
       CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
 
       Root<TestExecutionParameter> rParam = criteria.from(TestExecutionParameter.class);
-      Join<TestExecutionParameter, Test> rTest = rParam.join("testExecution").join("test");
+      Join<TestExecutionParameter, TestExecution> rTestExecution = rParam.join("testExecution");
 
-      Predicate pFixedTest = cb.equal(rTest.get("id"), cb.parameter(Long.class, "testId"));
+      Predicate pFixedTest = cb.equal(rTestExecution.get("id"), cb.parameter(Long.class, "testExecutionId"));
       Predicate pFixedName = cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName"));
 
       criteria.where(cb.and(pFixedTest, pFixedName));
       criteria.select(cb.count(rParam.get("id")));
 
       TypedQuery<Long> query = query(criteria);
-      query.setParameter("testId", testId);
+      query.setParameter("testExecutionId", testExecutionId);
       query.setParameter("paramName", paramName);
       return query.getSingleResult() != 0l;
    }

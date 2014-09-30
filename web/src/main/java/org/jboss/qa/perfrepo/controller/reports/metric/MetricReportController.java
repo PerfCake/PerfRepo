@@ -51,6 +51,7 @@ import org.jboss.qa.perfrepo.service.ReportService;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.UserService;
 import org.jboss.qa.perfrepo.session.UserSession;
+import org.jboss.qa.perfrepo.util.MessageUtils;
 import org.jboss.qa.perfrepo.util.ReportUtils;
 import org.jboss.qa.perfrepo.util.TagUtils;
 import org.jboss.qa.perfrepo.util.ViewUtils;
@@ -274,7 +275,7 @@ public class MetricReportController extends BaseController {
          addMessage(INFO, "page.metricreport.noTests");
       }
 
-      reportName = getBundleString("page.metricreport.newReport");
+      reportName = MessageUtils.getMessage("page.metricreport.newReport");
       reportId = reportService.getMaxId() + 1;
 
       chartSpecs = new ArrayList<ChartSpec>();

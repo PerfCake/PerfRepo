@@ -17,12 +17,10 @@ package org.jboss.qa.perfrepo.controller;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
@@ -30,6 +28,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
+import org.jboss.qa.perfrepo.util.MessageUtils;
 import org.richfaces.model.SortOrder;
 
 /**
@@ -54,7 +53,6 @@ public class BaseController implements Serializable {
    private boolean multipleSorting = false;
 
    private List<String> sortPriorities = new ArrayList<String>();
-   private ResourceBundle bundle;
 
    protected ExternalContext externalContext() {
       return FacesContext.getCurrentInstance().getExternalContext();
@@ -125,7 +123,7 @@ public class BaseController implements Serializable {
    }
 
    protected void addSessionMessage(Severity severity, String msgKey, Object... params) {
-      String msg = getBundleString(msgKey, params);
+      String msg = MessageUtils.getMessage(msgKey, params);
       addSessionMessage(new FacesMessage(severity, msg, msg));
    }
 
@@ -173,42 +171,21 @@ public class BaseController implements Serializable {
       fc.renderResponse();
    }
 
-   protected String getBundleString(String key, Object... params) {
-      if (bundle == null) {
-         bundle = ResourceBundle.getBundle("lang.strings");
-      }
-      if (bundle == null) {
-         return "??? " + key + " ???";
-      } else {
-         String str = bundle.getString(key);
-         if (str == null) {
-            return "??? " + key + " ???";
-         } else {
-            return MessageFormat.format(str, params);
-         }
-      }
-   }
-
-   public String getEnumString(Enum<?> anEnum) {
-      return getBundleString("enum." + anEnum.getClass().getName() + "." + anEnum.toString());
-   }
-
    protected void addMessage(Severity severity, String msgKey, Object... params) {
       FacesContext fc = FacesContext.getCurrentInstance();
-      String message = getBundleString(msgKey, params);
+      String message = MessageUtils.getMessage(msgKey, params);
       fc.addMessage(null, new FacesMessage(severity, message, message));
    }
 
-   protected void addMessageFor(ServiceException e) {
-      FacesContext.getCurrentInstance().addMessage(null, getServiceExceptionMessage(e));
+   protected void addMessage(ServiceException e) {
+	      FacesContext fc = FacesContext.getCurrentInstance();
+	      String message = MessageUtils.getMessage(e);
+	      fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
    }
 
-   protected void addSessionMessageFor(ServiceException e) {
-      addSessionMessage(getServiceExceptionMessage(e));
+   protected void addSessionMessage(ServiceException e) {
+	   String message = MessageUtils.getMessage(e);
+	   addSessionMessage(new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
    }
 
-   protected FacesMessage getServiceExceptionMessage(ServiceException exception) {
-      String msg = getBundleString("serviceException." + exception.getCode(), exception.getParams());
-      return new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg);
-   }
 }

@@ -131,7 +131,7 @@ public class TestController extends BaseController {
          Test createdTest = testService.createTest(test);
          redirectWithMessage("/test/" + createdTest.getId(), INFO, "page.test.createdSuccesfully", createdTest.getId());
       } catch (ServiceException e) {
-         addMessageFor(e);
+         addMessage(e);
       } catch (SecurityException e) {
          addMessage(ERROR, "page.test.errorSecurityException", e.getMessage());
       } catch (EJBException e) {
@@ -237,7 +237,7 @@ public class TestController extends BaseController {
                testService.addMetric(test, selectedAssignedMetric);
                redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyAssigned", selectedAssignedMetric.getName());
             } catch (ServiceException e) {
-               addSessionMessageFor(e);
+               addSessionMessage(e);
                redirect("/test/" + testId);
             }
          }
@@ -248,7 +248,7 @@ public class TestController extends BaseController {
             testService.addMetric(test, metric);
             redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyCreated", metric.getName());
          } catch (ServiceException e) {
-            addSessionMessageFor(e);
+            addSessionMessage(e);
             redirect("/test/" + testId);
          }
       }
@@ -257,7 +257,7 @@ public class TestController extends BaseController {
          try {
             testService.updateMetric(test, metric);
          } catch (ServiceException e) {
-            addSessionMessageFor(e);
+            addSessionMessage(e);
             redirect("/test/" + testId);
          }
       }
@@ -267,7 +267,7 @@ public class TestController extends BaseController {
             testService.removeMetric(test, metricToDelete);
             redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyDeleted", metricToDelete.getName());
          } catch (ServiceException e) {
-            addSessionMessageFor(e);
+            addSessionMessage(e);
             redirect("/test/" + testId);
          }
       }

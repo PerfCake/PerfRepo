@@ -90,7 +90,7 @@ public class TestSearchController extends BaseController {
                testService.removeTest(testToRemove);
                addMessage(INFO, "page.testSearch.testDeleted", testToRemove.getName());
             } catch (ServiceException e) {
-               addMessageFor(e);
+               addMessage(e);
             }
          }
       }

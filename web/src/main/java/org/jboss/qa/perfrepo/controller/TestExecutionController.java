@@ -139,7 +139,7 @@ public class TestExecutionController extends BaseController {
       }
       catch (ServiceException e) {
          log.error("Error while saving property", e);
-         addMessageFor(e);
+         addMessage(e);
       }
       userSession.refresh();
       favoriteParameters = userService.getFavoriteParametersForTest(test);
@@ -154,7 +154,7 @@ public class TestExecutionController extends BaseController {
          userService.removeFavoriteParameter(test, paramName);
       } catch (ServiceException e) {
          log.error("Error while removing favorite parameter.", e);
-         addMessageFor(e);
+         addMessage(e);
       }
       userSession.refresh();
       favoriteParameters = userService.getFavoriteParametersForTest(test);
@@ -225,7 +225,7 @@ public class TestExecutionController extends BaseController {
                redirectWithMessage("/exec/" + testExecution.getId(), INFO, "page.exec.successfullyUpdated", testExecution.getName());
             }
          } catch (ServiceException e) {
-            addMessageFor(e);
+            addMessage(e);
          }
       }
    }
@@ -235,7 +235,7 @@ public class TestExecutionController extends BaseController {
          testExecution = testService.setExecutionLocked(testExecution, locked);
          showMultiValue(null);
       } catch (ServiceException e) {
-         addMessageFor(e);
+         addMessage(e);
       }
    }
 
@@ -387,7 +387,7 @@ public class TestExecutionController extends BaseController {
             testExecution.getParameters().add(freshParam);
             editedParameter = null;
          } catch (ServiceException e) {
-            addMessageFor(e);
+            addMessage(e);
             editedParameter = null;
          }
       }
@@ -468,7 +468,7 @@ public class TestExecutionController extends BaseController {
             values = MultiValue.createFrom(testExecution);
             showMultiValue(prevValueInfo == null ? null : prevValueInfo.getMetricName());
          } catch (ServiceException e) {
-            addMessageFor(e);
+            addMessage(e);
          }
       }
    }
@@ -492,7 +492,7 @@ public class TestExecutionController extends BaseController {
             values = MultiValue.createFrom(testExecution);
             showMultiValue(prevValueInfo.getMetricName());
          } catch (ServiceException e) {
-            addMessageFor(e);
+            addMessage(e);
          }
       }
    }
@@ -636,7 +636,7 @@ public class TestExecutionController extends BaseController {
          testExecution = testService.getFullTestExecution(testExecutionId);
          showMultiValue(null);
       } catch (ServiceException e) {
-         addMessageFor(e);
+         addMessage(e);
       }
    }
 
@@ -648,7 +648,7 @@ public class TestExecutionController extends BaseController {
          testExecution = testService.getFullTestExecution(testExecutionId);
          showMultiValue(null);
       } catch (ServiceException e) {
-         addMessageFor(e);
+         addMessage(e);
       }
    }
 

@@ -39,7 +39,9 @@ import org.jboss.qa.perfrepo.viewscope.ViewScoped;
 @ViewScoped
 public class ReportListController extends BaseController {
 
-   private static final Logger log = Logger.getLogger(ReportListController.class);
+	private static final long serialVersionUID = 724797862273365319L;
+
+	private static final Logger log = Logger.getLogger(ReportListController.class);
 
    @Inject
    private ReportService reportService;
@@ -73,14 +75,12 @@ public class ReportListController extends BaseController {
       if (itemToRemove == null) {
          throw new IllegalStateException("Item to remove is null");
       }
-
       try {
          reportService.removeReport(itemToRemove.getId());
       } catch (ServiceException e) {
          log.error("Error while removing report " + itemToRemove.getId(), e);
-         addMessageFor(e);
+         addMessage(e);
       }
-
       updateSavedReports();
    }
 }
