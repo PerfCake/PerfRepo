@@ -13,17 +13,28 @@
 			<div>
 				<form method="POST" action="j_security_check" name="loginForm">
 					<h1>Login to Performance repository</h1>
+					<h:panelGroup
+						rendered="#{requestScope['javax.servlet.forward.servlet_path'].contains('j_security_check')}">
+						<ul>
+							<li class="alert alert-error">#{strings['page.login.invalidLogin']}</li>
+						</ul>
+					</h:panelGroup>
 					<div style="width: 500px">
 						<div style="width: 500px">
-							<label style="height: 20px; width: 140px; float: left; padding-top: 5px;" for="username">#{strings.userName}</label>
-							<input id="username" type="text" name="j_username" />
+							<label
+								style="height: 20px; width: 140px; float: left; padding-top: 5px;"
+								for="username">#{strings.userName}</label> <input id="username"
+								type="text" name="j_username" />
 						</div>
 						<div style="width: 500px;">
-							<label style="height: 20px; width: 140px; float: left; padding-top: 5px;" for="password">#{strings.password}</label>
-							<input id="password" type="password" name="j_password" />
+							<label
+								style="height: 20px; width: 140px; float: left; padding-top: 5px;"
+								for="password">#{strings.password}</label> <input id="password"
+								type="password" name="j_password" />
 						</div>
 						<div style="text-align: right">
-							<h:commandButton type="submit" value="Login" styleClass="btn btn-primary" />
+							<h:commandButton type="submit" value="Login"
+								styleClass="btn btn-primary" />
 						</div>
 					</div>
 				</form>
