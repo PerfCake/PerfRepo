@@ -3,7 +3,7 @@
    <parent>
       <groupId>org.jboss.qa</groupId>
       <artifactId>perfrepo-parent</artifactId>
-      <version>0.0.19</version>
+      <version>0.0.20-SNAPSHOT</version>
    </parent>
    <artifactId>perfrepo-model</artifactId>
    <name>Performance Result Repository Model</name>
