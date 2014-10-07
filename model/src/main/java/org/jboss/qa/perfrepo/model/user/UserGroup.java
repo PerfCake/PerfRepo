@@ -11,7 +11,6 @@ import javax.persistence.Table;
 
 import org.jboss.qa.perfrepo.model.Entity;
 import org.jboss.qa.perfrepo.model.auth.EntityType;
-import org.jboss.qa.perfrepo.model.auth.ReportPermission;
 import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
 
 @javax.persistence.Entity

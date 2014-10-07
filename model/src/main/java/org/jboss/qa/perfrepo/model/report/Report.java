@@ -16,6 +16,7 @@
 package org.jboss.qa.perfrepo.model.report;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.*;
@@ -24,6 +25,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jboss.qa.perfrepo.model.Entity;
+import org.jboss.qa.perfrepo.model.auth.Permission;
 import org.jboss.qa.perfrepo.model.user.User;
 
 /**
@@ -69,6 +71,9 @@ public class Report implements Entity<Report>, Comparable<Report> {
    @MapKey(name = "name")
 	private Map<String, ReportProperty> properties;
 
+   @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
+   private List<Permission> permissions;
+
 	public Long getId() {
 		return id;
 	}
@@ -107,6 +112,14 @@ public class Report implements Entity<Report>, Comparable<Report> {
 
    public void setProperties(Map<String, ReportProperty> properties) {
       this.properties = properties;
+   }
+
+   public List<Permission> getPermissions() {
+      return permissions;
+   }
+
+   public void setPermissions(List<Permission> permissions) {
+      this.permissions = permissions;
    }
 
    @Override

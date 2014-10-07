@@ -773,6 +773,7 @@ ALTER TABLE public.user_group_sequence OWNER TO perfrepo;
 
 CREATE TABLE permission (
   id bigint NOT NULL,
+  report_id bigint,
   access_type character varying(20) NOT NULL,
   access_level character varying(20) NOT NULL,
   group_id bigint,
@@ -783,6 +784,8 @@ CREATE TABLE permission (
 ALTER TABLE public.permission OWNER TO perfrepo;
 ALTER TABLE ONLY public.permission
 ADD CONSTRAINT permission_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.permission
+ADD CONSTRAINT permission_report_fkey FOREIGN KEY(report_id) REFERENCES "report"(id);
 ALTER TABLE ONLY public.permission
 ADD CONSTRAINT permission_group_fkey FOREIGN KEY (group_id) REFERENCES "group"(id);
 ALTER TABLE ONLY public.permission
@@ -803,39 +806,6 @@ CACHE 1;
 
 
 ALTER TABLE public.permission_sequence OWNER TO perfrepo;
-
---
--- Name: report_permission; Type: TABLE; Schema: public; Owner: perfrepo; Tablespace:
---
-
-CREATE TABLE report_permission (
-  id bigint NOT NULL,
-  report_id bigint NOT NULL,
-  permission_id bigint NOT NULL
-);
-
-
-ALTER TABLE public.report_permission OWNER TO perfrepo;
-ALTER TABLE ONLY public.report_permission
-ADD CONSTRAINT report_permission_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY public.report_permission
-ADD CONSTRAINT report_permission_report_fkey FOREIGN KEY (report_id) REFERENCES "report"(id);
-ALTER TABLE ONLY public.report_permission
-ADD CONSTRAINT report_permission_permission_fkey FOREIGN KEY (permission_id) REFERENCES "permission"(id);
-
---
--- Name: report_permission_sequence; Type: SEQUENCE; Schema: public; Owner: perfrepo
---
-
-CREATE SEQUENCE report_permission_sequence
-START WITH 1
-INCREMENT BY 1
-NO MAXVALUE
-NO MINVALUE
-CACHE 1;
-
-
-ALTER TABLE public.report_permission_sequence OWNER TO perfrepo;
 
 --
 -- Name: user, add password column

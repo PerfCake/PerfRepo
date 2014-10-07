@@ -1,15 +1,11 @@
 package org.jboss.qa.perfrepo.model.auth;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.jboss.qa.perfrepo.model.Entity;
+import org.jboss.qa.perfrepo.model.report.Report;
+
+import java.util.List;
 
 @javax.persistence.Entity
 @Table(name = "permission")
@@ -35,6 +31,10 @@ public class Permission implements Entity<Permission>, Comparable<Permission> {
 
 	@Column(name = "user_id")
 	private Long userId;
+
+   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+   @JoinColumn(name = "report_id", referencedColumnName = "id")
+   private Report report;
 
 	public AccessType getAccessType() {
 		return accessType;
@@ -77,8 +77,17 @@ public class Permission implements Entity<Permission>, Comparable<Permission> {
 		this.userId = userId;
 	}
 
-	@Override
+   public Report getReport() {
+      return report;
+   }
+
+   public void setReport(Report report) {
+      this.report = report;
+   }
+
+   @Override
 	public int compareTo(Permission o) {
+      //TODO: is this really ok?
 		return 0;
 	}
 

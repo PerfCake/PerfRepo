@@ -32,6 +32,6 @@ import org.jboss.qa.perfrepo.model.auth.AccessType;
 @InterceptorBinding
 public @interface Secured {
 
-    AccessType accessType() default AccessType.W;
+    AccessType accessType() default AccessType.WRITE;
 
 }
