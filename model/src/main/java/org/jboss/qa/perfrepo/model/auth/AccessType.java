@@ -1,14 +1,20 @@
 package org.jboss.qa.perfrepo.model.auth;
 
+/**
+ * AccessType represents a type of permission, it's its property. If the permission is READ, the user (or group) can only
+ * read the entity, therefore cannot modify it.
+ *
+ * If the permission is WRITE, user (or group) can also modify the entity.
+ */
 public enum AccessType {
 	
 	/**
 	 * Read Access Type
 	 */
-	R, 
+	READ,
 	
 	/**
 	 * Write Access Type
 	 */
-	W
+	WRITE
 }
