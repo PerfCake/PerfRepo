@@ -152,8 +152,6 @@ public class MetricReportController extends BaseController {
     * called on preRenderView
     */
    public void preRender() {
-      user = userService.getFullUser(userSession.getUser().getId());
-
       reloadSessionMessages();
    }
 
@@ -164,7 +162,7 @@ public class MetricReportController extends BaseController {
    public void save() {
       updateReport();
 
-      User user = userService.getFullUser(userSession.getUser().getId());
+      User user = userService.getUser(userSession.getUser().getId());
       Report report = reportService.getFullReport(reportId);
       if(report == null) {
          report = new Report();

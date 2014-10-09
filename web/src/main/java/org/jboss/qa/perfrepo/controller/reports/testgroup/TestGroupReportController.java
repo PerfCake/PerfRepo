@@ -212,7 +212,7 @@ public class TestGroupReportController extends BaseController {
 	private void saveReport(String reportName) {
       Report report = null;
 
-      User user = userService.getFullUser(userSession.getUser().getId());
+      User user = userService.getUser(userSession.getUser().getId());
 
       if(reportId != null) {
          report = reportService.getFullReport(reportId);
