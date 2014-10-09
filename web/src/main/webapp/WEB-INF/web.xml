@@ -6,7 +6,8 @@
 	<welcome-file-list>
 		<welcome-file>index.xhtml</welcome-file>
 	</welcome-file-list>
-	<!-- RESTEasy -->
+
+   <!-- RESTEasy -->
 	<servlet>
 		<servlet-name>Resteasy</servlet-name>
 		<servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
@@ -15,7 +16,9 @@
 		<servlet-name>Resteasy</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
-	<context-param>
+
+   <!-- Context parameters -->
+   <context-param>
 		<param-name>javax.ws.rs.Application</param-name>
 		<param-value>org.jboss.qa.perfrepo.rest.PerfRepoRESTApplication</param-value>
 	</context-param>
@@ -31,17 +34,13 @@
 		<param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
 		<param-value>true</param-value>
 	</context-param>
-	<context-param>
-		<param-name>repo.endpoint.host</param-name>
-		<param-value>${repo.endpoint.host}</param-value>
-	</context-param>
-	<context-param>
-		<param-name>repo.endpoint.port</param-name>
-		<param-value>${repo.endpoint.port}</param-value>
-	</context-param>
+
+   <!-- RestEASY listener -->
 	<listener>
 		<listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
 	</listener>
+
+   <!-- JSF -->
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
 		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -54,6 +53,8 @@
 		<url-pattern>*.faces</url-pattern>
 		<url-pattern>/faces/*</url-pattern>
 	</servlet-mapping>
+
+   <!-- filters -->
 	<filter>
 		<filter-name>RestAuthenticationFilter</filter-name>
 		<filter-class>org.jboss.qa.perfrepo.rest.security.RestAuthenticationFilter</filter-class>
@@ -90,9 +91,9 @@
 		<param-name>org.to.enableControlSkinningClasses</param-name>
 		<param-value>false</param-value>
 	</context-param>
+
 	<!-- Security -->
 	<security-constraint>
-		<display-name>${security.realm.name}</display-name>
 		<web-resource-collection>
 			<web-resource-name>repo</web-resource-name>
 			<description />
@@ -103,7 +104,8 @@
 			<role-name>*</role-name>
 		</auth-constraint>
 	</security-constraint>
-	<security-constraint><!--Exclude css and images here -->
+   <!--Exclude css and images here -->
+	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Exclude from Security</web-resource-name>
 			<url-pattern>/resources/images/*</url-pattern><!-- No security for images -->
