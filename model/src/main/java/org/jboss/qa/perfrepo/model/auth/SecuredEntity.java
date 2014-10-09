@@ -12,4 +12,6 @@ public @interface SecuredEntity {
 	
     EntityType type();
     
+    String parent() default "";
+
 }
