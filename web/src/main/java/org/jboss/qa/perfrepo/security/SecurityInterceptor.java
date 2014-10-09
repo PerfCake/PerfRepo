@@ -20,6 +20,7 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.jboss.qa.perfrepo.auth.AuthorizationService;
 import org.jboss.qa.perfrepo.model.Entity;
 import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
@@ -36,10 +37,18 @@ public class SecurityInterceptor {
 	public Object invoke(InvocationContext ctx) throws Exception {
 		Object[] params = ctx.getParameters();
 		Secured secureAnnotation = ctx.getMethod().getAnnotation(Secured.class);
-		for (Object param : params) {
-			if (param.getClass().getAnnotation(SecuredEntity.class) != null && param instanceof Entity<?>) {
-				if (!authorizationService.isUserAuthorizedFor(secureAnnotation.accessType(), (Entity<?>)param)) {
-					throw new SecurityException(MessageUtils.getMessage("securityException.101"));
+		if (params.length > 0) {
+			//just verify first attribute
+			Object param = params[0];
+			SecuredEntity se = param.getClass().getAnnotation(SecuredEntity.class);
+			if (se != null && param instanceof Entity<?>) {
+				Entity<?> entity = (Entity<?>)param;
+				if (entity.getId() == null) {
+					//create mode, need to verify parent entity
+					entity = (Entity<?>)PropertyUtils.getProperty(entity, se.parent());
+				}
+				if (!authorizationService.isUserAuthorizedFor(secureAnnotation.accessType(), entity)) {
+					throw new SecurityException(MessageUtils.getMessage("securityException.101", ctx.getMethod().getName(), param.getClass().getSimpleName(), ((Entity<?>)param).getId()));					
 				}
 			}
 		}

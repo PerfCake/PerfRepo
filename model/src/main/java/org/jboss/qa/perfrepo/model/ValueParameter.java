@@ -48,7 +48,7 @@ import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
       @NamedQuery(name = ValueParameter.FIND_BY_ID, query = "SELECT x from ValueParameter x WHERE x.id = :" + ValueParameter.NQ_ID),
       @NamedQuery(name = ValueParameter.GET_TEST, query = "SELECT test from ValueParameter vp inner join vp.value v inner join v.testExecution te inner join te.test test where vp= :entity") })
 @XmlRootElement(name = "valueParameter")
-@SecuredEntity(type=EntityType.TEST)
+@SecuredEntity(type=EntityType.TEST, parent="value")
 public class ValueParameter implements Entity<ValueParameter>, Comparable<ValueParameter> {
 
    private static final long serialVersionUID = 1673366421709715346L;

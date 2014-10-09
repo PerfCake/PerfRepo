@@ -58,7 +58,7 @@ import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
  */
 @javax.persistence.Entity
 @Table(name = "test_execution")
-@SecuredEntity(type=EntityType.TEST)
+@SecuredEntity(type=EntityType.TEST, parent="test")
 @NamedQueries({ @NamedQuery(name = TestExecution.GET_TEST, query = "SELECT te.test from TestExecution te inner join te.test where te= :entity") })
 @XmlRootElement(name = "testExecution")
 public class TestExecution implements Entity<TestExecution> {

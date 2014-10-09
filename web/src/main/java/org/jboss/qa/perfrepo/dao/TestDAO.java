@@ -78,7 +78,7 @@ public class TestDAO extends DAO<Test, Long> {
    }
 
    public Test getTestByRelation(Entity<?> entity) {
-      Query q = createNamedQuery(entity.getClass().getName() + ".getTest");
+      Query q = createNamedQuery(entity.getClass().getSimpleName() + ".getTest");
 	   q.setParameter("entity", entity);
 	   return ((Test) q.getSingleResult());
    }

@@ -50,7 +50,7 @@ import org.jboss.qa.perfrepo.model.util.EntityUtils;
 @javax.persistence.Entity
 @Table(name = "value")
 @NamedQueries({ @NamedQuery(name = Value.GET_TEST, query = "SELECT test from Value v inner join v.testExecution te inner join te.test test where v= :entity") })
-@SecuredEntity(type=EntityType.TEST)
+@SecuredEntity(type=EntityType.TEST, parent="testExecution")
 @XmlRootElement(name = "value")
 public class Value implements Entity<Value> {
 

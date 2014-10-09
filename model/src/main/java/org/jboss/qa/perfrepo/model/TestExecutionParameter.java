@@ -37,7 +37,7 @@ import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
 
 @javax.persistence.Entity
 @Table(name = "test_execution_parameter")
-@SecuredEntity(type=EntityType.TEST)
+@SecuredEntity(type=EntityType.TEST, parent="testExecution")
 @NamedQueries({
       @NamedQuery(name = TestExecutionParameter.GET_TEST, query = "SELECT test from Test test inner join test.testExecutions te inner join te.parameters tep where tep = :entity"),
       @NamedQuery(name = TestExecutionParameter.FIND_BY_TEST_ID, query = "SELECT DISTINCT p.name FROM TestExecutionParameter p, TestExecution e WHERE p.testExecution.id = e.id AND e.test.id = :testId") })

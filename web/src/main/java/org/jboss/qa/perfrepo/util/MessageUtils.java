@@ -3,8 +3,6 @@ package org.jboss.qa.perfrepo.util;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-import javax.faces.context.FacesContext;
-
 import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 
 /**
@@ -43,5 +41,4 @@ public class MessageUtils {
 	public static String getMessage(ServiceException e) {
 		return MessageFormat.format(bundle.getString("serviceException." + e.getCode()), e.getParams());
 	}
-
 }

@@ -35,7 +35,7 @@ import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
       @NamedQuery(name = TestMetric.GET_TEST, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm= :entity"),
       @NamedQuery(name = TestMetric.FIND_TEST_METRIC, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test and m.id= :metric"),
       @NamedQuery(name = TestMetric.FIND_TEST_METRIC_BY_NAME, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test AND m.name= :metricName") })
-@SecuredEntity(type=EntityType.TEST)
+@SecuredEntity(type=EntityType.TEST, parent="test")
 public class TestMetric implements Entity<TestMetric> {
 
    private static final long serialVersionUID = 4140777839186789812L;

@@ -95,6 +95,11 @@
          <version>${commons.collections.version}</version>
       </dependency>
       <dependency>
+         <groupId>commons-beanutils</groupId>
+         <artifactId>commons-beanutils</artifactId>
+         <version>${commons.beanutils.version}</version>
+      </dependency>
+      <dependency>
          <groupId>org.richfaces.compat</groupId>
          <artifactId>richfaces-components-rich</artifactId>
          <version>${richfaces.version}</version>

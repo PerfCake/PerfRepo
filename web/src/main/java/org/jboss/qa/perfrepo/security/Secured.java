@@ -33,5 +33,5 @@ import org.jboss.qa.perfrepo.model.auth.AccessType;
 public @interface Secured {
 
     AccessType accessType() default AccessType.WRITE;
-
+    
 }

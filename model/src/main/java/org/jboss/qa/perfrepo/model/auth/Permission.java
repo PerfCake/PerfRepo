@@ -1,11 +1,19 @@
 package org.jboss.qa.perfrepo.model.auth;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 import org.jboss.qa.perfrepo.model.Entity;
 import org.jboss.qa.perfrepo.model.report.Report;
-
-import java.util.List;
 
 @javax.persistence.Entity
 @Table(name = "permission")

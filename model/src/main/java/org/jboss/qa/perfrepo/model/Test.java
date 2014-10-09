@@ -40,7 +40,6 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.jboss.qa.perfrepo.model.auth.Permission;
 import org.jboss.qa.perfrepo.model.auth.EntityType;
 import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
 import org.jboss.qa.perfrepo.model.builder.TestBuilder;

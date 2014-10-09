@@ -36,7 +36,7 @@ import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
 @Table(name = "test_execution_tag")
 @NamedQueries({ @NamedQuery(name = TestExecutionTag.GET_TEST, query = "SELECT test from TestExecutionTag teg inner join teg.testExecution te inner join te.test test WHERE teg = :entity") })
 @XmlRootElement(name = "testExecutionTag")
-@SecuredEntity(type=EntityType.TEST)
+@SecuredEntity(type=EntityType.TEST, parent="testExecution")
 public class TestExecutionTag implements Entity<TestExecutionTag> {
 
    private static final long serialVersionUID = 1L;

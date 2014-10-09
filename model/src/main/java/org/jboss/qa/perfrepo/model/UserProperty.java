@@ -33,7 +33,9 @@ import org.jboss.qa.perfrepo.model.user.User;
 @Table(name = "user_property")
 public class UserProperty implements Entity<UserProperty>, Comparable<UserProperty> {
 
-   @Id
+	private static final long serialVersionUID = -1476383380689021931L;
+
+	@Id
    @SequenceGenerator(name = "USER_PROPERTY_ID_GENERATOR", sequenceName = "USER_PROPERTY_SEQUENCE", allocationSize = 1)
    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_PROPERTY_ID_GENERATOR")
    private Long id;

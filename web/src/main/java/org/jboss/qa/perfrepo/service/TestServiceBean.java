@@ -111,9 +111,10 @@ public class TestServiceBean implements TestService {
 	private UserService userService;
 
 	@Override
+	@Secured
 	public TestExecution createTestExecution(TestExecution testExecution) throws ServiceException {
 		// The test referred by test execution has to be an existing test
-		Test test = checkUserCanChangeTest(testExecution.getTest());
+		Test test = testDAO.get(testExecution.getTest().getId());
 		testExecution.setTest(test);
 		TestExecution storedTestExecution = testExecutionDAO.create(testExecution);
 		// execution params
@@ -208,12 +209,12 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	@Secured
 	public Long addAttachment(TestExecutionAttachment attachment) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(attachment.getTestExecution().getId());
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND_ADD_ATTACHMENT, attachment.getTestExecution().getId());
 		}
-		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
 		attachment.setTestExecution(exec);
 		TestExecutionAttachment newAttachment = testExecutionAttachmentDAO.create(attachment);
@@ -221,12 +222,12 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	@Secured
 	public void removeAttachment(TestExecutionAttachment attachment) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(attachment.getTestExecution().getId());
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND_REMOVE_ATTACHMENT, attachment.getTestExecution().getId());
 		}
-		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
 		TestExecutionAttachment freshAttachment = testExecutionAttachmentDAO.get(attachment.getId());
 		if (freshAttachment != null) {
@@ -240,6 +241,7 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	@Secured
 	public Test createTest(Test test) throws ServiceException {
 		if (!userService.isLoggedUserInGroup(test.getGroupId())) {
 			throw new SecurityException(MessageUtils.getMessage("serviceException.1600", userService.getLoggedUser()
@@ -296,8 +298,9 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	@Secured
 	public void removeTest(Test test) throws ServiceException {
-		Test freshTest = checkUserCanChangeTest(test);
+		Test freshTest = testDAO.get(test.getId());
 		for (TestExecution testExecution : freshTest.getTestExecutions()) {
 			removeTestExecution(testExecution);
 		}
@@ -323,12 +326,12 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	@Secured
 	public void removeTestExecution(TestExecution testExecution) throws ServiceException {
 		TestExecution freshTestExecution = testExecutionDAO.get(testExecution.getId());
 		if (freshTestExecution == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, testExecution.getId());
 		}
-		checkUserCanChangeTest(freshTestExecution.getTest());
 		for (TestExecutionParameter testExecutionParameter : freshTestExecution.getParameters()) {
 			testExecutionParameterDAO.remove(testExecutionParameter);
 		}
@@ -358,8 +361,9 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	@Secured
 	public TestMetric addMetric(Test test, Metric metric) throws ServiceException {
-		Test freshTest = checkUserCanChangeTest(test);
+		Test freshTest = testDAO.get(test.getId());
 		if (metric.getId() != null) {
 			// associating an existing metric with the test
 			Metric freshMetric = metricDAO.get(metric.getId());
@@ -396,8 +400,9 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	@Secured
 	public Metric updateMetric(Test test, Metric metric) throws ServiceException {
-		Test freshTest = checkUserCanChangeTest(test);
+		Test freshTest = testDAO.get(test.getId());
 		TestMetric freshTestMetric = testMetricDAO.find(freshTest, metric);
 		if (freshTestMetric == null) {
 			throw new ServiceException(ServiceException.Codes.METRIC_NOT_IN_TEST, freshTest.getName(), freshTest.getId(), metric.getName());
@@ -412,8 +417,9 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	@Secured
 	public void removeMetric(Test test, Metric metric) throws ServiceException {
-		Test freshTest = checkUserCanChangeTest(test);
+		Test freshTest = testDAO.get(test.getId());
 		if (freshTest == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_NOT_FOUND, test.getId());
 		}
@@ -452,12 +458,12 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	@Secured
 	public TestExecution updateTestExecution(TestExecution anExec) throws ServiceException {
 		TestExecution execEntity = testExecutionDAO.get(anExec.getId());
 		if (execEntity == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, anExec.getId());
 		}
-		checkUserCanChangeTest(execEntity.getTest());
 		checkLocked(execEntity);
 		for (TestExecutionTag interObj : execEntity.getTestExecutionTags()) {
 			testExecutionTagDAO.remove(interObj);
@@ -485,23 +491,23 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	@Secured
 	public TestExecution setExecutionLocked(TestExecution anExec, boolean locked) throws ServiceException {
 		TestExecution execEntity = testExecutionDAO.get(anExec.getId());
 		if (execEntity == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, anExec.getId());
 		}
-		checkUserCanChangeTest(execEntity.getTest());
 		execEntity.setLocked(locked);
 		return getFullTestExecution(anExec.getId());
 	}
 
 	@Override
+	@Secured
 	public TestExecutionParameter updateParameter(TestExecutionParameter tep) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(tep.getTestExecution().getId());
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, tep.getTestExecution().getId());
 		}
-		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
 
 		if (testExecutionParameterDAO.hasTestParam(exec.getId(), tep.getName())) {
@@ -525,24 +531,24 @@ public class TestServiceBean implements TestService {
    }
 
 	@Override
+	@Secured
 	public void removeParameter(TestExecutionParameter tep) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(tep.getTestExecution().getId());
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, tep.getTestExecution().getId());
 		}
-		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
 		TestExecutionParameter tepRemove = testExecutionParameterDAO.get(tep.getId());
 		testExecutionParameterDAO.remove(tepRemove);
 	}
 
 	@Override
+	@Secured
 	public Value addValue(Value value) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(value.getTestExecution().getId());
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, value.getTestExecution().getId());
 		}
-		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
 		Metric metric = null;
 		if (value.getMetric().getId() != null) {
@@ -586,12 +592,12 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	@Secured
 	public Value updateValue(Value value) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(value.getTestExecution().getId());
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, value.getTestExecution().getId());
 		}
-		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
 		Value oldValue = valueDAO.get(value.getId());
 		if (oldValue == null) {
@@ -624,12 +630,12 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	@Secured
 	public void removeValue(Value value) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(value.getTestExecution().getId());
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, value.getTestExecution().getId());
 		}
-		checkUserCanChangeTest(exec.getTest());
 		checkLocked(exec);
 		Value v = valueDAO.get(value.getId());
 		for (ValueParameter vp : v.getParameters()) {
@@ -770,33 +776,6 @@ public class TestServiceBean implements TestService {
 			clone.setAttachments(null);
 		}
 		return clone;
-	}
-
-	private Test checkUserCanChangeTest(Test test) throws ServiceException {
-		// The test referred by test execution has to be an existing test
-		if (test == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_NOT_NULL);
-		}
-		Test freshTest = null;
-		if (test.getId() != null) {
-			freshTest = testDAO.get(test.getId());
-			if (freshTest == null) {
-				throw new ServiceException(ServiceException.Codes.TEST_NOT_FOUND, test.getId());
-			}
-		} else if (test.getUid() != null) {
-			freshTest = testDAO.findByUid(test.getUid());
-			if (freshTest == null) {
-				throw new ServiceException(ServiceException.Codes.TEST_UID_NOT_FOUND, test.getUid());
-			}
-		} else {
-			throw new IllegalArgumentException("Can't find test, id or uid needs to be supplied");
-		}
-		// user can only insert test executions for tests pertaining to his group
-		if (!userService.isLoggedUserInGroup(freshTest.getGroupId())) {
-			throw new SecurityException(MessageUtils.getMessage("serviceException.1500", userService.getLoggedUser()
-					.getUsername(), freshTest.getGroupId(), freshTest.getName(), freshTest.getUid()));
-		}
-		return freshTest;
 	}
 
 	private void checkLocked(TestExecution exec) throws ServiceException {

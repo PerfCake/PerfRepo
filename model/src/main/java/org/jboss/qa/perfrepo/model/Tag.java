@@ -21,8 +21,6 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -36,7 +34,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "tag")
 public class Tag implements Entity<Tag>, Comparable<Tag> {
 
-   public static final String FIND_BY_PREFIX = "Tag.findByPrefix";
+	private static final long serialVersionUID = -5239043908577304531L;
+
+	public static final String FIND_BY_PREFIX = "Tag.findByPrefix";
 
    @Id
    @SequenceGenerator(name = "TAG_ID_GENERATOR", sequenceName = "TAG_SEQUENCE", allocationSize = 1)
