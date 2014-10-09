@@ -97,20 +97,22 @@ public class UserServiceBean implements UserService {
    }
 
    @Override
-   public User getFullUser(String userName) {
-      User user = userDAO.findByUsername(userName);
+   public User getFullUser(Long id) {
+      User user = userDAO.get(id);
       if (user == null) {
          return null;
       }
 
-      List<UserProperty> properties = userPropertyDAO.findByUserId(user.getId());
+      Collection<UserProperty> properties = userPropertyDAO.findByUserId(user.getId());
       Collection<FavoriteParameter> favoriteParameters = user.getFavoriteParameters();
+      Collection<Group> groups = user.getGroups();
 
       User clonedUser = user.clone();
       clonedUser.setProperties(EntityUtils.clone(properties));
       clonedUser.setFavoriteParameters(EntityUtils.clone(favoriteParameters));
+      clonedUser.setGroups(EntityUtils.clone(groups));
 
-      return user;
+      return clonedUser;
    }
 
    @Override
@@ -139,23 +141,6 @@ public class UserServiceBean implements UserService {
          }
 	   }
 	   return false;
-   }
-
-   @Override
-   public User getFullUser(Long id) {
-      User user = userDAO.get(id);
-      if (user == null) {
-         return null;
-      }
-
-      List<UserProperty> properties = userPropertyDAO.findByUserId(user.getId());
-      Collection<FavoriteParameter> favoriteParameters = user.getFavoriteParameters();
-
-      User clonedUser = user.clone();
-      clonedUser.setProperties(EntityUtils.clone(properties));
-      clonedUser.setFavoriteParameters(EntityUtils.clone(favoriteParameters));
-
-      return user;
    }
 
    @Override

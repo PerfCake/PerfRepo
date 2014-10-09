@@ -15,7 +15,8 @@
  */
 package org.jboss.qa.perfrepo.model.report;
 
-import java.util.List;
+
+import java.util.Collection;
 import java.util.Map;
 
 import javax.persistence.CascadeType;
@@ -83,7 +84,7 @@ public class Report implements Entity<Report>, Comparable<Report> {
 	private Map<String, ReportProperty> properties;
 
    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
-   private List<Permission> permissions;
+   private Collection<Permission> permissions;
 
 	public Long getId() {
 		return id;
@@ -125,11 +126,11 @@ public class Report implements Entity<Report>, Comparable<Report> {
       this.properties = properties;
    }
 
-   public List<Permission> getPermissions() {
+   public Collection<Permission> getPermissions() {
       return permissions;
    }
 
-   public void setPermissions(List<Permission> permissions) {
+   public void setPermissions(Collection<Permission> permissions) {
       this.permissions = permissions;
    }
 

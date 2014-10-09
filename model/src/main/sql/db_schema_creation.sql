@@ -245,6 +245,8 @@ ALTER TABLE public.test_sequence OWNER TO perfrepo;
 CREATE TABLE "user" (
     id bigint NOT NULL,
     username character varying(2047) NOT NULL,
+    first_name character varying(2047) NOT NULL,
+    last_name character varying(2047) NOT NULL,
     email character varying(2047) NOT NULL
 );
 
@@ -819,7 +821,7 @@ ADD COLUMN password character varying(300);
 -- User/Group data
 --
 
-insert into public.user (id, username, email, password) values (nextVal('user_sequence'), 'perfrepouser', 'example@example.com', '/+aGXwHMbhcz5HDdSx9FRg==');
+insert into public.user (id, username, first_name, last_name, email, password) values (nextVal('user_sequence'), 'perfrepouser', 'perfrepouser', 'perfrepouser', 'example@example.com', '/+aGXwHMbhcz5HDdSx9FRg==');
 
 insert into public.group (id, name) values (nextVal('group_sequence'), 'perfrepouser');
 

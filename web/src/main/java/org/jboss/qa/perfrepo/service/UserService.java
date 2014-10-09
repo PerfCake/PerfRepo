@@ -44,14 +44,6 @@ public interface UserService {
    /**
     * Return all information about user as detached entity (e.g. cloned)
     *
-    * @param userName
-    * @return User with properties.
-    */
-   public User getFullUser(String userName);
-
-   /**
-    * Return all information about user as detached entity (e.g. cloned)
-    *
     * @param id
     * @return User with properties.
     */

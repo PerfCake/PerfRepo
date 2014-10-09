@@ -52,6 +52,16 @@ public class User implements Entity<User>, Comparable<User> {
    @Size(max = 2047)
    private String username;
 
+   @Column(name = "first_name")
+   @NotNull
+   @Size(max = 2047)
+   private String firstName;
+
+   @Column(name = "last_name")
+   @NotNull
+   @Size(max = 2047)
+   private String lastName;
+
    @Column(name = "email")
    @NotNull
    @Size(max = 2047)
@@ -85,6 +95,22 @@ public class User implements Entity<User>, Comparable<User> {
       this.username = username;
    }
 
+   public String getFirstName() {
+      return firstName;
+   }
+
+   public void setFirstName(String firstName) {
+      this.firstName = firstName;
+   }
+
+   public String getLastName() {
+      return lastName;
+   }
+
+   public void setLastName(String lastName) {
+      this.lastName = lastName;
+   }
+
    public String getEmail() {
       return email;
    }
@@ -109,6 +135,14 @@ public class User implements Entity<User>, Comparable<User> {
       this.favoriteParameters = favoriteParameters;
    }
 
+   public Collection<Group> getGroups() {
+      return groups;
+   }
+
+   public void setGroups(Collection<Group> groups) {
+      this.groups = groups;
+   }
+
    @Override
    public int compareTo(User o) {
       return this.username.compareTo(o.username);
@@ -122,25 +156,4 @@ public class User implements Entity<User>, Comparable<User> {
          throw new RuntimeException(e);
       }
    }
-
-   public Collection<Group> getGroups() {
-	  return groups;
-   }
-
-   public void setGroups(Collection<Group> groups) {
-	  this.groups = groups;
-   }
-
-public UserProperty findProperty(String name) {
-      if (properties == null) {
-         return null;
-      }
-      for (UserProperty prop : properties) {
-         if (name.equals(prop.getName())) {
-            return prop;
-         }
-      }
-      return null;
-   }
-
 }
