@@ -47,9 +47,9 @@ public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long>
     * @param paramName
     * @return true if there's already test execution parameter with same pair (testExecutionId, param_name)
     */
-   public boolean hasTestParam(Long testExecutionId, String paramName) {
+   public boolean hasTestParam(Long testExecutionId, TestExecutionParameter param) {
       CriteriaBuilder cb = criteriaBuilder();
-      CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
+      CriteriaQuery<TestExecutionParameter> criteria = cb.createQuery(TestExecutionParameter.class);
 
       Root<TestExecutionParameter> rParam = criteria.from(TestExecutionParameter.class);
       Join<TestExecutionParameter, TestExecution> rTestExecution = rParam.join("testExecution");
@@ -58,12 +58,13 @@ public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long>
       Predicate pFixedName = cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName"));
 
       criteria.where(cb.and(pFixedTest, pFixedName));
-      criteria.select(cb.count(rParam.get("id")));
+      criteria.select(rParam);
 
-      TypedQuery<Long> query = query(criteria);
+      TypedQuery<TestExecutionParameter> query = query(criteria);
       query.setParameter("testExecutionId", testExecutionId);
-      query.setParameter("paramName", paramName);
-      return query.getSingleResult() != 0l;
+      query.setParameter("paramName", param.getName());
+      TestExecutionParameter tparam = query.getSingleResult();
+      return tparam != null && !tparam.getId().equals(param.getId());
    }
 
    public List<TestExecutionParameter> find(List<Long> execIdList, List<String> paramNameList) {

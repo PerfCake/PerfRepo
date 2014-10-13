@@ -510,7 +510,7 @@ public class TestServiceBean implements TestService {
 		}
 		checkLocked(exec);
 
-		if (testExecutionParameterDAO.hasTestParam(exec.getId(), tep.getName())) {
+		if (testExecutionParameterDAO.hasTestParam(exec.getId(), tep)) {
 			throw new ServiceException(ServiceException.Codes.PARAMETER_EXISTS, tep.getName());
 		}
 
