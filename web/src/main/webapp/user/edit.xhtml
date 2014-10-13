@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:r="http://richfaces.org"	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:body>
+	<f:metadata>
+		<f:event type="preRenderView" listener="#{userProfileController.preRender}" />
+	</f:metadata>
+	<ui:composition template="/layout/template.xhtml">
+		<ui:define name="title">Edit user profile</ui:define>
+		<ui:define name="content">
+         <div style=" overflow: hidden;">
+            <div id="control" style="float: left;opacity: 0.3;overflow: hidden;height:60px;">
+               <h2 class="text-success" style="">Profile</h2>
+            </div>
+
+            <div id="control" style="text-align:right;float: right;line-height: 40px; margin: 10px 0;width:400px;height:40px;">
+               <span style="margin:5px;">
+                  <a class="text-success" href="/repo/profile">
+                     <i class="icon-backward" title="#{strings.edit}" /> Back to profile
+                  </a>
+               </span>
+
+               <span style="margin:5px;">
+                  <a class="text-success" href="/repo/profile/change_password">
+                     <i class="icon-lock" title="#{strings.edit}" /> Change password
+                  </a>
+               </span>
+            </div>
+         </div>
+         <hr />
+         <h:form>
+            <fieldset>
+               <h1>Edit user profile</h1>
+               <!--<div class="control-group">
+                  <h:outputLabel class="detail-label">Username</h:outputLabel>
+                  <div class="controls">
+                     <h:inputText styleClass="input-text" value="#{userProfileController.user.username}" />
+                  </div>
+               </div>-->
+
+               <div class="control-group">
+                  <h:outputLabel class="detail-label">First name</h:outputLabel>
+                  <div class="controls">
+                     <h:inputText styleClass="input-text" value="#{userProfileController.user.firstName}" />
+                  </div>
+               </div>
+
+               <div class="control-group">
+                  <h:outputLabel class="detail-label">Last name</h:outputLabel>
+                  <div class="controls">
+                     <h:inputText styleClass="input-text" value="#{userProfileController.user.lastName}" />
+                  </div>
+               </div>
+
+               <div class="control-group">
+                  <h:outputLabel class="detail-label">E-mail</h:outputLabel>
+                  <div class="controls">
+                     <h:inputText styleClass="input-text" value="#{userProfileController.user.email}" />
+                  </div>
+               </div>
+
+               <div style="text-align: right">
+                  <h:commandButton action="#{userProfileController.update}" value="Save changes" styleClass="btn btn-primary" />
+               </div>
+            </fieldset>
+         </h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

@@ -437,6 +437,29 @@ public class TestServiceBean implements TestService {
 		}
 	}
 
+   @Override
+   public Metric getFullMetric(Long id) {
+      Metric metric = metricDAO.get(id);
+      if (metric == null) {
+         return null;
+      }
+      metric = metric.clone();
+
+      // TODO: read by named query with join fetches
+      Collection<TestMetric> testMetrics = metric.getTestMetrics();
+      List<Test> tests = new ArrayList<Test>();
+      if (testMetrics != null) {
+         for (TestMetric testMetric : testMetrics) {
+            Test test = testMetric.getTest().clone();
+            test.setTestMetrics(null);
+            tests.add(test);
+         }
+      }
+
+      metric.setTests(tests);
+      return metric;
+   }
+
 	@Override
 	public TestExecution getFullTestExecution(Long id) {
 		return cloneAndFetch(testExecutionDAO.get(id), true, true, true, true, true);

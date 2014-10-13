@@ -74,6 +74,14 @@ public interface TestService {
    public List<TestExecution> getFullTestExecutions(List<Long> ids);
 
    /**
+   * Get metric with all associated tests (without details).
+   *
+   * @param id
+   * @return metric
+   */
+   public Metric getFullMetric(Long id);
+
+   /**
     * Add attachment to the test execution. The {@link TestExecution} object referred by attachment
     * needs to be an empty object with only id set.
     * 

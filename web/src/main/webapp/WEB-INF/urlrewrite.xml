@@ -10,6 +10,16 @@
    </rule>
 
    <rule>
+      <from>^/profile/edit$</from>
+      <to type="forward" last="true">/user/edit.jsf</to>
+   </rule>
+
+   <rule>
+      <from>^/profile/change_password$</from>
+      <to type="forward" last="true">/user/change_password.jsf</to>
+   </rule>
+
+   <rule>
       <!-- /test/{testId} -->
       <from>^/test/([\d]+)$</from>
       <to type="forward" last="true">/test/detail.jsf?testId=$1</to>

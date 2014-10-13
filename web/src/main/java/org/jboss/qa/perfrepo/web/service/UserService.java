@@ -20,6 +20,25 @@ public interface UserService {
    public User createUser(User user) throws ServiceException;
 
    /**
+    * Updates user
+    *
+    * @param user
+    * @return user
+    * @throws ServiceException
+    */
+   public User updateUser(User user) throws ServiceException;
+
+   /**
+    * Changes user password. Provides check if old password is equal to "current" password
+    * and if yes then encrypts the new password and stores it
+    *
+    * @param oldPassword
+    * @param newPassword
+    * @throws ServiceException
+    */
+   public void changePassword(String oldPassword, String newPassword) throws ServiceException;
+
+   /**
     * Retrieves managed entity of user
     *
     * @param id

@@ -17,21 +17,11 @@ package org.jboss.qa.perfrepo.model.user;
 
 import java.util.Collection;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.Email;
 import org.jboss.qa.perfrepo.model.Entity;
 import org.jboss.qa.perfrepo.model.FavoriteParameter;
 import org.jboss.qa.perfrepo.model.UserProperty;
@@ -52,6 +42,11 @@ public class User implements Entity<User>, Comparable<User> {
    @Size(max = 2047)
    private String username;
 
+   @Column(name = "password")
+   @NotNull
+   @Size(max = 300)
+   private String password;
+
    @Column(name = "first_name")
    @NotNull
    @Size(max = 2047)
@@ -64,6 +59,7 @@ public class User implements Entity<User>, Comparable<User> {
 
    @Column(name = "email")
    @NotNull
+   @Email
    @Size(max = 2047)
    private String email;
 
@@ -93,6 +89,14 @@ public class User implements Entity<User>, Comparable<User> {
 
    public void setUsername(String username) {
       this.username = username;
+   }
+
+   public String getPassword() {
+      return password;
+   }
+
+   public void setPassword(String password) {
+      this.password = password;
    }
 
    public String getFirstName() {

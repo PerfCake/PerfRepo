@@ -1,5 +1,8 @@
 package org.jboss.qa.perfrepo.web.service;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,11 +19,13 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.Validator;
 
 import org.jboss.qa.perfrepo.web.dao.FavoriteParameterDAO;
 import org.jboss.qa.perfrepo.web.dao.TestDAO;
 import org.jboss.qa.perfrepo.web.dao.UserDAO;
 import org.jboss.qa.perfrepo.web.dao.UserPropertyDAO;
+import org.apache.commons.codec.binary.Base64;
 import org.jboss.qa.perfrepo.model.FavoriteParameter;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.UserProperty;
@@ -50,17 +55,57 @@ public class UserServiceBean implements UserService {
    @Resource
    private SessionContext sessionContext;
 
+   @Inject
+   private Validator validator;
+
    @Override
    public User createUser(User user) throws ServiceException {
+      //TODO: this method needs authorization for this operation, not used at all yet
       if (user.getId() != null) {
          throw new IllegalArgumentException("Can't create with id");
       }
-      if (!user.getId().equals(getLoggedUser().getId())) {
-         throw new ServiceException(ServiceException.Codes.NOT_YOU, null, "Only logged-in user can change his own properties");
-      }
+
       User newUser = userDAO.create(user).clone();
       newUser.setProperties(new ArrayList<UserProperty>(0));
       return newUser;
+   }
+
+   @Override
+   public User updateUser(User user) throws ServiceException {
+      if (user.getId() == null) {
+         throw new IllegalArgumentException("Can't update without id");
+      }
+      User loggedUser = getLoggedUser();
+      if (!user.getId().equals(loggedUser.getId())) {
+         throw new SecurityException("Only logged-in user can change his own properties");
+      }
+
+      User duplicateUsernameUser = userDAO.findByUsername(user.getUsername());
+      if(duplicateUsernameUser != null && duplicateUsernameUser.getId() != user.getId()) {
+         throw new ServiceException(ServiceException.Codes.USERNAME_ALREADY_EXISTS, user.getUsername());
+      }
+
+      User updatedUser = userDAO.update(user);
+      return updatedUser;
+   }
+
+   @Override
+   public void changePassword(String oldPassword, String newPassword) throws ServiceException {
+      if(oldPassword == null || newPassword == null) {
+         throw new ServiceException(ServiceException.Codes.PASSWORD_IS_EMPTY);
+      }
+
+      String newPasswordEncrypted = computeMd5(newPassword);
+      String oldPasswordEncrypted = computeMd5(oldPassword);
+
+      User user = userDAO.get(getLoggedUser().getId());
+
+      if(!user.getPassword().equals(oldPasswordEncrypted)) {
+         throw new ServiceException(ServiceException.Codes.PASSWORD_DOESNT_MATCH);
+      }
+
+      user.setPassword(newPasswordEncrypted);
+      userDAO.update(user);
    }
 
    @Override
@@ -174,5 +219,23 @@ public class UserServiceBean implements UserService {
          map.put(up.getName(), up.getValue());
       }
       return map;
+   }
+
+   private String computeMd5(String string) {
+      MessageDigest md = null;
+
+      try {
+         md = MessageDigest.getInstance("MD5");
+      } catch (NoSuchAlgorithmException ex) {
+         throw new RuntimeException(ex);
+      }
+
+      try {
+         md.update(string.getBytes("UTF-8"));
+      } catch (UnsupportedEncodingException ex) {
+         throw new RuntimeException(ex);
+      }
+
+      return Base64.encodeBase64String(md.digest());
    }
 }

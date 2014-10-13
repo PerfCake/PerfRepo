@@ -738,7 +738,6 @@ ALTER TABLE public.group_sequence OWNER TO perfrepo;
 --
 
 CREATE TABLE user_group (
-  id bigint NOT NULL,
   user_id bigint NOT NULL,
   group_id bigint NOT NULL
 );
@@ -746,28 +745,11 @@ CREATE TABLE user_group (
 
 ALTER TABLE public.user_group OWNER TO perfrepo;
 ALTER TABLE ONLY public.user_group
-ADD CONSTRAINT user_group_pkey PRIMARY KEY (id);
+ADD CONSTRAINT user_group_pkey PRIMARY KEY (user_id, group_id);
 ALTER TABLE ONLY public.user_group
 ADD CONSTRAINT user_group_group_fkey FOREIGN KEY (group_id) REFERENCES "group"(id);
 ALTER TABLE ONLY public.user_group
 ADD CONSTRAINT user_group_user_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
-
---
--- Name: user_group_sequence; Type: SEQUENCE; Schema: public; Owner: perfrepo
---
-
-CREATE SEQUENCE user_group_sequence
-START WITH 1
-INCREMENT BY 1
-NO MAXVALUE
-NO MINVALUE
-CACHE 1;
-
-
-ALTER TABLE public.user_group_sequence OWNER TO perfrepo;
-
-
-
 
 --
 -- Name: permission; Type: TABLE; Schema: public; Owner: perfrepo; Tablespace:
@@ -825,7 +807,7 @@ insert into public.user (id, username, first_name, last_name, email, password) v
 
 insert into public.group (id, name) values (nextVal('group_sequence'), 'perfrepouser');
 
-insert into user_group (id, user_id, group_id) values (nextVal('user_group_sequence'), (select id from public.user where username='perfrepouser'), (select id from public.group where name='perfrepouser'));
+insert into user_group (user_id, group_id) values ((select id from public.user where username='perfrepouser'), (select id from public.group where name='perfrepouser'));
 
 --
 -- Migrate script - reports from user_properties to report entities

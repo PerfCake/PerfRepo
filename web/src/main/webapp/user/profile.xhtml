@@ -8,8 +8,28 @@
 	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="title">User profile</ui:define>
 		<ui:define name="content">
+         <div style=" overflow: hidden;">
+            <div id="control" style="float: left;opacity: 0.3;overflow: hidden;height:60px;">
+               <h2 class="text-success" style="">Profile</h2>
+            </div>
+
+            <div id="control" style="text-align:right;float: right;line-height: 40px; margin: 10px 0;width:400px;height:40px;">
+               <span style="margin:5px;">
+                  <a class="text-success" href="/repo/profile/edit">
+                     <i class="icon-edit" title="#{strings.edit}" /> Edit profile
+                  </a>
+               </span>
+
+               <span style="margin:5px;">
+                  <a class="text-success" href="/repo/profile/change_password">
+                     <i class="icon-lock" title="#{strings.edit}" /> Change password
+                  </a>
+               </span>
+            </div>
+         </div>
+         <hr />
 			<fieldset>
-				<legend>Profile</legend>
+				<h1>About user</h1>
 				<h:outputLabel class="detail-label">Username</h:outputLabel>
 				<div class="detail-value">#{userProfileController.user.username}</div>
             <h:outputLabel class="detail-label">First name</h:outputLabel>
@@ -20,7 +40,7 @@
 				<div class="detail-value">#{userProfileController.user.email}</div>
             <h:outputLabel class="detail-label">Assigned groups</h:outputLabel>
             <div class="detail-value">
-               <r:repeat value="#{userProfileController.user.groups}" item="group">
+               <r:repeat value="#{userProfileController.user.groups}" var="group">
                   <h:outputText value="#{group.name}" /><br />
                </r:repeat>
             </div>
