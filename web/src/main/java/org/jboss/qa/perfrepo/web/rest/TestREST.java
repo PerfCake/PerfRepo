@@ -41,6 +41,7 @@ import org.jboss.qa.perfrepo.web.service.TestService;
  * 
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  */
 @Path("/test")
 @RequestScoped
@@ -81,8 +82,7 @@ public class TestREST {
    @Path("/{testId}")
    @Logged
    public Response delete(@PathParam("testId") Long testId) throws Exception {
-      Test test = new Test();
-      test.setId(testId);
+      Test test = testService.getTest(testId);
       testService.removeTest(test);
       return Response.noContent().build();
    }

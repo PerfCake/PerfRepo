@@ -6,15 +6,15 @@
    <persistence-unit name="PerfRepoPU" transaction-type="JTA">
       <provider>org.hibernate.ejb.HibernatePersistence</provider>
       <jta-data-source>java:jboss/datasources/PerfRepoTestDS</jta-data-source>
-      <jar-file>lib/perfrepo-model-${project.version}.jar</jar-file>
+      <jar-file>lib/perfrepo-model-1.0-SNAPSHOT.jar</jar-file>
 
       <properties>
          <!-- Properties for Hibernate -->
          <property name="hibernate.hbm2ddl.auto" value="validate" />
          <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
-         
+
          <!--property name="hibernate.show_sql" value="true" / -->
-         <!-- please use: http://localhost:9990/console/App.html#logging and set logging for category org.hibernate.SQL to 
+         <!-- please use: http://localhost:9990/console/App.html#logging and set logging for category org.hibernate.SQL to
             see SQL -->
       </properties>
    </persistence-unit>

@@ -47,6 +47,7 @@ import org.jboss.qa.perfrepo.model.Value;
  * Performance Repository REST API Client.
  * 
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  * 
  */
 public class PerfRepoClient {
@@ -54,8 +55,9 @@ public class PerfRepoClient {
    private static final Logger log = Logger.getLogger(PerfRepoClient.class);
 
    private static final String CONTENT_TYPE_XML = "text/xml";
-   private static final String REST_BASE_URL_TEMPLATE = "http://%s/repo/rest/";
+   private static final String REST_BASE_URL_TEMPLATE = "http://%s/%s/rest/";
    private String host;
+   private String url;
    private String basicAuthHash;
 
    private HttpClient httpClient;
@@ -66,8 +68,9 @@ public class PerfRepoClient {
     * @param host Host (may contain port in form host:port)
     * @param basicAuthHash Base64 encoded username:password for BASIC Authentication
     */
-   public PerfRepoClient(String host, String basicAuthHash) {
+   public PerfRepoClient(String host, String url, String basicAuthHash) {
       this.host = host;
+      this.url = url;
       this.basicAuthHash = basicAuthHash;
       httpClient = new DefaultHttpClient();
    }
@@ -80,7 +83,7 @@ public class PerfRepoClient {
    }
 
    private String restUrl(String urlTemplate, Object... params) {
-      return String.format(String.format(REST_BASE_URL_TEMPLATE, host) + urlTemplate, params);
+      return String.format(String.format(REST_BASE_URL_TEMPLATE, host, url) + urlTemplate, params);
    }
 
    private void logHttpError(String msg, HttpRequestBase req, HttpResponse resp) throws Exception {
@@ -156,7 +159,7 @@ public class PerfRepoClient {
       }
       Header[] locations = resp.getHeaders(HttpHeaders.LOCATION);
       if (locations != null && locations.length > 0) {
-         log.debug("Created new test at: " + locations[0].getValue());
+         log.debug("Added new value at: " + locations[0].getValue());
       }
       Long id = new Long(EntityUtils.toString(resp.getEntity()));
       EntityUtils.consume(resp.getEntity());
@@ -199,6 +202,7 @@ public class PerfRepoClient {
       HttpResponse resp = httpClient.execute(delete);
       if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_NO_CONTENT) {
          EntityUtils.consume(resp.getEntity());
+         log.debug("Deleted test: " + id);
          return true;
       } else {
          logHttpError("Error while deleting test", delete, resp);
@@ -225,7 +229,7 @@ public class PerfRepoClient {
       }
       Header[] locations = resp.getHeaders(HttpHeaders.LOCATION);
       if (locations != null && locations.length > 0) {
-         log.debug("Created new test at: " + locations[0].getValue());
+         log.debug("Created new test execution at: " + locations[0].getValue());
       }
       Long id = new Long(EntityUtils.toString(resp.getEntity()));
       EntityUtils.consume(resp.getEntity());
@@ -268,6 +272,7 @@ public class PerfRepoClient {
       HttpResponse resp = httpClient.execute(req);
       if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_NO_CONTENT) {
          EntityUtils.consume(resp.getEntity());
+         log.debug("Deleted test execution: " + id);
          return true;
       } else {
          logHttpError("Error while deleting test execution", req, resp);
@@ -295,7 +300,7 @@ public class PerfRepoClient {
       }
       Header[] locations = resp.getHeaders(HttpHeaders.LOCATION);
       if (locations != null && locations.length > 0) {
-         log.debug("Created new test at: " + locations[0].getValue());
+         log.debug("Created new metric at: " + locations[0].getValue());
       }
       Long id = new Long(EntityUtils.toString(resp.getEntity()));
       EntityUtils.consume(resp.getEntity());

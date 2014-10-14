@@ -8,11 +8,25 @@
    <artifactId>perfrepo-client</artifactId>
    <name>Performance Results Repository Client</name>
 
+   <properties>
+      <web.directory>${project.basedir}/..</web.directory>
+      <perfrepo.host>localhost:8080</perfrepo.host>
+      <perfrepo.context.root>repo</perfrepo.context.root>
+   </properties>
+
    <dependencies>
       <dependency>
          <groupId>org.jboss.qa</groupId>
          <artifactId>perfrepo-model</artifactId>
          <version>1.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.qa</groupId>
+         <artifactId>perfrepo-web</artifactId>
+         <version>1.0-SNAPSHOT</version>
+         <type>war</type>
+         <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -26,11 +40,24 @@
       </dependency>
 
       <dependency>
+         <groupId>org.jboss.arquillian.junit</groupId>
+         <artifactId>arquillian-junit-container</artifactId>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.as</groupId>
+         <artifactId>jboss-as-arquillian-container-remote</artifactId>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
          <scope>test</scope>
       </dependency>
    </dependencies>
+
    <build>
       <plugins>
          <plugin>
@@ -38,11 +65,11 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <version>${maven.surefire.plugin.version}</version>
             <configuration>
-               <excludes>
-                  <exclude>**/*Manual*.java</exclude>
-               </excludes>
                <parallel>classes</parallel>
                <threadCount>1</threadCount>
+               <systemProperties>
+                  <web.directory>${web.directory}</web.directory>
+               </systemProperties>
             </configuration>
          </plugin>
       </plugins>

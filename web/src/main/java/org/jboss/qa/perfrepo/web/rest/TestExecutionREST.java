@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
 import org.jboss.qa.perfrepo.model.Value;
@@ -79,6 +80,9 @@ public class TestExecutionREST {
    @Consumes(MediaType.TEXT_XML)
    @Logged
    public Response create(TestExecution testExecution, @Context UriInfo uriInfo) throws Exception {
+      Test test = testService.getFullTest(testExecution.getTest().getId());
+      testExecution.setTest(test);
+
       Long id = testService.createTestExecution(testExecution).getId();
       return Response.created(uriInfo.getBaseUriBuilder().path(TestExecutionREST.class).path(GET_TEST_EXECUTION_METHOD).build(id)).entity(id).build();
    }
@@ -91,8 +95,8 @@ public class TestExecutionREST {
 	  Collection<Value> values = te.getValues();
 	  Value value = values.iterator().next();
 	  value.setTestExecution(te);
-      Value result = testService.addValue(value);
-      return Response.created(uriInfo.getBaseUriBuilder().path(TestExecutionREST.class).path(GET_TEST_EXECUTION_METHOD).build(result.getId())).entity(result.getId()).build();
+     Value result = testService.addValue(value);
+     return Response.created(uriInfo.getBaseUriBuilder().path(TestExecutionREST.class).path(GET_TEST_EXECUTION_METHOD).build(result.getId())).entity(result.getId()).build();
    }
 
    @DELETE

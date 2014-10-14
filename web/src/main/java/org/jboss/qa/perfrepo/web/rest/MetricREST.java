@@ -16,10 +16,30 @@
 package org.jboss.qa.perfrepo.web.rest;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.jboss.qa.perfrepo.web.rest.logging.Logged;
+import org.jboss.qa.perfrepo.web.service.TestService;
 
 @Path("/metric")
 @RequestScoped
 public class MetricREST {
+
+   @Inject
+   private TestService testService;
+
+   @GET
+   @Produces(MediaType.TEXT_XML)
+   @Path("/{metricId}")
+   @Logged
+   public Response get(@PathParam("metricId") Long metricId) {
+      return Response.ok(testService.getFullMetric(metricId)).build();
+   }
 
 }
