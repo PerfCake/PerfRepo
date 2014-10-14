@@ -21,9 +21,9 @@
          <default-locale>en</default-locale>
          <supported-locale>cs</supported-locale>
       </locale-config>
-      <view-handler>org.jboss.qa.perfrepo.controller.PerfrepoViewHandler</view-handler>
+      <view-handler>org.jboss.qa.perfrepo.web.controller.PerfrepoViewHandler</view-handler>
    </application>
    <factory>
-      <exception-handler-factory>org.jboss.qa.perfrepo.exceptions.PerfRepoExceptionHandlerFactory</exception-handler-factory>
+      <exception-handler-factory>org.jboss.qa.perfrepo.web.exceptions.PerfRepoExceptionHandlerFactory</exception-handler-factory>
    </factory>
 </faces-config>
