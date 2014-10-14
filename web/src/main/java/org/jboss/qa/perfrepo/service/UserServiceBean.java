@@ -144,6 +144,19 @@ public class UserServiceBean implements UserService {
    }
 
    @Override
+   public boolean isUserInGroup(Long userId, Long groupId) {
+	   User user = getUser(userId);
+	   if (user != null && user.getGroups() != null) {
+		   for(Group group: user.getGroups()) {
+			   if (groupId.equals(group.getId())) {
+				   return true;
+			   }
+		   }
+	   }
+	   return false;
+   }
+
+   @Override
    public List<FavoriteParameter> getFavoriteParametersForTest(Test test) {
       User user = getLoggedUser();
       List<FavoriteParameter> result = new ArrayList<FavoriteParameter>();
@@ -152,7 +165,6 @@ public class UserServiceBean implements UserService {
             result.add(favoriteParameter);
          }
       }
-
       return result;
    }
 

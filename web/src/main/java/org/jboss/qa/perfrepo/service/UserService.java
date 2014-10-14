@@ -35,11 +35,19 @@ public interface UserService {
    public User getLoggedUser();
 
    /**
-    * Retrieves if user is assign in defined group
+    * Retrieves if logged user is assign in defined group
     * @param guid
     * @return boolean
     */
    public boolean isLoggedUserInGroup(String guid);
+
+   /**
+    * Retrieves if user is assign in defined group
+    * @param userId
+    * @param groupId
+    * @return
+    */
+   public boolean isUserInGroup(Long userId, Long groupId);
 
    /**
     * Return all information about user as detached entity (e.g. cloned)

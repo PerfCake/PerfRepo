@@ -1,11 +1,15 @@
 package org.jboss.qa.perfrepo.auth;
 
+import java.util.Collection;
+
 import javax.inject.Inject;
 
 import org.jboss.qa.perfrepo.dao.TestDAO;
 import org.jboss.qa.perfrepo.model.Entity;
 import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.auth.AccessLevel;
 import org.jboss.qa.perfrepo.model.auth.AccessType;
+import org.jboss.qa.perfrepo.model.auth.Permission;
 import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.service.UserService;
@@ -19,8 +23,28 @@ public class AuthorizationService {
 	UserService userService;
 	
 	private boolean isUserAuthorizedForReport(Long userId, AccessType accessType, Report report) {
-		//add implementation
-		return true;
+		Collection<Permission> permissions = report.getPermissions();
+		for (Permission permission : permissions) {
+			// if the user require read access, it is not important if the permission is for read or write
+			// if the user require write access, the permission must be for write
+			if (accessType.equals(AccessType.READ) || permission.getAccessType().equals(AccessType.WRITE)) {
+				if (permission.getLevel().equals(AccessLevel.PUBLIC)) {
+					//Public permission, the access is granted
+					return true;
+				} else if (permission.getUserId() != null && permission.getLevel().equals(AccessLevel.USER)) {
+					//USER permission, the permission userId should be same as user, who require the access
+					if (userId.equals(permission.getUserId())) {
+						return true;
+					}
+				} else if (permission.getGroupId() != null && permission.getLevel().equals(AccessLevel.GROUP)) {
+					//GROUP permission, user must be assigned in permission group
+					if (userService.isUserInGroup(userId, permission.getGroupId())) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	private boolean isUserAuthorizedForTest(Long userId, AccessType accessType, Test test) {
