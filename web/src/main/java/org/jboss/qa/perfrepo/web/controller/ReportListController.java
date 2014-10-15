@@ -76,7 +76,7 @@ public class ReportListController extends BaseController {
          throw new IllegalStateException("Item to remove is null");
       }
       try {
-         reportService.removeReport(itemToRemove.getId());
+         reportService.removeReport(itemToRemove);
       } catch (ServiceException e) {
          log.error("Error while removing report " + itemToRemove.getId(), e);
          addMessage(e);

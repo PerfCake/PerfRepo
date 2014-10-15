@@ -25,7 +25,7 @@ public interface ReportService {
     * @param id
     * @throws org.jboss.qa.perfrepo.web.service.exceptions.ServiceException
     */
-   public void removeReport(Long id) throws ServiceException;
+   public void removeReport(Report report) throws ServiceException;
 
    /**
     * Create new report
@@ -64,6 +64,6 @@ public interface ReportService {
     * @param id
     * @return {@link Report} with all attributes fetched
     */
-   public Report getFullReport(Long id);
+   public Report getFullReport(Report report);
 
 }

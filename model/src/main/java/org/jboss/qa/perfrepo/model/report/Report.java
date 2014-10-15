@@ -37,7 +37,9 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jboss.qa.perfrepo.model.Entity;
+import org.jboss.qa.perfrepo.model.auth.EntityType;
 import org.jboss.qa.perfrepo.model.auth.Permission;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
 import org.jboss.qa.perfrepo.model.user.User;
 
 /**
@@ -47,6 +49,7 @@ import org.jboss.qa.perfrepo.model.user.User;
  */
 @javax.persistence.Entity
 @Table(name = "report")
+@SecuredEntity(type=EntityType.REPORT)
 @XmlRootElement(name = "report")
 @NamedQueries({
               @NamedQuery(name = Report.FIND_BY_USERNAME, query = "SELECT report from Report report join report.user user where user.username = :username"),
@@ -85,6 +88,14 @@ public class Report implements Entity<Report>, Comparable<Report> {
 
    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
    private Collection<Permission> permissions;
+
+   public Report() {
+	   super();
+   }
+
+   public Report(Long id) {
+	   this.id = id;
+   }
 
 	public Long getId() {
 		return id;

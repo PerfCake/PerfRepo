@@ -15,9 +15,12 @@
  */
 package org.jboss.qa.perfrepo.web.dao;
 
-import org.jboss.qa.perfrepo.model.auth.Permission;
+import java.util.List;
 
 import javax.inject.Named;
+
+import org.jboss.qa.perfrepo.model.auth.Permission;
+import org.jboss.qa.perfrepo.model.report.Report;
 
 /**
  * DAO for {@link org.jboss.qa.perfrepo.model.auth.Permission}
@@ -27,5 +30,15 @@ import javax.inject.Named;
  */
 @Named
 public class PermissionDAO extends DAO<Permission, Long> {
+
+	/**
+	 * Returns all report permission.
+	 * @param reportId
+	 * @return
+	 */
+	public List<Permission> getByReport(Long reportId) {
+		Report report = new Report(reportId);
+		return getAllByProperty("report", report);
+	}
 
 }

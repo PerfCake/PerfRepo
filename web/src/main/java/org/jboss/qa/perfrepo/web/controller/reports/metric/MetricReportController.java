@@ -162,7 +162,7 @@ public class MetricReportController extends BaseController {
       updateReport();
 
       User user = userService.getUser(userSession.getUser().getId());
-      Report report = reportService.getFullReport(reportId);
+      Report report = reportService.getFullReport(new Report(reportId));
       if(report == null) {
          report = new Report();
       }
@@ -306,7 +306,7 @@ public class MetricReportController extends BaseController {
 
    private void generateSavedReport(Long reportId) {
       try {
-         Report report = reportService.getFullReport(reportId);
+         Report report = reportService.getFullReport(new Report(reportId));
          this.reportId = report.getId();
          this.reportName = report.getName();
 

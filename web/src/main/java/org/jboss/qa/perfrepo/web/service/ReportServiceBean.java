@@ -14,17 +14,19 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.TestMetric;
+import org.jboss.qa.perfrepo.model.auth.AccessType;
+import org.jboss.qa.perfrepo.model.report.Report;
+import org.jboss.qa.perfrepo.model.report.ReportProperty;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO;
 import org.jboss.qa.perfrepo.web.dao.MetricDAO;
 import org.jboss.qa.perfrepo.web.dao.ReportDAO;
 import org.jboss.qa.perfrepo.web.dao.TestDAO;
 import org.jboss.qa.perfrepo.web.dao.TestExecutionDAO;
 import org.jboss.qa.perfrepo.web.dao.TestMetricDAO;
-import org.jboss.qa.perfrepo.model.Metric;
-import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.model.TestMetric;
-import org.jboss.qa.perfrepo.model.report.Report;
-import org.jboss.qa.perfrepo.model.report.ReportProperty;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO;
+import org.jboss.qa.perfrepo.web.security.Secured;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 
 /**
@@ -62,9 +64,10 @@ public class ReportServiceBean implements ReportService {
    }
 
    @Override
-   public void removeReport(Long id) throws ServiceException {
-      Report report = reportDAO.get(id);
-      reportDAO.remove(report);
+   @Secured
+   public void removeReport(Report report) throws ServiceException {
+      Report r = reportDAO.get(report.getId());
+      reportDAO.remove(r);
    }
 
    @Override
@@ -73,29 +76,32 @@ public class ReportServiceBean implements ReportService {
    }
 
    @Override
+   @Secured
    public Report updateReport(Report report) {
       return reportDAO.update(report);
    }
 
    @Override
+   @Deprecated
    public Long getMaxId() {
       return reportDAO.findMaxId();
    }
 
    @Override
-   public Report getFullReport(Long id) {
-      Report report = reportDAO.get(id);
-      if(report == null) {
+   @Secured(accessType=AccessType.READ)
+   public Report getFullReport(Report report) {
+      Report freshReport  = reportDAO.get(report.getId());
+      if(freshReport == null) {
          return null;
       }
 
       Map<String, ReportProperty> clonedReportProperties = new HashMap<String, ReportProperty>();
 
-      for(String propertyKey: report.getProperties().keySet()) {
-         clonedReportProperties.put(propertyKey, report.getProperties().get(propertyKey).clone());
+      for(String propertyKey: freshReport.getProperties().keySet()) {
+         clonedReportProperties.put(propertyKey, freshReport.getProperties().get(propertyKey).clone());
       }
 
-      Report result = report.clone();
+      Report result = freshReport.clone();
       result.setProperties(clonedReportProperties);
 
       return result;

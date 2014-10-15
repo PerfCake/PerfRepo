@@ -38,6 +38,7 @@ public class ReportDAO extends DAO<Report, Long> {
       return findByNamedQuery(Report.FIND_BY_USERNAME, params);
    }
 
+   @Deprecated
    public Long findMaxId() {
       TypedQuery<Long> tq = createNamedQuery(Report.FIND_MAX_ID, Long.class);
 

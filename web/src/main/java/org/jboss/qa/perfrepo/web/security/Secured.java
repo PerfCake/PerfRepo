@@ -22,6 +22,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
 import org.jboss.qa.perfrepo.model.auth.AccessType;
@@ -32,6 +33,6 @@ import org.jboss.qa.perfrepo.model.auth.AccessType;
 @InterceptorBinding
 public @interface Secured {
 
-    AccessType accessType() default AccessType.WRITE;
+    @Nonbinding AccessType accessType() default AccessType.WRITE;
     
 }

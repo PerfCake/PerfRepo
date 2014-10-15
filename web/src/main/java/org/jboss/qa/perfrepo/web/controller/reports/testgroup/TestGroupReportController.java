@@ -157,7 +157,7 @@ public class TestGroupReportController extends BaseController {
       reportId = reportIdParam != null ? Long.parseLong(reportIdParam) : null;
 
 		if (reportId != null) {
-         Report report = reportService.getFullReport(reportId);
+         Report report = reportService.getFullReport(new Report(reportId));
          if(report != null) {
             reportName = report.getName();
             Map<String, ReportProperty> properties = report.getProperties();
@@ -215,7 +215,7 @@ public class TestGroupReportController extends BaseController {
       User user = userService.getUser(userSession.getUser().getId());
 
       if(reportId != null) {
-         report = reportService.getFullReport(reportId);
+         report = reportService.getFullReport(new Report(reportId));
       }
 
       if(report == null) {
