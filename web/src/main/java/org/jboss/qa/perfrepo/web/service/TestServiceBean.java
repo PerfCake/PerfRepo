@@ -241,7 +241,6 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
-	@Secured
 	public Test createTest(Test test) throws ServiceException {
 		if (!userService.isLoggedUserInGroup(test.getGroupId())) {
 			throw new SecurityException(MessageUtils.getMessage("serviceException.1600", userService.getLoggedUser()
