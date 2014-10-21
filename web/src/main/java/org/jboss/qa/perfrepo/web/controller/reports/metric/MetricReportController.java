@@ -162,13 +162,10 @@ public class MetricReportController extends BaseController {
       updateReport();
 
       User user = userService.getUser(userSession.getUser().getId());
-      Report report = reportService.getFullReport(new Report(reportId));
-      if(report == null) {
-         report = new Report();
-      }
+      Report report = new Report();
 
       if(reportId != null) { //editing existing report
-         report.setId(reportId);
+         report = reportService.getFullReport(new Report(reportId));
       }
 
       report.setName(reportName);
@@ -204,7 +201,12 @@ public class MetricReportController extends BaseController {
       }
 
       report.setProperties(reportProperties);
-      reportService.updateReport(report);
+      if(reportId == null) {
+         reportService.createReport(report);
+      }
+      else {
+         reportService.updateReport(report);
+      }
 
       addSessionMessage(INFO, "page.reports.metric.reportSaved");
       reloadSessionMessages();
@@ -282,7 +284,6 @@ public class MetricReportController extends BaseController {
       }
 
       reportName = MessageUtils.getMessage("page.metricreport.newReport");
-      reportId = reportService.getMaxId() + 1;
 
       chartSpecs = new ArrayList<ChartSpec>();
       ChartSpec chart = new ChartSpec("Chart 1");

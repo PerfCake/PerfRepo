@@ -44,13 +44,6 @@ public interface ReportService {
    public Report updateReport(Report report);
 
    /**
-    * Get's the next id that is available for a report
-    *
-    * @return next ID
-    */
-   public Long getMaxId();
-
-   /**
     * Computes metric report.
     *
     * @param request
@@ -61,7 +54,7 @@ public interface ReportService {
    /**
     * Get report with all properties
     *
-    * @param id
+    * @param report
     * @return {@link Report} with all attributes fetched
     */
    public Report getFullReport(Report report);

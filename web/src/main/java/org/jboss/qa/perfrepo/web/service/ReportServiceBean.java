@@ -82,12 +82,6 @@ public class ReportServiceBean implements ReportService {
    }
 
    @Override
-   @Deprecated
-   public Long getMaxId() {
-      return reportDAO.findMaxId();
-   }
-
-   @Override
    @Secured(accessType=AccessType.READ)
    public Report getFullReport(Report report) {
       Report freshReport  = reportDAO.get(report.getId());
