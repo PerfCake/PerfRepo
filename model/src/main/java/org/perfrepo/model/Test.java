@@ -84,6 +84,9 @@ public class Test implements Entity<Test> {
 	@OneToMany(mappedBy = "test")
 	private Collection<TestMetric> testMetrics;
 
+   @OneToMany(mappedBy = "test")
+   private Collection<TestSubscriber> testSubscribers;
+
 	@Column(name = "uid")
 	@NotNull
 	@Size(max = 2047)
@@ -139,6 +142,15 @@ public class Test implements Entity<Test> {
 	public void setTestMetrics(Collection<TestMetric> testMetrics) {
 		this.testMetrics = testMetrics;
 	}
+
+   public void setTestSubscribers(Collection<TestSubscriber> testSubscribers) {
+      this.testSubscribers = testSubscribers;
+   }
+
+   @XmlTransient
+   public Collection<TestSubscriber> getTestSubscribers() {
+      return this.testSubscribers;
+   }
 
 	@XmlTransient
 	public Collection<TestMetric> getTestMetrics() {

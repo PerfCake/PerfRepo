@@ -19,31 +19,15 @@
 package org.perfrepo.web.service;
 
 import org.apache.log4j.Logger;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Tag;
+import org.perfrepo.model.*;
 import org.perfrepo.model.Test;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionAttachment;
-import org.perfrepo.model.TestExecutionParameter;
-import org.perfrepo.model.TestExecutionTag;
-import org.perfrepo.model.TestMetric;
-import org.perfrepo.model.Value;
-import org.perfrepo.model.ValueParameter;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.model.to.TestSearchTO;
 import org.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
+import org.perfrepo.model.user.User;
 import org.perfrepo.model.util.EntityUtils;
 import org.perfrepo.model.util.EntityUtils.UpdateSet;
-import org.perfrepo.web.dao.MetricDAO;
-import org.perfrepo.web.dao.TagDAO;
-import org.perfrepo.web.dao.TestDAO;
-import org.perfrepo.web.dao.TestExecutionAttachmentDAO;
-import org.perfrepo.web.dao.TestExecutionDAO;
-import org.perfrepo.web.dao.TestExecutionParameterDAO;
-import org.perfrepo.web.dao.TestExecutionTagDAO;
-import org.perfrepo.web.dao.TestMetricDAO;
-import org.perfrepo.web.dao.ValueDAO;
-import org.perfrepo.web.dao.ValueParameterDAO;
+import org.perfrepo.web.dao.*;
 import org.perfrepo.web.security.Secured;
 import org.perfrepo.web.service.exceptions.ServiceException;
 import org.perfrepo.web.util.MessageUtils;
@@ -110,6 +94,12 @@ public class TestServiceBean implements TestService {
 
 	@Inject
 	private UserService userService;
+
+   @Inject
+   private TestSubscriberDAO testSubscriberDAO;
+
+   @Inject
+   private UserDAO userDAO;
 
 	@Override
 	@Secured
@@ -300,9 +290,13 @@ public class TestServiceBean implements TestService {
 	@Secured
 	public void removeTest(Test test) throws ServiceException {
 		Test freshTest = testDAO.get(test.getId());
+      User currentUser = userService.getLoggedUser();
 		for (TestExecution testExecution : freshTest.getTestExecutions()) {
 			removeTestExecution(testExecution);
 		}
+      for (TestSubscriber testSubscriber : freshTest.getTestSubscribers()) {
+         removeSubscriber(currentUser, freshTest);
+      }
 		Iterator<TestMetric> allTestMetrics = freshTest.getTestMetrics().iterator();
 		while (allTestMetrics.hasNext()) {
 			TestMetric testMetric = allTestMetrics.next();
@@ -737,6 +731,37 @@ public class TestServiceBean implements TestService {
 	public Test getTest(Long id) {
 		return testDAO.get(id);
 	}
+
+   @Override
+   public TestSubscriber addSubscriber(User user, Test test) {
+      Test freshTest = testDAO.get(test.getId());
+      User freshUser = userDAO.get(user.getId());
+      TestSubscriber testSubscriber = new TestSubscriber();
+      testSubscriber.setTest(freshTest);
+      testSubscriber.setUser(freshUser);
+      return testSubscriberDAO.create(testSubscriber);
+   }
+
+   @Override
+   public void removeSubscriber(User user, Test test) {
+      List<TestSubscriber> users = testSubscriberDAO.findByTest(test);
+      for (TestSubscriber testSubscriber : users) {
+         if (testSubscriber.getUser().getId().equals(user.getId())) {
+            testSubscriberDAO.remove(testSubscriber);
+         }
+      }
+   }
+
+   @Override
+   public boolean isUserSubscribed(User user, Test test) {
+      List<TestSubscriber> tests = testSubscriberDAO.findByUser(user);
+      for (TestSubscriber testSubscriber : tests) {
+         if (testSubscriber.getTest().getId().equals(test.getId())) {
+            return true;
+         }
+      }
+      return false;
+   }
 
 	private TestMetric createTestMetric(Test test, Metric metric) {
 		Metric existingMetric = metricDAO.get(metric.getId());

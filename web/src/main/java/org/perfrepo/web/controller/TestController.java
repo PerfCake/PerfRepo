@@ -31,6 +31,7 @@ import org.perfrepo.model.Metric;
 import org.perfrepo.model.MetricComparator;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.to.TestExecutionSearchTO;
+import org.perfrepo.model.user.User;
 import org.perfrepo.web.service.TestService;
 import org.perfrepo.web.service.UserService;
 import org.perfrepo.web.service.exceptions.ServiceException;
@@ -183,6 +184,21 @@ public class TestController extends BaseController {
 	public List<String> getUserGroups() {
 		return userService.getLoggedUserGroupNames();
 	}
+
+   public void addSubscriber() {
+      User currentUser = userService.getLoggedUser();
+      testService.addSubscriber(currentUser, test);
+   }
+
+   public void removeSubscriber() {
+      User currentUser = userService.getLoggedUser();
+      testService.removeSubscriber(currentUser, test);
+   }
+
+   public boolean isSubscribed() {
+      User currentUser = userService.getLoggedUser();
+      return testService.isUserSubscribed(currentUser, test);
+   }
 
 	public class MetricDetails {
 		private boolean createMode;

@@ -889,3 +889,72 @@ create or replace function migrate_favorite_parameters ()
   END
   '
 LANGUAGE plpgsql VOLATILE;
+
+
+
+-----------------------------------------------------------------------------------------------
+--                                                                                           --
+-- Upgrade of db schema from version 0.0.19 to 1.0                                           --
+--                                                                                           --
+-----------------------------------------------------------------------------------------------
+
+ALTER TABLE permission DROP CONSTRAINT CheckGroupOrUserIsFilled;
+
+--
+-- function which creates default access rights for existing reports
+--
+
+create or replace function reports_rights ()
+  RETURNS setof permission AS
+  '
+  DECLARE
+      reportrow report;
+      permissionId integer;
+	  groupId integer;
+  BEGIN
+
+  for reportrow in select * from report loop
+	for groupId in select group_id from user_group where user_id=reportrow.user_id loop
+		execute ''SELECT nextval(''''PERMISSION_SEQUENCE'''')'' into permissionId;
+		execute ''insert into permission (id, access_type, access_level, group_id, report_id) VALUES ('' || permissionId || '', ''''WRITE'''', ''''GROUP'''', '' || groupId|| '', '' || reportrow.id|| '')'';
+	end loop;
+  end loop;
+
+  execute ''SELECT nextval(''''PERMISSION_SEQUENCE'''')'' into permissionId;
+  execute ''insert into permission (id, access_type, access_level, report_id) VALUES ('' || permissionId|| '', ''''READ'''', ''''PUBLIC'''', '' || reportrow.id|| '')'';
+
+  return;
+  END
+  '
+LANGUAGE plpgsql VOLATILE;
+
+
+CREATE TABLE test_subscriber (
+    id bigint NOT NULL,
+    test_id bigint NOT NULL,
+    user_id bigint NOT NULL
+);
+
+ALTER TABLE public.test_subscriber OWNER TO perfrepo;
+
+CREATE SEQUENCE test_subscriber_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+ALTER TABLE public.test_subscriber_sequence OWNER TO perfrepo;
+
+ALTER TABLE ONLY test_subscriber
+    ADD CONSTRAINT test_subscriber_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY test_subscriber
+    ADD CONSTRAINT test_subscriber_test_fkey FOREIGN KEY (test_id) REFERENCES test(id);
+
+ALTER TABLE ONLY test_subscriber
+    ADD CONSTRAINT test_subscriber_user_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+    
+CREATE INDEX test_subscriber_test ON test_subscriber(test_id);
+CREATE INDEX test_subscriber_user ON test_subscriber(user_id);
+
