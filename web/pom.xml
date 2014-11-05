@@ -168,8 +168,12 @@
 			<artifactId>guava</artifactId>
 			<version>${guava.version}</version>
 		</dependency>
+      <dependency>
+         <groupId>javax.mail</groupId>
+         <artifactId>mail</artifactId>
+         <scope>provided</scope>
+      </dependency>
 	</dependencies>
-
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
