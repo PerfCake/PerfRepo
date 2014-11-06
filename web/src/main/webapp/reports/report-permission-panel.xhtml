@@ -17,7 +17,7 @@
 	</div>
 	<rich:panel id="reportAccessRights" rendered="#{reportPermissionController.panelShown}" style="text-align:right;">
 		<h:outputText style="font-style:italic;"
-			value="You must save the report to propagate the permission changes" /><br/><br/>
+			value="#{strings['panel.report.permissions.warning']}" /><br/><br/>
 		<table id="reportAcessRightsTable"
 			class="table table-bordered smallpad">
 			<thead>
