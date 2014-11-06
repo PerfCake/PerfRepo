@@ -1,4 +1,4 @@
-package org.jboss.qa.perfrepo.web.auth;
+package org.jboss.qa.perfrepo.web.security;
 
 import java.util.Collection;
 

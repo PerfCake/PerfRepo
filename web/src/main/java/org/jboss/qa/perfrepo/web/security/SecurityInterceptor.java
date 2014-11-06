@@ -23,7 +23,6 @@ import javax.interceptor.InvocationContext;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jboss.qa.perfrepo.model.Entity;
 import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
-import org.jboss.qa.perfrepo.web.auth.AuthorizationService;
 import org.jboss.qa.perfrepo.web.util.MessageUtils;
 
 @Secured
