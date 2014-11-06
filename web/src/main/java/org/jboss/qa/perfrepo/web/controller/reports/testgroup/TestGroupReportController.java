@@ -15,13 +15,14 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jboss.qa.perfrepo.web.controller.BaseController;
-import org.jboss.qa.perfrepo.web.controller.reports.testgroup.TestGroupChartBean.ChartData;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.report.ReportProperty;
 import org.jboss.qa.perfrepo.model.user.User;
+import org.jboss.qa.perfrepo.web.controller.BaseController;
+import org.jboss.qa.perfrepo.web.controller.reports.ReportPermissionController;
+import org.jboss.qa.perfrepo.web.controller.reports.testgroup.TestGroupChartBean.ChartData;
 import org.jboss.qa.perfrepo.web.service.ReportService;
 import org.jboss.qa.perfrepo.web.service.TestService;
 import org.jboss.qa.perfrepo.web.service.UserService;
@@ -46,30 +47,35 @@ public class TestGroupReportController extends BaseController {
 
 	@Inject
 	private TestService testService;
-	
+
 	@Inject
 	private UserService userService;
 
-   @Inject
-   private ReportService reportService;
+	@Inject
+	private ReportService reportService;
 
-   @Inject
-   private UserSession userSession;
-	
+	@Inject
+	private UserSession userSession;
+
+	@Inject
+	private ReportPermissionController reportAccessController;
+
 	/**
 	 * Test name, tag, value
 	 */
 	private HashBasedTable<String, ColumnKey, ValueCell> data = HashBasedTable.create();
-	
+
 	/**
 	 * Report properties
 	 */
 	private Long reportId = null;
-	
+
 	private String reportName = null;
 
-   private boolean isCloning = false;
-	
+	private boolean isCloning = false;
+
+	private Report report;
+
 	//private List<String> baselineTags = Arrays.asList("FSW", "simple-12", "600ER8", "baseline");	
 	//format: report_prefix + reportId + "tag.1.alias", report_prefix + reportId + "tag.2.alias"	
 	//testGroupReport.FSW600CR2.compare.1.1=600CR1
@@ -83,47 +89,47 @@ public class TestGroupReportController extends BaseController {
 	//testGroupReport.FSW600CR2.tag.3.alias=600CR2
 	//testGroupReport.FSW600CR2.threshold=-5.0
 	//testGroupReport.FSW600CR2.tests=sy-binding-camel-jms,sy-binding-http-get,sy-binding-http-get-throttling
-	
+
 	private List<String> tags = Lists.newArrayList();
-	
-	private Map<String, String> tagAlias = new HashMap<String, String>(); 
-	
+
+	private Map<String, String> tagAlias = new HashMap<String, String>();
+
 	private List<String> tests = Lists.newArrayList();
-	
+
 	private List<String> metrics = Lists.newArrayList();
 
 	private List<String> selectedMetrics = Lists.newArrayList();
-	
+
 	private Map<String, List<String>> comparison = new HashMap<String, List<String>>();
-	
+
 	private Double semiNegativeThreshold = -5.0;
-	
-	private NumberFormat formatter = new DecimalFormat("#0.00"); 
-	
+
+	private NumberFormat formatter = new DecimalFormat("#0.00");
+
 	private List<String> testsCopy;
-	
+
 	private String currentTest;
-	
+
 	private List<String> tagsCopy;
-	
+
 	private Map<String, String> tagAliasCopy;
-	
+
 	private Map<String, List<String>> comparisonCopy;
-	
+
 	private String currentTag;
-	
+
 	private String baseline1 = null;
-	
+
 	private String baseline2 = null;
-	
+
 	private String newReportName;
-	
+
 	public void processTestExecutions() {
 		data.clear();
 		reloadSessionMessages();
 		//get TEs 
 		List<TestExecution> testExecutions = testService.getTestExecutions(tags, tests);
-		for(TestExecution te : testExecutions) {
+		for (TestExecution te : testExecutions) {
 			String tagsKey = normalizeTags(te.getTags());
 			if (!tags.contains(tagsKey)) {
 				tags.add(tagsKey);
@@ -150,99 +156,108 @@ public class TestGroupReportController extends BaseController {
 			selectedMetrics.addAll(metrics);
 		}
 	}
-	
+
 	@PostConstruct
 	private void readConfiguration() {
-      String reportIdParam = getRequestParam("reportId");
-      reportId = reportIdParam != null ? Long.parseLong(reportIdParam) : null;
+		String reportIdParam = getRequestParam("reportId");
+		reportId = reportIdParam != null ? Long.parseLong(reportIdParam) : null;
 
 		if (reportId != null) {
-         Report report = reportService.getFullReport(new Report(reportId));
-         if(report != null) {
-            reportName = report.getName();
-            Map<String, ReportProperty> properties = report.getProperties();
-            if (properties != null && !properties.isEmpty()) {
-               //tests
-               String testsProperty = properties.get("tests").getValue();
-               tests = new ArrayList<String>();
-               if (testsProperty != null) {
-                  tests = Lists.newArrayList(testsProperty.split(", "));
-               }
-               //tags
-               int i = 1;
-               tags = new ArrayList<String>();
-               tagAlias = new HashMap<String, String>();
-               String tag = properties.containsKey("tag." + i) ? properties.get("tag." + i).getValue() : null;
-               while (tag != null) {
-                  tags.add(tag);
-                  String ta = properties.containsKey("tag." + i + ".alias") ? properties.get("tag." + i + ".alias").getValue() : null;
-                  if (ta != null) {
-                     tagAlias.put(tag, ta);
-                  }
-                  i++;
-                  tag = properties.containsKey("tag." + i) ? properties.get("tag." + i).getValue() : null;
-               }
-               //comparison
-               i = 1;
-               comparison = new HashMap<String, List<String>>();
-               String compare =  properties.containsKey("compare." + i + ".1") ? properties.get("compare." + i + ".1").getValue() : null;
-               while (compare != null) {
-                  String c1 = properties.containsKey("compare." + i + ".1") ? properties.get("compare." + i + ".1").getValue() : null;
-                  String c2 = properties.containsKey("compare." + i + ".2") ? properties.get("compare." + i + ".2").getValue() : null;
-                  String alias = properties.containsKey("compare." + i + ".alias") ? properties.get("compare." + i + ".alias").getValue() : null;
-                  comparison.put(alias, Lists.newArrayList(c1, c2));
-                  i++;
-                  compare = properties.containsKey("compare." + i + ".1") ? properties.get("compare." + i + ".1").getValue() : null;
-               }
-               String metricsProperty = properties.containsKey("metrics") ? properties.get("metrics").getValue() : null;
-               if (metricsProperty != null) {
-                  selectedMetrics.addAll(Lists.newArrayList(metricsProperty.split(", ")));
-               }
-               //TODO: threshold
-               processTestExecutions();
-            }
-         }
+			Report report = reportService.getFullReport(new Report(reportId));
+			if (report != null) {
+				reportName = report.getName();
+				Map<String, ReportProperty> properties = report.getProperties();
+				if (properties != null && !properties.isEmpty()) {
+					//tests
+					String testsProperty = properties.get("tests").getValue();
+					tests = new ArrayList<String>();
+					if (testsProperty != null) {
+						tests = Lists.newArrayList(testsProperty.split(", "));
+					}
+					//tags
+					int i = 1;
+					tags = new ArrayList<String>();
+					tagAlias = new HashMap<String, String>();
+					String tag = properties.containsKey("tag." + i) ? properties.get("tag." + i).getValue() : null;
+					while (tag != null) {
+						tags.add(tag);
+						String ta = properties.containsKey("tag." + i + ".alias") ? properties.get(
+								"tag." + i + ".alias").getValue() : null;
+						if (ta != null) {
+							tagAlias.put(tag, ta);
+						}
+						i++;
+						tag = properties.containsKey("tag." + i) ? properties.get("tag." + i).getValue() : null;
+					}
+					//comparison
+					i = 1;
+					comparison = new HashMap<String, List<String>>();
+					String compare = properties.containsKey("compare." + i + ".1") ? properties.get(
+							"compare." + i + ".1").getValue() : null;
+					while (compare != null) {
+						String c1 = properties.containsKey("compare." + i + ".1") ? properties.get(
+								"compare." + i + ".1").getValue() : null;
+						String c2 = properties.containsKey("compare." + i + ".2") ? properties.get(
+								"compare." + i + ".2").getValue() : null;
+						String alias = properties.containsKey("compare." + i + ".alias") ? properties.get(
+								"compare." + i + ".alias").getValue() : null;
+						comparison.put(alias, Lists.newArrayList(c1, c2));
+						i++;
+						compare = properties.containsKey("compare." + i + ".1") ? properties.get("compare." + i + ".1")
+								.getValue() : null;
+					}
+					String metricsProperty = properties.containsKey("metrics") ? properties.get("metrics").getValue()
+							: null;
+					if (metricsProperty != null) {
+						selectedMetrics.addAll(Lists.newArrayList(metricsProperty.split(", ")));
+					}
+					//TODO: threshold
+					processTestExecutions();
+				}
+			}
 		}
 	}
 
-   public void saveReport() {
-      saveReport(reportName);
-   }
-	
+	public void saveReport() {
+		saveReport(reportName);
+	}
+
 	private void saveReport(String reportName) {
-      Report report = null;
+		Report report = null;
 
-      User user = userService.getUser(userSession.getUser().getId());
+		User user = userService.getUser(userSession.getUser().getId());
 
-      if(reportId != null) {
-         report = reportService.getFullReport(new Report(reportId));
-      }
+		if (reportId != null) {
+			report = reportService.getFullReport(new Report(reportId));
+		}
 
-      if(report == null) {
-         report = new Report();
-      }
-      report.setName(reportName);
-      report.setType("TestGroupReport");
-      report.setUser(user);
+		if (report == null) {
+			report = new Report();
+		}
+		report.setName(reportName);
+		report.setType("TestGroupReport");
+		report.setUser(user);
 
-      Map<String, ReportProperty> properties = report.getProperties();
-      if(properties == null) {
-         properties = new HashMap<String, ReportProperty>();
-      }
+		Map<String, ReportProperty> properties = report.getProperties();
+		if (properties == null) {
+			properties = new HashMap<String, ReportProperty>();
+		}
 
 		//tests
 		String testsProperty = "";
 		for (String test : tests) {
 			testsProperty += test + ", ";
 		}
-		ReportUtils.createOrUpdateReportPropertyInMap(properties, "tests", testsProperty.substring(0, testsProperty.length()-2), report);
+		ReportUtils.createOrUpdateReportPropertyInMap(properties, "tests",
+				testsProperty.substring(0, testsProperty.length() - 2), report);
 
 		//tags
-		int i =1;
+		int i = 1;
 		for (String tag : tags) {
 			ReportUtils.createOrUpdateReportPropertyInMap(properties, "tag." + i, tag, report);
 			if (tagAlias.get(tag) != null) {
-				ReportUtils.createOrUpdateReportPropertyInMap(properties, "tag." + i + ".alias", tagAlias.get(tag), report);
+				ReportUtils.createOrUpdateReportPropertyInMap(properties, "tag." + i + ".alias", tagAlias.get(tag),
+						report);
 			}
 			i++;
 		}
@@ -250,37 +265,44 @@ public class TestGroupReportController extends BaseController {
 		//comparison
 		i = 1;
 		for (String key : comparison.keySet()) {
-			ReportUtils.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".1", comparison.get(key).get(0), report);
-			ReportUtils.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".2", comparison.get(key).get(1), report);
+			ReportUtils.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".1",
+					comparison.get(key).get(0), report);
+			ReportUtils.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".2",
+					comparison.get(key).get(1), report);
 			ReportUtils.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".alias", key, report);
 			i++;
 		}
 
-      String metricsProperty = "";
+		String metricsProperty = "";
 		for (String metric : selectedMetrics) {
 			metricsProperty += metric + ", ";
 		}
 
-		ReportUtils.createOrUpdateReportPropertyInMap(properties, "metrics", metricsProperty.substring(0, metricsProperty.length()-2), report);
-      report.setProperties(properties);
-      reportService.updateReport(report);
-
-      addSessionMessage(INFO, "page.reports.testGroup.reportSaved", reportId);
+		ReportUtils.createOrUpdateReportPropertyInMap(properties, "metrics",
+				metricsProperty.substring(0, metricsProperty.length() - 2), report);
+		report.setProperties(properties);
+		report.setPermissions(reportAccessController.getPermissions());
+		if (report.getId() == null) {
+			reportService.createReport(report);
+		} else {
+			reportService.updateReport(report);
+		}
+		addSessionMessage(INFO, "page.reports.testGroup.reportSaved", reportId);
 		reloadSessionMessages();
 	}
 
 	public void cloneReport() {
-      reportId = null;
-      saveReport(newReportName);
-      redirectWithMessage("/reports", INFO, "page.reports.testGroup.reportSaved", newReportName);
+		reportId = null;
+		saveReport(newReportName);
+		redirectWithMessage("/reports", INFO, "page.reports.testGroup.reportSaved", newReportName);
 	}
 
 	public List<String> getTests() {
 		List<String> result = new ArrayList<String>(tests);
 		Collections.sort(result);
-		return  result;
+		return result;
 	}
-	
+
 	public List<String> getTags() {
 		return tags;
 	}
@@ -294,31 +316,31 @@ public class TestGroupReportController extends BaseController {
 		}
 		return tags;
 	}
-	
+
 	public ValueCell getValue(String test, String tags, String metric) {
 		return data.get(test, new ColumnKey(tags, metric));
 	}
-	
+
 	public List<String> getComparisonValues() {
 		return new ArrayList<String>(comparison.keySet());
 	}
-	
+
 	private String normalizeTags(List<String> tags) {
 		Collections.sort(tags);
 		String result = "";
 		for (String tag : tags) {
-			result += tag + " ";			
+			result += tag + " ";
 		}
 		return result.substring(0, result.length() - 1);
 	}
-	
+
 	public List<String> parseTags(String tags) {
 		if (tags != null) {
 			return Lists.newArrayList(tags.split(" "));
 		}
 		return null;
-	}	
-	
+	}
+
 	public float compare(String test, String compareKey, String metric) {
 		List<String> compareColumns = comparison.get(compareKey);
 		if (compareColumns != null && compareColumns.size() == 2) {
@@ -333,7 +355,7 @@ public class TestGroupReportController extends BaseController {
 		}
 		return 0f;
 	}
-	
+
 	public String getStyle(float result) {
 		if (result > 0) {
 			return "green";
@@ -343,23 +365,23 @@ public class TestGroupReportController extends BaseController {
 			return "orange";
 		}
 	}
-	
+
 	private float compareValues(Value v1, Value v2) {
-		return (float)(((v2.getResultValue() - v1.getResultValue()) * 100f)/v2.getResultValue());
+		return (float) (((v2.getResultValue() - v1.getResultValue()) * 100f) / v2.getResultValue());
 	}
-	
-	public String format(Object number){
+
+	public String format(Object number) {
 		if (number != null) {
 			return formatter.format(number);
 		} else {
 			return "";
 		}
 	}
-	
+
 	public String getTagAlias(String tag) {
 		return tagAlias.get(tag);
 	}
-	
+
 	public Map<String, String> getTagAlias() {
 		return tagAlias;
 	}
@@ -370,8 +392,8 @@ public class TestGroupReportController extends BaseController {
 
 	public List<String> autocompleteTests(String test) {
 		List<String> tests = testService.getTestsByPrefix(test);
-		java.util.Iterator<String> it = tests.iterator();		
-		while(it.hasNext()) {
+		java.util.Iterator<String> it = tests.iterator();
+		while (it.hasNext()) {
 			String t = it.next();
 			if (testsCopy != null && this.testsCopy.contains(t)) {
 				it.remove();
@@ -379,14 +401,14 @@ public class TestGroupReportController extends BaseController {
 		}
 		return tests;
 	}
-	
+
 	public void removeTest(String test) {
-	    this.testsCopy.remove(test);
+		this.testsCopy.remove(test);
 	}
-	
+
 	public void addTest() {
 		if (currentTest != null) {
-			if(testService.getTestByUID(currentTest) != null) {
+			if (testService.getTestByUID(currentTest) != null) {
 				this.testsCopy.add(currentTest);
 			} else {
 				addSessionMessage(ERROR, "page.reports.testGroup.testNotExists", currentTest);
@@ -395,24 +417,24 @@ public class TestGroupReportController extends BaseController {
 		}
 		currentTest = null;
 	}
-	
+
 	public void storeTests() {
 		tests = testsCopy;
 		testsCopy = null;
 		processTestExecutions();
 	}
-	
+
 	public List<String> getTestsCopy() {
 		if (testsCopy == null) {
-			testsCopy = new ArrayList<String>(tests);			
+			testsCopy = new ArrayList<String>(tests);
 		}
 		return testsCopy;
 	}
-	
+
 	public void clearTestsCopy() {
 		testsCopy = null;
 	}
-	
+
 	public String getCurrentTag() {
 		return currentTag;
 	}
@@ -420,11 +442,11 @@ public class TestGroupReportController extends BaseController {
 	public void setCurrentTag(String currentTag) {
 		this.currentTag = currentTag;
 	}
-	
+
 	public List<String> autocompleteTags(String tag) {
 		List<String> tests = testService.getTagsByPrefix(tag);
-		java.util.Iterator<String> it = tests.iterator();		
-		while(it.hasNext()) {
+		java.util.Iterator<String> it = tests.iterator();
+		while (it.hasNext()) {
 			String t = it.next();
 			if (tagsCopy != null && this.tagsCopy.contains(t)) {
 				it.remove();
@@ -432,11 +454,11 @@ public class TestGroupReportController extends BaseController {
 		}
 		return tests;
 	}
-	
+
 	public void removeTag(String tag) {
-	    this.tagsCopy.remove(tag);
+		this.tagsCopy.remove(tag);
 	}
-	
+
 	public void addTag() {
 		if (currentTag != null) {
 			List<String> tags = parseTags(currentTag);
@@ -448,7 +470,7 @@ public class TestGroupReportController extends BaseController {
 		}
 		currentTag = null;
 	}
-	
+
 	public void storeTags() {
 		tags = tagsCopy;
 		tagsCopy = null;
@@ -457,7 +479,7 @@ public class TestGroupReportController extends BaseController {
 			MapDifference<String, String> diff = Maps.difference(tagAlias, tagAliasCopy);
 			if (!diff.areEqual()) {
 				Map<String, MapDifference.ValueDifference<String>> diffs = diff.entriesDiffering();
-				for(String key : diffs.keySet()) {
+				for (String key : diffs.keySet()) {
 					String newValue = diffs.get(key).rightValue();
 					String oldValue = diffs.get(key).leftValue();
 					for (String compKey : comparison.keySet()) {
@@ -470,12 +492,12 @@ public class TestGroupReportController extends BaseController {
 					}
 				}
 			}
-		}		
+		}
 		tagAlias = tagAliasCopy;
 		tagAliasCopy = null;
 		processTestExecutions();
 	}
-	
+
 	public Map<String, String> getTagAliasCopy() {
 		return tagAliasCopy;
 	}
@@ -491,12 +513,12 @@ public class TestGroupReportController extends BaseController {
 		}
 		return tagsCopy;
 	}
-	
+
 	public void clearTagsCopy() {
 		tagsCopy = null;
 		tagAliasCopy = null;
 	}
-	
+
 	public String getCurrentTest() {
 		return currentTest;
 	}
@@ -505,7 +527,6 @@ public class TestGroupReportController extends BaseController {
 		this.currentTest = currentTest;
 	}
 
-
 	public Map<String, List<String>> getComparison() {
 		return comparison;
 	}
@@ -513,79 +534,81 @@ public class TestGroupReportController extends BaseController {
 	public void setComparison(Map<String, List<String>> comparison) {
 		this.comparison = comparison;
 	}
-	
+
 	public List<String> getComparisonLabels() {
 		if (comparisonCopy == null) {
 			comparisonCopy = new HashMap<String, List<String>>(comparison);
 		}
 		return new ArrayList<String>(comparisonCopy.keySet());
 	}
-	
+
 	public List<String> getBaselines() {
 		List<String> baselines = new ArrayList<String>();
 		for (String tag : tags) {
 			String alias = tagAlias.get(tag);
 			if (alias != null && !baselines.contains(alias)) {
-				baselines.add(alias);				
-			} else if (alias ==null && !baselines.contains(tag)) {
+				baselines.add(alias);
+			} else if (alias == null && !baselines.contains(tag)) {
 				baselines.add(tag);
 			}
 		}
 		return baselines;
 	}
-	
+
 	public List<String> getBaselines2() {
 		if (baseline1 != null) {
 			List<String> baselines = getBaselines();
 			baselines.remove(baseline1);
-			return baselines;					
+			return baselines;
 		}
 		return new ArrayList<String>();
 	}
-	
+
 	public void addComparison() {
 		if (baseline1 != null && baseline2 != null) {
 			List<String> comparison = Lists.newArrayList(baseline1, baseline2);
 			if (!comparisonCopy.containsValue(comparison)) {
 				comparisonCopy.put(baseline2 + " vs. " + baseline1, comparison);
 			}
-		}		
+		}
 	}
-	
+
 	public ChartData dataset(String metric) {
 		if (comparison != null && !comparison.isEmpty()) {
-			String compareKey = (String)comparison.keySet().toArray()[0];
-		    List<String> testList = new ArrayList<String>();
-		    List<Double> valueList = new ArrayList<Double>();
-		    for(String test : data.rowKeySet()) {
-			    testList.add(test);
-			    valueList.add(Double.valueOf(compare(test, compareKey, metric)));
-		    }
-		    ChartData dataset = new TestGroupChartBean.ChartData();
-		    dataset.setTests(testList.toArray(new String[0]));
-		    dataset.setValues(valueList.toArray(new Double[0]));
-		    dataset.setTitle(compareKey + " - " + metric);
-		    return dataset;
+			String compareKey = (String) comparison.keySet().toArray()[0];
+			List<String> testList = new ArrayList<String>();
+			List<Double> valueList = new ArrayList<Double>();
+			for (String test : data.rowKeySet()) {
+				testList.add(test);
+				valueList.add(Double.valueOf(compare(test, compareKey, metric)));
+			}
+			ChartData dataset = new TestGroupChartBean.ChartData();
+			dataset.setTests(testList.toArray(new String[0]));
+			dataset.setValues(valueList.toArray(new Double[0]));
+			dataset.setTitle(compareKey + " - " + metric);
+			return dataset;
 		}
 		return null;
-    }
-	
+	}
+
 	public void removeComparison(String label) {
 		comparisonCopy.remove(label);
 	}
-	
+
 	public void storeComparison() {
 		comparison = comparisonCopy;
 		comparisonCopy = null;
-		baseline1 = null; baseline2 = null;
+		baseline1 = null;
+		baseline2 = null;
 		processTestExecutions();
 	}
-	
+
 	public void clearComparisonCopy() {
 		comparisonCopy = null;
-		baseline1 = null; baseline2 = null;
+		baseline1 = null;
+		baseline2 = null;
 	}
-	
+
 	public void storeMetrics() {
 		processTestExecutions();
 	}
@@ -621,7 +644,7 @@ public class TestGroupReportController extends BaseController {
 	public void setReportId(Long reportId) {
 		this.reportId = reportId;
 	}
-	
+
 	public String getReportName() {
 		return reportName;
 	}
@@ -636,8 +659,8 @@ public class TestGroupReportController extends BaseController {
 
 	public void setNewReportName(String newReportName) {
 		this.newReportName = newReportName;
-	}	
-	
+	}
+
 	public List<String> getMetrics() {
 		return metrics;
 	}
@@ -654,22 +677,30 @@ public class TestGroupReportController extends BaseController {
 		this.selectedMetrics = selectedMetrics;
 	}
 
-   public boolean isCloning() {
-      return isCloning;
-   }
+	public boolean isCloning() {
+		return isCloning;
+	}
 
-   public void setCloning(boolean cloning) {
-      isCloning = cloning;
-   }
+	public void setCloning(boolean cloning) {
+		isCloning = cloning;
+	}
 
-   public class ValueCell implements Serializable {
+	public Report getReport() {
+		return report;
+	}
+
+	public void setReport(Report report) {
+		this.report = report;
+	}
+
+	public class ValueCell implements Serializable {
 
 		private static final long serialVersionUID = 2771413301301479495L;
 
 		private Collection<Value> values = new ArrayList<Value>();
-		
+
 		private Value bestValue;
-		
+
 		public ValueCell(Value value) {
 			addValues(Arrays.asList(value));
 		}
@@ -677,12 +708,12 @@ public class TestGroupReportController extends BaseController {
 		public ValueCell(Collection<Value> values) {
 			addValues(values);
 		}
-		
+
 		public void addValues(Collection<Value> values) {
 			if (values != null) {
 				this.values.addAll(values);
-				for (Value value: values) {
-					if (bestValue == null || ValueComparator.compare(bestValue, value) < 0){
+				for (Value value : values) {
+					if (bestValue == null || ValueComparator.compare(bestValue, value) < 0) {
 						bestValue = value;
 					}
 				}
@@ -703,8 +734,8 @@ public class TestGroupReportController extends BaseController {
 
 		public void setBestValue(Value bestValue) {
 			this.bestValue = bestValue;
-		}	
-		
+		}
+
 	}
 
 	public class ColumnKey {

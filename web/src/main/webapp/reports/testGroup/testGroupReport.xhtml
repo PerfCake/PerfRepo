@@ -2,20 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:r="http://richfaces.org"
 	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
 <h:body>
 	<f:metadata>
 		<f:viewParam name="reportId" value="#{testGroupReportController.reportId}" />
 	</f:metadata>
-	<ui:composition template="/layout/template.xhtml">	
+	<ui:composition template="/layout/template.xhtml">
 		<ui:define name="title">Report #{testGroupReportController.reportName}</ui:define>
-		<ui:define name="content">
-		<ui:include src="/reports/testGroup/tests-popup.xhtml" />
-		<ui:include src="/reports/testGroup/tags-popup.xhtml" />
-		<ui:include src="/reports/testGroup/compare-popup.xhtml" />
-		<ui:include src="/reports/testGroup/clone-popup.xhtml" />
-		<ui:include src="/reports/testGroup/metric-popup.xhtml" />
+			<ui:define name="content">
+			<ui:include src="/reports/testGroup/tests-popup.xhtml" />
+			<ui:include src="/reports/testGroup/tags-popup.xhtml" />
+			<ui:include src="/reports/testGroup/compare-popup.xhtml" />
+			<ui:include src="/reports/testGroup/clone-popup.xhtml" />
+			<ui:include src="/reports/testGroup/metric-popup.xhtml" />
+			<ui:include src="/reports/report-permissions-add-popup.xhtml" />
 			<h:form id="testGroupReport">
 				<h1><h:outputText value="#{testGroupReportController.reportName}" rendered="#{testGroupReportController.reportName != null}"/></h1>
+				<ui:include src="/reports/report-permission-panel.xhtml" />
 				<div id="control" style="text-align: right;line-height: 30px;">
 					<span style="margin:5px;">
 						<a4j:commandLink styleClass="text-success" action="#{testGroupReportController.setCloning(false)}" rendered="#{testGroupReportController.reportId == null}" oncomplete="#{rich:component('clonePopup')}.show();" alt="Save New Report" title="Save New Report"><i class="icon-copy"/>Save Report</a4j:commandLink>

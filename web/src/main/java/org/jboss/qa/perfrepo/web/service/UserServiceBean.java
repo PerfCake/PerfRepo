@@ -21,10 +21,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.Validator;
 
-import org.jboss.qa.perfrepo.web.dao.FavoriteParameterDAO;
-import org.jboss.qa.perfrepo.web.dao.TestDAO;
-import org.jboss.qa.perfrepo.web.dao.UserDAO;
-import org.jboss.qa.perfrepo.web.dao.UserPropertyDAO;
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.qa.perfrepo.model.FavoriteParameter;
 import org.jboss.qa.perfrepo.model.Test;
@@ -32,6 +28,11 @@ import org.jboss.qa.perfrepo.model.UserProperty;
 import org.jboss.qa.perfrepo.model.user.Group;
 import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.model.util.EntityUtils;
+import org.jboss.qa.perfrepo.web.dao.FavoriteParameterDAO;
+import org.jboss.qa.perfrepo.web.dao.GroupDAO;
+import org.jboss.qa.perfrepo.web.dao.TestDAO;
+import org.jboss.qa.perfrepo.web.dao.UserDAO;
+import org.jboss.qa.perfrepo.web.dao.UserPropertyDAO;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 
 @Named
@@ -42,6 +43,9 @@ public class UserServiceBean implements UserService {
 
    @Inject
    private UserDAO userDAO;
+
+   @Inject
+   private GroupDAO groupDAO;
 
    @Inject
    private UserPropertyDAO userPropertyDAO;
@@ -163,6 +167,21 @@ public class UserServiceBean implements UserService {
    @Override
    public User getUser(Long id) {
       return userDAO.get(id);
+   }
+
+   @Override
+   public Group getGroup(Long id) {
+      return groupDAO.get(id);
+   }
+
+   @Override
+   public List<Group> getGroups() {
+		return groupDAO.getAll();
+   }
+
+   @Override
+   public List<User> getUsers() {
+		return userDAO.getAll();
    }
 
    @Override

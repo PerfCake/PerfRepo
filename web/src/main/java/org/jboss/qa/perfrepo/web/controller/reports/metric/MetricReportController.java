@@ -30,6 +30,7 @@ import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.web.controller.BaseController;
+import org.jboss.qa.perfrepo.web.controller.reports.ReportPermissionController;
 import org.jboss.qa.perfrepo.model.FavoriteParameter;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
@@ -88,6 +89,9 @@ public class MetricReportController extends BaseController {
 
    @Inject
    private UserService userService;
+
+   @Inject
+   private ReportPermissionController reportAccessController;
 
    private User user;
 
@@ -201,6 +205,7 @@ public class MetricReportController extends BaseController {
       }
 
       report.setProperties(reportProperties);
+      report.setPermissions(reportAccessController.getPermissions());
       if(reportId == null) {
          reportService.createReport(report);
       }

@@ -83,10 +83,10 @@ public class Report implements Entity<Report>, Comparable<Report> {
 	private User user;
 	
 	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
-   @MapKey(name = "name")
+    @MapKey(name = "name")
 	private Map<String, ReportProperty> properties;
 
-   @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
+   @OneToMany(mappedBy = "report")
    private Collection<Permission> permissions;
 
    public Report() {

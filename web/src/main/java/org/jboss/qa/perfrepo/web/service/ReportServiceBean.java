@@ -1,6 +1,7 @@
 package org.jboss.qa.perfrepo.web.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -17,11 +18,15 @@ import javax.inject.Named;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestMetric;
+import org.jboss.qa.perfrepo.model.auth.AccessLevel;
 import org.jboss.qa.perfrepo.model.auth.AccessType;
+import org.jboss.qa.perfrepo.model.auth.Permission;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.report.ReportProperty;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
+import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.web.dao.MetricDAO;
+import org.jboss.qa.perfrepo.web.dao.PermissionDAO;
 import org.jboss.qa.perfrepo.web.dao.ReportDAO;
 import org.jboss.qa.perfrepo.web.dao.TestDAO;
 import org.jboss.qa.perfrepo.web.dao.TestExecutionDAO;
@@ -42,6 +47,9 @@ public class ReportServiceBean implements ReportService {
 
    @Inject
    private ReportDAO reportDAO;
+
+   @Inject
+   private PermissionDAO permissionDAO;
 
    @Inject
    private TestDAO testDAO;
@@ -67,18 +75,38 @@ public class ReportServiceBean implements ReportService {
    @Secured
    public void removeReport(Report report) throws ServiceException {
       Report r = reportDAO.get(report.getId());
+      permissionDAO.removeReportPermissions(report.getId());
       reportDAO.remove(r);
    }
 
    @Override
+   public  Collection<Permission> getReportPermissions(Report report) {
+	   if (report != null && report.getId() != null) {
+		   return permissionDAO.getByReport(report.getId());
+	   } else if (report == null || report.getPermissions() == null || report.getPermissions().size() == 0) {
+		   return getDefaultPermission();
+	   } else if (report.getId() == null && report.getPermissions() != null && report.getPermissions().size() != 0) {
+		   return report.getPermissions();
+	   }
+	   return getDefaultPermission();
+   }
+
+   @Override
    public Report createReport(Report report) {
-      return reportDAO.create(report);
+	   Report r = reportDAO.create(report);
+	   saveReportPermissions(r, report.getPermissions());
+	   return r;
    }
 
    @Override
    @Secured
    public Report updateReport(Report report) {
-      return reportDAO.update(report);
+	   //TODO: verify rights
+	   // somebody is able to read report
+	   // somebody is able to write report
+	   // the updater is able to write report
+	   saveReportPermissions(report, report.getPermissions());
+	   return reportDAO.update(report);
    }
 
    @Override
@@ -92,12 +120,16 @@ public class ReportServiceBean implements ReportService {
       Map<String, ReportProperty> clonedReportProperties = new HashMap<String, ReportProperty>();
 
       for(String propertyKey: freshReport.getProperties().keySet()) {
-         clonedReportProperties.put(propertyKey, freshReport.getProperties().get(propertyKey).clone());
+    	  clonedReportProperties.put(propertyKey, freshReport.getProperties().get(propertyKey).clone());
+      }
+      List<Permission> clonedPermission = new ArrayList<Permission>();
+      for (Permission perm : freshReport.getPermissions()) {
+    	  clonedPermission.add(perm.clone());
       }
 
       Report result = freshReport.clone();
       result.setProperties(clonedReportProperties);
-
+      result.setPermissions(clonedPermission);
       return result;
    }
 
@@ -176,10 +208,86 @@ public class ReportServiceBean implements ReportService {
       return response;
    }
 
+   /**
+    * Stores permissions to report
+    * @param report
+    * @param newPermissions
+    */
+   private void saveReportPermissions(Report report, Collection<Permission> newPermissions) {
+	   Report freshReport = reportDAO.get(report.getId());
+	   List<Permission> oldPermissions = permissionDAO.getByReport(report.getId());
+	   // if the new permissions not defined, use default permissions
+	   if (newPermissions == null || newPermissions.isEmpty()) {
+		   newPermissions = getDefaultPermission();
+	   }
+	   for (Permission newPerm : newPermissions) {
+		   // if new permission has no id and the permission is not contained in the old permissions, store it
+		   if (newPerm.getId() == null && !isContained(newPerm, oldPermissions)) {
+			   newPerm.setReport(freshReport);
+			   permissionDAO.create(newPerm);
+		   }
+	   }
+	   for (Permission oldPerm : oldPermissions) {
+		   // if the old permission is not contained in the new collection, remove it
+		   if (!isContained(oldPerm, newPermissions)) {
+			   permissionDAO.remove(oldPerm);
+		   }
+	   }
+   }
+
+   /**
+    * Returns true if the permission is contained in the permission collection
+    * The method checks equality of all attributes except id (accessType, level, userId, groupId, reportId).
+    * The main purpose of the method is to avoid situations when the semantically same permission exists in the database and the same is created.
+    * @param permission
+    * @param permissions
+    * @return
+    */
+   private boolean isContained(Permission permission, Collection<Permission> permissions) {
+	   for (Permission p : permissions) {
+		   if (p.getAccessType().equals(permission.getAccessType()) && p.getLevel().equals(permission.getLevel())) {
+			   if ((permission.getUserId() != null && permission.getUserId().equals(p.getUserId())) || (permission.getUserId() == null && p.getUserId() == null)) {
+				   if ((permission.getGroupId() != null && permission.getGroupId().equals(p.getGroupId())) || (permission.getGroupId() == null && p.getGroupId() == null)) {
+					   return true;
+				   }
+			   }
+		   }
+	   }
+	   return false;
+   }
+
+   /**
+    * Return all users reports
+    * @param username
+    * @return
+    */
    private List<Report> getAllReports(String username) {
       List<Report> result = new ArrayList<Report>();
       result.addAll(reportDAO.findReportsByUser(username));
 
       return result;
+   }
+
+   /**
+    * Returns the default permissions WRITE group, READ PUBLIC
+    * @return
+    */
+   private Collection<Permission> getDefaultPermission() {
+	   List<Permission> defaultPermissions = new ArrayList<Permission>();
+	   Permission read = new Permission();
+	   read.setAccessType(AccessType.READ);
+	   read.setLevel(AccessLevel.PUBLIC);
+	   defaultPermissions.add(read);
+	   Permission write = new Permission();
+	   write.setAccessType(AccessType.WRITE);
+	   write.setLevel(AccessLevel.GROUP);
+	   User user = userService.getLoggedUser();
+	   if (user.getGroups() != null && user.getGroups().size() > 0) {
+		   write.setGroupId(user.getGroups().iterator().next().getId());
+	   } else {
+		   throw new RuntimeException("User is not assigned in any group");
+	   }
+	   defaultPermissions.add(write);
+	   return defaultPermissions;
    }
 }

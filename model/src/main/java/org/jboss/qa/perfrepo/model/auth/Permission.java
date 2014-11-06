@@ -14,13 +14,14 @@ import javax.persistence.Table;
 
 import org.jboss.qa.perfrepo.model.Entity;
 import org.jboss.qa.perfrepo.model.report.Report;
+import org.jboss.qa.perfrepo.model.user.User;
 
 @javax.persistence.Entity
 @Table(name = "permission")
 public class Permission implements Entity<Permission>, Comparable<Permission> {
 
 	private static final long serialVersionUID = 5637370080321126750L;
-	
+
 	@Id
 	@SequenceGenerator(name = "PERMISSION_ID_GENERATOR", sequenceName = "PERMISSION_SEQUENCE", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PERMISSION_ID_GENERATOR")
@@ -40,9 +41,9 @@ public class Permission implements Entity<Permission>, Comparable<Permission> {
 	@Column(name = "user_id")
 	private Long userId;
 
-   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-   @JoinColumn(name = "report_id", referencedColumnName = "id")
-   private Report report;
+	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "report_id", referencedColumnName = "id")
+	private Report report;
 
 	public AccessType getAccessType() {
 		return accessType;
@@ -85,18 +86,71 @@ public class Permission implements Entity<Permission>, Comparable<Permission> {
 		this.userId = userId;
 	}
 
-   public Report getReport() {
-      return report;
-   }
+	public Report getReport() {
+		return report;
+	}
 
-   public void setReport(Report report) {
-      this.report = report;
-   }
+	public void setReport(Report report) {
+		this.report = report;
+	}
 
-   @Override
+	public void setUser(User user) {
+		this.userId = user.getId();
+	}
+
+	@Override
 	public int compareTo(Permission o) {
-      //TODO: is this really ok?
+		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((accessType == null) ? 0 : accessType.hashCode());
+		result = prime * result + ((groupId == null) ? 0 : groupId.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((level == null) ? 0 : level.hashCode());
+		result = prime * result + ((report == null) ? 0 : report.hashCode());
+		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Permission other = (Permission) obj;
+		if (accessType != other.accessType)
+			return false;
+		if (groupId == null) {
+			if (other.groupId != null)
+				return false;
+		} else if (!groupId.equals(other.groupId))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (level != other.level)
+			return false;
+		if (report == null) {
+			if (other.report != null)
+				return false;
+		} else if (!report.equals(other.report))
+			return false;
+		if (userId == null) {
+			if (other.userId != null)
+				return false;
+		} else if (!userId.equals(other.userId))
+			return false;
+		return true;
 	}
 
 	@Override

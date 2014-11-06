@@ -2,6 +2,7 @@ package org.jboss.qa.perfrepo.web.service;
 
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.FavoriteParameter;
+import org.jboss.qa.perfrepo.model.user.Group;
 import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 
@@ -45,6 +46,27 @@ public interface UserService {
     * @return user
     */
    public User getUser(Long id);
+
+   /**
+    * Retrieves managed entity of group
+    * @param id
+    * @return group
+    */
+   public Group getGroup(Long id);
+
+   /**
+    * Retrieves all users
+    * @param prefix
+    * @return
+    */
+   public List<User> getUsers();
+
+   /**
+    * Retrieves all groups
+    * @param prefix
+    * @return
+    */
+   public List<Group> getGroups();
 
    /**
     * Retrieves currently logged user

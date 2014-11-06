@@ -41,4 +41,15 @@ public class PermissionDAO extends DAO<Permission, Long> {
 		return getAllByProperty("report", report);
 	}
 
+	/**
+	 * Removes report permissions
+	 * @param report
+	 */
+	public void removeReportPermissions(Long reportId) {
+		List<Permission> permissions = getByReport(reportId);
+		for (Permission p : permissions) {
+			this.remove(p);
+		}
+	}
+
 }

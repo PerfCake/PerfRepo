@@ -1,9 +1,11 @@
 package org.jboss.qa.perfrepo.web.service;
 
+import org.jboss.qa.perfrepo.model.auth.Permission;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.to.MetricReportTO;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -59,4 +61,11 @@ public interface ReportService {
     */
    public Report getFullReport(Report report);
 
+   /**
+    * Returns all permission to report. If the permissions are not assigned, returns default permission.
+    * @param report
+    * @return
+    * @throws ServiceException
+    */
+   public  Collection<Permission> getReportPermissions(Report report);
 }

@@ -9,9 +9,11 @@
         <ui:define name="customJavascript">
            <h:outputScript library="js" name="metric_history.js" />
         </ui:define>
-		<ui:define name="title">#{metricReportBean.reportName}</ui:define>
-		<ui:define name="content">
-      <ui:include src="/reports/metricHistory/comment_edit.xhtml" />
+		   <ui:define name="title">#{metricReportBean.reportName}</ui:define>
+		   <ui:define name="content">
+         <ui:include src="/reports/metricHistory/comment_edit.xhtml" />
+			<ui:include src="/reports/report-permissions-add-popup.xhtml" />
+
 			<h:form id="formReportConfig">
 				<h1>
 					#{metricReportBean.reportName} <a href="#{metricReportBean.linkToReport}"><i class="icon-link" title="Permanent link to report" /></a>
@@ -27,6 +29,7 @@
 							<i class="icon-check-minus"></i>
 						</r:commandLink>
 					</h2>
+					<ui:include src="/reports/report-permission-panel.xhtml" />
 					<table>
 						<tr>
 							<td><h:outputText value="Report name" /></td>
