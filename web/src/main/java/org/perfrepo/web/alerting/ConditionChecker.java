@@ -18,6 +18,9 @@
  */
 package org.perfrepo.web.alerting;
 
+
+import org.perfrepo.model.Metric;
+
 /**
  * API for checking of condition for alerting.
  *
@@ -25,13 +28,14 @@ package org.perfrepo.web.alerting;
  */
 public interface ConditionChecker {
 
-	/**
-	 * Checks the condition for alerting
-	 *
-	 * @param condition specification of condition in String in our custom DSL that should hold
-	 * @param currentResult result of the test execution that is currently being processed, e.g. against which the
-	 * condition should hold
-	 * @return true if condition still hold | false if condition is broken
-	 */
-	public boolean checkCondition(String condition, double currentResult);
+   /**
+    * Checks the condition for alerting
+    *
+    * @param condition specification of condition in String in our custom DSL that should hold
+    * @param currentResult result of the test execution that is currently being processed, e.g. against which the
+    *                      condition should hold. This value will replace the "result" variable in condition!
+    * @param metric metric that the condition is linked to
+    * @return true if condition still hold | false if condition is broken
+    */
+   public boolean checkCondition(String condition, double currentResult, Metric metric);
 }

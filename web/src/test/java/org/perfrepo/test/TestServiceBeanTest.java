@@ -27,6 +27,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.perfrepo.model.Metric;
 import org.perfrepo.model.MetricComparator;
@@ -54,6 +55,7 @@ import java.util.concurrent.Callable;
  * @author Michal Linhard (mlinhard@redhat.com)
  */
 @RunWith(Arquillian.class)
+@Ignore
 public class TestServiceBeanTest {
 
 	private static final Logger log = Logger.getLogger(TestServiceBeanTest.class);

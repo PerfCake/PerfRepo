@@ -33,6 +33,7 @@ import javax.persistence.criteria.Root;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -114,6 +115,26 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
 		criteria.where(em.getCriteriaBuilder().equal(root.get(propertyName), value));
 		return em.createQuery(criteria).getResultList();
 	}
+
+   /**
+    * Finds all entities of current type with restriction to one property which has a value
+    * in the provided collection
+    *
+    * @param propertyName
+    * @param value
+    * @return all entities with selected property
+    */
+   public List<T> getAllByPropertyIn(final String propertyName, final Collection<Object> value) {
+      CriteriaQuery<T> criteria = createCriteria();
+      CriteriaBuilder cb = criteriaBuilder();
+      Root<T> root = criteria.from(type);
+      criteria.select(root);
+      criteria.where(root.get(propertyName).in(cb.parameter(Collection.class, "value")));
+      TypedQuery<T> query = em.createQuery(criteria);
+      query.setParameter("value", value);
+
+      return query.getResultList();
+   }
 
 	/**
 	 * Return result of named query

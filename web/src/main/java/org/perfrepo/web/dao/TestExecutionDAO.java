@@ -65,6 +65,69 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 		return getAllByProperty("test", test);
 	}
 
+   /**
+    * Shortcut for getLast(howMany, howMany), i.e. returns last (ordered by started date) <howMany> test executions
+    *
+    * @param howMany
+    * @return
+    */
+   public List<TestExecution> getLast(int howMany) {
+      return getLast(howMany, howMany);
+   }
+
+   /**
+    * Returns interval of test executions ordered by started date asc. The interval is defined as
+    * <number_of_executions - from, number_of_executions - from + howMany>, i.e. behaves exactly as
+    * SQL LIMIT clause, goes back in past by <from> executions and from that test execution takes <howMany>
+    * following test executions.
+    *
+    * @param from
+    * @param howMany
+    * @return
+    */
+   public List<TestExecution> getLast(int from, int howMany) {
+      CriteriaBuilder criteriaBuilder = criteriaBuilder();
+
+      CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+      countQuery.select(criteriaBuilder.count(countQuery.from(TestExecution.class)));
+
+      Long count = query(countQuery).getSingleResult();
+
+      CriteriaQuery<TestExecution> resultQuery = createCriteria();
+
+      Root<TestExecution> root = resultQuery.from(TestExecution.class);
+
+      resultQuery.select(root);
+      resultQuery.orderBy(criteriaBuilder.asc(root.get("started")));
+
+      TypedQuery<TestExecution> typedQuery = query(resultQuery);
+      typedQuery.setFirstResult(count.intValue() - from);
+      typedQuery.setMaxResults(howMany);
+
+      List<TestExecution> result = typedQuery.getResultList();
+
+      return result;
+   }
+
+   /**
+    * TODO: document this
+    *
+    * @param propertyName
+    * @param from
+    * @param to
+    * @return
+    */
+   public <T extends Comparable<? super T>> List<TestExecution> getAllByPropertyBetween(String propertyName, T from, T to) {
+      CriteriaQuery<TestExecution> resultQuery = createCriteria();
+      CriteriaBuilder cb = criteriaBuilder();
+
+      Root<TestExecution> root = resultQuery.from(TestExecution.class);
+      resultQuery.select(root);
+      resultQuery.where(cb.between(root.<T>get(propertyName), from, to));
+
+      return query(resultQuery).getResultList();
+   }
+
 	/**
 	 * Fetch test via JPA relationship.
 	 *

@@ -4,11 +4,15 @@
         http://jboss.org/schema/arquillian
         http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
-	<container qualifier="jbossas-remote">
-		<configuration>
-			<property name="managementAddress">localhost</property>
-			<property name="managementPort">9999</property>
-		</configuration>
-	</container>
+   <engine>
+      <property name="deploymentExportPath">target/deployments</property>
+   </engine>
+
+   <container qualifier="jbossas-remote">
+      <configuration>
+         <property name="managementAddress">localhost</property>
+         <property name="managementPort">9999</property>
+      </configuration>
+   </container>
 
 </arquillian>

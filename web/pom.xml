@@ -12,236 +12,317 @@
 	<name>Performance Results Repository - Web</name>
 	<description />
 
-	<dependencies>
-		<dependency>
-			<groupId>org.perfrepo</groupId>
-			<artifactId>perfrepo-model</artifactId>
-			<version>1.2-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>${commons.lang.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.enterprise</groupId>
-			<artifactId>cdi-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.spec.javax.annotation</groupId>
-			<artifactId>jboss-annotations-api_1.1_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.spec.javax.ws.rs</groupId>
-			<artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.spec.javax.ejb</groupId>
-			<artifactId>jboss-ejb-api_3.1_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.spec.javax.faces</groupId>
-			<artifactId>jboss-jsf-api_2.1_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.spec.javax.servlet</groupId>
-			<artifactId>jboss-servlet-api_3.0_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-jpamodelgen</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator-annotation-processor</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>${commons.io.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>${commons.collections.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>${commons.beanutils.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>${commons.codec.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.richfaces.compat</groupId>
-			<artifactId>richfaces-components-rich</artifactId>
-			<version>${richfaces.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-jaxrs</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-jaxb-provider</artifactId>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun.xml.bind</groupId>
-					<artifactId>jaxb-impl</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.xml.stream</groupId>
-					<artifactId>sjsxp</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.arquillian.junit</groupId>
-			<artifactId>arquillian-junit-container</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.as</groupId>
-			<artifactId>jboss-as-arquillian-container-remote</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.spec.javax.el</groupId>
-			<artifactId>jboss-el-api_2.2_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.tuckey</groupId>
-			<artifactId>urlrewritefilter</artifactId>
-			<version>${urlrewritefilter.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>${jfreechart.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>${guava.version}</version>
-		</dependency>
+   <dependencies>
+      <dependency>
+         <groupId>org.perfrepo</groupId>
+         <artifactId>perfrepo-model</artifactId>
+         <version>1.2-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+         <groupId>commons-lang</groupId>
+         <artifactId>commons-lang</artifactId>
+         <version>${commons.lang.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>javax.enterprise</groupId>
+         <artifactId>cdi-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.spec.javax.annotation</groupId>
+         <artifactId>jboss-annotations-api_1.1_spec</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.spec.javax.ws.rs</groupId>
+         <artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.hibernate.javax.persistence</groupId>
+         <artifactId>hibernate-jpa-2.0-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-core</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.spec.javax.ejb</groupId>
+         <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-validator</artifactId>
+         <scope>provided</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-api</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.spec.javax.faces</groupId>
+         <artifactId>jboss-jsf-api_2.1_spec</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.spec.javax.servlet</groupId>
+         <artifactId>jboss-servlet-api_3.0_spec</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
       <dependency>
          <groupId>javax.mail</groupId>
          <artifactId>mail</artifactId>
          <scope>provided</scope>
       </dependency>
-	</dependencies>
 
-	<build>
-		<finalName>${project.artifactId}</finalName>
-		<plugins>
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-jpamodelgen</artifactId>
+         <scope>provided</scope>
+      </dependency>
 
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>${maven.war.plugin.version}</version>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<archive>
-						<manifestEntries>
-							<Dependencies>org.jboss.resteasy.resteasy-jaxb-provider export services</Dependencies>
-						</manifestEntries>
-					</archive>
-					<webResources>
-						<resource>
-							<directory>src/main/webapp/</directory>
-							<filtering>true</filtering>
-							<includes>
-								<include>WEB-INF/web.xml</include>
-								<include>WEB-INF/jboss-web.xml</include>
-							</includes>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.jboss.as.plugins</groupId>
-				<artifactId>jboss-as-maven-plugin</artifactId>
-				<version>${maven.jboss.as.plugin.version}</version>
-			</plugin>
-		</plugins>
-		<resources>
-			<resource>
-				<directory>src/main/resources/</directory>
-				<filtering>false</filtering>
-			</resource>
-			<resource>
-				<directory>src/main/resources/</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>META-INF/persistence.xml</include>
-				</includes>
-			</resource>
-		</resources>
-	</build>
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-validator-annotation-processor</artifactId>
+         <scope>provided</scope>
+      </dependency>
 
-	<profiles>
-		<profile>
-			<!-- The default profile skips all tests, though you can tune it to run just unit tests based on a custom pattern -->
-			<!-- Seperate profiles are provided for running all tests, including Arquillian tests that execute in the specified container -->
-			<id>default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<version>${maven.surefire.plugin.version}</version>
-						<configuration>
-							<skip>true</skip>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
+      <dependency>
+         <groupId>commons-io</groupId>
+         <artifactId>commons-io</artifactId>
+         <version>${commons.io.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>commons-collections</groupId>
+         <artifactId>commons-collections</artifactId>
+         <version>${commons.collections.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>commons-beanutils</groupId>
+         <artifactId>commons-beanutils</artifactId>
+         <version>${commons.beanutils.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>commons-codec</groupId>
+         <artifactId>commons-codec</artifactId>
+         <version>${commons.codec.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.richfaces.compat</groupId>
+         <artifactId>richfaces-components-rich</artifactId>
+         <version>${richfaces.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>log4j</groupId>
+         <artifactId>log4j</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-jaxrs</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-jaxb-provider</artifactId>
+         <scope>provided</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>com.sun.xml.bind</groupId>
+               <artifactId>jaxb-impl</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>com.sun.xml.stream</groupId>
+               <artifactId>sjsxp</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.arquillian.junit</groupId>
+         <artifactId>arquillian-junit-container</artifactId>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.as</groupId>
+         <artifactId>jboss-as-arquillian-container-remote</artifactId>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.spec.javax.el</groupId>
+         <artifactId>jboss-el-api_2.2_spec</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.tuckey</groupId>
+         <artifactId>urlrewritefilter</artifactId>
+         <version>${urlrewritefilter.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>jfree</groupId>
+         <artifactId>jfreechart</artifactId>
+         <version>${jfreechart.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>com.google.guava</groupId>
+         <artifactId>guava</artifactId>
+         <version>${guava.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.antlr</groupId>
+         <artifactId>antlr</artifactId>
+         <version>${antlr.version}</version>
+         <type>jar</type>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.mockito</groupId>
+         <artifactId>mockito-core</artifactId>
+         <version>1.9.5</version>
+         <scope>test</scope>
+      </dependency>
+
+   </dependencies>
+
+
+   <build>
+      <finalName>${project.artifactId}</finalName>
+      <plugins>
+         <plugin>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>${maven.war.plugin.version}</version>
+            <configuration>
+               <failOnMissingWebXml>false</failOnMissingWebXml>
+               <archive>
+                  <manifestEntries>
+                     <Dependencies>org.jboss.resteasy.resteasy-jaxb-provider export services</Dependencies>
+                  </manifestEntries>
+               </archive>
+               <webResources>
+                  <resource>
+                     <directory>src/main/webapp/</directory>
+                     <filtering>true</filtering>
+                     <includes>
+                        <include>WEB-INF/web.xml</include>
+                        <include>WEB-INF/jboss-web.xml</include>
+                     </includes>
+                  </resource>
+               </webResources>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.jboss.as.plugins</groupId>
+            <artifactId>jboss-as-maven-plugin</artifactId>
+            <version>${maven.jboss.as.plugin.version}</version>
+         </plugin>
+
+         <!-- plugins for ANTLR -->
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>add-source</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                     <goal>add-source</goal>
+                  </goals>
+                  <configuration>
+                     <sources>
+                        <source>${basedir}/target/generated-sources/antlr3</source>
+                     </sources>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr3-maven-plugin</artifactId>
+            <version>${antlr.version}</version>
+            <executions>
+               <execution>
+                  <id>run antlr</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                     <goal>antlr</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+
+      </plugins>
+      <resources>
+         <resource>
+            <directory>src/main/resources/</directory>
+            <filtering>false</filtering>
+         </resource>
+         <resource>
+            <directory>src/main/resources/</directory>
+            <filtering>true</filtering>
+            <includes>
+               <include>META-INF/persistence.xml</include>
+            </includes>
+         </resource>
+      </resources>
+   </build>
+
+   <profiles>
+      <profile>
+         <!-- The default profile skips all tests, though you can tune it to run just unit tests based on a custom pattern -->
+         <!-- Seperate profiles are provided for running all tests, including Arquillian tests that execute in the specified container -->
+         <id>default</id>
+         <activation>
+            <activeByDefault>true</activeByDefault>
+         </activation>
+         <build>
+            <plugins>
+               <plugin>
+                  <artifactId>maven-surefire-plugin</artifactId>
+                  <version>${maven.surefire.plugin.version}</version>
+                  <configuration>
+                     <skip>false</skip>
+                  </configuration>
+               </plugin>
+            </plugins>
+         </build>
+      </profile>
 
 		<profile>
 			<!-- When built in OpenShift the 'openshift' profile will be used when invoking mvn. -->
