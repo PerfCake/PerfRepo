@@ -215,7 +215,6 @@ public class TestServiceBean implements TestService {
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND_ADD_ATTACHMENT, attachment.getTestExecution().getId());
 		}
-		checkLocked(exec);
 		attachment.setTestExecution(exec);
 		TestExecutionAttachment newAttachment = testExecutionAttachmentDAO.create(attachment);
 		return newAttachment.getId();
@@ -228,7 +227,6 @@ public class TestServiceBean implements TestService {
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND_REMOVE_ATTACHMENT, attachment.getTestExecution().getId());
 		}
-		checkLocked(exec);
 		TestExecutionAttachment freshAttachment = testExecutionAttachmentDAO.get(attachment.getId());
 		if (freshAttachment != null) {
 			testExecutionAttachmentDAO.remove(freshAttachment);
@@ -486,7 +484,6 @@ public class TestServiceBean implements TestService {
 		if (execEntity == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, anExec.getId());
 		}
-		checkLocked(execEntity);
 		for (TestExecutionTag interObj : execEntity.getTestExecutionTags()) {
 			testExecutionTagDAO.remove(interObj);
 		}
@@ -514,24 +511,11 @@ public class TestServiceBean implements TestService {
 
 	@Override
 	@Secured
-	public TestExecution setExecutionLocked(TestExecution anExec, boolean locked) throws ServiceException {
-		TestExecution execEntity = testExecutionDAO.get(anExec.getId());
-		if (execEntity == null) {
-			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, anExec.getId());
-		}
-		execEntity.setLocked(locked);
-		return getFullTestExecution(anExec.getId());
-	}
-
-	@Override
-	@Secured
 	public TestExecutionParameter updateParameter(TestExecutionParameter tep) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(tep.getTestExecution().getId());
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, tep.getTestExecution().getId());
 		}
-		checkLocked(exec);
-
 		if (testExecutionParameterDAO.hasTestParam(exec.getId(), tep)) {
 			throw new ServiceException(ServiceException.Codes.PARAMETER_EXISTS, tep.getName());
 		}
@@ -559,7 +543,6 @@ public class TestServiceBean implements TestService {
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, tep.getTestExecution().getId());
 		}
-		checkLocked(exec);
 		TestExecutionParameter tepRemove = testExecutionParameterDAO.get(tep.getId());
 		testExecutionParameterDAO.remove(tepRemove);
 	}
@@ -571,7 +554,6 @@ public class TestServiceBean implements TestService {
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, value.getTestExecution().getId());
 		}
-		checkLocked(exec);
 		Metric metric = null;
 		if (value.getMetric().getId() != null) {
 			metric = metricDAO.get(value.getMetric().getId());
@@ -620,7 +602,6 @@ public class TestServiceBean implements TestService {
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, value.getTestExecution().getId());
 		}
-		checkLocked(exec);
 		Value oldValue = valueDAO.get(value.getId());
 		if (oldValue == null) {
 			throw new ServiceException(ServiceException.Codes.VALUE_NOT_FOUND, value.getId());
@@ -658,7 +639,6 @@ public class TestServiceBean implements TestService {
 		if (exec == null) {
 			throw new ServiceException(ServiceException.Codes.TEST_EXECUTION_NOT_FOUND, value.getTestExecution().getId());
 		}
-		checkLocked(exec);
 		Value v = valueDAO.get(value.getId());
 		for (ValueParameter vp : v.getParameters()) {
 			valueParameterDAO.remove(vp);
@@ -798,11 +778,5 @@ public class TestServiceBean implements TestService {
 			clone.setAttachments(null);
 		}
 		return clone;
-	}
-
-	private void checkLocked(TestExecution exec) throws ServiceException {
-		if (exec.isLocked()) {
-			throw new ServiceException(ServiceException.Codes.EXECUTION_LOCKED, exec.getId());
-		}
 	}
 }

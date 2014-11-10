@@ -76,16 +76,6 @@ public class TestExecutionBuilder {
    }
 
    /**
-    * Set locked to true
-    *
-    * @return this {@link TestExecutionBuilder}
-    */
-   public TestExecutionBuilder locked() {
-      testExecution.setLocked(Boolean.TRUE);
-      return this;
-   }
-
-   /**
     * Set execution comment.
     * 
     * @param comment
@@ -93,16 +83,6 @@ public class TestExecutionBuilder {
     */
    public TestExecutionBuilder comment(String comment) {
       testExecution.setComment(comment);
-      return this;
-   }
-
-   /**
-    * Set locked to false
-    *
-    * @return this {@link TestExecutionBuilder}
-    */
-   public TestExecutionBuilder unlocked() {
-      testExecution.setLocked(Boolean.FALSE);
       return this;
    }
 

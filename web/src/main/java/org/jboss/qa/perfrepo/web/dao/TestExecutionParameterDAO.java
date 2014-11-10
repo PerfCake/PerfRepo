@@ -63,8 +63,8 @@ public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long>
       TypedQuery<TestExecutionParameter> query = query(criteria);
       query.setParameter("testExecutionId", testExecutionId);
       query.setParameter("paramName", param.getName());
-      TestExecutionParameter tparam = query.getSingleResult();
-      return tparam != null && !tparam.getId().equals(param.getId());
+      List<TestExecutionParameter> tparams = query.getResultList();
+      return tparams.size() > 0 && !tparams.get(0).getId().equals(param.getId());
    }
 
    public List<TestExecutionParameter> find(List<Long> execIdList, List<String> paramNameList) {

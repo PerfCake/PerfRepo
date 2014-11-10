@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.jboss.qa.perfrepo.web.controller.reports.charts.RfChartSeries;
 import org.jboss.qa.perfrepo.model.FavoriteParameter;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
@@ -46,10 +45,11 @@ import org.jboss.qa.perfrepo.model.ValueParameter;
 import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
 import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.model.util.EntityUtils;
+import org.jboss.qa.perfrepo.web.controller.reports.charts.RfChartSeries;
 import org.jboss.qa.perfrepo.web.rest.TestExecutionREST;
-import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.web.service.TestService;
 import org.jboss.qa.perfrepo.web.service.UserService;
+import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.web.session.UserSession;
 import org.jboss.qa.perfrepo.web.util.MultiValue;
 import org.jboss.qa.perfrepo.web.util.MultiValue.ParamInfo;
@@ -238,15 +238,6 @@ public class TestExecutionController extends BaseController {
       }
    }
 
-   public void setExecutionLocked(boolean locked) {
-      try {
-         testExecution = testService.setExecutionLocked(testExecution, locked);
-         showMultiValue(null);
-      } catch (ServiceException e) {
-         addMessage(e);
-      }
-   }
-
    public Long getTestExecutionId() {
       return testExecutionId;
    }
@@ -270,7 +261,6 @@ public class TestExecutionController extends BaseController {
                }
                testExecution = new TestExecution();
                testExecution.setTest(test);
-               testExecution.setLocked(Boolean.FALSE);
                testExecution.setStarted(new Date());
                testExecution.setName("New execution");
                setEditedTestExecution();

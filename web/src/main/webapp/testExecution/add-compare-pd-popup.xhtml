@@ -39,7 +39,7 @@
 						<ui:repeat value="#{parametrizedTestExecutionController.result}" var="te">
 							<tr class="rf-dt-r rf-dt-fst-r">								
 								<td class="rf-dt-c">#{te.name}</td>								
-								<td class="rf-dt-c"><h:outputText value="#{te.jobId}" /></td>
+								<td class="rf-dt-c"></td>
 								<td class="rf-dt-c">
 									<h:outputText value="#{te.started}">
 										<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeStyle="full" />
@@ -51,7 +51,6 @@
 									</ui:repeat>
 								</td>
 								<td class="rf-dt-c">
-									 <input type="checkbox" name="toAdd" value="#{te.jobId}"/>  
 								</td>
 							</tr>
 						</ui:repeat>

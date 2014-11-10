@@ -221,7 +221,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       criteria.having(pHavingAllTagsPresent);
       // this isn't very ellegant, but Postgres 8.4 doesn't allow GROUP BY only with id
       // this feature is allowed only since Postgres 9.1+
-      criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("locked"), rExec.get("started"), rExec.get("jobId"), rExec.get("comment"));
+      criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("started"), rExec.get("comment"));
       TypedQuery<TestExecution> query = query(criteria);
 
       // set parameters
@@ -299,7 +299,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 	   criteria.select(rExec);
 	   criteria.where(cb.and(pTagNameInFixedList, pTestUID));
 	   criteria.having(pHavingAllTagsPresent);
-	   criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("locked"), rExec.get("started"), rExec.get("jobId"), rExec.get("comment"));
+	   criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("started"), rExec.get("comment"));
 
       TypedQuery<TestExecution> query = query(criteria);
 	   query.setParameter("testUID", testUIDs);

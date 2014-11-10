@@ -97,14 +97,6 @@ public class TestExecution implements Entity<TestExecution> {
    @Column(name = "started")
    private Date started;
 
-   @NotNull
-   @Column(name = "locked")
-   @XmlAttribute(name = "locked")
-   private Boolean locked;
-
-   @Column(name = "job_id")
-   private Long jobId;
-
    @Column(name = "comment")
    @Size(max = 10239)
    private String comment;
@@ -292,31 +284,6 @@ public class TestExecution implements Entity<TestExecution> {
       } catch (CloneNotSupportedException e) {
          throw new RuntimeException(e);
       }
-   }
-
-   @XmlTransient
-   public boolean isLocked() {
-      return locked == null || locked.booleanValue();
-   }
-
-   @XmlTransient
-   public Boolean getLocked() {
-      return locked;
-   }
-
-   public void setLocked(Boolean locked) {
-      this.locked = locked;
-   }
-
-   // TODO: this is an experimental attribute, might be removed in future versions
-   // please conslut with pdrozd,mlinhard before depending on this
-   @XmlAttribute(name = "jobId")
-   public Long getJobId() {
-      return jobId;
-   }
-
-   public void setJobId(Long jobId) {
-      this.jobId = jobId;
    }
 
    public String getComment() {

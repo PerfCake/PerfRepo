@@ -247,16 +247,6 @@ public interface TestService {
    public TestExecutionParameter getFullParameter(Long paramId);
 
    /**
-    * Lock/unlock test execution.
-    * 
-    * @param anExec
-    * @param locked
-    * @return full test execution
-    * @throws ServiceException
-    */
-   public TestExecution setExecutionLocked(TestExecution anExec, boolean locked) throws ServiceException;
-
-   /**
     * Updates or creates TestExecutionParameter
     * 
     * @param tep TestExecutionParameter to update

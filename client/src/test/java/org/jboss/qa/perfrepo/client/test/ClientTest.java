@@ -246,7 +246,6 @@ public class ClientTest {
 
    private TestExecution createTestExecutionWithParam(Long testId) {
       return TestExecution.builder()
-            .unlocked()
             .testId(testId)
             .name("execution1")
             .started(new Date())
@@ -261,7 +260,6 @@ public class ClientTest {
 
    private TestExecution createTestExecution(Long testId) {
       return TestExecution.builder()
-            .unlocked()
             .testId(testId)
             .name("execution1")
             .started(new Date())

@@ -88,7 +88,7 @@
 
    <rule>
       <from>^/reports/parametrizedDetail/([\w_]+)/([\w_.]+)$</from>
-      <to type="forward" last="true">/reports/parametrizedDetail.jsf?testId=$1&amp;jobId=$2</to>
+      <to type="forward" last="true">/reports/parametrizedDetail.jsf?testId=$1</to>
       <set name="formActionURL">/reports/parametrizedDetail/$1/$2</set>
    </rule>
 

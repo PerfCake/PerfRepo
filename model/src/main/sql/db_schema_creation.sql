@@ -931,3 +931,7 @@ create or replace function reports_rights ()
   END
   '
 LANGUAGE plpgsql VOLATILE;
+
+ALTER TABLE test_execution DROP COLUMN locked;
+
+ALTER TABLE test_execution DROP COLUMN job_id;
