@@ -231,6 +231,14 @@ public interface TestService {
    public TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException;
 
    /**
+    * Get parameter and test execution.
+    *
+    * @param paramId
+    * @return test execution parameter
+    */
+   public TestExecutionParameter getFullParameter(Long paramId);
+
+   /**
     * Lock/unlock test execution.
     * 
     * @param anExec

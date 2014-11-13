@@ -511,6 +511,19 @@ public class TestServiceBean implements TestService {
 		return testExecutionParameterDAO.update(tep);
 	}
 
+   @Override
+   public TestExecutionParameter getFullParameter(Long paramId) {
+      TestExecutionParameter p = testExecutionParameterDAO.get(paramId);
+      if (p == null) {
+         return null;
+      }
+
+      TestExecutionParameter pclone = p.clone();
+      pclone.setTestExecution(p.getTestExecution().clone());
+
+      return pclone;
+   }
+
 	@Override
 	public void removeParameter(TestExecutionParameter tep) throws ServiceException {
 		TestExecution exec = testExecutionDAO.get(tep.getTestExecution().getId());
