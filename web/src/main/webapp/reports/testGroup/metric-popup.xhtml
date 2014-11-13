@@ -6,6 +6,10 @@
 	<h:form id="metricForm" class="form-horizontal well-small">
 		<rich:focus id="focus"/>
 		<fieldset>
+			<a4j:commandLink onclick="document.getElementById('metricForm:info').style.display='block'" alt="Information" title="Information"><i class="icon-info"/></a4j:commandLink>
+				<h:panelGroup id="info" layout="block" styleClass="alert alert-info" style="display:none">
+					<p>The default behavior of the report is to compare all metrics defined for all tests. You can filter metrics by deselecting the metric's checkbox</p>
+				</h:panelGroup>
 			<h5>Select metrics</h5>
 			<a4j:outputPanel id="metricsPopupMessagesPanel">
 				<h:messages errorClass="alert alert-error" infoClass="alert alert-success" fatalClass="alert alert-error" warnClass="alert alert-info" />
@@ -13,13 +17,13 @@
 			
 			<br/><br/>
 			<h5>Metrics:</h5>			
-			<h:selectManyCheckbox value="#{testGroupReportController.selectedMetrics}" layout="pageDirection">
+			<h:selectManyCheckbox value="#{testGroupReportController.selectedMetrics}" layout="pageDirection" disabled="#{!testGroupReportController.userAuthorized}">
    			    <f:selectItems value="#{testGroupReportController.metrics}" />
    		    </h:selectManyCheckbox>
 			
 			<div style="text-align:right">				
 				<a4j:commandButton styleClass="btn btn-primary btn-small" action="#{testGroupReportController.storeMetrics()}" value="OK" alt="OK" title="OK"
-					oncomplete="#{rich:component('metricsPopup')}.hide()" render="@form :testGroupReport :testGroupReportTable" />
+					oncomplete="#{rich:component('metricsPopup')}.hide()" render="@form :testGroupReport :testGroupReportTable chart" />
 				<a4j:commandButton styleClass="btn btn-primary btn-small" oncomplete="#{rich:component('metricsPopup')}.hide()" value="#{strings.cancel}" alt="#{strings.cancel}" title="#{strings.cancel}"/>
 			</div>			
 		</fieldset>		

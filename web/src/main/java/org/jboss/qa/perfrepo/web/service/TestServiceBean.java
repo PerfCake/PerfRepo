@@ -32,16 +32,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
-import org.jboss.qa.perfrepo.web.dao.MetricDAO;
-import org.jboss.qa.perfrepo.web.dao.TagDAO;
-import org.jboss.qa.perfrepo.web.dao.TestDAO;
-import org.jboss.qa.perfrepo.web.dao.TestExecutionAttachmentDAO;
-import org.jboss.qa.perfrepo.web.dao.TestExecutionDAO;
-import org.jboss.qa.perfrepo.web.dao.TestExecutionParameterDAO;
-import org.jboss.qa.perfrepo.web.dao.TestExecutionTagDAO;
-import org.jboss.qa.perfrepo.web.dao.TestMetricDAO;
-import org.jboss.qa.perfrepo.web.dao.ValueDAO;
-import org.jboss.qa.perfrepo.web.dao.ValueParameterDAO;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Tag;
 import org.jboss.qa.perfrepo.model.Test;
@@ -57,6 +47,16 @@ import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 import org.jboss.qa.perfrepo.model.util.EntityUtils;
 import org.jboss.qa.perfrepo.model.util.EntityUtils.UpdateSet;
+import org.jboss.qa.perfrepo.web.dao.MetricDAO;
+import org.jboss.qa.perfrepo.web.dao.TagDAO;
+import org.jboss.qa.perfrepo.web.dao.TestDAO;
+import org.jboss.qa.perfrepo.web.dao.TestExecutionAttachmentDAO;
+import org.jboss.qa.perfrepo.web.dao.TestExecutionDAO;
+import org.jboss.qa.perfrepo.web.dao.TestExecutionParameterDAO;
+import org.jboss.qa.perfrepo.web.dao.TestExecutionTagDAO;
+import org.jboss.qa.perfrepo.web.dao.TestMetricDAO;
+import org.jboss.qa.perfrepo.web.dao.ValueDAO;
+import org.jboss.qa.perfrepo.web.dao.ValueParameterDAO;
 import org.jboss.qa.perfrepo.web.security.Secured;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.web.util.MessageUtils;
@@ -163,7 +163,7 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
-	public List<TestExecution> getFullTestExecutions(List<Long> ids) {
+	public List<TestExecution> getFullTestExecutions(Collection<Long> ids) {
 		List<TestExecution> result = new ArrayList<TestExecution>();
 		for (Long id : ids) {
 			TestExecution testExecution = getFullTestExecution(id);

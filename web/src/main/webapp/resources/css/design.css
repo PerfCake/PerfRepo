@@ -6335,6 +6335,11 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
 	border: 0 !important;
 }
 
+.rf-pp-cnt {
+	font-size: 14px !important;
+	color: #555555 !important;
+}
+
 .compare_exec_baseline {
 	background: #FFF58A;
 }

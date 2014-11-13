@@ -6,14 +6,19 @@
 	<h:form id="testForm" class="form-horizontal well-small">
 		<rich:focus id="focus"/>
 		<fieldset>
+			<a4j:commandLink onclick="document.getElementById('testForm:info').style.display='block'" alt="Information" title="Information"><i class="icon-info"/></a4j:commandLink>
+			<h:panelGroup id="info" layout="block" styleClass="alert alert-info" style="display:none">
+				<p>The report requires the definition of tests for which is report generated. The tests can be added by entering test uid.</p>
+				<p>The test executions which will be compared in the report are selected according to defined tests and tags. You can enter the tags on popup 'Tags' of the report</p>
+			</h:panelGroup>
 			<h5>Add new test</h5>
 			<a4j:outputPanel id="testPopupMessagesPanel">
 				<h:messages errorClass="alert alert-error" infoClass="alert alert-success" fatalClass="alert alert-error" warnClass="alert alert-info" />
 			</a4j:outputPanel>
 			<rich:autocomplete id="addTest" tabindex="1" styleClass="input-text" mode="cachedAjax" tokens=", " minChars="2" autofill="false"
-            		autocompleteMethod="#{testGroupReportController.autocompleteTests}" value="#{testGroupReportController.currentTest}" />
+            		autocompleteMethod="#{testGroupReportController.autocompleteTests}" value="#{testGroupReportController.currentTest}" disabled="#{!testGroupReportController.userAuthorized}" />
            	<a4j:commandButton styleClass="btn btn-success btn-small" action="#{testGroupReportController.addTest()}" value="Add Test" alt="Add Test" title="Add Test"
-					render="@form :testForm :values" />
+					render="@form :testForm :values" disabled="#{!testGroupReportController.userAuthorized}" />
 			<br/><br/>
 			<h5>Tests:</h5>
 			<table id="values" class="table table-bordered smallpad">
@@ -27,14 +32,14 @@
 					<ui:repeat value="#{testGroupReportController.testsCopy}" var="test">
 						<tr>
 							<td style="text-align: left; vertical-align: middle">#{test}</td>
-							<td style="text-align: left; vertical-align: middle"><a4j:commandLink action="#{testGroupReportController.removeTest(test)}" render="@form :testForm" alt="Delete Test" title="Delete Test"><i class="icon-remove"/></a4j:commandLink></td>
+							<td style="text-align: left; vertical-align: middle"><a4j:commandLink disabled="#{!testGroupReportController.userAuthorized}" action="#{testGroupReportController.removeTest(test)}" render="@form :testForm" alt="Delete Test" title="Delete Test"><i class="icon-remove"/></a4j:commandLink></td>
 						</tr>
 				    </ui:repeat>
 				</tbody>
 			</table>
 			<div style="text-align:right">				
 				<a4j:commandButton styleClass="btn btn-primary btn-small" action="#{testGroupReportController.storeTests()}" value="OK" alt="OK" title="OK"
-					oncomplete="#{rich:component('testsPopup')}.hide()" render="@form :testGroupReport :testGroupReportTable :testPopupMessagesPanel" />
+					oncomplete="#{rich:component('testsPopup')}.hide()" render="@form :testGroupReport :testGroupReportTable :testPopupMessagesPanel chart" />
 				<a4j:commandButton styleClass="btn btn-primary btn-small" action="#{testGroupReportController.clearTestsCopy()}" oncomplete="#{rich:component('testsPopup')}.hide()" value="#{strings.cancel}" alt="#{strings.cancel}" title="#{strings.cancel}"/>
 			</div>
 		</fieldset>

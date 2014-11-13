@@ -71,7 +71,7 @@ public interface TestService {
     * @param ids
     * @return List of {@link TestExecution}
     */
-   public List<TestExecution> getFullTestExecutions(List<Long> ids);
+   public List<TestExecution> getFullTestExecutions(Collection<Long> ids);
 
    /**
    * Get metric with all associated tests (without details).

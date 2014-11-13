@@ -52,206 +52,255 @@ import org.jboss.qa.perfrepo.model.builder.TestBuilder;
  */
 @javax.persistence.Entity
 @Table(name = "test")
-@SecuredEntity(type=EntityType.TEST)
+@SecuredEntity(type = EntityType.TEST)
 @NamedQueries({
-      @NamedQuery(name = Test.FIND_TESTS_USING_METRIC, query = "SELECT test from Test test, TestMetric tm, Metric m where test = tm.test and tm.metric = m and m.id = :metric"),
-      @NamedQuery(name = Test.FIND_BY_UID, query = "SELECT test FROM Test test WHERE test.uid = :uid")
-              })
+		@NamedQuery(name = Test.FIND_TESTS_USING_METRIC, query = "SELECT test from Test test, TestMetric tm, Metric m where test = tm.test and tm.metric = m and m.id = :metric"),
+		@NamedQuery(name = Test.FIND_BY_UID, query = "SELECT test FROM Test test WHERE test.uid = :uid")
+})
 @XmlRootElement(name = "test")
 public class Test implements Entity<Test> {
 
-   private static final long serialVersionUID = 2936849220074718535L;
+	private static final long serialVersionUID = 2936849220074718535L;
 
-   public static final String FIND_TESTS_USING_METRIC = "Test.findTestsUsingMetric";
-   public static final String FIND_BY_UID = "Test.findByUid";
+	public static final String FIND_TESTS_USING_METRIC = "Test.findTestsUsingMetric";
+	public static final String FIND_BY_UID = "Test.findByUid";
 
-   @Id
-   @SequenceGenerator(name = "TEST_ID_GENERATOR", sequenceName = "TEST_SEQUENCE", allocationSize = 1)
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_ID_GENERATOR")
-   private Long id;
+	@Id
+	@SequenceGenerator(name = "TEST_ID_GENERATOR", sequenceName = "TEST_SEQUENCE", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_ID_GENERATOR")
+	private Long id;
 
-   @Column(name = "name")
-   @NotNull
-   @Size(max = 2047)
-   private String name;
+	@Column(name = "name")
+	@NotNull
+	@Size(max = 2047)
+	private String name;
 
-   @OneToMany(mappedBy = "test")
-   private Collection<TestExecution> testExecutions;
+	@OneToMany(mappedBy = "test")
+	private Collection<TestExecution> testExecutions;
 
-   @OneToMany(mappedBy = "test")
-   private Collection<TestMetric> testMetrics;
+	@OneToMany(mappedBy = "test")
+	private Collection<TestMetric> testMetrics;
 
-   @Column(name = "uid")
-   @NotNull
-   @Size(max = 2047)
-   private String uid;
+	@Column(name = "uid")
+	@NotNull
+	@Size(max = 2047)
+	private String uid;
 
-   @Column(name = "groupId")
-   @NotNull
-   @Size(max = 255)
-   private String groupId;
+	@Column(name = "groupId")
+	@NotNull
+	@Size(max = 255)
+	private String groupId;
 
-   @Column(name = "description")
-   @NotNull
-   @Size(max = 10239)
-   private String description;
+	@Column(name = "description")
+	@NotNull
+	@Size(max = 10239)
+	private String description;
 
-   @XmlTransient
-   public Long getId() {
-      return id;
-   }
+	@XmlTransient
+	public Long getId() {
+		return id;
+	}
 
-   public void setId(Long id) {
-      this.id = id;
-   }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-   @XmlID
-   @XmlAttribute(name = "id")
-   public String getStringId() {
-      return id == null ? null : String.valueOf(id);
-   }
+	@XmlID
+	@XmlAttribute(name = "id")
+	public String getStringId() {
+		return id == null ? null : String.valueOf(id);
+	}
 
-   public void setStringId(String id) {
-      this.id = Long.valueOf(id);
-   }
+	public void setStringId(String id) {
+		this.id = Long.valueOf(id);
+	}
 
-   public void setName(String name) {
-      this.name = name;
-   }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-   @XmlAttribute(name = "name")
-   public String getName() {
-      return this.name;
-   }
+	@XmlAttribute(name = "name")
+	public String getName() {
+		return this.name;
+	}
 
-   public void setTestExecutions(Collection<TestExecution> testExecutions) {
-      this.testExecutions = testExecutions;
-   }
+	public void setTestExecutions(Collection<TestExecution> testExecutions) {
+		this.testExecutions = testExecutions;
+	}
 
-   @XmlTransient
-   public Collection<TestExecution> getTestExecutions() {
-      return this.testExecutions;
-   }
+	@XmlTransient
+	public Collection<TestExecution> getTestExecutions() {
+		return this.testExecutions;
+	}
 
-   public void setTestMetrics(Collection<TestMetric> testMetrics) {
-      this.testMetrics = testMetrics;
-   }
+	public void setTestMetrics(Collection<TestMetric> testMetrics) {
+		this.testMetrics = testMetrics;
+	}
 
-   @XmlTransient
-   public Collection<TestMetric> getTestMetrics() {
-      return this.testMetrics;
-   }
+	@XmlTransient
+	public Collection<TestMetric> getTestMetrics() {
+		return this.testMetrics;
+	}
 
-   @XmlElementWrapper(name = "metrics")
-   @XmlElement(name = "metric")
-   public Collection<Metric> getMetrics() {
-      return testMetrics == null ? null : new MetricCollection();
-   }
+	@XmlElementWrapper(name = "metrics")
+	@XmlElement(name = "metric")
+	public Collection<Metric> getMetrics() {
+		return testMetrics == null ? null : new MetricCollection();
+	}
 
-   public void setMetrics(Collection<Metric> metrics) {
-      testMetrics = new ArrayList<TestMetric>();
-      getMetrics().addAll(metrics);
-   }
+	public void setMetrics(Collection<Metric> metrics) {
+		testMetrics = new ArrayList<TestMetric>();
+		getMetrics().addAll(metrics);
+	}
 
-   /**
-    * Hack to evade listing intermediate {@link TestMetric} objects in XML.
-    */
-   private class MetricCollection extends AbstractCollection<Metric> {
+	/**
+	 * Hack to evade listing intermediate {@link TestMetric} objects in XML.
+	 */
+	private class MetricCollection extends AbstractCollection<Metric> {
 
-      private class MetricIterator implements Iterator<Metric> {
+		private class MetricIterator implements Iterator<Metric> {
 
-         private Iterator<TestMetric> iterator;
+			private Iterator<TestMetric> iterator;
 
-         @Override
-         public boolean hasNext() {
-            return iterator.hasNext();
-         }
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
 
-         @Override
-         public Metric next() {
-            return iterator.next().getMetric();
-         }
+			@Override
+			public Metric next() {
+				return iterator.next().getMetric();
+			}
 
-         @Override
-         public void remove() {
-            throw new UnsupportedOperationException();
-         }
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
 
-      }
+		}
 
-      @Override
-      public Iterator<Metric> iterator() {
-         MetricIterator i = new MetricIterator();
-         i.iterator = testMetrics.iterator();
-         return i;
-      }
+		@Override
+		public Iterator<Metric> iterator() {
+			MetricIterator i = new MetricIterator();
+			i.iterator = testMetrics.iterator();
+			return i;
+		}
 
-      @Override
-      public int size() {
-         return testMetrics.size();
-      }
+		@Override
+		public int size() {
+			return testMetrics.size();
+		}
 
-      @Override
-      public boolean add(Metric e) {
-         TestMetric tm = new TestMetric();
-         tm.setMetric(e);
-         return testMetrics.add(tm);
-      }
+		@Override
+		public boolean add(Metric e) {
+			TestMetric tm = new TestMetric();
+			tm.setMetric(e);
+			return testMetrics.add(tm);
+		}
 
-   }
+	}
 
-   public void setUid(String uid) {
-      this.uid = uid;
-   }
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
 
-   @XmlAttribute(name = "uid")
-   public String getUid() {
-      return this.uid;
-   }
+	@XmlAttribute(name = "uid")
+	public String getUid() {
+		return this.uid;
+	}
 
-   @XmlAttribute(name = "groupId")
-   public String getGroupId() {
-      return groupId;
-   }
+	@XmlAttribute(name = "groupId")
+	public String getGroupId() {
+		return groupId;
+	}
 
-   public void setGroupId(String groupId) {
-      this.groupId = groupId;
-   }
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
 
-   public String getDescription() {
-      return description;
-   }
+	public String getDescription() {
+		return description;
+	}
 
-   @XmlElement(name = "description")
-   public void setDescription(String description) {
-      this.description = description;
-   }
+	@XmlElement(name = "description")
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-   @XmlTransient
-   public List<Metric> getSortedMetrics() {
-      if (testMetrics == null || testMetrics.isEmpty()) {
-         return new ArrayList<Metric>(0);
-      } else {
-         List<Metric> result = new ArrayList<Metric>();
-         for (TestMetric tm : testMetrics) {
-            result.add(tm.getMetric());
-         }
-         Collections.sort(result);
-         return result;
-      }
-   }
+	@XmlTransient
+	public List<Metric> getSortedMetrics() {
+		if (testMetrics == null || testMetrics.isEmpty()) {
+			return new ArrayList<Metric>(0);
+		} else {
+			List<Metric> result = new ArrayList<Metric>();
+			for (TestMetric tm : testMetrics) {
+				result.add(tm.getMetric());
+			}
+			Collections.sort(result);
+			return result;
+		}
+	}
 
-   public static TestBuilder builder() {
-      return new TestBuilder();
-   }
+	public static TestBuilder builder() {
+		return new TestBuilder();
+	}
 
-   @Override
-   public Test clone() {
-      try {
-         return (Test) super.clone();
-      } catch (CloneNotSupportedException e) {
-         throw new RuntimeException(e);
-      }
-   }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((groupId == null) ? 0 : groupId.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((uid == null) ? 0 : uid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Test other = (Test) obj;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		if (groupId == null) {
+			if (other.groupId != null)
+				return false;
+		} else if (!groupId.equals(other.groupId))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (uid == null) {
+			if (other.uid != null)
+				return false;
+		} else if (!uid.equals(other.uid))
+			return false;
+		return true;
+	}
+
+	@Override
+	public Test clone() {
+		try {
+			return (Test) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 }

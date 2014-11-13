@@ -17,15 +17,17 @@ import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.Value;
+import org.jboss.qa.perfrepo.model.auth.AccessType;
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.report.ReportProperty;
 import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.web.controller.BaseController;
 import org.jboss.qa.perfrepo.web.controller.reports.ReportPermissionController;
-import org.jboss.qa.perfrepo.web.controller.reports.testgroup.TestGroupChartBean.ChartData;
+import org.jboss.qa.perfrepo.web.security.AuthorizationService;
 import org.jboss.qa.perfrepo.web.service.ReportService;
 import org.jboss.qa.perfrepo.web.service.TestService;
 import org.jboss.qa.perfrepo.web.service.UserService;
+import org.jboss.qa.perfrepo.web.session.TEComparatorSession;
 import org.jboss.qa.perfrepo.web.session.UserSession;
 import org.jboss.qa.perfrepo.web.util.ReportUtils;
 import org.jboss.qa.perfrepo.web.util.ValueComparator;
@@ -35,10 +37,17 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 @Named
 @ViewScoped
 public class TestGroupReportController extends BaseController {
+
+	private static final String CHART_COLOR_RED = "#BD4247";
+
+	private static final String CHART_COLOR_ORANGE = "#ECA778";
+
+	private static final String CHART_COLOR_GREEN = "#1B8D1B";
 
 	/**
 	 * Serial Version UID
@@ -60,6 +69,12 @@ public class TestGroupReportController extends BaseController {
 	@Inject
 	private ReportPermissionController reportAccessController;
 
+	@Inject
+	private TEComparatorSession teComparator;
+
+	@Inject
+	private AuthorizationService authorizationService;
+
 	/**
 	 * Test name, tag, value
 	 */
@@ -75,6 +90,8 @@ public class TestGroupReportController extends BaseController {
 	private boolean isCloning = false;
 
 	private Report report;
+
+	private boolean userAuthorized = true;
 
 	//private List<String> baselineTags = Arrays.asList("FSW", "simple-12", "600ER8", "baseline");	
 	//format: report_prefix + reportId + "tag.1.alias", report_prefix + reportId + "tag.2.alias"	
@@ -94,6 +111,8 @@ public class TestGroupReportController extends BaseController {
 
 	private Map<String, String> tagAlias = new HashMap<String, String>();
 
+	private Collection<Long> testIds = Sets.newHashSet();
+
 	private List<String> tests = Lists.newArrayList();
 
 	private List<String> metrics = Lists.newArrayList();
@@ -112,6 +131,10 @@ public class TestGroupReportController extends BaseController {
 
 	private List<String> tagsCopy;
 
+	private List<String> newFoundTags = Lists.newArrayList();
+
+	private int testExecutionsFound = 0;
+
 	private Map<String, String> tagAliasCopy;
 
 	private Map<String, List<String>> comparisonCopy;
@@ -124,11 +147,17 @@ public class TestGroupReportController extends BaseController {
 
 	private String newReportName;
 
+	private List<TestExecution> testExecutions = new ArrayList<TestExecution>();
+
+	private List<TestExecution> missingTE = new ArrayList<TestExecution>();
+
 	public void processTestExecutions() {
 		data.clear();
 		reloadSessionMessages();
 		//get TEs 
-		List<TestExecution> testExecutions = testService.getTestExecutions(tags, tests);
+		testExecutions = findTestExecutions();
+		//filter tags according to test execution result
+		//tags.clear();
 		for (TestExecution te : testExecutions) {
 			String tagsKey = normalizeTags(te.getTags());
 			if (!tags.contains(tagsKey)) {
@@ -155,19 +184,82 @@ public class TestGroupReportController extends BaseController {
 		if (selectedMetrics.isEmpty()) {
 			selectedMetrics.addAll(metrics);
 		}
+		//filter tagAlias according to tags
+		//tagAlias = Maps.filterKeys(tagAlias, Predicates.in(tags));
+	}
+
+	public List<TestExecution> findTestExecutions() {
+		if (testIds.isEmpty() && !tags.isEmpty() && !tests.isEmpty()) {
+			missingTE.clear(); //may be useless step
+			List<TestExecution> allTestExecutions = testService.getTestExecutions(tags, tests);
+			// build list of test execution ids
+			for (TestExecution te : allTestExecutions) {
+				if (!testIds.contains(te.getId())) {
+					testIds.add(te.getId());
+				}
+			}
+			return allTestExecutions;
+		} else if (!testIds.isEmpty()) {
+			//find defined test executions by id
+			List<TestExecution> testExecutions = testService.getFullTestExecutions(testIds);
+			boolean initial = false;
+			//is tests && tags are empty - when we go to the report from the search page
+			if (tests.isEmpty() && tags.isEmpty()) {
+				initial = true;
+			}
+			List<TestExecution> filtered = new ArrayList<TestExecution>();
+			for (TestExecution te: testExecutions) {
+				if (initial) {
+					if (!tests.contains(te.getTestUid())) {
+						tests.add(te.getTestUid());
+					}
+					String tagsKey = normalizeTags(te.getTags());
+					if (!tags.contains(tagsKey)) {
+						tags.add(tagsKey);
+					}
+					filtered.add(te);
+				} else {
+					if (tests.contains(te.getTestUid()) && tags.contains(normalizeTags(te.getTags()))) {
+						filtered.add(te);
+					} else {
+						testIds.remove(te.getId());
+					}
+				}
+			}
+			//find missing test execution that can be compared in the report - allowed only when user is authorized for write access
+			if (userAuthorized) {
+				List<TestExecution> allTestExecutions = testService.getTestExecutions(tags, tests);
+				for (TestExecution te : allTestExecutions) {
+					if (!filtered.contains(te) && !missingTE.contains(te)) {
+						missingTE.add(te);
+					}
+				}
+			}
+			return filtered;
+		}
+		return new ArrayList<TestExecution>();
 	}
 
 	@PostConstruct
 	private void readConfiguration() {
 		String reportIdParam = getRequestParam("reportId");
 		reportId = reportIdParam != null ? Long.parseLong(reportIdParam) : null;
-
 		if (reportId != null) {
+			userAuthorized = authorizationService.isUserAuthorizedFor(AccessType.WRITE, new Report(reportId));
 			Report report = reportService.getFullReport(new Report(reportId));
 			if (report != null) {
 				reportName = report.getName();
 				Map<String, ReportProperty> properties = report.getProperties();
 				if (properties != null && !properties.isEmpty()) {
+					//ids
+					if (properties.get("testIds") != null) {
+						String idsProperty = properties.get("testIds").getValue();
+						if (idsProperty != null) {
+							for (String item : idsProperty.split(", ")) {
+								testIds.add(Long.valueOf(item));
+							}
+						}
+					}
 					//tests
 					String testsProperty = properties.get("tests").getValue();
 					tests = new ArrayList<String>();
@@ -212,10 +304,12 @@ public class TestGroupReportController extends BaseController {
 						selectedMetrics.addAll(Lists.newArrayList(metricsProperty.split(", ")));
 					}
 					//TODO: threshold
-					processTestExecutions();
 				}
 			}
+		} else if (teComparator.isAnyToCompare()) {
+			testIds.addAll(teComparator.getExecIds());
 		}
+		processTestExecutions();
 	}
 
 	public void saveReport() {
@@ -242,6 +336,14 @@ public class TestGroupReportController extends BaseController {
 		if (properties == null) {
 			properties = new HashMap<String, ReportProperty>();
 		}
+
+		//ids
+		String idsProperty = "";
+		for (Long id : testIds) {
+			idsProperty += id + ", ";
+		}
+		ReportUtils.createOrUpdateReportPropertyInMap(properties, "testIds",
+				idsProperty.substring(0, idsProperty.length() - 2), report);
 
 		//tests
 		String testsProperty = "";
@@ -421,6 +523,7 @@ public class TestGroupReportController extends BaseController {
 	public void storeTests() {
 		tests = testsCopy;
 		testsCopy = null;
+		//testIds.clear();
 		processTestExecutions();
 	}
 
@@ -461,11 +564,17 @@ public class TestGroupReportController extends BaseController {
 
 	public void addTag() {
 		if (currentTag != null) {
-			List<String> tags = parseTags(currentTag);
-			Collections.sort(tags);
-			String tag = normalizeTags(tags);
-			if (!tagsCopy.contains(tag)) {
-				this.tagsCopy.add(tag);
+			List<TestExecution> tes = testService.getTestExecutions(Lists.newArrayList(currentTag), tests);
+			newFoundTags = Lists.newArrayList();
+			for (TestExecution te: tes) {
+				String t = normalizeTags(te.getTags());
+				if (!tagsCopy.contains(t)) {
+					tagsCopy.add(t);
+					newFoundTags.add(t);
+				}
+				if (newFoundTags.contains(t)) {
+					testExecutionsFound++;
+				}
 			}
 		}
 		currentTag = null;
@@ -517,6 +626,8 @@ public class TestGroupReportController extends BaseController {
 	public void clearTagsCopy() {
 		tagsCopy = null;
 		tagAliasCopy = null;
+		newFoundTags.clear();
+		testExecutionsFound = 0;
 	}
 
 	public String getCurrentTest() {
@@ -573,22 +684,87 @@ public class TestGroupReportController extends BaseController {
 		}
 	}
 
-	public ChartData dataset(String metric) {
-		if (comparison != null && !comparison.isEmpty()) {
-			String compareKey = (String) comparison.keySet().toArray()[0];
-			List<String> testList = new ArrayList<String>();
-			List<Double> valueList = new ArrayList<Double>();
-			for (String test : data.rowKeySet()) {
-				testList.add(test);
-				valueList.add(Double.valueOf(compare(test, compareKey, metric)));
+//	public ChartData dataset(String metric) {
+//		if (comparison != null && !comparison.isEmpty()) {
+//			String compareKey = (String) comparison.keySet().toArray()[0];
+//			List<String> testList = new ArrayList<String>();
+//			List<Double> valueList = new ArrayList<Double>();
+//			for (String test : data.rowKeySet()) {
+//				testList.add(test);
+//				valueList.add(Double.valueOf(compare(test, compareKey, metric)));
+//			}
+//			ChartData dataset = new TestGroupChartBean.ChartData();
+//			dataset.setTests(testList.toArray(new String[0]));
+//			dataset.setValues(valueList.toArray(new Double[0]));
+//			dataset.setTitle(compareKey + " - " + metric);
+//			return dataset;
+//		}
+//		return null;
+//	}
+
+	public void addAllMissingTestExecutions() {
+		if (!missingTE.isEmpty()) {
+			for (TestExecution te : missingTE) {
+				if (!testIds.contains(te.getId())) {
+					testIds.add(te.getId());
+				}
+				String tag = normalizeTags(te.getTags());
+				if (!tags.contains(tag)) {
+					tags.add(tag);
+				}
 			}
-			ChartData dataset = new TestGroupChartBean.ChartData();
-			dataset.setTests(testList.toArray(new String[0]));
-			dataset.setValues(valueList.toArray(new Double[0]));
-			dataset.setTitle(compareKey + " - " + metric);
-			return dataset;
+			missingTE.clear();
+			processTestExecutions();
+		}
+	}
+
+	public void addMissingTestExecution(TestExecution te) {
+		if (!testIds.contains(te.getId())) {
+			testIds.add(te.getId());
+			String tag = normalizeTags(te.getTags());
+			if (!tags.contains(tag)) {
+				tags.add(tag);
+			}
+			missingTE.remove(te);
+			processTestExecutions();
+		}
+	}
+
+	public void removeTestExecutionFromReport(TestExecution te) {
+		testIds.remove(te.getId());
+		processTestExecutions();
+	}
+
+	public boolean isSelectedAllTE() {
+		return missingTE.isEmpty();
+	}
+
+	public List<TestExecution> getMissingTE() {
+		return missingTE;
+	}
+
+	public void setMissingTE(List<TestExecution> missingTE) {
+		this.missingTE = missingTE;
+	}
+
+	public List<ChartRow> getChartData(String metric, String compareKey) {
+		if (comparison != null && !comparison.isEmpty() && comparison.containsKey(compareKey)) {
+			List<ChartRow> chartData = new ArrayList<ChartRow>();
+			for (String test : data.rowKeySet()) {
+				ChartRow row = new ChartRow();
+				row.setTest(test);
+				row.setResult(Double.valueOf(compare(test, compareKey, metric)));
+				row.setLabel(format(row.getResult()) + '%');
+				row.setColor(getChartColor(row.getResult()));
+				chartData.add(row);
+			}
+			return chartData;
 		}
 		return null;
+	}
+
+	private String getChartColor(Double result) {
+		return (result < -5) ? CHART_COLOR_RED : (result < 0  ? CHART_COLOR_ORANGE : CHART_COLOR_GREEN);
 	}
 
 	public void removeComparison(String label) {
@@ -691,6 +867,71 @@ public class TestGroupReportController extends BaseController {
 
 	public void setReport(Report report) {
 		this.report = report;
+	}
+
+	public List<TestExecution> getTestExecutions() {
+		return testExecutions;
+	}
+
+	public void setTestExecutions(List<TestExecution> testExecutions) {
+		this.testExecutions = testExecutions;
+	}
+
+	public boolean isUserAuthorized() {
+		return userAuthorized;
+	}
+
+	public void setUserAuthorized(boolean userAuthorized) {
+		this.userAuthorized = userAuthorized;
+	}
+
+	public List<String> getNewFoundTags() {
+		return newFoundTags;
+	}
+
+	public void setNewFoundTags(List<String> newFoundTags) {
+		this.newFoundTags = newFoundTags;
+	}
+
+	public int getTestExecutionsFound() {
+		return testExecutionsFound;
+	}
+
+	public void setTestExecutionsFound(int testExecutionsFound) {
+		this.testExecutionsFound = testExecutionsFound;
+	}
+
+	public class ChartRow {
+
+		private String test;
+		private String label;
+		private Double result;
+		private String color;
+
+		public String getTest() {
+			return test;
+		}
+		public void setTest(String test) {
+			this.test = test;
+		}
+		public String getLabel() {
+			return label;
+		}
+		public void setLabel(String label) {
+			this.label = label;
+		}
+		public Double getResult() {
+			return result;
+		}
+		public void setResult(Double result) {
+			this.result = result;
+		}
+		public String getColor() {
+			return color;
+		}
+		public void setColor(String color) {
+			this.color = color;
+		}
 	}
 
 	public class ValueCell implements Serializable {
