@@ -15,16 +15,22 @@
  */
 package org.jboss.qa.perfrepo.controller;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.controller.reports.charts.RfChartSeries;
@@ -102,6 +108,8 @@ public class TestExecutionController extends BaseController {
 
    private Long createForTest;
    private Long testExecutionId;
+
+   private Long attachmentId;
 
    public List<FavoriteParameter> getFavoriteParameters() {
       return favoriteParameters;
@@ -506,7 +514,7 @@ public class TestExecutionController extends BaseController {
     */
    public String getDownloadLink(TestExecutionAttachment attachment) {
       HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-      return request.getContextPath() + "/rest/testExecution/attachment/" + attachment.getId();
+      return request.getContextPath() + "/exec/attachment/" + attachment.getId();
    }
 
    public List<ValueInfo> getValues() {
@@ -607,6 +615,14 @@ public class TestExecutionController extends BaseController {
       this.showMultiValueTable = showMultiValueTable;
    }
 
+   public Long getAttachmentId() {
+      return attachmentId;
+   }
+
+   public void setAttachmentId(Long attachmentId) {
+      this.attachmentId = attachmentId;
+   }
+
    private FavoriteParameter findFavoriteParameter(String paramName) {
       if (paramName == null || favoriteParameters == null) {
          return null;
@@ -621,6 +637,34 @@ public class TestExecutionController extends BaseController {
 
    public boolean isFavorite(String paramName) {
       return findFavoriteParameter(paramName) != null;
+   }
+
+   public void downloadAttachment() {
+      TestExecutionAttachment attachment = testService.getAttachment(attachmentId);
+      if (attachment == null) {
+         addMessage(ERROR, "Attachment not found.");
+      }
+
+      HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+
+      response.reset();
+      response.setContentType(attachment.getMimetype());
+      response.setHeader("Content-Disposition", "attachment; filename=" + attachment.getFilename());
+
+      try(BufferedInputStream input = new BufferedInputStream(new ByteArrayInputStream(attachment.getContent()));
+          BufferedOutputStream output = new BufferedOutputStream(response.getOutputStream())
+         ) {
+
+         byte[] buffer = new byte[10240];
+         for (int length; (length = input.read(buffer)) > 0;) {
+            output.write(buffer, 0, length);
+         }
+      }
+      catch(IOException ex) {
+         addMessage(ERROR, "Error occurred while downloading attachment.");
+      }
+
+      FacesContext.getCurrentInstance().responseComplete();
    }
 
    public void uploadAttachment(FileUploadEvent event) throws Exception {

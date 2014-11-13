@@ -54,10 +54,16 @@
    </rule>
 
    <rule>
-      <!-- /exec/{testExecutionId} -->
+      <!-- /exec/{testExecutionId}/edit -->
       <from>^/exec/([\d]+)/edit$</from>
       <to type="forward" last="true" qsappend="true">/testExecution/edit.jsf?testExecutionId=$1</to>
       <set name="formActionURL">/exec/$1/edit</set>
+   </rule>
+
+   <rule>
+      <!-- /exec/attachment/{attachmentId} -->
+      <from>^/exec/attachment/([\d]+)$</from>
+      <to type="forward" last="true" qsappend="true">/testExecution/downloadAttachment.jsf?attachmentId=$1</to>
    </rule>
 
    <rule>
