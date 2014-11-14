@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.qa.perfrepo.controller;
+package org.jboss.qa.perfrepo.web.controller;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
-import org.jboss.qa.perfrepo.service.TestService;
-import org.jboss.qa.perfrepo.viewscope.ViewScoped;
+import org.jboss.qa.perfrepo.web.service.TestService;
+import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
 
 /**
  * Displays value of {@link TestExecutionParameter}

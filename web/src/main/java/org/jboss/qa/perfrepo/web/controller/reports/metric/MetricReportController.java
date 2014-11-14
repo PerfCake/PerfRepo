@@ -51,6 +51,7 @@ import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.web.service.ReportService;
 import org.jboss.qa.perfrepo.web.service.TestService;
 import org.jboss.qa.perfrepo.web.service.UserService;
+import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.web.session.UserSession;
 import org.jboss.qa.perfrepo.web.util.MessageUtils;
 import org.jboss.qa.perfrepo.web.util.ReportUtils;
