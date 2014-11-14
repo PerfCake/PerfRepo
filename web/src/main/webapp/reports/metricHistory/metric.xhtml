@@ -11,6 +11,7 @@
         </ui:define>
 		<ui:define name="title">#{metricReportBean.reportName}</ui:define>
 		<ui:define name="content">
+      <ui:include src="/reports/metricHistory/comment_edit.xhtml" />
 			<h:form id="formReportConfig">
 				<h1>
 					#{metricReportBean.reportName} <a href="#{metricReportBean.linkToReport}"><i class="icon-link" title="Permanent link to report" /></a>
@@ -177,7 +178,9 @@
                         <r:legend position="nw" />
 					</r:chart>
 
-                    <h:panelGrid rendered="#{chartItem.renderDetails}" >
+               <h:panelGrid rendered="#{chartItem.renderDetails}" >
+
+
 						<table class="pointDetails">
 							<tr>
 								<td class="pointDetailsLabel">Execution ID</td>
@@ -193,11 +196,14 @@
 							</tr>
 							<tr>
 								<td class="pointDetailsLabel">Execution tags</td>
-								<td class="pointDetailsValue"><table>
+								<td class="pointDetailsValue">
+                           <table>
 										<tr>
-											<td><ui:repeat value="#{metricReportBean.pointDetails.tags}" varStatus="status" var="item">
+											<td>
+                                    <ui:repeat value="#{metricReportBean.pointDetails.tags}" varStatus="status" var="item">
 													<span class="badge badge-success">#{item}</span>
-												</ui:repeat></td>
+												</ui:repeat>
+                                 </td>
 										</tr>
 									</table></td>
 							</tr>
@@ -207,11 +213,37 @@
 									<td class="pointDetailsValue"><h:outputText value="#{metricReportBean.getDisplayValueFavParam(item)}" escape="false" /></td>
 								</tr>
 							</ui:repeat>
-						</table>
-						<r:commandLink styleClass="btn btn-primary btn-small" onclick="metricHistoryPermanentlyHighlight()" oncomplete="metricHistoryRefresh()" action="#{teComparatorSession.add(metricReportBean.pointDetails.execId)}"
-							alt="Add execution to comparison" title="Add execution to comparison" render=":formReportConfig :formChart :headerForm:compareMenuItem :messagesPanel">
-							<i class="icon-plus"></i> Add to comparison
-						</r:commandLink>
+                     <tr>
+                        <td class="pointDetailsLabel">Comment</td>
+                        <td class="pointDetailsValue">
+                           <table>
+                              <tr>
+                                 <td><h:outputText value="#{metricReportBean.pointDetails.comment}" escape="false" /></td>
+                              </tr>
+                           </table>
+                        </td>
+                     </tr>
+                  </table>
+
+                  <h:panelGroup>
+                     <table>
+                        <tr>
+                           <td>
+                              <r:commandLink styleClass="btn btn-primary btn-small" onclick="metricHistoryPermanentlyHighlight()" oncomplete="metricHistoryRefresh()" action="#{teComparatorSession.add(metricReportBean.pointDetails.execId)}"
+                                             alt="Add execution to comparison" title="Add execution to comparison" render=":formReportConfig :formChart :headerForm:compareMenuItem :messagesPanel">
+                                 <i class="icon-plus"></i> Add to comparison
+                              </r:commandLink>
+
+                              <r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.setPointDetails(metricReportBean.pointDetails)}" oncomplete="#{rich:component('dialogCommentEdit')}.show();"
+                                             alt="Edit comment" title="Edit comment" render=":dialogCommentEdit">
+                                 <i class="icon-edit"></i> Edit comment
+                              </r:commandLink>
+                           </td>
+                        </tr>
+                     </table>
+                  </h:panelGroup>
+
+
 					</h:panelGrid>
 				</r:repeat>
 			</h:form>

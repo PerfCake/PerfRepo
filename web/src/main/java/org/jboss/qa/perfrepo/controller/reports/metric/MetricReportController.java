@@ -50,6 +50,7 @@ import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.service.ReportService;
 import org.jboss.qa.perfrepo.service.TestService;
 import org.jboss.qa.perfrepo.service.UserService;
+import org.jboss.qa.perfrepo.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.session.UserSession;
 import org.jboss.qa.perfrepo.util.MessageUtils;
 import org.jboss.qa.perfrepo.util.ReportUtils;
@@ -268,6 +269,14 @@ public class MetricReportController extends BaseController {
          baselineToRemove.chart.removeBaseline(baselineToRemove);
       }
       baselineSpecs.remove(baselineToRemove);
+   }
+
+   public void updateTestExecutionFromDetail() {
+      try {
+         testService.updateTestExecution(pointDetails.exec);
+      } catch (ServiceException ex) {
+         addMessage(ex);
+      }
    }
 
    private void generateNewReport() {
@@ -491,6 +500,10 @@ public class MetricReportController extends BaseController {
 
    public void setReportId(Long reportId) {
       this.reportId = reportId;
+   }
+
+   public void setPointDetails(PointDetails pointDetails) {
+      this.pointDetails = pointDetails;
    }
 
    /** -----------------------------------------------------------------------------------
@@ -959,6 +972,7 @@ public class MetricReportController extends BaseController {
 
       private Long execId;
       private TestExecution exec;
+      private String comment;
       private List<PointDetailsFavParam> favParams = new ArrayList<MetricReportController.PointDetailsFavParam>();
 
       public Long getExecId() {
@@ -971,6 +985,14 @@ public class MetricReportController extends BaseController {
 
       public String getExecStarted() {
          return exec == null ? "N/A" : DFMT.format(exec.getStarted());
+      }
+
+      public String getComment() {
+         return exec == null ? "" : exec.getComment();
+      }
+
+      public void setComment(String comment) {
+         exec.setComment(comment);
       }
 
       public List<String> getTags() {

@@ -109,14 +109,14 @@
    <rule>
       <!-- /reports/metric -->
       <from>^/reports/metric$</from>
-      <to type="forward" last="true">/reports/metric.jsf</to>
+      <to type="forward" last="true">/reports/metricHistory/metric.jsf</to>
       <set name="formActionURL">/reports/metric</set>
    </rule>
 
    <rule>
       <!-- /reports/metric/{reportId} -->
       <from>^/reports/metric/([\d]+)$</from>
-      <to type="forward" last="true">/reports/metric.jsf?reportId=$1</to>
+      <to type="forward" last="true">/reports/metricHistory/metric.jsf?reportId=$1</to>
       <set name="formActionURL">/reports/metric/$1</set>
    </rule>
 

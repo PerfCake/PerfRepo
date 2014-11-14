@@ -6407,6 +6407,7 @@ table.pointDetails {
 }
 
 table.pointDetails td.pointDetailsLabel {
+    width: 130px;
 	font-weight: bold;
 }
 
