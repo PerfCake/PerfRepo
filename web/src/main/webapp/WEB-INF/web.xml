@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
-	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	version="2.5">
+		 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+		 version="2.5">
 	<display-name>p-repo</display-name>
 	<welcome-file-list>
 		<welcome-file>index.xhtml</welcome-file>
 	</welcome-file-list>
 
-   <!-- RESTEasy -->
+	<!-- RESTEasy -->
 	<servlet>
 		<servlet-name>Resteasy</servlet-name>
 		<servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
@@ -17,8 +17,8 @@
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
 
-   <!-- Context parameters -->
-   <context-param>
+	<!-- Context parameters -->
+	<context-param>
 		<param-name>javax.ws.rs.Application</param-name>
 		<param-value>org.jboss.qa.perfrepo.web.rest.PerfRepoRESTApplication</param-value>
 	</context-param>
@@ -35,12 +35,12 @@
 		<param-value>true</param-value>
 	</context-param>
 
-   <!-- RestEASY listener -->
+	<!-- RestEASY listener -->
 	<listener>
 		<listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
 	</listener>
 
-   <!-- JSF -->
+	<!-- JSF -->
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
 		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -54,7 +54,7 @@
 		<url-pattern>/faces/*</url-pattern>
 	</servlet-mapping>
 
-   <!-- filters -->
+	<!-- filters -->
 	<filter>
 		<filter-name>RestAuthenticationFilter</filter-name>
 		<filter-class>org.jboss.qa.perfrepo.web.rest.security.RestAuthenticationFilter</filter-class>
@@ -96,20 +96,22 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>repo</web-resource-name>
-			<description />
+			<description/>
 			<url-pattern>/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
-			<description />
+			<description/>
 			<role-name>*</role-name>
 		</auth-constraint>
 	</security-constraint>
-   <!--Exclude css and images here -->
+	<!--Exclude css and images here -->
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Exclude from Security</web-resource-name>
-			<url-pattern>/resources/images/*</url-pattern><!-- No security for images -->
-			<url-pattern>/resources/css/*</url-pattern><!-- No security for css -->
+			<url-pattern>/resources/images/*</url-pattern>
+			<!-- No security for images -->
+			<url-pattern>/resources/css/*</url-pattern>
+			<!-- No security for css -->
 			<url-pattern>/resources/font/*</url-pattern>
 			<url-pattern>/resources/js/*</url-pattern>
 			<url-pattern>/org.richfaces.resources/*</url-pattern>
@@ -131,7 +133,7 @@
 		</form-login-config>
 	</login-config>
 	<security-role>
-		<description />
+		<description/>
 		<role-name>*</role-name>
-	</security-role>	
+	</security-role>
 </web-app>

@@ -1,4 +1,3 @@
-
 var previousAdded;
 var previousHighlightedPointX;
 var previousHighlightedPointSeries;
@@ -12,16 +11,16 @@ var highlightedPointsCounter;
 metricHistoryClear();
 
 function metricHistoryRefresh() {
-    for(var i = 0; i < highlightedPointsCounter; i++)  {
+    for (var i = 0; i < highlightedPointsCounter; i++) {
         var chart = $(document.getElementById(highlightedPointsChart[i])).chart('getPlotObject');
 
-        if(typeof(chart.highlight) === "function") {
+        if (typeof(chart.highlight) === "function") {
             chart.highlight(highlightedPointsSeries[i], highlightedPointsX[i]);
         }
     }
 
     var chart = $(document.getElementById(previousHighlightedPointChart)).chart('getPlotObject');
-    if(typeof(chart.highlight) === "function") {
+    if (typeof(chart.highlight) === "function") {
         chart.highlight(previousHighlightedPointSeries, previousHighlightedPointX);
     }
 }
@@ -30,9 +29,9 @@ function metricHistoryPointClick(e) {
     var currentChartName = e.currentTarget.name + 'Chart';
     var chart = $(document.getElementById(currentChartName)).chart('getPlotObject');
 
-    if(!previousAdded && previousHighlightedPointChart != null) {
+    if (!previousAdded && previousHighlightedPointChart != null) {
         var previousChart = $(document.getElementById(previousHighlightedPointChart)).chart('getPlotObject');
-        if(typeof(previousChart.unhighlight) === "function") {
+        if (typeof(previousChart.unhighlight) === "function") {
             previousChart.unhighlight(previousHighlightedPointSeries, previousHighlightedPointX);
         }
     }
@@ -68,6 +67,6 @@ function metricHistoryClear() {
     highlightedPointsCounter = 0;
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
     $("#clearCompare").click(metricHistoryClear());
 });

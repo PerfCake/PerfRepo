@@ -15,25 +15,23 @@
  */
 package org.jboss.qa.perfrepo.web.controller;
 
-import javax.inject.Named;
-
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
+
+import javax.inject.Named;
 
 /**
  * Backing bean home screen.
- * 
+ *
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @Named
 @ViewScoped
 public class HomeController extends BaseController {
 
-   /**
-    * called on preRenderView
-    */
-   public void preRender() throws Exception {
-      reloadSessionMessages();
-   }
-
+	/**
+	 * called on preRenderView
+	 */
+	public void preRender() throws Exception {
+		reloadSessionMessages();
+	}
 }

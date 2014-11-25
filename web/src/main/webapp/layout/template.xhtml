@@ -1,31 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:c="http://java.sun.com/jstl/core">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+        >
 <h:head>
-	<h:outputStylesheet name="design.css" library="css" />
-	<h:outputStylesheet name="font-awesome.min.css" library="css" />
-	<link href="#{request.contextPath}/resources/images/perfrepo.ico" rel="shortcut icon"></link>
-	<h:panelGroup id="titleGroup">
-		<title><ui:insert name="title"></ui:insert></title>
-	</h:panelGroup>
-	<ui:insert name="head"></ui:insert>
+    <h:outputStylesheet name="design.css" library="css"/>
+    <h:outputStylesheet name="font-awesome.min.css" library="css"/>
+    <link href="#{request.contextPath}/resources/images/perfrepo.ico" rel="shortcut icon"></link>
+    <h:panelGroup id="titleGroup">
+        <title><ui:insert name="title"></ui:insert></title>
+    </h:panelGroup>
+    <ui:insert name="head"></ui:insert>
 </h:head>
 <h:body>
     <ui:insert name="customJavascript"></ui:insert>
-	<div class="topbar">
-		<div id="header">
-			<ui:include src="/layout/headerMenu.xhtml" />
-		</div>
-	</div>
-	<div class="container">
-		<h:panelGroup id="messagesPanel">
-			<h:messages errorClass="alert alert-error" infoClass="alert alert-success" fatalClass="alert alert-error" warnClass="alert alert-info" />
-		</h:panelGroup>
-		<div id="content">
-			<ui:insert name="content"></ui:insert>
-		</div>
-		<div id="footer"></div>
-	</div>
+
+    <div class="topbar">
+        <div id="header">
+            <ui:include src="/layout/headerMenu.xhtml"/>
+        </div>
+    </div>
+    <div class="container">
+        <h:panelGroup id="messagesPanel">
+            <h:messages errorClass="alert alert-error" infoClass="alert alert-success" fatalClass="alert alert-error"
+                        warnClass="alert alert-info"/>
+        </h:panelGroup>
+
+        <div id="content">
+            <ui:insert name="content"></ui:insert>
+        </div>
+        <div id="footer"></div>
+    </div>
 </h:body>
 </html>

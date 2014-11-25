@@ -10,26 +10,26 @@ import org.richfaces.ui.output.chart.ChartDataModel;
  */
 public class RfChartSeries {
 
-   private ChartDataModel data;
-   private String name;
+	private ChartDataModel data;
+	private String name;
 
-   public RfChartSeries(ChartDataModel dataModel) {
-      this.data = dataModel;
-   }
+	public RfChartSeries(ChartDataModel dataModel) {
+		this.data = dataModel;
+	}
 
-   public String getName() {
-      return name;
-   }
+	public String getName() {
+		return name;
+	}
 
-   public void setName(String name) {
-      this.name = name;
-   }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-   public ChartDataModel getData() {
-      return data;
-   }
+	public ChartDataModel getData() {
+		return data;
+	}
 
-   public void setData(ChartDataModel data) {
-      this.data = data;
-   }
+	public void setData(ChartDataModel data) {
+		this.data = data;
+	}
 }

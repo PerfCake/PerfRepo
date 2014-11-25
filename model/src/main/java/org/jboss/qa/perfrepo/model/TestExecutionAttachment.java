@@ -15,6 +15,9 @@
  */
 package org.jboss.qa.perfrepo.model;
 
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -34,137 +37,131 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.jboss.qa.perfrepo.model.auth.EntityType;
-import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
-
 /**
- * 
  * A binary file that can be attached to test execution.
- * 
+ *
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @javax.persistence.Entity
 @Table(name = "test_execution_attachment")
 @NamedQueries({
-	@NamedQuery(name = TestExecutionAttachment.FIND_BY_EXECUTION, query = "SELECT new TestExecutionAttachment(a.id, a.filename, a.mimetype) from TestExecutionAttachment a WHERE a.testExecution.id = :exec"),
-	@NamedQuery(name = TestExecutionAttachment.GET_TEST, query = "SELECT test from Test test inner join test.testExecutions te inner join te.attachments tea where tea = :entity")
+		@NamedQuery(name = TestExecutionAttachment.FIND_BY_EXECUTION, query = "SELECT new TestExecutionAttachment(a.id, a.filename, a.mimetype) from TestExecutionAttachment a WHERE a.testExecution.id = :exec"),
+		@NamedQuery(name = TestExecutionAttachment.GET_TEST, query = "SELECT test from Test test inner join test.testExecutions te inner join te.attachments tea where tea = :entity")
 })
 @XmlRootElement(name = "attachment")
-@SecuredEntity(type=EntityType.TEST, parent="testExecution")
+@SecuredEntity(type = EntityType.TEST, parent = "testExecution")
 public class TestExecutionAttachment implements Entity<TestExecutionAttachment> {
 
-   private static final long serialVersionUID = -3358483095886229881L;
-   public static final String GET_TEST = "TestExecutionAttachment.getTest";
-   public static final String FIND_BY_EXECUTION = "TestExecutionAttachment.findByExecution";
+	private static final long serialVersionUID = -3358483095886229881L;
+	public static final String GET_TEST = "TestExecutionAttachment.getTest";
+	public static final String FIND_BY_EXECUTION = "TestExecutionAttachment.findByExecution";
 
-   /**
-    * Constructor.
-    */
-   public TestExecutionAttachment() {
-      super();
-   }
+	/**
+	 * Constructor.
+	 */
+	public TestExecutionAttachment() {
+		super();
+	}
 
-   /**
-    * Constructor.
-    * 
-    * @param id
-    * @param filename
-    * @param mimetype
-    */
-   public TestExecutionAttachment(Long id, String filename, String mimetype) {
-      super();
-      this.id = id;
-      this.filename = filename;
-      this.mimetype = mimetype;
-   }
+	/**
+	 * Constructor.
+	 *
+	 * @param id
+	 * @param filename
+	 * @param mimetype
+	 */
+	public TestExecutionAttachment(Long id, String filename, String mimetype) {
+		super();
+		this.id = id;
+		this.filename = filename;
+		this.mimetype = mimetype;
+	}
 
-   @Id
-   @SequenceGenerator(name = "TEST_EXECUTION_ATTACHMENT_ID_GENERATOR", sequenceName = "TEST_EXECUTION_ATTACHMENT_SEQUENCE", allocationSize = 1)
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_EXECUTION_ATTACHMENT_ID_GENERATOR")
-   private Long id;
+	@Id
+	@SequenceGenerator(name = "TEST_EXECUTION_ATTACHMENT_ID_GENERATOR", sequenceName = "TEST_EXECUTION_ATTACHMENT_SEQUENCE", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_EXECUTION_ATTACHMENT_ID_GENERATOR")
+	private Long id;
 
-   @Column(name = "filename")
-   @NotNull
-   @Size(max = 2047)
-   private String filename;
+	@Column(name = "filename")
+	@NotNull
+	@Size(max = 2047)
+	private String filename;
 
-   @Column(name = "mimetype")
-   @NotNull
-   @Size(max = 255)
-   private String mimetype;
+	@Column(name = "mimetype")
+	@NotNull
+	@Size(max = 255)
+	private String mimetype;
 
-   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-   @JoinColumn(name = "test_execution_id", referencedColumnName = "id")
-   private TestExecution testExecution;
+	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "test_execution_id", referencedColumnName = "id")
+	private TestExecution testExecution;
 
-   @Lob
-   @Column(name = "content")
-   @NotNull
-   @Size(max = 1048576)
-   private byte[] content;
+	@Lob
+	@Column(name = "content")
+	@NotNull
+	@Size(max = 1048576)
+	private byte[] content;
 
-   @XmlTransient
-   public Long getId() {
-      return id;
-   }
+	@XmlTransient
+	public Long getId() {
+		return id;
+	}
 
-   public void setId(Long id) {
-      this.id = id;
-   }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-   @XmlID
-   @XmlAttribute(name = "id")
-   public String getStringId() {
-      return id == null ? null : String.valueOf(id);
-   }
+	@XmlID
+	@XmlAttribute(name = "id")
+	public String getStringId() {
+		return id == null ? null : String.valueOf(id);
+	}
 
-   public void setStringId(String id) {
-      this.id = Long.valueOf(id);
-   }
+	public void setStringId(String id) {
+		this.id = Long.valueOf(id);
+	}
 
-   public void setTestExecution(TestExecution testExecution) {
-      this.testExecution = testExecution;
-   }
+	public void setTestExecution(TestExecution testExecution) {
+		this.testExecution = testExecution;
+	}
 
-   public TestExecution getTestExecution() {
-      return this.testExecution;
-   }
+	public TestExecution getTestExecution() {
+		return this.testExecution;
+	}
 
-   @XmlAttribute(name = "filename")
-   public String getFilename() {
-      return filename;
-   }
+	@XmlAttribute(name = "filename")
+	public String getFilename() {
+		return filename;
+	}
 
-   public void setFilename(String filename) {
-      this.filename = filename;
-   }
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
 
-   @XmlAttribute(name = "mimetype")
-   public String getMimetype() {
-      return mimetype;
-   }
+	@XmlAttribute(name = "mimetype")
+	public String getMimetype() {
+		return mimetype;
+	}
 
-   public void setMimetype(String mimetype) {
-      this.mimetype = mimetype;
-   }
+	public void setMimetype(String mimetype) {
+		this.mimetype = mimetype;
+	}
 
-   @XmlTransient
-   public byte[] getContent() {
-      return content;
-   }
+	@XmlTransient
+	public byte[] getContent() {
+		return content;
+	}
 
-   public void setContent(byte[] content) {
-      this.content = content;
-   }
+	public void setContent(byte[] content) {
+		this.content = content;
+	}
 
-   @Override
-   public TestExecutionAttachment clone() {
-      try {
-         return (TestExecutionAttachment) super.clone();
-      } catch (CloneNotSupportedException e) {
-         throw new RuntimeException(e);
-      }
-   }
-
+	@Override
+	public TestExecutionAttachment clone() {
+		try {
+			return (TestExecutionAttachment) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

@@ -15,9 +15,19 @@
  */
 package org.jboss.qa.perfrepo.web.controller.reports.parametrized;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.collections.keyvalue.MultiKey;
+import org.apache.log4j.Logger;
+
+import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.TestExecution;
+import org.jboss.qa.perfrepo.model.Value;
+import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
+import org.jboss.qa.perfrepo.web.controller.BaseController;
+import org.jboss.qa.perfrepo.web.service.TestService;
+import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
+
+import com.google.common.collect.Lists;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -25,56 +35,46 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.keyvalue.MultiKey;
-import org.apache.log4j.Logger;
-import org.jboss.qa.perfrepo.web.controller.BaseController;
-import org.jboss.qa.perfrepo.model.Metric;
-import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.model.TestExecution;
-import org.jboss.qa.perfrepo.model.Value;
-import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
-import org.jboss.qa.perfrepo.web.service.TestService;
-import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
-
-import com.google.common.collect.Lists;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Detail of list of {@link TestExecution} grouped by test definition and job Id
- * 
+ *
  * @author Pavel Drozd (pdrozd@redhat.com)
- * 
  */
 @Named
 @ViewScoped
 public class ParametrizedTestExecutionController extends BaseController {
 
 	private static final long serialVersionUID = 3012075520261954430L;
-	
+
 	@Inject
-	private TestService testService;	
-	
+	private TestService testService;
+
 	private static final Logger log = Logger.getLogger(ParametrizedTestExecutionController.class);
-	
+
 	private Long testId;
 
-	private Long jobId;	
-	
+	private Long jobId;
+
 	private List<TestExecution> testExecutions = null;
-	
+
 	private Map<String, String> renderedParam;
 
 	private Test test = null;
-	
+
 	private Long compareJobId;
-	
+
 	private TestExecutionSearchTO search = new TestExecutionSearchTO();
-	
+
 	private List<TestExecution> result;
-	
+
 	private TestExecutionTable table = new TestExecutionTable();
-	
+
 	private boolean markedBestResult = true;
-	
+
 	//TODO: filter parameters - only changeable should be in the table
 	//TODO: complete graphs
 	//TODO: possibility to change all values or single value - best result - to create baseline
@@ -96,9 +96,9 @@ public class ParametrizedTestExecutionController extends BaseController {
 			redirectWithMessage("/", ERROR, "page.exec.errorNoTestId");
 		}
 	}
-	
+
 	public void addCompareTestExecutions() {
-		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		String[] jobs = request.getParameterValues("toAdd");
 		if (jobs != null && jobs.length > 0) {
 			for (String job : jobs) {
@@ -106,7 +106,7 @@ public class ParametrizedTestExecutionController extends BaseController {
 			}
 		}
 	}
-	
+
 	public void addCompareTestExecutions(Long jobId) {
 		if (table.getCompareJobIds() == null || table.getCompareJobIds().size() == 0) {
 			compareJobId = jobId;
@@ -114,14 +114,14 @@ public class ParametrizedTestExecutionController extends BaseController {
 		List<TestExecution> compareTestExecutions = null;// = testService.getFullTestExecutionsByTestAndJob(testId, jobId);
 		table.addTestExecutions(jobId, compareTestExecutions);
 	}
-	
+
 	public float compare(String metricName, MultiKey parameters) {
 		if (compareJobId != null) {
 			return table.compareValues(compareJobId, metricName, parameters);
 		}
 		return 0;
 	}
-	
+
 	public String getStyle(float number) {
 		if (compareJobId != null) {
 			if (number < -3) {
@@ -135,12 +135,11 @@ public class ParametrizedTestExecutionController extends BaseController {
 			return "black";
 		}
 	}
-	
+
 	public void transferBestValues() {
 		table.transferBestValues();
 	}
-	
-	
+
 	public String getStyle(String metricName, MultiKey parameters) {
 		if (compareJobId != null) {
 			float number = table.compareValues(compareJobId, metricName, parameters);
@@ -154,8 +153,8 @@ public class ParametrizedTestExecutionController extends BaseController {
 			return "black";
 		}
 	}
-	
-	public String getStyle(Long jobId, String metricName, MultiKey parameters) {		
+
+	public String getStyle(Long jobId, String metricName, MultiKey parameters) {
 		if (isMarkedBestResult()) {
 			if (table.isBestResult(jobId, parameters, metricName)) {
 				return "blue";
@@ -163,41 +162,39 @@ public class ParametrizedTestExecutionController extends BaseController {
 		}
 		return "black";
 	}
-	
+
 	public List<String> getTags() {
 		return Lists.newArrayList(table.getTags().get(jobId));
 	}
-	
+
 	public List<String> getTags(Long jobId) {
 		return Lists.newArrayList(table.getTags().get(jobId));
 	}
-	
+
 	public List<MultiKey> getSortedRowKeys() {
 		return table.getSortedRowKeys();
 	}
-	
-	public Value getValue(Long jobId, String metricName, MultiKey parameters) {		
+
+	public Value getValue(Long jobId, String metricName, MultiKey parameters) {
 		return table.getValue(jobId, metricName, parameters);
 	}
-	
-	public Value getValue(String metricName, MultiKey parameters) {		
+
+	public Value getValue(String metricName, MultiKey parameters) {
 		return table.getValue(metricName, parameters);
 	}
-	
+
 	public void searchTEs() {
 		search.setTestUID(test.getUid());
 		//result = testService.searchTestExecutionsGroupedByJobId(search);
 	}
-	
-	
+
 	public void removeCompareTE(Long jobId) {
 		if (jobId.equals(compareJobId)) {
 			compareJobId = null;
 		}
 		table.removeTestExecutions(jobId);
-		
 	}
-	
+
 	public boolean renderCell(MultiKey key, int index) {
 		String paramValue = String.valueOf(key.getKey(index));
 		String paramName = getParameterNames().get(index);
@@ -205,13 +202,13 @@ public class ParametrizedTestExecutionController extends BaseController {
 			renderedParam.put(paramName, paramValue);
 			return true;
 		}
-		return false;		
-	}	
-	
-	public int getRowSpan(MultiKey key, int index) {		
+		return false;
+	}
+
+	public int getRowSpan(MultiKey key, int index) {
 		return table.getParameterValuesCount(key, index);
 	}
-	
+
 	public List<TestExecution> getTestExecution() {
 		return testExecutions;
 	}
@@ -291,11 +288,7 @@ public class ParametrizedTestExecutionController extends BaseController {
 	public void setMarkedBestResult(boolean markedBestResult) {
 		this.markedBestResult = markedBestResult;
 	}
-	
-	
-	
-	
-	
+
 //	public XYLineChartSpec getChart() {
 //		Metric metric = new Metric();
 //		metric.setName("avg_throughput");
@@ -303,7 +296,7 @@ public class ParametrizedTestExecutionController extends BaseController {
 //		params.put("thread", "100");		
 //		return createChart(metric, params);
 //	}
-	
+
 //	private XYLineChartSpec createChart(Metric metric, Map<String, String> constantParameters) {
 //		String xParam = null;
 //		String paramRegular = "";
@@ -349,7 +342,7 @@ public class ParametrizedTestExecutionController extends BaseController {
 //        return chartSpec;     
 //
 //	  }
-	
+
 //	private class KeyComparator implements Comparator<String> {
 //
 //		@Override

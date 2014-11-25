@@ -15,7 +15,9 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.util.Collection;
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+import org.jboss.qa.perfrepo.model.util.EntityUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,140 +37,135 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.jboss.qa.perfrepo.model.auth.EntityType;
-import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
-import org.jboss.qa.perfrepo.model.util.EntityUtils;
+import java.util.Collection;
 
 /**
- * 
  * Represents one value measured in a {@link TestExecution}.
- * 
+ *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @javax.persistence.Entity
 @Table(name = "value")
-@NamedQueries({ @NamedQuery(name = Value.GET_TEST, query = "SELECT test from Value v inner join v.testExecution te inner join te.test test where v= :entity") })
-@SecuredEntity(type=EntityType.TEST, parent="testExecution")
+@NamedQueries({@NamedQuery(name = Value.GET_TEST, query = "SELECT test from Value v inner join v.testExecution te inner join te.test test where v= :entity")})
+@SecuredEntity(type = EntityType.TEST, parent = "testExecution")
 @XmlRootElement(name = "value")
 public class Value implements Entity<Value> {
 
-   private static final long serialVersionUID = 1227873698917395252L;
+	private static final long serialVersionUID = 1227873698917395252L;
 
-   public static final String GET_TEST = "Value.getTest";
+	public static final String GET_TEST = "Value.getTest";
 
-   @Id
-   @SequenceGenerator(name = "VALUE_ID_GENERATOR", sequenceName = "VALUE_SEQUENCE", allocationSize = 1)
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "VALUE_ID_GENERATOR")
-   private Long id;
+	@Id
+	@SequenceGenerator(name = "VALUE_ID_GENERATOR", sequenceName = "VALUE_SEQUENCE", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "VALUE_ID_GENERATOR")
+	private Long id;
 
-   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-   @JoinColumn(name = "metric_id", referencedColumnName = "id")
-   private Metric metric;
+	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "metric_id", referencedColumnName = "id")
+	private Metric metric;
 
-   @Column(name = "result_value")
-   private Double resultValue;
+	@Column(name = "result_value")
+	private Double resultValue;
 
-   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-   @JoinColumn(name = "test_execution_id", referencedColumnName = "id")
-   private TestExecution testExecution;
+	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "test_execution_id", referencedColumnName = "id")
+	private TestExecution testExecution;
 
-   @OneToMany(mappedBy = "value")
-   private Collection<ValueParameter> parameters;
+	@OneToMany(mappedBy = "value")
+	private Collection<ValueParameter> parameters;
 
-   @XmlTransient
-   public Long getId() {
-      return id;
-   }
+	@XmlTransient
+	public Long getId() {
+		return id;
+	}
 
-   public void setId(Long id) {
-      this.id = id;
-   }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-   public void setMetric(Metric metric) {
-      this.metric = metric;
-   }
+	public void setMetric(Metric metric) {
+		this.metric = metric;
+	}
 
-   @XmlTransient
-   public Metric getMetric() {
-      return this.metric;
-   }
+	@XmlTransient
+	public Metric getMetric() {
+		return this.metric;
+	}
 
-   public void setResultValue(Double resultValue) {
-      this.resultValue = resultValue;
-   }
+	public void setResultValue(Double resultValue) {
+		this.resultValue = resultValue;
+	}
 
-   @XmlAttribute(name = "result")
-   public Double getResultValue() {
-      return this.resultValue;
-   }
+	@XmlAttribute(name = "result")
+	public Double getResultValue() {
+		return this.resultValue;
+	}
 
-   public void setTestExecution(TestExecution testExecution) {
-      this.testExecution = testExecution;
-   }
+	public void setTestExecution(TestExecution testExecution) {
+		this.testExecution = testExecution;
+	}
 
-   @XmlTransient
-   public TestExecution getTestExecution() {
-      return this.testExecution;
-   }
+	@XmlTransient
+	public TestExecution getTestExecution() {
+		return this.testExecution;
+	}
 
-   public void setParameters(Collection<ValueParameter> valueParameters) {
-      this.parameters = valueParameters;
-   }
+	public void setParameters(Collection<ValueParameter> valueParameters) {
+		this.parameters = valueParameters;
+	}
 
-   @XmlElementWrapper(name = "parameters")
-   @XmlElement(name = "parameter")
-   public Collection<ValueParameter> getParameters() {
-      return this.parameters;
-   }
+	@XmlElementWrapper(name = "parameters")
+	@XmlElement(name = "parameter")
+	public Collection<ValueParameter> getParameters() {
+		return this.parameters;
+	}
 
-   @XmlAttribute(name = "metricName")
-   public String getMetricName() {
-      return metric == null ? null : metric.getName();
-   }
+	@XmlAttribute(name = "metricName")
+	public String getMetricName() {
+		return metric == null ? null : metric.getName();
+	}
 
-   public void setMetricName(String metricName) {
-      if (metric == null) {
-         metric = new Metric();
-      }
-      metric.setName(metricName);
-   }
+	public void setMetricName(String metricName) {
+		if (metric == null) {
+			metric = new Metric();
+		}
+		metric.setName(metricName);
+	}
 
-   @XmlAttribute(name = "metricComparator")
-   public String getMetricComparator() {
-      return metric == null ? null : metric.getComparator();
-   }
+	@XmlAttribute(name = "metricComparator")
+	public String getMetricComparator() {
+		return metric == null ? null : metric.getComparator();
+	}
 
-   public void setMetricComparator(String metricComparator) {
-      if (metric == null) {
-         metric = new Metric();
-      }
-      metric.setComparator(metricComparator);
-   }
+	public void setMetricComparator(String metricComparator) {
+		if (metric == null) {
+			metric = new Metric();
+		}
+		metric.setComparator(metricComparator);
+	}
 
-   @Override
-   public Value clone() {
-      try {
-         return (Value) super.clone();
-      } catch (CloneNotSupportedException e) {
-         throw new RuntimeException(e);
-      }
-   }
+	@Override
+	public Value clone() {
+		try {
+			return (Value) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-   public Value cloneWithParameters() {
-      Value cloneValue = clone();
-      cloneValue.setParameters(EntityUtils.clone(cloneValue.getParameters()));
-      if (cloneValue.getParameters() != null) {
-         for (ValueParameter pClone : cloneValue.getParameters()) {
-            pClone.setValue(cloneValue);
-         }
-      }
-      return cloneValue;
-   }
+	public Value cloneWithParameters() {
+		Value cloneValue = clone();
+		cloneValue.setParameters(EntityUtils.clone(cloneValue.getParameters()));
+		if (cloneValue.getParameters() != null) {
+			for (ValueParameter pClone : cloneValue.getParameters()) {
+				pClone.setValue(cloneValue);
+			}
+		}
+		return cloneValue;
+	}
 
-   public boolean hasParameters() {
-      return parameters != null && !parameters.isEmpty();
-   }
-
+	public boolean hasParameters() {
+		return parameters != null && !parameters.isEmpty();
+	}
 }

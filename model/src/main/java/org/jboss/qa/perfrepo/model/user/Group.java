@@ -2,8 +2,6 @@ package org.jboss.qa.perfrepo.model.user;
 
 import org.jboss.qa.perfrepo.model.Entity;
 
-import java.util.Collection;
-
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,9 +11,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import java.util.Collection;
+
 @javax.persistence.Entity
 @Table(name = "\"group\"")
-public class Group implements Entity<Group>, Comparable<Group>{
+public class Group implements Entity<Group>, Comparable<Group> {
 
 	@Id
 	@SequenceGenerator(name = "GROUP_ID_GENERATOR", sequenceName = "GROUP_SEQUENCE", allocationSize = 1)
@@ -28,15 +28,15 @@ public class Group implements Entity<Group>, Comparable<Group>{
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "groups")
 	private Collection<User> users;
 
-   public Long getId() {
-      return id;
-   }
+	public Long getId() {
+		return id;
+	}
 
-   public void setId(Long id) {
-      this.id = id;
-   }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-   public String getName() {
+	public String getName() {
 		return name;
 	}
 
@@ -52,18 +52,17 @@ public class Group implements Entity<Group>, Comparable<Group>{
 		this.users = users;
 	}
 
-   @Override
-   public int compareTo(Group group) {
-      return this.name.compareTo(group.name);
-   }
+	@Override
+	public int compareTo(Group group) {
+		return this.name.compareTo(group.name);
+	}
 
-   @Override
-   public Group clone() {
-      try {
-         return (Group) super.clone();
-      } catch (CloneNotSupportedException e) {
-         throw new RuntimeException(e);
-      }
-   }
-
+	@Override
+	public Group clone() {
+		try {
+			return (Group) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

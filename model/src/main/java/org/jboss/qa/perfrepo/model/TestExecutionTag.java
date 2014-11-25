@@ -15,6 +15,9 @@
  */
 package org.jboss.qa.perfrepo.model;
 
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+
 import javax.persistence.CascadeType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,89 +32,85 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.jboss.qa.perfrepo.model.auth.EntityType;
-import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
-
 @javax.persistence.Entity
 @Table(name = "test_execution_tag")
-@NamedQueries({ @NamedQuery(name = TestExecutionTag.GET_TEST, query = "SELECT test from TestExecutionTag teg inner join teg.testExecution te inner join te.test test WHERE teg = :entity") })
+@NamedQueries({@NamedQuery(name = TestExecutionTag.GET_TEST, query = "SELECT test from TestExecutionTag teg inner join teg.testExecution te inner join te.test test WHERE teg = :entity")})
 @XmlRootElement(name = "testExecutionTag")
-@SecuredEntity(type=EntityType.TEST, parent="testExecution")
+@SecuredEntity(type = EntityType.TEST, parent = "testExecution")
 public class TestExecutionTag implements Entity<TestExecutionTag> {
 
-   private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-   public static final String GET_TEST = "TestExecutionTag.getTest";
+	public static final String GET_TEST = "TestExecutionTag.getTest";
 
-   @Id
-   @SequenceGenerator(name = "TEST_EXECUTION_TAG_ID_GENERATOR", sequenceName = "TEST_EXECUTION_TAG_SEQUENCE", allocationSize = 1)
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_EXECUTION_TAG_ID_GENERATOR")
-   private Long id;
+	@Id
+	@SequenceGenerator(name = "TEST_EXECUTION_TAG_ID_GENERATOR", sequenceName = "TEST_EXECUTION_TAG_SEQUENCE", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_EXECUTION_TAG_ID_GENERATOR")
+	private Long id;
 
-   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-   @JoinColumn(name = "tag_id", referencedColumnName = "id")
-   private Tag tag;
+	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "tag_id", referencedColumnName = "id")
+	private Tag tag;
 
-   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-   @JoinColumn(name = "test_execution_id", referencedColumnName = "id")
-   private TestExecution testExecution;
+	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "test_execution_id", referencedColumnName = "id")
+	private TestExecution testExecution;
 
-   public TestExecutionTag() {
-      super();
-   }
+	public TestExecutionTag() {
+		super();
+	}
 
-   @XmlTransient
-   public Long getId() {
-      return id;
-   }
+	@XmlTransient
+	public Long getId() {
+		return id;
+	}
 
-   public void setId(Long id) {
-      this.id = id;
-   }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-   @XmlAttribute(name = "name")
-   public String getTagName() {
-      return tag == null ? null : String.valueOf(tag.getName());
-   }
+	@XmlAttribute(name = "name")
+	public String getTagName() {
+		return tag == null ? null : String.valueOf(tag.getName());
+	}
 
-   public void setTagName(String name) {
-      if (tag == null) {
-         tag = new Tag();
-      }
-      tag.setName(name);
-   }
+	public void setTagName(String name) {
+		if (tag == null) {
+			tag = new Tag();
+		}
+		tag.setName(name);
+	}
 
-   public void setTag(Tag tag) {
-      this.tag = tag;
-   }
+	public void setTag(Tag tag) {
+		this.tag = tag;
+	}
 
-   @XmlTransient
-   public Tag getTag() {
-      return this.tag;
-   }
+	@XmlTransient
+	public Tag getTag() {
+		return this.tag;
+	}
 
-   public void setTestExecution(TestExecution testExecution) {
-      this.testExecution = testExecution;
-   }
+	public void setTestExecution(TestExecution testExecution) {
+		this.testExecution = testExecution;
+	}
 
-   @XmlTransient
-   public TestExecution getTestExecution() {
-      return this.testExecution;
-   }
+	@XmlTransient
+	public TestExecution getTestExecution() {
+		return this.testExecution;
+	}
 
-   @Override
-   public TestExecutionTag clone() {
-      try {
-         return (TestExecutionTag) super.clone();
-      } catch (CloneNotSupportedException e) {
-         throw new RuntimeException(e);
-      }
-   }
+	@Override
+	public TestExecutionTag clone() {
+		try {
+			return (TestExecutionTag) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-   public TestExecutionTag cloneWithTag() {
-      TestExecutionTag clone = clone();
-      clone.setTag(tag == null ? null : tag.clone());
-      return clone;
-   }
-
+	public TestExecutionTag cloneWithTag() {
+		TestExecutionTag clone = clone();
+		clone.setTag(tag == null ? null : tag.clone());
+		return clone;
+	}
 }

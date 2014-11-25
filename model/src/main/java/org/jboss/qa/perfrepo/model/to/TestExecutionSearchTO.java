@@ -22,103 +22,102 @@ import java.util.List;
 
 /**
  * Test execution search criteria.
- * 
+ *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 public class TestExecutionSearchTO implements Serializable {
 
-   //means "Test executed after"
-   private Date startedFrom;
-   //means "Test executed before"
-   private Date startedTo;
-   private String tags;
-   private String testUID;
-   private String testName;
-   private List<ParamCriteria> parameters = new ArrayList<ParamCriteria>();
-   private int limit;
+	//means "Test executed after"
+	private Date startedFrom;
+	//means "Test executed before"
+	private Date startedTo;
+	private String tags;
+	private String testUID;
+	private String testName;
+	private List<ParamCriteria> parameters = new ArrayList<ParamCriteria>();
+	private int limit;
 
-   public static class ParamCriteria implements Serializable {
-      private String name;
-      private String value;
+	public static class ParamCriteria implements Serializable {
+		private String name;
+		private String value;
 
-      public String getName() {
-         return name;
-      }
+		public String getName() {
+			return name;
+		}
 
-      public void setName(String name) {
-         this.name = name;
-      }
+		public void setName(String name) {
+			this.name = name;
+		}
 
-      public String getValue() {
-         return value;
-      }
+		public String getValue() {
+			return value;
+		}
 
-      public void setValue(String value) {
-         this.value = value;
-      }
+		public void setValue(String value) {
+			this.value = value;
+		}
 
-      public boolean isDisplayed() {
-         return isNameEmpty() || value == null || "".equals(value.trim()) || value.contains("%");
-      }
+		public boolean isDisplayed() {
+			return isNameEmpty() || value == null || "".equals(value.trim()) || value.contains("%");
+		}
 
-      public boolean isNameEmpty() {
-         return name == null || "".equals(name.trim());
-      }
-   }
+		public boolean isNameEmpty() {
+			return name == null || "".equals(name.trim());
+		}
+	}
 
-   //means "Test executed after"
-   public Date getStartedFrom() {
-      return startedFrom;
-   }
+	//means "Test executed after"
+	public Date getStartedFrom() {
+		return startedFrom;
+	}
 
-   public void setStartedFrom(Date startedFrom) {
-      this.startedFrom = startedFrom;
-   }
+	public void setStartedFrom(Date startedFrom) {
+		this.startedFrom = startedFrom;
+	}
 
-   //means "Test executed before"
-   public Date getStartedTo() {
-      return startedTo;
-   }
+	//means "Test executed before"
+	public Date getStartedTo() {
+		return startedTo;
+	}
 
-   public void setStartedTo(Date startedTo) {
-      this.startedTo = startedTo;
-   }
+	public void setStartedTo(Date startedTo) {
+		this.startedTo = startedTo;
+	}
 
-   public String getTestUID() {
-      return testUID;
-   }
+	public String getTestUID() {
+		return testUID;
+	}
 
-   public void setTestUID(String testUID) {
-      this.testUID = testUID;
-   }
+	public void setTestUID(String testUID) {
+		this.testUID = testUID;
+	}
 
-   public String getTestName() {
-      return testName;
-   }
+	public String getTestName() {
+		return testName;
+	}
 
-   public void setTestName(String testName) {
-      this.testName = testName;
-   }
+	public void setTestName(String testName) {
+		this.testName = testName;
+	}
 
-   public String getTags() {
-      return tags;
-   }
+	public String getTags() {
+		return tags;
+	}
 
-   public void setTags(String tags) {
-      this.tags = tags;
-   }
+	public void setTags(String tags) {
+		this.tags = tags;
+	}
 
-   public List<ParamCriteria> getParameters() {
-      return parameters;
-   }
+	public List<ParamCriteria> getParameters() {
+		return parameters;
+	}
 
-   public int getLimit() {
-	  return limit;
-   }
+	public int getLimit() {
+		return limit;
+	}
 
-   public void setLimit(int limit) {
-	  this.limit = limit;
-   }
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
 }

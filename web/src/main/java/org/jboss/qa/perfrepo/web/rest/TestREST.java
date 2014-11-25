@@ -15,7 +15,10 @@
  */
 package org.jboss.qa.perfrepo.web.rest;
 
-import java.lang.reflect.Method;
+import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.web.rest.logging.Logged;
+import org.jboss.qa.perfrepo.web.service.TestService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -31,14 +34,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.jboss.qa.perfrepo.model.Metric;
-import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.web.rest.logging.Logged;
-import org.jboss.qa.perfrepo.web.service.TestService;
+import java.lang.reflect.Method;
 
 /**
  * REST interface for Test objects.
- * 
+ *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
  * @author Jiri Holusa (jholusa@redhat.com)
@@ -47,54 +47,55 @@ import org.jboss.qa.perfrepo.web.service.TestService;
 @RequestScoped
 public class TestREST {
 
-   private static Method GET_TEST_METHOD;
-   private static Method GET_METRIC_METHOD;
-   static {
-      try {
-         GET_TEST_METHOD = TestREST.class.getMethod("get", Long.class);
-         GET_METRIC_METHOD = MetricREST.class.getMethod("get", Long.class);
-      } catch (Exception e) {
-         e.printStackTrace(System.err);
-      }
-   }
+	private static Method GET_TEST_METHOD;
+	private static Method GET_METRIC_METHOD;
 
-   @Inject
-   private TestService testService;
+	static {
+		try {
+			GET_TEST_METHOD = TestREST.class.getMethod("get", Long.class);
+			GET_METRIC_METHOD = MetricREST.class.getMethod("get", Long.class);
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+	}
 
-   @GET
-   @Produces(MediaType.TEXT_XML)
-   @Path("/{testId}")
-   @Logged
-   public Response get(@PathParam("testId") Long testId) {
-      return Response.ok(testService.getFullTest(testId)).build();
-   }
+	@Inject
+	private TestService testService;
 
-   @POST
-   @Path("/create")
-   @Consumes(MediaType.TEXT_XML)
-   @Logged
-   public Response create(Test test, @Context UriInfo uriInfo) throws Exception {
-      Long id = testService.createTest(test).getId();
-      return Response.created(uriInfo.getBaseUriBuilder().path(TestREST.class).path(GET_TEST_METHOD).build(id)).entity(id).build();
-   }
+	@GET
+	@Produces(MediaType.TEXT_XML)
+	@Path("/{testId}")
+	@Logged
+	public Response get(@PathParam("testId") Long testId) {
+		return Response.ok(testService.getFullTest(testId)).build();
+	}
 
-   @DELETE
-   @Path("/{testId}")
-   @Logged
-   public Response delete(@PathParam("testId") Long testId) throws Exception {
-      Test test = testService.getTest(testId);
-      testService.removeTest(test);
-      return Response.noContent().build();
-   }
+	@POST
+	@Path("/create")
+	@Consumes(MediaType.TEXT_XML)
+	@Logged
+	public Response create(Test test, @Context UriInfo uriInfo) throws Exception {
+		Long id = testService.createTest(test).getId();
+		return Response.created(uriInfo.getBaseUriBuilder().path(TestREST.class).path(GET_TEST_METHOD).build(id)).entity(id).build();
+	}
 
-   @POST
-   @Path("/{testId}/addMetric")
-   @Consumes(MediaType.TEXT_XML)
-   @Logged
-   public Response addMetric(@PathParam("testId") Long testId, Metric metric, @Context UriInfo uriInfo) throws Exception {
-      Test test = new Test();
-      test.setId(testId);
-      Long id = testService.addMetric(test, metric).getId();
-      return Response.created(uriInfo.getBaseUriBuilder().path(MetricREST.class).path(GET_METRIC_METHOD).build(id)).entity(id).build();
-   }
+	@DELETE
+	@Path("/{testId}")
+	@Logged
+	public Response delete(@PathParam("testId") Long testId) throws Exception {
+		Test test = testService.getTest(testId);
+		testService.removeTest(test);
+		return Response.noContent().build();
+	}
+
+	@POST
+	@Path("/{testId}/addMetric")
+	@Consumes(MediaType.TEXT_XML)
+	@Logged
+	public Response addMetric(@PathParam("testId") Long testId, Metric metric, @Context UriInfo uriInfo) throws Exception {
+		Test test = new Test();
+		test.setId(testId);
+		Long id = testService.addMetric(test, metric).getId();
+		return Response.created(uriInfo.getBaseUriBuilder().path(MetricREST.class).path(GET_METRIC_METHOD).build(id)).entity(id).build();
+	}
 }

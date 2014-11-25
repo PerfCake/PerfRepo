@@ -15,6 +15,16 @@
  */
 package org.jboss.qa.perfrepo.web.controller;
 
+import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
+import org.jboss.qa.perfrepo.web.util.MessageUtils;
+
+import org.richfaces.model.SortOrder;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,170 +32,158 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.application.FacesMessage.Severity;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-
-import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
-import org.jboss.qa.perfrepo.web.util.MessageUtils;
-import org.richfaces.model.SortOrder;
-
 /**
- * 
  * Base class for controllers.
- * 
+ *
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 public class BaseController implements Serializable {
 
-   private static final long serialVersionUID = -1616863465068425778L;
+	private static final long serialVersionUID = -1616863465068425778L;
 
-   private Map<String, SortOrder> sortsOrders = new HashMap<String, SortOrder>();
+	private Map<String, SortOrder> sortsOrders = new HashMap<String, SortOrder>();
 
-   private static final String SORT_PROPERTY_PARAMETER = "sortProperty";
-   public static final String SESSION_MESSAGES_KEY = "sessionMessages";
+	private static final String SORT_PROPERTY_PARAMETER = "sortProperty";
+	public static final String SESSION_MESSAGES_KEY = "sessionMessages";
 
-   protected static final Severity ERROR = FacesMessage.SEVERITY_ERROR;
-   protected static final Severity INFO = FacesMessage.SEVERITY_INFO;
+	protected static final Severity ERROR = FacesMessage.SEVERITY_ERROR;
+	protected static final Severity INFO = FacesMessage.SEVERITY_INFO;
 
-   private boolean multipleSorting = false;
+	private boolean multipleSorting = false;
 
-   private List<String> sortPriorities = new ArrayList<String>();
+	private List<String> sortPriorities = new ArrayList<String>();
 
-   protected ExternalContext externalContext() {
-      return FacesContext.getCurrentInstance().getExternalContext();
-   }
+	protected ExternalContext externalContext() {
+		return FacesContext.getCurrentInstance().getExternalContext();
+	}
 
-   public Map<String, String> getRequestParams() {
-      return externalContext().getRequestParameterMap();
-   }
+	public Map<String, String> getRequestParams() {
+		return externalContext().getRequestParameterMap();
+	}
 
-   protected String getRequestParam(String name) {
-      return getRequestParams().get(name);
-   }
+	protected String getRequestParam(String name) {
+		return getRequestParams().get(name);
+	}
 
-   protected Long getRequestParamLong(String name) {
-      return new Long(getRequestParams().get(name));
-   }
+	protected Long getRequestParamLong(String name) {
+		return new Long(getRequestParams().get(name));
+	}
 
-   public String getRequestParam(String name, String _default) {
-      String ret = getRequestParam(name);
-      if (ret == null) {
-         return _default;
-      } else {
-         return ret;
-      }
-   }
+	public String getRequestParam(String name, String _default) {
+		String ret = getRequestParam(name);
+		if (ret == null) {
+			return _default;
+		} else {
+			return ret;
+		}
+	}
 
-   public Map<String, SortOrder> getSortsOrders() {
-      return sortsOrders;
-   }
+	public Map<String, SortOrder> getSortsOrders() {
+		return sortsOrders;
+	}
 
-   public void setSortsOrders(Map<String, SortOrder> sortsOrders) {
-      this.sortsOrders = sortsOrders;
-   }
+	public void setSortsOrders(Map<String, SortOrder> sortsOrders) {
+		this.sortsOrders = sortsOrders;
+	}
 
-   public boolean isMultipleSorting() {
-      return multipleSorting;
-   }
+	public boolean isMultipleSorting() {
+		return multipleSorting;
+	}
 
-   public void setMultipleSorting(boolean multipleSorting) {
-      this.multipleSorting = multipleSorting;
-   }
+	public void setMultipleSorting(boolean multipleSorting) {
+		this.multipleSorting = multipleSorting;
+	}
 
-   public List<String> getSortPriorities() {
-      return sortPriorities;
-   }
+	public List<String> getSortPriorities() {
+		return sortPriorities;
+	}
 
-   public void setSortPriorities(List<String> sortPriorities) {
-      this.sortPriorities = sortPriorities;
-   }
+	public void setSortPriorities(List<String> sortPriorities) {
+		this.sortPriorities = sortPriorities;
+	}
 
-   public void sort() {
-      String property = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(SORT_PROPERTY_PARAMETER);
-      if (property != null) {
-         SortOrder currentPropertySortOrder = sortsOrders.get(property);
-         if (multipleSorting) {
-            if (!sortPriorities.contains(property)) {
-               sortPriorities.add(property);
-            }
-         } else {
-            sortsOrders.clear();
-         }
-         if (currentPropertySortOrder == null || currentPropertySortOrder.equals(SortOrder.descending)) {
-            sortsOrders.put(property, SortOrder.ascending);
-         } else {
-            sortsOrders.put(property, SortOrder.descending);
-         }
-      }
-   }
+	public void sort() {
+		String property = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(SORT_PROPERTY_PARAMETER);
+		if (property != null) {
+			SortOrder currentPropertySortOrder = sortsOrders.get(property);
+			if (multipleSorting) {
+				if (!sortPriorities.contains(property)) {
+					sortPriorities.add(property);
+				}
+			} else {
+				sortsOrders.clear();
+			}
+			if (currentPropertySortOrder == null || currentPropertySortOrder.equals(SortOrder.descending)) {
+				sortsOrders.put(property, SortOrder.ascending);
+			} else {
+				sortsOrders.put(property, SortOrder.descending);
+			}
+		}
+	}
 
-   protected void addSessionMessage(Severity severity, String msgKey, Object... params) {
-      String msg = MessageUtils.getMessage(msgKey, params);
-      addSessionMessage(new FacesMessage(severity, msg, msg));
-   }
+	protected void addSessionMessage(Severity severity, String msgKey, Object... params) {
+		String msg = MessageUtils.getMessage(msgKey, params);
+		addSessionMessage(new FacesMessage(severity, msg, msg));
+	}
 
-   protected void addSessionMessage(FacesMessage facesMessage) {
-      Map<String, Object> sm = externalContext().getSessionMap();
-      @SuppressWarnings("unchecked")
-      List<FacesMessage> sessionMsgs = (List<FacesMessage>) sm.get(SESSION_MESSAGES_KEY);
-      if (sessionMsgs == null) {
-         sessionMsgs = new ArrayList<FacesMessage>();
-         sm.put(SESSION_MESSAGES_KEY, sessionMsgs);
-      }
-      sessionMsgs.add(facesMessage);
-   }
+	protected void addSessionMessage(FacesMessage facesMessage) {
+		Map<String, Object> sm = externalContext().getSessionMap();
+		@SuppressWarnings("unchecked")
+		List<FacesMessage> sessionMsgs = (List<FacesMessage>) sm.get(SESSION_MESSAGES_KEY);
+		if (sessionMsgs == null) {
+			sessionMsgs = new ArrayList<FacesMessage>();
+			sm.put(SESSION_MESSAGES_KEY, sessionMsgs);
+		}
+		sessionMsgs.add(facesMessage);
+	}
 
-   protected void reloadSessionMessages() {
-      Map<String, Object> sm = externalContext().getSessionMap();
-      @SuppressWarnings("unchecked")
-      List<FacesMessage> sessionMsgs = (List<FacesMessage>) sm.get(SESSION_MESSAGES_KEY);
-      if (sessionMsgs != null) {
-         for (FacesMessage msg : sessionMsgs) {
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-         }
-      }
-      sm.remove(SESSION_MESSAGES_KEY);
-   }
+	protected void reloadSessionMessages() {
+		Map<String, Object> sm = externalContext().getSessionMap();
+		@SuppressWarnings("unchecked")
+		List<FacesMessage> sessionMsgs = (List<FacesMessage>) sm.get(SESSION_MESSAGES_KEY);
+		if (sessionMsgs != null) {
+			for (FacesMessage msg : sessionMsgs) {
+				FacesContext.getCurrentInstance().addMessage(null, msg);
+			}
+		}
+		sm.remove(SESSION_MESSAGES_KEY);
+	}
 
-   protected void redirectWithMessage(String relPath, Severity severity, String msgKey, Object... params) {
-      FacesContext fc = FacesContext.getCurrentInstance();
-      addSessionMessage(severity, msgKey, params);
-      try {
-         externalContext().redirect(externalContext().getRequestContextPath() + relPath);
-      } catch (IOException e) {
-         throw new RuntimeException("Error while redirecting", e);
-      }
-      fc.renderResponse();
-   }
+	protected void redirectWithMessage(String relPath, Severity severity, String msgKey, Object... params) {
+		FacesContext fc = FacesContext.getCurrentInstance();
+		addSessionMessage(severity, msgKey, params);
+		try {
+			externalContext().redirect(externalContext().getRequestContextPath() + relPath);
+		} catch (IOException e) {
+			throw new RuntimeException("Error while redirecting", e);
+		}
+		fc.renderResponse();
+	}
 
-   protected void redirect(String relPath) {
-      FacesContext fc = FacesContext.getCurrentInstance();
-      try {
-         externalContext().redirect(externalContext().getRequestContextPath() + relPath);
-      } catch (IOException e) {
-         throw new RuntimeException("Error while redirecting", e);
-      }
-      fc.renderResponse();
-   }
+	protected void redirect(String relPath) {
+		FacesContext fc = FacesContext.getCurrentInstance();
+		try {
+			externalContext().redirect(externalContext().getRequestContextPath() + relPath);
+		} catch (IOException e) {
+			throw new RuntimeException("Error while redirecting", e);
+		}
+		fc.renderResponse();
+	}
 
-   protected void addMessage(Severity severity, String msgKey, Object... params) {
-      FacesContext fc = FacesContext.getCurrentInstance();
-      String message = MessageUtils.getMessage(msgKey, params);
-      fc.addMessage(null, new FacesMessage(severity, message, message));
-   }
+	protected void addMessage(Severity severity, String msgKey, Object... params) {
+		FacesContext fc = FacesContext.getCurrentInstance();
+		String message = MessageUtils.getMessage(msgKey, params);
+		fc.addMessage(null, new FacesMessage(severity, message, message));
+	}
 
-   protected void addMessage(ServiceException e) {
-	      FacesContext fc = FacesContext.getCurrentInstance();
-	      String message = MessageUtils.getMessage(e);
-	      fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
-   }
+	protected void addMessage(ServiceException e) {
+		FacesContext fc = FacesContext.getCurrentInstance();
+		String message = MessageUtils.getMessage(e);
+		fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
+	}
 
-   protected void addSessionMessage(ServiceException e) {
-	   String message = MessageUtils.getMessage(e);
-	   addSessionMessage(new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
-   }
-
+	protected void addSessionMessage(ServiceException e) {
+		String message = MessageUtils.getMessage(e);
+		addSessionMessage(new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
+	}
 }

@@ -1,53 +1,69 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:r="http://richfaces.org">
+      xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:r="http://richfaces.org">
 <h:body>
-	<f:metadata>
-		<f:event type="preRenderView" listener="#{reportList.preRender}" />
-	</f:metadata>
-	<ui:composition template="/layout/template.xhtml">
-		<ui:define name="title">Reports</ui:define>
-		<ui:define name="content">
-			<h3>Main reports</h3>
-			<table id="reportTable" class="table table-bordered smallpad">
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Note</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr><td><a href="/repo/reports/metric">#{strings['page.reportIndex.metricHistory']}</a></td><td>Show results for specific metrics in history</td></tr>
-					<tr><td><a href="/repo/reports/testGroupReport">#{strings['page.reportIndex.testGroupReport']}</a></td><td>Show results for specific tests and compare them across different test runs</td></tr>
-					<tr><td><a href="/repo/reports/compare/exec">#{strings['page.reportIndex.compareExecutions']}</a></td><td>Compare execution results of specific Test Executions</td></tr>
-					<tr><td><a href="/repo/reports/compare/param">#{strings['page.reportIndex.compareParameters']}</a></td><td>Compare execution parameters of specific Test Executions</td></tr>
-				</tbody>
-			</table>
-			<h3>Saved reports</h3>
-			<h:form id="formSavedReports">
-				<table id="savedReportTable" class="table table-bordered smallpad">
-					<thead>
-						<tr>
-							<th>Name</th>
-							<th>Type</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						<r:repeat value="#{reportList.savedReports}" var="reportItem">
-							<tr>
-								<td><a href="#{request.contextPath}/reports/#{reportItem.type.toLowerCase()}/#{reportItem.id}">#{reportItem.name}</a></td>
-								<td><h:outputText value="#{reportItem.type}" /></td>
-								<td style="text-align: center"><r:commandLink action="#{reportList.remove(reportItem)}" alt="Remove" title="Remove" render=":formSavedReports :messagesPanel">
-										<i class="icon-remove"/>
-									</r:commandLink>
-								</td>
-							</tr>
-						</r:repeat>
-					</tbody>
-				</table>
-			</h:form>
-		</ui:define>
-	</ui:composition>
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{reportList.preRender}"/>
+    </f:metadata>
+    <ui:composition template="/layout/template.xhtml">
+        <ui:define name="title">Reports</ui:define>
+        <ui:define name="content">
+            <h3>Main reports</h3>
+            <table id="reportTable" class="table table-bordered smallpad">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Note</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><a href="/repo/reports/metric">#{strings['page.reportIndex.metricHistory']}</a></td>
+                    <td>Show results for specific metrics in history</td>
+                </tr>
+                <tr>
+                    <td><a href="/repo/reports/testGroupReport">#{strings['page.reportIndex.testGroupReport']}</a></td>
+                    <td>Show results for specific tests and compare them across different test runs</td>
+                </tr>
+                <tr>
+                    <td><a href="/repo/reports/compare/exec">#{strings['page.reportIndex.compareExecutions']}</a></td>
+                    <td>Compare execution results of specific Test Executions</td>
+                </tr>
+                <tr>
+                    <td><a href="/repo/reports/compare/param">#{strings['page.reportIndex.compareParameters']}</a></td>
+                    <td>Compare execution parameters of specific Test Executions</td>
+                </tr>
+                </tbody>
+            </table>
+            <h3>Saved reports</h3>
+            <h:form id="formSavedReports">
+                <table id="savedReportTable" class="table table-bordered smallpad">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <r:repeat value="#{reportList.savedReports}" var="reportItem">
+                        <tr>
+                            <td>
+                                <a href="#{request.contextPath}/reports/#{reportItem.type.toLowerCase()}/#{reportItem.id}">#{reportItem.name}</a>
+                            </td>
+                            <td><h:outputText value="#{reportItem.type}"/></td>
+                            <td style="text-align: center"><r:commandLink action="#{reportList.remove(reportItem)}"
+                                                                          alt="Remove" title="Remove"
+                                                                          render=":formSavedReports :messagesPanel">
+                                <i class="icon-remove"/>
+                            </r:commandLink>
+                            </td>
+                        </tr>
+                    </r:repeat>
+                    </tbody>
+                </table>
+            </h:form>
+        </ui:define>
+    </ui:composition>
 </h:body>
 </html>

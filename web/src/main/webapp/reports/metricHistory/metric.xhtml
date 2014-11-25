@@ -1,256 +1,291 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:r="http://richfaces.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:r="http://richfaces.org">
 <h:body>
-	<f:metadata>
-		<f:event type="preRenderView" listener="#{metricReportBean.preRender}" />
-	</f:metadata>
-	<ui:composition template="/layout/template.xhtml">
-        <ui:define name="customJavascript">
-           <h:outputScript library="js" name="metric_history.js" />
-        </ui:define>
-		   <ui:define name="title">#{metricReportBean.reportName}</ui:define>
-		   <ui:define name="content">
-         <ui:include src="/reports/metricHistory/comment_edit.xhtml" />
-			<ui:include src="/reports/report-permissions-add-popup.xhtml" />
+<f:metadata>
+    <f:event type="preRenderView" listener="#{metricReportBean.preRender}"/>
+</f:metadata>
+<ui:composition template="/layout/template.xhtml">
+<ui:define name="customJavascript">
+    <h:outputScript library="js" name="metric_history.js"/>
+</ui:define>
+<ui:define name="title">#{metricReportBean.reportName}</ui:define>
+<ui:define name="content">
+<ui:include src="/reports/metricHistory/comment_edit.xhtml"/>
+<ui:include src="/reports/report-permissions-add-popup.xhtml"/>
 
-			<h:form id="formReportConfig">
-				<h1>
-					#{metricReportBean.reportName} <a href="#{metricReportBean.linkToReport}"><i class="icon-link" title="Permanent link to report" /></a>
-				</h1>
-				<r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.showConfig}" alt="Show configuration" title="Show configuration"
-					render=":formReportConfig :messagesPanel" rendered="#{!metricReportBean.configVisible}">
-					<i class="icon-cogs"></i> Show configuration
+<h:form id="formReportConfig">
+    <h1>
+        #{metricReportBean.reportName} <a href="#{metricReportBean.linkToReport}"><i class="icon-link"
+                                                                                     title="Permanent link to report"/></a>
+    </h1>
+    <r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.showConfig}"
+                   alt="Show configuration" title="Show configuration"
+                   render=":formReportConfig :messagesPanel" rendered="#{!metricReportBean.configVisible}">
+        <i class="icon-cogs"></i> Show configuration
+    </r:commandLink>
+    <h:panelGroup rendered="#{metricReportBean.configVisible}">
+        <h2>
+            Report configuration
+            <r:commandLink action="#{metricReportBean.hideConfig}" alt="Hide configuration" title="Hide configuration"
+                           render=":formReportConfig :messagesPanel">
+                <i class="icon-check-minus"></i>
+            </r:commandLink>
+        </h2>
+        <ui:include src="/reports/report-permission-panel.xhtml"/>
+        <table>
+            <tr>
+                <td><h:outputText value="Report name"/></td>
+                <td><h:inputText value="#{metricReportBean.reportName}">
+                    <r:ajax render=":formReportConfig titleGroup :messagesPanel"/>
+                </h:inputText>
+                </td>
+            </tr>
+            <!--<tr>
+                <td><h:outputText value="Report ID" /></td>
+                <td><h:inputText value="#{metricReportBean.reportId}" /></td>
+            </tr>-->
+        </table>
+        <h3>Charts</h3>
+        <h:dataTable id="tableCharts" styleClass="table table-bordered table-striped editableEntryTable"
+                     value="#{metricReportBean.chartSpecs}" var="chartItem">
+            <h:column>
+                <f:facet name="header">Name</f:facet>
+                <h:inputText value="#{chartItem.chartName}">
+                    <r:ajax render=":formReportConfig :messagesPanel" listener="#{chartItem.editedName}"/>
+                </h:inputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Test</f:facet>
+                <h:selectOneMenu value="#{chartItem.selectedTestId}">
+                    <f:selectItems value="#{metricReportBean.selectionTests}" var="testItem"
+                                   itemLabel="#{testItem.name}" itemValue="#{testItem.id}"/>
+                    <r:ajax render=":formReportConfig :messagesPanel" listener="#{chartItem.selectedTest}"/>
+                </h:selectOneMenu>
+            </h:column>
+            <h:column>
+                <f:facet name="header"></f:facet>
+                <r:commandLink styleClass="btn btn-primary btn-small"
+                               action="#{metricReportBean.removeChart(chartItem)}" alt="Remove" title="Remove"
+                               render=":formReportConfig :messagesPanel">
+                    <i class="icon-minus"></i>
                 </r:commandLink>
-				<h:panelGroup rendered="#{metricReportBean.configVisible}">
-					<h2>
-						Report configuration
-						<r:commandLink action="#{metricReportBean.hideConfig}" alt="Hide configuration" title="Hide configuration" render=":formReportConfig :messagesPanel">
-							<i class="icon-check-minus"></i>
-						</r:commandLink>
-					</h2>
-					<ui:include src="/reports/report-permission-panel.xhtml" />
-					<table>
-						<tr>
-							<td><h:outputText value="Report name" /></td>
-							<td><h:inputText value="#{metricReportBean.reportName}">
-									<r:ajax render=":formReportConfig titleGroup :messagesPanel" />
-								</h:inputText>
-                            </td>
-						</tr>
-						<!--<tr>
-							<td><h:outputText value="Report ID" /></td>
-							<td><h:inputText value="#{metricReportBean.reportId}" /></td>
-						</tr>-->
-					</table>
-					<h3>Charts</h3>
-					<h:dataTable id="tableCharts" styleClass="table table-bordered table-striped editableEntryTable" value="#{metricReportBean.chartSpecs}" var="chartItem">
-						<h:column>
-							<f:facet name="header">Name</f:facet>
-							<h:inputText value="#{chartItem.chartName}">
-                                <r:ajax render=":formReportConfig :messagesPanel" listener="#{chartItem.editedName}" />
-                            </h:inputText>
-						</h:column>
-						<h:column>
-							<f:facet name="header">Test</f:facet>
-							<h:selectOneMenu value="#{chartItem.selectedTestId}">
-								<f:selectItems value="#{metricReportBean.selectionTests}" var="testItem" itemLabel="#{testItem.name}" itemValue="#{testItem.id}" />
-								<r:ajax render=":formReportConfig :messagesPanel" listener="#{chartItem.selectedTest}" />
-							</h:selectOneMenu>
-						</h:column>
-						<h:column>
-							<f:facet name="header"></f:facet>
-							<r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.removeChart(chartItem)}" alt="Remove" title="Remove"
-								render=":formReportConfig :messagesPanel">
-								<i class="icon-minus"></i>
-							</r:commandLink>
-						</h:column>
-					</h:dataTable>
-                    <r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addChart}" onclick="metricHistoryClear()" alt="Add chart" title="Add chart"
-                                  render=":formReportConfig :messagesPanel">
-                        <i class="icon-plus"></i> Add chart
-                    </r:commandLink>
+            </h:column>
+        </h:dataTable>
+        <r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addChart}"
+                       onclick="metricHistoryClear()" alt="Add chart" title="Add chart"
+                       render=":formReportConfig :messagesPanel">
+            <i class="icon-plus"></i> Add chart
+        </r:commandLink>
 
-					<h3>Series</h3>
-					<h:dataTable id="tableSeries" styleClass="table table-bordered table-striped editableEntryTable" value="#{metricReportBean.seriesSpecs}" var="seriesItem">
-						<h:column>
-							<f:facet name="header">Chart</f:facet>
-							<h:selectOneMenu value="#{seriesItem.chart}">
-								<f:selectItems value="#{metricReportBean.chartNames}" var="chartItem" itemLabel="#{chartItem}" itemValue="#{chartItem}" />
-								<r:ajax render=":formReportConfig :messagesPanel" />
-							</h:selectOneMenu>
-						</h:column>
-						<h:column>
-							<f:facet name="header">Series name</f:facet>
-							<h:inputText value="#{seriesItem.name}" />
-						</h:column>
-						<h:column>
-							<f:facet name="header">Metric</f:facet>
-							<h:selectOneMenu value="#{seriesItem.selectedMetricId}">
-								<f:selectItems value="#{seriesItem.selectionMetrics}" var="metricItem" itemLabel="#{metricItem.name}" itemValue="#{metricItem.id}" />
-							</h:selectOneMenu>
-						</h:column>
-						<h:column>
-							<f:facet name="header">Tags</f:facet>
-							<h:inputText value="#{seriesItem.selectedTags}" />
-						</h:column>
-						<h:column>
-							<f:facet name="header"></f:facet>
-							<r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.removeSeries(seriesItem)}" alt="Remove" title="Remove"
-								render=":formReportConfig :messagesPanel">
-								<i class="icon-minus"></i>
-							</r:commandLink>
-						</h:column>
-					</h:dataTable>
-                    <r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addSeries}" onclick="metricHistoryClear()" alt="Add series" title="Add series"
+        <h3>Series</h3>
+        <h:dataTable id="tableSeries" styleClass="table table-bordered table-striped editableEntryTable"
+                     value="#{metricReportBean.seriesSpecs}" var="seriesItem">
+            <h:column>
+                <f:facet name="header">Chart</f:facet>
+                <h:selectOneMenu value="#{seriesItem.chart}">
+                    <f:selectItems value="#{metricReportBean.chartNames}" var="chartItem" itemLabel="#{chartItem}"
+                                   itemValue="#{chartItem}"/>
+                    <r:ajax render=":formReportConfig :messagesPanel"/>
+                </h:selectOneMenu>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Series name</f:facet>
+                <h:inputText value="#{seriesItem.name}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Metric</f:facet>
+                <h:selectOneMenu value="#{seriesItem.selectedMetricId}">
+                    <f:selectItems value="#{seriesItem.selectionMetrics}" var="metricItem"
+                                   itemLabel="#{metricItem.name}" itemValue="#{metricItem.id}"/>
+                </h:selectOneMenu>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Tags</f:facet>
+                <h:inputText value="#{seriesItem.selectedTags}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header"></f:facet>
+                <r:commandLink styleClass="btn btn-primary btn-small"
+                               action="#{metricReportBean.removeSeries(seriesItem)}" alt="Remove" title="Remove"
+                               render=":formReportConfig :messagesPanel">
+                    <i class="icon-minus"></i>
+                </r:commandLink>
+            </h:column>
+        </h:dataTable>
+        <r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addSeries}"
+                       onclick="metricHistoryClear()" alt="Add series" title="Add series"
+                       render=":formReportConfig :messagesPanel">
+            <i class="icon-plus"></i> Add series
+        </r:commandLink>
+
+        <h:panelGroup rendered="#{!metricReportBean.baselineSpecs.isEmpty()}">
+            <h3>Baselines</h3>
+            <h:dataTable id="tableBaselines" styleClass="table table-bordered table-striped editableEntryTable"
+                         value="#{metricReportBean.baselineSpecs}"
+                         var="baselinesItem">
+                <h:column>
+                    <f:facet name="header">Chart</f:facet>
+                    <h:selectOneMenu value="#{baselinesItem.chart}">
+                        <f:selectItems value="#{metricReportBean.chartNames}" var="chartItem" itemLabel="#{chartItem}"
+                                       itemValue="#{chartItem}"/>
+                        <r:ajax render=":formReportConfig :messagesPanel"/>
+                    </h:selectOneMenu>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Name</f:facet>
+                    <h:inputText value="#{baselinesItem.name}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Metric</f:facet>
+                    <h:selectOneMenu value="#{baselinesItem.selectedMetricId}">
+                        <f:selectItems value="#{baselinesItem.selectionMetrics}" var="metricItem"
+                                       itemLabel="#{metricItem.name}" itemValue="#{metricItem.id}"/>
+                    </h:selectOneMenu>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Exec ID</f:facet>
+                    <h:inputText value="#{baselinesItem.execId}">
+                        <f:convertNumber pattern="#0"/>
+                    </h:inputText>
+                </h:column>
+                <h:column>
+                    <f:facet name="header"></f:facet>
+                    <r:commandLink styleClass="btn btn-primary btn-small"
+                                   action="#{metricReportBean.removeBaseline(baselinesItem)}" alt="Remove"
+                                   title="Remove"
                                    render=":formReportConfig :messagesPanel">
-                        <i class="icon-plus"></i> Add series
+                        <i class="icon-minus"></i>
                     </r:commandLink>
+                </h:column>
+            </h:dataTable>
+        </h:panelGroup>
 
-					<h:panelGroup rendered="#{!metricReportBean.baselineSpecs.isEmpty()}">
-						<h3>Baselines</h3>
-						<h:dataTable id="tableBaselines" styleClass="table table-bordered table-striped editableEntryTable" value="#{metricReportBean.baselineSpecs}"
-							var="baselinesItem">
-							<h:column>
-								<f:facet name="header">Chart</f:facet>
-								<h:selectOneMenu value="#{baselinesItem.chart}">
-									<f:selectItems value="#{metricReportBean.chartNames}" var="chartItem" itemLabel="#{chartItem}" itemValue="#{chartItem}" />
-									<r:ajax render=":formReportConfig :messagesPanel" />
-								</h:selectOneMenu>
-							</h:column>
-							<h:column>
-								<f:facet name="header">Name</f:facet>
-								<h:inputText value="#{baselinesItem.name}" />
-							</h:column>
-							<h:column>
-								<f:facet name="header">Metric</f:facet>
-								<h:selectOneMenu value="#{baselinesItem.selectedMetricId}">
-									<f:selectItems value="#{baselinesItem.selectionMetrics}" var="metricItem" itemLabel="#{metricItem.name}" itemValue="#{metricItem.id}" />
-								</h:selectOneMenu>
-							</h:column>
-							<h:column>
-								<f:facet name="header">Exec ID</f:facet>
-								<h:inputText value="#{baselinesItem.execId}">
-									<f:convertNumber pattern="#0" />
-								</h:inputText>
-							</h:column>
-							<h:column>
-								<f:facet name="header"></f:facet>
-								<r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.removeBaseline(baselinesItem)}" alt="Remove" title="Remove"
-									render=":formReportConfig :messagesPanel">
-									<i class="icon-minus"></i>
-								</r:commandLink>
-							</h:column>
-						</h:dataTable>
-					</h:panelGroup>
+        <r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addBaseline}"
+                       onclick="metricHistoryClear()" alt="Add baseline" title="Add baseline"
+                       render=":formReportConfig :messagesPanel">
+            <i class="icon-plus"></i> Add baseline
+        </r:commandLink>
 
-					<r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.addBaseline}" onclick="metricHistoryClear()" alt="Add baseline" title="Add baseline"
-						render=":formReportConfig :messagesPanel">
-						<i class="icon-plus"></i> Add baseline
-                    </r:commandLink>
+        <br/><br/>
+        <hr/>
+        <br/>
+        <r:commandLink styleClass="btn btn-primary btn-large" action="#{metricReportBean.save}" alt="Save" title="Save"
+                       render=":messagesPanel">
+            <i class="icon-save"></i> Save
+        </r:commandLink>
+        <r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.previewReport}" alt="Preview"
+                       title="Preview"
+                       render=":formReportConfig :formChart :messagesPanel">
+            Preview
+        </r:commandLink>
 
-                    <br /><br /><hr /><br />
-                    <r:commandLink styleClass="btn btn-primary btn-large" action="#{metricReportBean.save}" alt="Save" title="Save" render=":messagesPanel">
-                       <i class="icon-save"></i> Save
-                    </r:commandLink>
-                    <r:commandLink styleClass="btn btn-primary btn-small"  action="#{metricReportBean.previewReport}" alt="Preview" title="Preview"
-                                  render=":formReportConfig :formChart :messagesPanel">
-                        Preview
-                    </r:commandLink>
+        <br/><br/>
+        <hr/>
 
-                    <br /><br /><hr />
+    </h:panelGroup>
+</h:form>
+<h:form id="formChart">
+    <r:repeat value="#{metricReportBean.chartSpecs}" var="chartItem" id="repeat">
+        <h2>
+            <h:outputText value="#{chartItem.chartName}"/>
+        </h2>
 
-				</h:panelGroup>
-			</h:form>
-			<h:form id="formChart">
-				<r:repeat value="#{metricReportBean.chartSpecs}" var="chartItem" id="repeat">
-					<h2>
-						<h:outputText value="#{chartItem.chartName}" />
-					</h2>
+        <r:chart title="#{chartItem.chartName}" plotClickListener="#{chartItem.chartActionListener}"
+                 onplotclick="metricHistoryPointClick(event)">
+            <r:repeat value="#{chartItem.chartSeries}" var="seriesItem">
+                <r:series label="#{seriesItem.name}" data="#{seriesItem.chartModel}" type="line"/>
+            </r:repeat>
+            <r:repeat value="#{chartItem.chartBaselines}" var="baselineItem">
+                <r:series label="#{baselineItem.name}" data="#{baselineItem.chartModel}" type="line"/>
+            </r:repeat>
+            <r:ajax event="plotclick" render=":formChart :messagesPanel" oncomplete="metricHistoryRefresh()"/>
+            <r:xaxis label="Test execution"/>
+            <r:yaxis label="Metric value" min="0"/>
+            <r:legend position="nw"/>
+        </r:chart>
 
-					<r:chart title="#{chartItem.chartName}" plotClickListener="#{chartItem.chartActionListener}" onplotclick="metricHistoryPointClick(event)">
-						<r:repeat value="#{chartItem.chartSeries}" var="seriesItem">
-							<r:series label="#{seriesItem.name}" data="#{seriesItem.chartModel}" type="line" />
-						</r:repeat>
-						<r:repeat value="#{chartItem.chartBaselines}" var="baselineItem">
-							<r:series label="#{baselineItem.name}" data="#{baselineItem.chartModel}" type="line" />
-						</r:repeat>
-						<r:ajax event="plotclick" render=":formChart :messagesPanel" oncomplete="metricHistoryRefresh()" />
-						<r:xaxis label="Test execution" />
-						<r:yaxis label="Metric value" min="0" />
-                        <r:legend position="nw" />
-					</r:chart>
-
-               <h:panelGrid rendered="#{chartItem.renderDetails}" >
+        <h:panelGrid rendered="#{chartItem.renderDetails}">
 
 
-						<table class="pointDetails">
-							<tr>
-								<td class="pointDetailsLabel">Execution ID</td>
-								<td class="pointDetailsValue">#{metricReportBean.pointDetails.execId}</td>
-							</tr>
-							<tr>
-								<td class="pointDetailsLabel">Execution name</td>
-								<td class="pointDetailsValue"><a href="/repo/exec/#{metricReportBean.pointDetails.execId}">#{metricReportBean.pointDetails.execName}</a></td>
-							</tr>
-							<tr>
-								<td class="pointDetailsLabel">Execution time</td>
-								<td class="pointDetailsValue">#{metricReportBean.pointDetails.execStarted}</td>
-							</tr>
-							<tr>
-								<td class="pointDetailsLabel">Execution tags</td>
-								<td class="pointDetailsValue">
-                           <table>
-										<tr>
-											<td>
-                                    <ui:repeat value="#{metricReportBean.pointDetails.tags}" varStatus="status" var="item">
-													<span class="badge badge-success">#{item}</span>
-												</ui:repeat>
-                                 </td>
-										</tr>
-									</table></td>
-							</tr>
-							<ui:repeat value="#{metricReportBean.pointDetails.favParams}" varStatus="status" var="item">
-								<tr>
-									<td class="pointDetailsLabel">#{item.label}</td>
-									<td class="pointDetailsValue"><h:outputText value="#{metricReportBean.getDisplayValueFavParam(item)}" escape="false" /></td>
-								</tr>
-							</ui:repeat>
-                     <tr>
-                        <td class="pointDetailsLabel">Comment</td>
-                        <td class="pointDetailsValue">
-                           <table>
-                              <tr>
-                                 <td><h:outputText value="#{metricReportBean.pointDetails.comment}" escape="false" /></td>
-                              </tr>
-                           </table>
+            <table class="pointDetails">
+                <tr>
+                    <td class="pointDetailsLabel">Execution ID</td>
+                    <td class="pointDetailsValue">#{metricReportBean.pointDetails.execId}</td>
+                </tr>
+                <tr>
+                    <td class="pointDetailsLabel">Execution name</td>
+                    <td class="pointDetailsValue"><a
+                            href="/repo/exec/#{metricReportBean.pointDetails.execId}">#{metricReportBean.pointDetails.execName}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="pointDetailsLabel">Execution time</td>
+                    <td class="pointDetailsValue">#{metricReportBean.pointDetails.execStarted}</td>
+                </tr>
+                <tr>
+                    <td class="pointDetailsLabel">Execution tags</td>
+                    <td class="pointDetailsValue">
+                        <table>
+                            <tr>
+                                <td>
+                                    <ui:repeat value="#{metricReportBean.pointDetails.tags}" varStatus="status"
+                                               var="item">
+                                        <span class="badge badge-success">#{item}</span>
+                                    </ui:repeat>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <ui:repeat value="#{metricReportBean.pointDetails.favParams}" varStatus="status" var="item">
+                    <tr>
+                        <td class="pointDetailsLabel">#{item.label}</td>
+                        <td class="pointDetailsValue"><h:outputText
+                                value="#{metricReportBean.getDisplayValueFavParam(item)}" escape="false"/></td>
+                    </tr>
+                </ui:repeat>
+                <tr>
+                    <td class="pointDetailsLabel">Comment</td>
+                    <td class="pointDetailsValue">
+                        <table>
+                            <tr>
+                                <td><h:outputText value="#{metricReportBean.pointDetails.comment}" escape="false"/></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            <h:panelGroup>
+                <table>
+                    <tr>
+                        <td>
+                            <r:commandLink styleClass="btn btn-primary btn-small"
+                                           onclick="metricHistoryPermanentlyHighlight()"
+                                           oncomplete="metricHistoryRefresh()"
+                                           action="#{teComparatorSession.add(metricReportBean.pointDetails.execId)}"
+                                           alt="Add execution to comparison" title="Add execution to comparison"
+                                           render=":formReportConfig :formChart :headerForm:compareMenuItem :messagesPanel">
+                                <i class="icon-plus"></i> Add to comparison
+                            </r:commandLink>
+
+                            <r:commandLink styleClass="btn btn-primary btn-small"
+                                           action="#{metricReportBean.setPointDetails(metricReportBean.pointDetails)}"
+                                           oncomplete="#{rich:component('dialogCommentEdit')}.show();"
+                                           alt="Edit comment" title="Edit comment" render=":dialogCommentEdit">
+                                <i class="icon-edit"></i> Edit comment
+                            </r:commandLink>
                         </td>
-                     </tr>
-                  </table>
-
-                  <h:panelGroup>
-                     <table>
-                        <tr>
-                           <td>
-                              <r:commandLink styleClass="btn btn-primary btn-small" onclick="metricHistoryPermanentlyHighlight()" oncomplete="metricHistoryRefresh()" action="#{teComparatorSession.add(metricReportBean.pointDetails.execId)}"
-                                             alt="Add execution to comparison" title="Add execution to comparison" render=":formReportConfig :formChart :headerForm:compareMenuItem :messagesPanel">
-                                 <i class="icon-plus"></i> Add to comparison
-                              </r:commandLink>
-
-                              <r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.setPointDetails(metricReportBean.pointDetails)}" oncomplete="#{rich:component('dialogCommentEdit')}.show();"
-                                             alt="Edit comment" title="Edit comment" render=":dialogCommentEdit">
-                                 <i class="icon-edit"></i> Edit comment
-                              </r:commandLink>
-                           </td>
-                        </tr>
-                     </table>
-                  </h:panelGroup>
+                    </tr>
+                </table>
+            </h:panelGroup>
 
 
-					</h:panelGrid>
-				</r:repeat>
-			</h:form>
-		</ui:define>
-	</ui:composition>
+        </h:panelGrid>
+    </r:repeat>
+</h:form>
+</ui:define>
+</ui:composition>
 </h:body>
 </html>

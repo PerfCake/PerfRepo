@@ -15,20 +15,18 @@
  */
 package org.jboss.qa.perfrepo.web.dao;
 
-import javax.inject.Named;
-
 import org.jboss.qa.perfrepo.model.TestExecutionTag;
+
+import javax.inject.Named;
 
 /**
  * DAO for {@link TestExecutionTag}
- * 
+ *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @Named
 public class TestExecutionTagDAO extends DAO<TestExecutionTag, Long> {
 
-   // nothing to add
-
+	// nothing to add
 }

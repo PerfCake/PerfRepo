@@ -19,47 +19,45 @@ import org.jboss.qa.perfrepo.model.Metric;
 
 /**
  * {@link Metric} builder.
- * 
+ *
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 public class MetricBuilder {
 
-   private TestBuilder parentBuilder;
-   private Metric metric;
+	private TestBuilder parentBuilder;
+	private Metric metric;
 
-   public MetricBuilder(TestBuilder parentBuilder, Metric metric) {
-      this.parentBuilder = parentBuilder;
-      this.metric = metric;
-   }
+	public MetricBuilder(TestBuilder parentBuilder, Metric metric) {
+		this.parentBuilder = parentBuilder;
+		this.metric = metric;
+	}
 
-   public MetricBuilder name(String name) {
-      metric.setName(name);
-      return this;
-   }
+	public MetricBuilder name(String name) {
+		metric.setName(name);
+		return this;
+	}
 
-   public MetricBuilder comparator(String comparator) {
-      metric.setComparator(comparator);
-      return this;
-   }
+	public MetricBuilder comparator(String comparator) {
+		metric.setComparator(comparator);
+		return this;
+	}
 
-   public MetricBuilder description(String description) {
-      metric.setDescription(description);
-      return this;
-   }
+	public MetricBuilder description(String description) {
+		metric.setDescription(description);
+		return this;
+	}
 
-   public TestBuilder test() {
-      if (parentBuilder == null) {
-         throw new IllegalStateException("Parent builder not defined, this is a standalone metric. Call MetricBuilder.build()");
-      }
-      return parentBuilder;
-   }
+	public TestBuilder test() {
+		if (parentBuilder == null) {
+			throw new IllegalStateException("Parent builder not defined, this is a standalone metric. Call MetricBuilder.build()");
+		}
+		return parentBuilder;
+	}
 
-   public Metric build() {
-      if (parentBuilder != null) {
-         throw new IllegalStateException("This metric can't be built as standalone object, call MetricBuilder.test()");
-      }
-      return metric.clone();
-   }
-
+	public Metric build() {
+		if (parentBuilder != null) {
+			throw new IllegalStateException("This metric can't be built as standalone object, call MetricBuilder.test()");
+		}
+		return metric.clone();
+	}
 }

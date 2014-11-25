@@ -15,23 +15,8 @@
  */
 package org.jboss.qa.perfrepo.web.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.apache.log4j.Logger;
+
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Tag;
 import org.jboss.qa.perfrepo.model.Test;
@@ -61,13 +46,27 @@ import org.jboss.qa.perfrepo.web.security.Secured;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.web.util.MessageUtils;
 
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+
 /**
- * 
  * Implements {@link TestService}.
- * 
+ *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @Named
 @Stateless
@@ -183,7 +182,7 @@ public class TestServiceBean implements TestService {
 	public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search) {
 		// remove param criteria with empty param name
 		if (search.getParameters() != null) {
-			for (Iterator<ParamCriteria> allParams = search.getParameters().iterator(); allParams.hasNext();) {
+			for (Iterator<ParamCriteria> allParams = search.getParameters().iterator(); allParams.hasNext(); ) {
 				ParamCriteria param = allParams.next();
 				if (param.isNameEmpty()) {
 					allParams.remove();
@@ -306,7 +305,7 @@ public class TestServiceBean implements TestService {
 			TestMetric testMetric = allTestMetrics.next();
 			Metric metric = testMetric.getMetric();
 			List<Test> testsUsingMetric = testDAO.findByNamedQuery(Test.FIND_TESTS_USING_METRIC,
-					Collections.<String, Object> singletonMap("metric", metric.getId()));
+					Collections.<String, Object>singletonMap("metric", metric.getId()));
 			allTestMetrics.remove();
 			testMetricDAO.remove(testMetric);
 			if (testsUsingMetric.size() == 0) {
@@ -434,28 +433,28 @@ public class TestServiceBean implements TestService {
 		}
 	}
 
-   @Override
-   public Metric getFullMetric(Long id) {
-      Metric metric = metricDAO.get(id);
-      if (metric == null) {
-         return null;
-      }
-      metric = metric.clone();
+	@Override
+	public Metric getFullMetric(Long id) {
+		Metric metric = metricDAO.get(id);
+		if (metric == null) {
+			return null;
+		}
+		metric = metric.clone();
 
-      // TODO: read by named query with join fetches
-      Collection<TestMetric> testMetrics = metric.getTestMetrics();
-      List<Test> tests = new ArrayList<Test>();
-      if (testMetrics != null) {
-         for (TestMetric testMetric : testMetrics) {
-            Test test = testMetric.getTest().clone();
-            test.setTestMetrics(null);
-            tests.add(test);
-         }
-      }
+		// TODO: read by named query with join fetches
+		Collection<TestMetric> testMetrics = metric.getTestMetrics();
+		List<Test> tests = new ArrayList<Test>();
+		if (testMetrics != null) {
+			for (TestMetric testMetric : testMetrics) {
+				Test test = testMetric.getTest().clone();
+				test.setTestMetrics(null);
+				tests.add(test);
+			}
+		}
 
-      metric.setTests(tests);
-      return metric;
-   }
+		metric.setTests(tests);
+		return metric;
+	}
 
 	@Override
 	public TestExecution getFullTestExecution(Long id) {
@@ -523,18 +522,18 @@ public class TestServiceBean implements TestService {
 		return testExecutionParameterDAO.update(tep);
 	}
 
-   @Override
-   public TestExecutionParameter getFullParameter(Long paramId) {
-      TestExecutionParameter p = testExecutionParameterDAO.get(paramId);
-      if (p == null) {
-         return null;
-      }
+	@Override
+	public TestExecutionParameter getFullParameter(Long paramId) {
+		TestExecutionParameter p = testExecutionParameterDAO.get(paramId);
+		if (p == null) {
+			return null;
+		}
 
-      TestExecutionParameter pclone = p.clone();
-      pclone.setTestExecution(p.getTestExecution().clone());
+		TestExecutionParameter pclone = p.clone();
+		pclone.setTestExecution(p.getTestExecution().clone());
 
-      return pclone;
-   }
+		return pclone;
+	}
 
 	@Override
 	@Secured
@@ -721,8 +720,7 @@ public class TestServiceBean implements TestService {
 			for (TestExecutionTag testExecutionTag : testExecution.getTestExecutionTags()) {
 				if (tags.contains(testExecutionTag.getTagName())) {
 					testExecutionTagDAO.remove(testExecutionTag);
-				}
-				else {
+				} else {
 					testExecutionTags.add(testExecutionTag);
 				}
 			}
@@ -746,8 +744,8 @@ public class TestServiceBean implements TestService {
 	}
 
 	private TestExecution cloneAndFetch(TestExecution exec, boolean fetchTest, boolean fetchParameters,
-			boolean fetchTags, boolean fetchValues,
-			boolean fetchAttachments) {
+										boolean fetchTags, boolean fetchValues,
+										boolean fetchAttachments) {
 		if (exec == null) {
 			return null;
 		}

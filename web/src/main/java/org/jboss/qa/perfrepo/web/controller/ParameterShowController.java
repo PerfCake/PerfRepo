@@ -15,61 +15,60 @@
  */
 package org.jboss.qa.perfrepo.web.controller;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.apache.log4j.Logger;
+
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 import org.jboss.qa.perfrepo.web.service.TestService;
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 /**
  * Displays value of {@link TestExecutionParameter}
- * 
+ *
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @Named
 @ViewScoped
 public class ParameterShowController extends BaseController {
 
-   private static final long serialVersionUID = 370202307562230671L;
-   private static final Logger log = Logger.getLogger(ParameterShowController.class);
+	private static final long serialVersionUID = 370202307562230671L;
+	private static final Logger log = Logger.getLogger(ParameterShowController.class);
 
-   private Long paramId;
+	private Long paramId;
 
-   @Inject
-   private TestService testService;
+	@Inject
+	private TestService testService;
 
-   private TestExecutionParameter param = null;
+	private TestExecutionParameter param = null;
 
-   public Long getParamId() {
-      return paramId;
-   }
+	public Long getParamId() {
+		return paramId;
+	}
 
-   public void setParamId(Long paramId) {
-      this.paramId = paramId;
-   }
+	public void setParamId(Long paramId) {
+		this.paramId = paramId;
+	}
 
-   public TestExecutionParameter getParam() {
-      return param;
-   }
+	public TestExecutionParameter getParam() {
+		return param;
+	}
 
-   /**
-    * called on preRenderView
-    */
-   public void preRender() throws Exception {
-      reloadSessionMessages();
-      if (paramId == null) {
-         log.error("No parameter ID supplied");
-         redirectWithMessage("/", ERROR, "page.showParam.errorNoParamId");
-      } else {
-         param = testService.getFullParameter(paramId);
-         if (param == null) {
-            log.error("Can't find parameter with id " + paramId);
-            redirectWithMessage("/", ERROR, "page.showParam.errorParamNotFound", paramId);
-         }
-      }
-   }
-
+	/**
+	 * called on preRenderView
+	 */
+	public void preRender() throws Exception {
+		reloadSessionMessages();
+		if (paramId == null) {
+			log.error("No parameter ID supplied");
+			redirectWithMessage("/", ERROR, "page.showParam.errorNoParamId");
+		} else {
+			param = testService.getFullParameter(paramId);
+			if (param == null) {
+				log.error("Can't find parameter with id " + paramId);
+				redirectWithMessage("/", ERROR, "page.showParam.errorParamNotFound", paramId);
+			}
+		}
+	}
 }

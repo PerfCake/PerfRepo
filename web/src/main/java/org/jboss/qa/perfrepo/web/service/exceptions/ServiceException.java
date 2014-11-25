@@ -19,9 +19,8 @@ import javax.ejb.ApplicationException;
 
 /**
  * Exception in service layer.
- * 
+ *
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @ApplicationException(rollback = true)
 public class ServiceException extends Exception {
@@ -47,15 +46,15 @@ public class ServiceException extends Exception {
 		static final int PARAMETER_EXISTS = 1400;
 		static final int USER_NOT_FOUND = 1500;
 		static final int NOT_YOU = 1600;
-      static final int USERNAME_ALREADY_EXISTS = 1700;
-      static final int PASSWORD_IS_EMPTY = 1800;
-      static final int PASSWORD_DOESNT_MATCH = 1900;
+		static final int USERNAME_ALREADY_EXISTS = 1700;
+		static final int PASSWORD_IS_EMPTY = 1800;
+		static final int PASSWORD_DOESNT_MATCH = 1900;
 	}
 
 	private int code;
 	private Object[] params;
 
-	public ServiceException(int code, Object...params) {
+	public ServiceException(int code, Object... params) {
 		this.code = code;
 		this.params = params;
 	}

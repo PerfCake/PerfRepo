@@ -15,40 +15,38 @@
  */
 package org.jboss.qa.perfrepo.web.dao;
 
-import java.util.List;
+import org.jboss.qa.perfrepo.model.Tag;
 
 import javax.inject.Named;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.jboss.qa.perfrepo.model.Tag;
+import java.util.List;
 
 /**
  * DAO for {@link Tag}
- * 
+ *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @Named
 public class TagDAO extends DAO<Tag, Long> {
 
-   public Tag findByName(String name) {
-      List<Tag> tags = getAllByProperty("name", name);
-      if (tags.size() > 0) {
-         return tags.get(0);
-      }
-      return null;
-   }
+	public Tag findByName(String name) {
+		List<Tag> tags = getAllByProperty("name", name);
+		if (tags.size() > 0) {
+			return tags.get(0);
+		}
+		return null;
+	}
 
-   public List<Tag> findByPrefix(String prefix) {
-	   CriteriaQuery<Tag> criteria = createCriteria();
-	   Root<Tag> root = criteria.from(Tag.class);
-	   criteria.select(root);
-	   CriteriaBuilder cb = criteriaBuilder();
-	   criteria.where(cb.like(cb.lower(root.<String>get("name")), prefix.toLowerCase() + "%"));
-	   return query(criteria).getResultList();
-   }
-
+	public List<Tag> findByPrefix(String prefix) {
+		CriteriaQuery<Tag> criteria = createCriteria();
+		Root<Tag> root = criteria.from(Tag.class);
+		criteria.select(root);
+		CriteriaBuilder cb = criteriaBuilder();
+		criteria.where(cb.like(cb.lower(root.<String>get("name")), prefix.toLowerCase() + "%"));
+		return query(criteria).getResultList();
+	}
 }

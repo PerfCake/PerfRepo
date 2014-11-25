@@ -15,14 +15,6 @@
  */
 package org.jboss.qa.perfrepo.web.controller.reports;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.jboss.qa.perfrepo.model.auth.AccessLevel;
 import org.jboss.qa.perfrepo.model.auth.AccessType;
 import org.jboss.qa.perfrepo.model.auth.Permission;
@@ -34,42 +26,50 @@ import org.jboss.qa.perfrepo.web.service.ReportService;
 import org.jboss.qa.perfrepo.web.service.UserService;
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 @Named
 @ViewScoped
 public class ReportPermissionController extends BaseController {
 
-    /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 5444130093765337514L;
-	
+
 	@Inject
 	ReportService reportService;
-	
+
 	@Inject
 	UserService userService;
-	
-	private Collection<Permission> permissions = new ArrayList<Permission>();
-	
-	private Collection<Permission> workingCopy = new ArrayList<Permission>();
-	
-	private String userId;
-	
-	private String groupId;
-	
-	private Permission permission = new Permission();
-	
-	private Long reportId;
-	
-	private boolean isPanelShown = false;
-	
-    public AccessLevel[] getAccessLevels() {    	
-       return AccessLevel.values();
-    }
 
-    public AccessType[] getAccessTypes() {
-        return AccessType.values();
-    }
+	private Collection<Permission> permissions = new ArrayList<Permission>();
+
+	private Collection<Permission> workingCopy = new ArrayList<Permission>();
+
+	private String userId;
+
+	private String groupId;
+
+	private Permission permission = new Permission();
+
+	private Long reportId;
+
+	private boolean isPanelShown = false;
+
+	public AccessLevel[] getAccessLevels() {
+		return AccessLevel.values();
+	}
+
+	public AccessType[] getAccessTypes() {
+		return AccessType.values();
+	}
 
 	public Collection<Permission> getPermissions() {
 		return permissions;
@@ -78,37 +78,36 @@ public class ReportPermissionController extends BaseController {
 	public void setPermissions(Collection<Permission> permissions) {
 		this.permissions = permissions;
 	}
-	
+
 	@PostConstruct
 	public void initialize() {
 		String reportIdParam = getRequestParam("reportId");
-	    reportId = reportIdParam != null ? Long.parseLong(reportIdParam) : null;	    
-	    permissions = reportService.getReportPermissions(new Report(reportId));	    
+		reportId = reportIdParam != null ? Long.parseLong(reportIdParam) : null;
+		permissions = reportService.getReportPermissions(new Report(reportId));
 	}
-	
+
 	public void clearWorkingCopy() {
 		workingCopy.clear();
 	}
-	
+
 	public String getPermissionGroup(Permission p) {
 		if (AccessLevel.GROUP.equals(p.getLevel())) {
 			Group group = userService.getGroup(p.getGroupId());
 			return group.getName();
-			
 		} else {
 			return null;
-		}		
+		}
 	}
-	
+
 	public String getPermissionUser(Permission p) {
 		if (AccessLevel.USER.equals(p.getLevel())) {
 			User user = userService.getUser(p.getUserId());
 			return user.getUsername();
 		} else {
 			return null;
-		}		
+		}
 	}
-	
+
 	public List<User> getUsers() {
 		return userService.getUsers();
 	}
@@ -116,19 +115,19 @@ public class ReportPermissionController extends BaseController {
 	public List<Group> getGroups() {
 		return userService.getGroups();
 	}
-	
+
 	public void clearPermission() {
 		permission = new Permission();
 		userId = "";
 		groupId = "";
 	}
-	
+
 	public void removePermission(Permission p) {
 		permissions.remove(p);
 	}
-	
+
 	public void addNewPermission() {
-		if (AccessLevel.GROUP.equals(permission.getLevel())){			
+		if (AccessLevel.GROUP.equals(permission.getLevel())) {
 			permission.setGroupId(Long.valueOf(groupId));
 		} else if (AccessLevel.USER.equals(permission.getLevel())) {
 			permission.setUserId(Long.valueOf(userId));
@@ -178,7 +177,7 @@ public class ReportPermissionController extends BaseController {
 	public void setPermission(Permission permission) {
 		this.permission = permission;
 	}
-	
+
 	public void togglePanel() {
 		if (isPanelShown) {
 			isPanelShown = false;
@@ -193,5 +192,5 @@ public class ReportPermissionController extends BaseController {
 
 	public void setPanelShown(boolean isPanelShown) {
 		this.isPanelShown = isPanelShown;
-	}	
+	}
 }

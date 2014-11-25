@@ -15,28 +15,25 @@
  */
 package org.jboss.qa.perfrepo.web.dao;
 
+import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
+
+import javax.inject.Named;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.inject.Named;
-
-import org.jboss.qa.perfrepo.model.TestExecutionAttachment;
-
 /**
- * 
  * DAO for {@link TestExecutionAttachment}
- * 
+ *
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @Named
 public class TestExecutionAttachmentDAO extends DAO<TestExecutionAttachment, Long> {
 
-   public Collection<TestExecutionAttachment> findByExecution(Long testExecutionId) {
-      Map<String, Object> params = new TreeMap<String, Object>();
-      params.put("exec", testExecutionId);
-      return findByNamedQuery(TestExecutionAttachment.FIND_BY_EXECUTION, params);
-   }
-
+	public Collection<TestExecutionAttachment> findByExecution(Long testExecutionId) {
+		Map<String, Object> params = new TreeMap<String, Object>();
+		params.put("exec", testExecutionId);
+		return findByNamedQuery(TestExecutionAttachment.FIND_BY_EXECUTION, params);
+	}
 }

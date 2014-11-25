@@ -1,6 +1,15 @@
 package org.jboss.qa.perfrepo.web.security;
 
-import java.util.Collection;
+import org.jboss.qa.perfrepo.model.Entity;
+import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.auth.AccessLevel;
+import org.jboss.qa.perfrepo.model.auth.AccessType;
+import org.jboss.qa.perfrepo.model.auth.Permission;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+import org.jboss.qa.perfrepo.model.report.Report;
+import org.jboss.qa.perfrepo.web.dao.PermissionDAO;
+import org.jboss.qa.perfrepo.web.dao.TestDAO;
+import org.jboss.qa.perfrepo.web.service.UserService;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -10,16 +19,7 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jboss.qa.perfrepo.web.dao.PermissionDAO;
-import org.jboss.qa.perfrepo.web.dao.TestDAO;
-import org.jboss.qa.perfrepo.model.Entity;
-import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.model.auth.AccessLevel;
-import org.jboss.qa.perfrepo.model.auth.AccessType;
-import org.jboss.qa.perfrepo.model.auth.Permission;
-import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
-import org.jboss.qa.perfrepo.model.report.Report;
-import org.jboss.qa.perfrepo.web.service.UserService;
+import java.util.Collection;
 
 @Named
 @Stateless

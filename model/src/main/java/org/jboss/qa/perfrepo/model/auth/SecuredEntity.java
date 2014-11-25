@@ -9,9 +9,8 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target({TYPE})
 public @interface SecuredEntity {
-	
-    EntityType type();
-    
-    String parent() default "";
 
+	EntityType type();
+
+	String parent() default "";
 }

@@ -18,7 +18,7 @@ package org.jboss.qa.perfrepo.web.dao;
 import org.jboss.qa.perfrepo.model.report.Report;
 
 import javax.inject.Named;
-import javax.persistence.TypedQuery;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +31,10 @@ import java.util.Map;
 @Named
 public class ReportDAO extends DAO<Report, Long> {
 
-   public List<Report> findReportsByUser(String username) {
-      Map<String, Object> params = new HashMap<String, Object>();
-      params.put("username", username);
+	public List<Report> findReportsByUser(String username) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("username", username);
 
-      return findByNamedQuery(Report.FIND_BY_USERNAME, params);
-   }
+		return findByNamedQuery(Report.FIND_BY_USERNAME, params);
+	}
 }

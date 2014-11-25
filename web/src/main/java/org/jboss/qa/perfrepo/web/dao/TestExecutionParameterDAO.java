@@ -15,7 +15,8 @@
  */
 package org.jboss.qa.perfrepo.web.dao;
 
-import java.util.List;
+import org.jboss.qa.perfrepo.model.TestExecution;
+import org.jboss.qa.perfrepo.model.TestExecutionParameter;
 
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
@@ -25,61 +26,59 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.jboss.qa.perfrepo.model.TestExecution;
-import org.jboss.qa.perfrepo.model.TestExecutionParameter;
+import java.util.List;
 
 /**
  * DAO for {@link TestExecutionParameter}
- * 
+ *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
  * @author Jiri Holusa (jholusa@redhat.com)
- * 
  */
 @Named
 public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long> {
 
-   /**
-    * Discovers if test execution already has the parameter, in other word
-    * if it breaks the unique (testExecutionId, name) constraint
-    *
-    * @param testId
-    * @param paramName
-    * @return true if there's already test execution parameter with same pair (testExecutionId, param_name)
-    */
-   public boolean hasTestParam(Long testExecutionId, TestExecutionParameter param) {
-      CriteriaBuilder cb = criteriaBuilder();
-      CriteriaQuery<TestExecutionParameter> criteria = cb.createQuery(TestExecutionParameter.class);
+	/**
+	 * Discovers if test execution already has the parameter, in other word
+	 * if it breaks the unique (testExecutionId, name) constraint
+	 *
+	 * @param testId
+	 * @param paramName
+	 * @return true if there's already test execution parameter with same pair (testExecutionId, param_name)
+	 */
+	public boolean hasTestParam(Long testExecutionId, TestExecutionParameter param) {
+		CriteriaBuilder cb = criteriaBuilder();
+		CriteriaQuery<TestExecutionParameter> criteria = cb.createQuery(TestExecutionParameter.class);
 
-      Root<TestExecutionParameter> rParam = criteria.from(TestExecutionParameter.class);
-      Join<TestExecutionParameter, TestExecution> rTestExecution = rParam.join("testExecution");
+		Root<TestExecutionParameter> rParam = criteria.from(TestExecutionParameter.class);
+		Join<TestExecutionParameter, TestExecution> rTestExecution = rParam.join("testExecution");
 
-      Predicate pFixedTest = cb.equal(rTestExecution.get("id"), cb.parameter(Long.class, "testExecutionId"));
-      Predicate pFixedName = cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName"));
+		Predicate pFixedTest = cb.equal(rTestExecution.get("id"), cb.parameter(Long.class, "testExecutionId"));
+		Predicate pFixedName = cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName"));
 
-      criteria.where(cb.and(pFixedTest, pFixedName));
-      criteria.select(rParam);
+		criteria.where(cb.and(pFixedTest, pFixedName));
+		criteria.select(rParam);
 
-      TypedQuery<TestExecutionParameter> query = query(criteria);
-      query.setParameter("testExecutionId", testExecutionId);
-      query.setParameter("paramName", param.getName());
-      List<TestExecutionParameter> tparams = query.getResultList();
-      return tparams.size() > 0 && !tparams.get(0).getId().equals(param.getId());
-   }
+		TypedQuery<TestExecutionParameter> query = query(criteria);
+		query.setParameter("testExecutionId", testExecutionId);
+		query.setParameter("paramName", param.getName());
+		List<TestExecutionParameter> tparams = query.getResultList();
+		return tparams.size() > 0 && !tparams.get(0).getId().equals(param.getId());
+	}
 
-   public List<TestExecutionParameter> find(List<Long> execIdList, List<String> paramNameList) {
-      CriteriaBuilder cb = criteriaBuilder();
-      CriteriaQuery<TestExecutionParameter> criteria = cb.createQuery(TestExecutionParameter.class);
+	public List<TestExecutionParameter> find(List<Long> execIdList, List<String> paramNameList) {
+		CriteriaBuilder cb = criteriaBuilder();
+		CriteriaQuery<TestExecutionParameter> criteria = cb.createQuery(TestExecutionParameter.class);
 
-      Root<TestExecutionParameter> rParam = criteria.from(TestExecutionParameter.class);
-      Predicate pParamNameInList = rParam.get("name").in(cb.parameter(List.class, "paramNameList"));
-      Predicate pExecIdInList = rParam.get("testExecution").get("id").in(cb.parameter(List.class, "execIdList"));
-      rParam.fetch("testExecution");
-      criteria.where(cb.and(pParamNameInList, pExecIdInList));
-      criteria.select(rParam);
-      TypedQuery<TestExecutionParameter> query = query(criteria);
-      query.setParameter("paramNameList", paramNameList);
-      query.setParameter("execIdList", execIdList);
-      return query.getResultList();
-   }
+		Root<TestExecutionParameter> rParam = criteria.from(TestExecutionParameter.class);
+		Predicate pParamNameInList = rParam.get("name").in(cb.parameter(List.class, "paramNameList"));
+		Predicate pExecIdInList = rParam.get("testExecution").get("id").in(cb.parameter(List.class, "execIdList"));
+		rParam.fetch("testExecution");
+		criteria.where(cb.and(pParamNameInList, pExecIdInList));
+		criteria.select(rParam);
+		TypedQuery<TestExecutionParameter> query = query(criteria);
+		query.setParameter("paramNameList", paramNameList);
+		query.setParameter("execIdList", execIdList);
+		return query.getResultList();
+	}
 }

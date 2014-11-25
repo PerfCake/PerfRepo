@@ -15,25 +15,25 @@
  */
 package org.jboss.qa.perfrepo.web.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.apache.log4j.Logger;
+
 import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.web.service.ReportService;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Controller for /repo/reports
- * 
+ *
  * @author Michal Linhard (mlinhard@redhat.com)
  * @author Jiri Holusa (jholusa@redhat.com)
- * 
  */
 @Named("reportList")
 @ViewScoped
@@ -43,44 +43,44 @@ public class ReportListController extends BaseController {
 
 	private static final Logger log = Logger.getLogger(ReportListController.class);
 
-   @Inject
-   private ReportService reportService;
+	@Inject
+	private ReportService reportService;
 
-   private List<Report> savedReports;
+	private List<Report> savedReports;
 
-   public List<Report> getSavedReports() {
-      return savedReports;
-   }
+	public List<Report> getSavedReports() {
+		return savedReports;
+	}
 
-   /**
-    * called on preRenderView
-    */
-   public void preRender() throws Exception {
-      reloadSessionMessages();
-      if (savedReports == null) {
-         updateSavedReports();
-      }
-   }
+	/**
+	 * called on preRenderView
+	 */
+	public void preRender() throws Exception {
+		reloadSessionMessages();
+		if (savedReports == null) {
+			updateSavedReports();
+		}
+	}
 
-   private void updateSavedReports() {
-      savedReports = new ArrayList<Report>();
+	private void updateSavedReports() {
+		savedReports = new ArrayList<Report>();
 
-      savedReports = reportService.getAllUsersReports();
+		savedReports = reportService.getAllUsersReports();
 
-      // when all types of reports have been added
-      Collections.sort(savedReports);
-   }
+		// when all types of reports have been added
+		Collections.sort(savedReports);
+	}
 
-   public void remove(Report itemToRemove) {
-      if (itemToRemove == null) {
-         throw new IllegalStateException("Item to remove is null");
-      }
-      try {
-         reportService.removeReport(itemToRemove);
-      } catch (ServiceException e) {
-         log.error("Error while removing report " + itemToRemove.getId(), e);
-         addMessage(e);
-      }
-      updateSavedReports();
-   }
+	public void remove(Report itemToRemove) {
+		if (itemToRemove == null) {
+			throw new IllegalStateException("Item to remove is null");
+		}
+		try {
+			reportService.removeReport(itemToRemove);
+		} catch (ServiceException e) {
+			log.error("Error while removing report " + itemToRemove.getId(), e);
+			addMessage(e);
+		}
+		updateSavedReports();
+	}
 }

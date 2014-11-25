@@ -15,63 +15,60 @@
  */
 package org.jboss.qa.perfrepo.web.dao;
 
+import org.jboss.qa.perfrepo.model.Metric;
+
+import javax.inject.Named;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Named;
-
-import org.jboss.qa.perfrepo.model.Metric;
-
 /**
  * DAO for {@link Metric}
- * 
+ *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @Named
 public class MetricDAO extends DAO<Metric, Long> {
 
-   public List<Metric> getMetrics() {
-      return getAll();
-   }
+	public List<Metric> getMetrics() {
+		return getAll();
+	}
 
-   /**
-    * Returns all metrics by name prefix, which belong tests with defined group id
-    * 
-    * @param name
-    * @param groupId
-    * @return List of {@link Metric}
-    */
-   public List<Metric> getMetricByNameAndGroup(String name, String groupId) {
-      Map<String, Object> params = new HashMap<String, Object>();
-      params.put("groupId", groupId);
-      params.put("name", name);
-      return findByNamedQuery(Metric.FIND_BY_NAME_GROUPID, params, true);
-   }
+	/**
+	 * Returns all metrics by name prefix, which belong tests with defined group id
+	 *
+	 * @param name
+	 * @param groupId
+	 * @return List of {@link Metric}
+	 */
+	public List<Metric> getMetricByNameAndGroup(String name, String groupId) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("groupId", groupId);
+		params.put("name", name);
+		return findByNamedQuery(Metric.FIND_BY_NAME_GROUPID, params, true);
+	}
 
-   /**
-    * Returns all metrics which belong tests with defined group id
-    * 
-    * @param groupId
-    * @return List of {@link Metric}
-    */
-   public List<Metric> getMetricByGroup(String groupId) {
-      Map<String, Object> params = new HashMap();
-      params.put("groupId", groupId);
-      return findByNamedQuery(Metric.FIND_BY_GROUPID, params, true);
-   }
+	/**
+	 * Returns all metrics which belong tests with defined group id
+	 *
+	 * @param groupId
+	 * @return List of {@link Metric}
+	 */
+	public List<Metric> getMetricByGroup(String groupId) {
+		Map<String, Object> params = new HashMap();
+		params.put("groupId", groupId);
+		return findByNamedQuery(Metric.FIND_BY_GROUPID, params, true);
+	}
 
-   /**
-    * 
-    * @param testId
-    * @return All metrics under given test id.
-    */
-   public List<Metric> getMetricByTest(Long testId) {
-      Map<String, Object> params = new HashMap();
-      params.put("testId", testId);
-      return findByNamedQuery(Metric.FIND_BY_TESTID, params, true);
-   }
-
+	/**
+	 * @param testId
+	 * @return All metrics under given test id.
+	 */
+	public List<Metric> getMetricByTest(Long testId) {
+		Map<String, Object> params = new HashMap();
+		params.put("testId", testId);
+		return findByNamedQuery(Metric.FIND_BY_TESTID, params, true);
+	}
 }

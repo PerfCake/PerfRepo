@@ -16,23 +16,21 @@
 package org.jboss.qa.perfrepo.web.security;
 
 import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.jboss.qa.perfrepo.model.auth.AccessType;
 
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
-import org.jboss.qa.perfrepo.model.auth.AccessType;
-
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target({METHOD, TYPE})
 @InterceptorBinding
 public @interface Secured {
 
-    @Nonbinding AccessType accessType() default AccessType.WRITE;
-    
+	@Nonbinding AccessType accessType() default AccessType.WRITE;
 }

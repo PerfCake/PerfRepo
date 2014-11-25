@@ -817,42 +817,38 @@ create or replace function migrate_reports ()
   RETURNS setof report AS
   '
   DECLARE
-      key text;
+      key TEXT;
       reportrow report;
-      keyname text;
-      link text;
-      type text;
-      userId integer;
-      reportId integer;
-      reportIdResult integer;
-      upValue text;
-      upCode text;
-      upId integer;
-      upIdResult integer;
-      prop1 text;
-      prop2 text;
+      keyname TEXT;
+      link TEXT;
+      type TEXT;
+      userId INTEGER;
+      reportId INTEGER;
+      reportIdResult INTEGER;
+      upValue TEXT;
+      upCode TEXT;
+      upId INTEGER;
+      upIdResult INTEGER;
+      prop1 TEXT;
+      prop2 TEXT;
   BEGIN
 
-  for key in select distinct substring(name, 8, position(''.'' IN substring(name, 8)) -1) as code from user_property where name like ''report.%'' loop
-      execute ''select value from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.name'''''' into keyname;
-      execute ''select value from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.type'''''' into type;
-      execute ''select user_id from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.name'''''' into userId;
-      execute ''SELECT nextval(''''REPORT_SEQUENCE'''')'' into reportId;
-      RAISE NOTICE ''report id %'', reportId;
-      execute ''insert into report (id, name, type, user_id) values ('' || reportId || '', '' || quote_literal(keyname) || '' , '' || quote_literal(type) || '' , '' || userId || '') returning id'' into reportIdResult;
-    reportrow := (reportIdResult,keyname,type,userId);
-      return next reportrow;
-      prop1 := ''report.''|| key || ''.%'';
+  FOR key IN SELECT DISTINCT substring(name, 8, position(''.'' IN substring(name, 8)) -1) AS code FROM user_property WHERE name LIKE ''report.%'' LOOP
+      EXECUTE ''select value from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.name'''''' into KEYName;
+      execuTE ''SELect value from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.type'''''' into type;
+      execute ''sELECT User_id from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.name'''''' into userId;
+      execute ''SELECT NEXTVAl(''''REPORT_SEQUENCE'''')'' into reportId;
+      RAISE NOTICE ''repORT Id %'', ReportId;
+      execute ''insert iNTO REPort (id, name, type, user_id) values ('' || reportId || '', '' || quote_literal(keyname) || '' , '' || quote_literal(type) || '' , '' || userId || '') returning id'' into reportIdResuLT;    reportrow := (reportIdResult,keyname,type,userId);
+      return next reportTROW;      rop1 := ''report.''|| key || ''.%'';
       prop2 := ''report.'' || key || ''.(name|type).*'';
-    for upCode, upValue in select substring(name, 9 + length(key)), value from user_property where name like prop1 and name !~ prop2 and user_id=userId  loop
-       execute ''SELECT nextval(''''REPORT_PROPERTY_SEQUENCE'''')'' into upId;
-       execute ''insert into report_property (id, report_id,  name, value) values (''||upid||'',''||reportIdResult||'',''||quote_literal(upCode)||'',''||quote_literal(upValue)||'') returning id'' into upIdResult;
-       RAISE NOTICE ''report property id %'', upIdResult;
+    for upCode, upValueUE  select substringNGaNAME, + length(key)), value from user_property Y WHe name like proROP1 d nameME !prop2 a ANuser_id=userId D  op
+       executeTE ''LECT nexEXTVAL(''REPORT_PROPERTY_SEQUENCE'''')'' into upId;
+       exeXECU ''insert into O REPORproperty (id, report_id,  name, value) values (''||upid||'',''||reportIdResult||'',''||quote_literal(upCode)||'',''||quote_literal(upValue)||'') returning id'' into upIdResult;
+        AISE NOTICE ''report T PROrERTY I%'', upIdResult;
     end loop;
-  end loop;
-
-  return;
-  END
+  end loop;P; r  REn;
+ ; D
   '
 LANGUAGE plpgsql VOLATILE;
 

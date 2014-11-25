@@ -27,19 +27,17 @@ import java.util.Map;
  * DAO for {@link org.jboss.qa.perfrepo.model.FavoriteParameter}
  *
  * @author Jiri Holusa (jholusa@redhat.com)
- *
  */
 @Named
 public class FavoriteParameterDAO extends DAO<FavoriteParameter, Long> {
 
-   public FavoriteParameter findByTestAndParamName(String paramName, Long testId, Long userId) {
-      Map<String, Object> params = new HashMap<String, Object>();
-      params.put("paramName", paramName);
-      params.put("userId", userId);
-      params.put("testId", testId);
+	public FavoriteParameter findByTestAndParamName(String paramName, Long testId, Long userId) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("paramName", paramName);
+		params.put("userId", userId);
+		params.put("testId", testId);
 
-      List<FavoriteParameter> result = findByNamedQuery(FavoriteParameter.FIND_BY_TEST_AND_PARAM_NAME, params);
-      return !result.isEmpty() ? result.get(0) : null;
-   }
-
+		List<FavoriteParameter> result = findByNamedQuery(FavoriteParameter.FIND_BY_TEST_AND_PARAM_NAME, params);
+		return !result.isEmpty() ? result.get(0) : null;
+	}
 }

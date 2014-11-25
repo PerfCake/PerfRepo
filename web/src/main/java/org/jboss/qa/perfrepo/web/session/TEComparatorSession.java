@@ -15,46 +15,44 @@
  */
 package org.jboss.qa.perfrepo.web.session;
 
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
-
 /**
  * Holds ids of test executions selected for comparison.
- * 
+ *
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @Named(value = "teComparatorSession")
 @SessionScoped
 public class TEComparatorSession implements Serializable {
 
-   private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-   private Set<Long> execIds = new HashSet<Long>();
+	private Set<Long> execIds = new HashSet<Long>();
 
-   public void add(Long te) {
-      execIds.add(te);
-   }
+	public void add(Long te) {
+		execIds.add(te);
+	}
 
-   public void remove(Long id) {
-      execIds.remove(id);
-   }
+	public void remove(Long id) {
+		execIds.remove(id);
+	}
 
-   public Collection<Long> getExecIds() {
-      return execIds;
-   }
+	public Collection<Long> getExecIds() {
+		return execIds;
+	}
 
-   public boolean isAnyToCompare() {
-      return execIds != null && execIds.size() > 0;
-   }
+	public boolean isAnyToCompare() {
+		return execIds != null && execIds.size() > 0;
+	}
 
-   public void clear() {
-      execIds.clear();
-   }
-
+	public void clear() {
+		execIds.clear();
+	}
 }

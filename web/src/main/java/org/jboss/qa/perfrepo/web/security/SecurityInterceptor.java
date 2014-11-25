@@ -15,15 +15,16 @@
  */
 package org.jboss.qa.perfrepo.web.security;
 
+import org.apache.commons.beanutils.PropertyUtils;
+
+import org.jboss.qa.perfrepo.model.Entity;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+import org.jboss.qa.perfrepo.web.util.MessageUtils;
+
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.jboss.qa.perfrepo.model.Entity;
-import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
-import org.jboss.qa.perfrepo.web.util.MessageUtils;
 
 @Secured
 @Interceptor
@@ -41,13 +42,13 @@ public class SecurityInterceptor {
 			Object param = params[0];
 			SecuredEntity se = param.getClass().getAnnotation(SecuredEntity.class);
 			if (se != null && param instanceof Entity<?>) {
-				Entity<?> entity = (Entity<?>)param;
+				Entity<?> entity = (Entity<?>) param;
 				if (entity.getId() == null) {
 					//create mode, need to verify parent entity
-					entity = (Entity<?>)PropertyUtils.getProperty(entity, se.parent());
+					entity = (Entity<?>) PropertyUtils.getProperty(entity, se.parent());
 				}
 				if (!authorizationService.isUserAuthorizedFor(secureAnnotation.accessType(), entity)) {
-					throw new SecurityException(MessageUtils.getMessage("securityException.101", ctx.getMethod().getName(), param.getClass().getSimpleName(), ((Entity<?>)param).getId()));					
+					throw new SecurityException(MessageUtils.getMessage("securityException.101", ctx.getMethod().getName(), param.getClass().getSimpleName(), ((Entity<?>) param).getId()));
 				}
 			}
 		}

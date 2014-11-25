@@ -15,27 +15,25 @@
  */
 package org.jboss.qa.perfrepo.web.dao;
 
-import java.util.List;
+import org.jboss.qa.perfrepo.model.user.User;
 
 import javax.inject.Named;
 
-import org.jboss.qa.perfrepo.model.user.User;
+import java.util.List;
 
 /**
  * DAO for {@link User}
- * 
+ *
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @Named
 public class UserDAO extends DAO<User, Long> {
 
-   public User findByUsername(String name) {
-      List<User> users = getAllByProperty("username", name);
-      if (users.size() > 0) {
-         return users.get(0);
-      }
-      return null;
-   }
-
+	public User findByUsername(String name) {
+		List<User> users = getAllByProperty("username", name);
+		if (users.size() > 0) {
+			return users.get(0);
+		}
+		return null;
+	}
 }

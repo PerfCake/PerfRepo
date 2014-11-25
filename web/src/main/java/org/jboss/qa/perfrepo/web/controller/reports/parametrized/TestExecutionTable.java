@@ -1,13 +1,7 @@
 package org.jboss.qa.perfrepo.web.controller.reports.parametrized;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.collections.keyvalue.MultiKey;
+
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.TestExecutionParameter;
@@ -18,38 +12,42 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public class TestExecutionTable {
-	
-	
-	List<String> parameterNames = new ArrayList<String>();	
-	
+
+	List<String> parameterNames = new ArrayList<String>();
+
 	private List<TestExecution> baseTestExecutions;
-	
+
 	private List<Metric> metrics = new ArrayList<Metric>();
-	
+
 	private Multimap<Long, TestExecution> compareTestExecutions;
-	
+
 	private Multimap<Long, String> tags = HashMultimap.create();
-	
+
 	private Long jobId;
-	
+
 	private List<Long> compareJobIds = new ArrayList<Long>();
-	
+
 	///** best values stored as coordinates in the table (key, column) **/
 	//private Map<MultiKey, Value> bestValues = new HashMap<MultiKey, Value>();
-	
-	
+
 	/**
 	 * Table represents the TestExecutionscompareValue
 	 * row key - parameter values, sorted by parameter name
-	 * column key - jobId + Metric name 
+	 * column key - jobId + Metric name
 	 * value - Value
 	 */
 	private HashBasedTable<MultiKey, MultiKey, Value> table = HashBasedTable.create();
-	
+
 	private HashBasedTable<MultiKey, String, Value> bestValues = HashBasedTable.create();
-	
-	
+
 	public void process(Long jobId, List<TestExecution> testExecutions) {
 		this.jobId = jobId;
 		this.baseTestExecutions = testExecutions;
@@ -57,7 +55,7 @@ public class TestExecutionTable {
 			for (TestExecutionParameter tep : te.getParameters()) {
 				if (!parameterNames.contains(tep.getName())) {
 					parameterNames.add(tep.getName());
-				}					
+				}
 			}
 			for (Value value : te.getValues()) {
 				Metric metric = value.getMetric();
@@ -68,29 +66,31 @@ public class TestExecutionTable {
 		}
 		addTestExecutions(jobId, testExecutions, true);
 	}
-	
+
 	public boolean isBestResult(MultiKey params, String metricName) {
 		return isBestResult(jobId, params, metricName);
 	}
-	
+
 	public boolean isBestResult(Long jobId, MultiKey params, String metricName) {
 		Value bestValue = bestValues.get(params, metricName);
 		Value value = getValue(jobId, metricName, params);
 		return bestValue.equals(value);
 	}
-	
+
 	/**
 	 * Add TestExecutions, which belongs to specified Job to the table
+	 *
 	 * @param jobId - Jenkins Job Id
 	 * @param testExecutions - List of TestExecution, which belong to job
 	 */
 	public void addTestExecutions(Long jobId, List<TestExecution> testExecutions) {
 		addTestExecutions(jobId, testExecutions, false);
 	}
-	
+
 	/**
 	 * Removes TestExecutions, which belongs to specified Job to the table
-	 * @param jobId - Jenkins Job Id 
+	 *
+	 * @param jobId - Jenkins Job Id
 	 */
 	public void removeTestExecutions(Long jobId) {
 		compareTestExecutions.removeAll(jobId);
@@ -99,8 +99,7 @@ public class TestExecutionTable {
 			table.remove(null, new MultiKey(jobId, m.getName()));
 		}
 	}
-		
-	
+
 	public void transferBestValues() {
 		for (MultiKey params : table.rowKeySet()) {
 			for (Metric metric : metrics) {
@@ -112,13 +111,13 @@ public class TestExecutionTable {
 			}
 		}
 	}
-	
-	
+
 	/**
-	 * Add TestExecutions, which belongs to specified Job to the table 
+	 * Add TestExecutions, which belongs to specified Job to the table
+	 *
 	 * @param jobId - Jenkins Job Id
 	 * @param testExecutions - List of TestExecution, which belong to job
-	 * @param baseTEs - indicates if the base/comparison TestExecutions are added to the table. 
+	 * @param baseTEs - indicates if the base/comparison TestExecutions are added to the table.
 	 */
 	private void addTestExecutions(Long jobId, List<TestExecution> testExecutions, boolean baseTEs) {
 		if (!baseTEs) {
@@ -129,7 +128,7 @@ public class TestExecutionTable {
 		}
 		for (TestExecution te : testExecutions) {
 			String[] paramValues = new String[parameterNames.size()];
-			for (TestExecutionParameter tep : te.getParameters()){
+			for (TestExecutionParameter tep : te.getParameters()) {
 				paramValues[parameterNames.indexOf(tep.getName())] = tep.getValue();
 			}
 			MultiKey params = new MultiKey(paramValues);
@@ -138,7 +137,7 @@ public class TestExecutionTable {
 			if (baseTEs || table.containsRow(params)) {
 				for (Value value : te.getValues()) {
 					MultiKey columnKey = new MultiKey(jobId, value.getMetric().getName());
-					if (!baseTEs) {						
+					if (!baseTEs) {
 						compareTestExecutions.put(jobId, te);
 					}
 					table.put(params, columnKey, value);
@@ -149,18 +148,18 @@ public class TestExecutionTable {
 					}
 				}
 				tags.putAll(jobId, te.getTags());
-			}			
+			}
 		}
 	}
-	
-	public int getParameterValuesCount(MultiKey parameters, int index) {		
+
+	public int getParameterValuesCount(MultiKey parameters, int index) {
 		Set<MultiKey> keys = table.rowKeySet();
 		int count = 0;
 		for (MultiKey key : keys) {
 			boolean inc = true;
-			for (int i=0; i <= index; i++) {
-				if (!key.getKey(i).equals(parameters.getKey(i))){
-					inc=false;
+			for (int i = 0; i <= index; i++) {
+				if (!key.getKey(i).equals(parameters.getKey(i))) {
+					inc = false;
 				}
 			}
 			if (inc) {
@@ -169,11 +168,12 @@ public class TestExecutionTable {
 		}
 		return count;
 	}
-	
+
 	/**
 	 * Returns percentage difference between origin and compare values
 	 * if the result is negative, the origin value is worst than compare value
 	 * if the result is positive, the origin value is better than compare value
+	 *
 	 * @param compareJobId
 	 * @param metricName
 	 * @param parameters
@@ -182,41 +182,39 @@ public class TestExecutionTable {
 	public float compareValues(Long compareJobId, String metricName, MultiKey parameters) {
 		Value originValue = getValue(jobId, metricName, parameters);
 		Value compareValue = getValue(compareJobId, metricName, parameters);
-		return compareValues(originValue, compareValue);		
+		return compareValues(originValue, compareValue);
 	}
-	
+
 	private float compareValues(Value v1, Value v2) {
 		//TODO: algorithm
-		return (float)(((v1.getResultValue() - v2.getResultValue()) * 100f)/v1.getResultValue());
+		return (float) (((v1.getResultValue() - v2.getResultValue()) * 100f) / v1.getResultValue());
 	}
-	
-	
+
 	//list testexecutionparameters
 	public Value getValue(Long jobId, String metricName, Map<String, String> parameters) {
 		String[] params = new String[parameterNames.size()];
-		for (int i=0; i< parameterNames.size(); i++) {
+		for (int i = 0; i < parameterNames.size(); i++) {
 			params[i] = parameters.get(parameterNames.get(i));
 		}
 		return getValue(jobId, metricName, parameters);
 	}
-	
-	
-	public Value getValue(Long jobId, String metricName, String[] parameters) {		
+
+	public Value getValue(Long jobId, String metricName, String[] parameters) {
 		MultiKey rowKey = new MultiKey(parameters);
 		MultiKey colKey = new MultiKey(jobId, metricName);
 		return table.get(rowKey, colKey);
 	}
-	
-	public Value getValue(Long jobId, String metricName, MultiKey parameters) {		
+
+	public Value getValue(Long jobId, String metricName, MultiKey parameters) {
 		MultiKey colKey = new MultiKey(jobId, metricName);
 		return table.get(parameters, colKey);
 	}
-	
-	public Value getValue(String metricName, MultiKey parameters) {		
+
+	public Value getValue(String metricName, MultiKey parameters) {
 		MultiKey colKey = new MultiKey(jobId, metricName);
 		return table.get(parameters, colKey);
 	}
-	
+
 	public List<MultiKey> getSortedRowKeys() {
 		List<MultiKey> result = Lists.newArrayList(table.rowKeySet());
 		Collections.sort(result, new KeyComparator());
@@ -271,7 +269,7 @@ public class TestExecutionTable {
 	public void setJobId(Long jobId) {
 		this.jobId = jobId;
 	}
-	
+
 	public List<Long> getCompareJobIds() {
 		return compareJobIds;
 	}
@@ -281,10 +279,10 @@ public class TestExecutionTable {
 	}
 
 	private class KeyComparator implements Comparator<MultiKey> {
-	   @Override
-	   public int compare(MultiKey key1, MultiKey key2) {
-		   int compare = 0;
-		   for (int i = 0; i < key1.getKeys().length; i++) {				
+		@Override
+		public int compare(MultiKey key1, MultiKey key2) {
+			int compare = 0;
+			for (int i = 0; i < key1.getKeys().length; i++) {
 				try {
 					compare = Double.valueOf(String.valueOf(key1.getKey(i))).compareTo(Double.parseDouble(String.valueOf(key2.getKey(i))));
 				} catch (Exception e) {
@@ -295,6 +293,8 @@ public class TestExecutionTable {
 				}
 			}
 			return compare;
-	   }
-	};
+		}
+	}
+
+	;
 }

@@ -15,16 +15,15 @@
  */
 package org.jboss.qa.perfrepo.web.dao;
 
-import javax.inject.Named;
-
 import org.jboss.qa.perfrepo.model.user.Group;
 import org.jboss.qa.perfrepo.model.user.User;
 
+import javax.inject.Named;
+
 /**
  * DAO for {@link User}
- * 
+ *
  * @author Pavel Drozd
- * 
  */
 @Named
 public class GroupDAO extends DAO<Group, Long> {

@@ -15,12 +15,9 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.util.AbstractCollection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+import org.jboss.qa.perfrepo.model.builder.TestBuilder;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -40,13 +37,16 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.jboss.qa.perfrepo.model.auth.EntityType;
-import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
-import org.jboss.qa.perfrepo.model.builder.TestBuilder;
+import java.util.AbstractCollection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Represents one test.
- * 
+ *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
  */
@@ -176,7 +176,6 @@ public class Test implements Entity<Test> {
 			public void remove() {
 				throw new UnsupportedOperationException();
 			}
-
 		}
 
 		@Override
@@ -197,7 +196,6 @@ public class Test implements Entity<Test> {
 			tm.setMetric(e);
 			return testMetrics.add(tm);
 		}
-
 	}
 
 	public void setUid(String uid) {
@@ -302,5 +300,4 @@ public class Test implements Entity<Test> {
 			throw new RuntimeException(e);
 		}
 	}
-
 }

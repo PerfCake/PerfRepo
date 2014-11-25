@@ -1,10 +1,9 @@
 package org.jboss.qa.perfrepo.web.exceptions;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+
+import org.jboss.qa.perfrepo.web.controller.BaseController;
 
 import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
@@ -15,15 +14,16 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.jboss.qa.perfrepo.web.controller.BaseController;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Exception handler.
- * 
+ *
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 public class PerfRepoExceptionHandler extends ExceptionHandlerWrapper {
 

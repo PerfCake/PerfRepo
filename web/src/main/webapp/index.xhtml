@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets">
 <h:body>
-	<f:metadata>
-		<f:event type="preRenderView" listener="#{homeController.preRender}" />
-	</f:metadata>
-	<ui:composition template="/layout/template.xhtml">
-		<ui:define name="title">#{strings['page.index.title']}</ui:define>
-		<ui:define name="content">
-			<h1>Welcome to Performance repository</h1>
-			<p>
-				You can start browsing <a href="/repo/test/search">test definitions</a>, <a href="/repo/exec/search">test execution data</a> or view some of the <a
-					href="/repo/reports">reports</a>.<br /><br />
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{homeController.preRender}"/>
+    </f:metadata>
+    <ui:composition template="/layout/template.xhtml">
+        <ui:define name="title">#{strings['page.index.title']}</ui:define>
+        <ui:define name="content">
+            <h1>Welcome to Performance repository</h1>
+
+            <p>
+                You can start browsing <a href="/repo/test/search">test definitions</a>, <a
+                    href="/repo/exec/search">test execution data</a> or view some of the <a
+                    href="/repo/reports">reports</a>.<br/><br/>
 
                 You can find the Performance repository JIRA <a href="https://issues.jboss.org/browse/PERFREPO">here</a>.
-			</p>
-		</ui:define>
-	</ui:composition>
+            </p>
+        </ui:define>
+    </ui:composition>
 </h:body>
 </html>

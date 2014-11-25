@@ -15,24 +15,24 @@
  */
 package org.jboss.qa.perfrepo.web.dao;
 
-import java.util.List;
+import org.jboss.qa.perfrepo.model.auth.Permission;
+import org.jboss.qa.perfrepo.model.report.Report;
 
 import javax.inject.Named;
 
-import org.jboss.qa.perfrepo.model.auth.Permission;
-import org.jboss.qa.perfrepo.model.report.Report;
+import java.util.List;
 
 /**
  * DAO for {@link org.jboss.qa.perfrepo.model.auth.Permission}
  *
  * @author Jiri Holusa (jholusa@redhat.com)
- *
  */
 @Named
 public class PermissionDAO extends DAO<Permission, Long> {
 
 	/**
 	 * Returns all report permission.
+	 *
 	 * @param reportId
 	 * @return
 	 */
@@ -43,6 +43,7 @@ public class PermissionDAO extends DAO<Permission, Long> {
 
 	/**
 	 * Removes report permissions
+	 *
 	 * @param report
 	 */
 	public void removeReportPermissions(Long reportId) {
@@ -51,5 +52,4 @@ public class PermissionDAO extends DAO<Permission, Long> {
 			this.remove(p);
 		}
 	}
-
 }

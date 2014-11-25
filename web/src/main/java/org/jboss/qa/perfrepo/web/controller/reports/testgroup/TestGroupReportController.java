@@ -1,20 +1,5 @@
 package org.jboss.qa.perfrepo.web.controller.reports.testgroup;
 
-import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.auth.AccessType;
@@ -38,6 +23,21 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Named
 @ViewScoped
@@ -208,7 +208,7 @@ public class TestGroupReportController extends BaseController {
 				initial = true;
 			}
 			List<TestExecution> filtered = new ArrayList<TestExecution>();
-			for (TestExecution te: testExecutions) {
+			for (TestExecution te : testExecutions) {
 				if (initial) {
 					if (!tests.contains(te.getTestUid())) {
 						tests.add(te.getTestUid());
@@ -566,7 +566,7 @@ public class TestGroupReportController extends BaseController {
 		if (currentTag != null) {
 			List<TestExecution> tes = testService.getTestExecutions(Lists.newArrayList(currentTag), tests);
 			newFoundTags = Lists.newArrayList();
-			for (TestExecution te: tes) {
+			for (TestExecution te : tes) {
 				String t = normalizeTags(te.getTags());
 				if (!tagsCopy.contains(t)) {
 					tagsCopy.add(t);
@@ -764,7 +764,7 @@ public class TestGroupReportController extends BaseController {
 	}
 
 	private String getChartColor(Double result) {
-		return (result < -5) ? CHART_COLOR_RED : (result < 0  ? CHART_COLOR_ORANGE : CHART_COLOR_GREEN);
+		return (result < -5) ? CHART_COLOR_RED : (result < 0 ? CHART_COLOR_ORANGE : CHART_COLOR_GREEN);
 	}
 
 	public void removeComparison(String label) {
@@ -911,24 +911,31 @@ public class TestGroupReportController extends BaseController {
 		public String getTest() {
 			return test;
 		}
+
 		public void setTest(String test) {
 			this.test = test;
 		}
+
 		public String getLabel() {
 			return label;
 		}
+
 		public void setLabel(String label) {
 			this.label = label;
 		}
+
 		public Double getResult() {
 			return result;
 		}
+
 		public void setResult(Double result) {
 			this.result = result;
 		}
+
 		public String getColor() {
 			return color;
 		}
+
 		public void setColor(String color) {
 			this.color = color;
 		}
@@ -976,7 +983,6 @@ public class TestGroupReportController extends BaseController {
 		public void setBestValue(Value bestValue) {
 			this.bestValue = bestValue;
 		}
-
 	}
 
 	public class ColumnKey {

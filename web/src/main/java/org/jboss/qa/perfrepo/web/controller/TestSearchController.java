@@ -15,99 +15,98 @@
  */
 package org.jboss.qa.perfrepo.web.controller;
 
-import java.util.List;
+import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.to.TestSearchTO;
+import org.jboss.qa.perfrepo.web.service.TestService;
+import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
+import org.jboss.qa.perfrepo.web.session.SearchCriteriaSession;
+import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.model.to.TestSearchTO;
-import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
-import org.jboss.qa.perfrepo.web.service.TestService;
-import org.jboss.qa.perfrepo.web.session.SearchCriteriaSession;
-import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
+import java.util.List;
 
 /**
  * Search tests.
- * 
+ *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @Named
 @ViewScoped
 public class TestSearchController extends BaseController {
 
-   private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-   @Inject
-   private TestService testService;
+	@Inject
+	private TestService testService;
 
-   @Inject
-   private SearchCriteriaSession criteriaSession;
+	@Inject
+	private SearchCriteriaSession criteriaSession;
 
-   private TestSearchTO criteria = null;
+	private TestSearchTO criteria = null;
 
-   private List<Test> result;
+	private List<Test> result;
 
-   public void preRender() {
-      if (criteria == null) {
-         criteria = criteriaSession.getTestSearchCriteria();
-         search();
-      }
-   }
+	public void preRender() {
+		if (criteria == null) {
+			criteria = criteriaSession.getTestSearchCriteria();
+			search();
+		}
+	}
 
-   public void search() {
-      result = testService.searchTest(criteria);
-   }
+	public void search() {
+		result = testService.searchTest(criteria);
+	}
 
-   public List<Test> getResult() {
-      return result;
-   }
+	public List<Test> getResult() {
+		return result;
+	}
 
-   public void setResult(List<Test> result) {
-      this.result = result;
-   }
+	public void setResult(List<Test> result) {
+		this.result = result;
+	}
 
-   public TestSearchTO getCriteria() {
-      return criteria;
-   }
+	public TestSearchTO getCriteria() {
+		return criteria;
+	}
 
-   public void setCriteria(TestSearchTO search) {
-      this.criteria = search;
-   }
+	public void setCriteria(TestSearchTO search) {
+		this.criteria = search;
+	}
 
-   public String delete() {
-      Long idToDelete = Long.valueOf(getRequestParam("idToDelete"));
-      if (idToDelete == null) {
-         throw new IllegalStateException("Bad request, missing idToDelete");
-      } else {
-         Test testToRemove = removeById(idToDelete);
-         if (testToRemove == null) {
-            throw new IllegalStateException("Bad request, missing idToDelete");
-         } else {
-            try {
-               testService.removeTest(testToRemove);
-               addMessage(INFO, "page.testSearch.testDeleted", testToRemove.getName());
-            } catch (ServiceException e) {
-               addMessage(e);
-            }
-         }
-      }
-      return null;
-   }
+	public String delete() {
+		Long idToDelete = Long.valueOf(getRequestParam("idToDelete"));
+		if (idToDelete == null) {
+			throw new IllegalStateException("Bad request, missing idToDelete");
+		} else {
+			Test testToRemove = removeById(idToDelete);
+			if (testToRemove == null) {
+				throw new IllegalStateException("Bad request, missing idToDelete");
+			} else {
+				try {
+					testService.removeTest(testToRemove);
+					addMessage(INFO, "page.testSearch.testDeleted", testToRemove.getName());
+				} catch (ServiceException e) {
+					addMessage(e);
+				}
+			}
+		}
+		return null;
+	}
 
-   public List<String> autocompleteTest(String test) {
+	public List<String> autocompleteTest(String test) {
 		return testService.getTestsByPrefix(test);
-   }
+	}
 
-   private Test removeById(Long id) {
-      for (Test test : result) {
-         if (test.getId().equals(id)) {
-            result.remove(test);
-            return test;
-         }
-      }
-      return null;
-   }
+	private Test removeById(Long id) {
+		for (Test test : result) {
+			if (test.getId().equals(id)) {
+				result.remove(test);
+				return test;
+			}
+		}
+		return null;
+	}
 }

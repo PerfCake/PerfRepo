@@ -15,13 +15,9 @@
  */
 package org.jboss.qa.perfrepo.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -44,17 +40,19 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.jboss.qa.perfrepo.model.auth.EntityType;
-import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
-import org.jboss.qa.perfrepo.model.builder.TestExecutionBuilder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * 
  * Represents one execution of a test.
- * 
+ *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 @javax.persistence.Entity
 @Table(name = "test_execution")
@@ -343,5 +341,4 @@ public class TestExecution implements Entity<TestExecution> {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-
 }

@@ -5,21 +5,19 @@ import javax.faces.context.ExceptionHandlerFactory;
 
 /**
  * Factory for {@link PerfRepoExceptionHandler}
- * 
+ *
  * @author Michal Linhard (mlinhard@redhat.com)
- * 
  */
 public class PerfRepoExceptionHandlerFactory extends ExceptionHandlerFactory {
 
-   private ExceptionHandlerFactory parent;
+	private ExceptionHandlerFactory parent;
 
-   public PerfRepoExceptionHandlerFactory(ExceptionHandlerFactory parent) {
-      this.parent = parent;
-   }
+	public PerfRepoExceptionHandlerFactory(ExceptionHandlerFactory parent) {
+		this.parent = parent;
+	}
 
-   @Override
-   public ExceptionHandler getExceptionHandler() {
-      return new PerfRepoExceptionHandler(parent.getExceptionHandler());
-   }
-
+	@Override
+	public ExceptionHandler getExceptionHandler() {
+		return new PerfRepoExceptionHandler(parent.getExceptionHandler());
+	}
 }

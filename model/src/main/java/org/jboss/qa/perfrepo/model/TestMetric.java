@@ -15,6 +15,9 @@
  */
 package org.jboss.qa.perfrepo.model;
 
+import org.jboss.qa.perfrepo.model.auth.EntityType;
+import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
+
 import javax.persistence.CascadeType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,66 +29,63 @@ import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.jboss.qa.perfrepo.model.auth.EntityType;
-import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
-
 @javax.persistence.Entity
 @Table(name = "test_metric")
 @NamedQueries({
-      @NamedQuery(name = TestMetric.GET_TEST, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm= :entity"),
-      @NamedQuery(name = TestMetric.FIND_TEST_METRIC, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test and m.id= :metric"),
-      @NamedQuery(name = TestMetric.FIND_TEST_METRIC_BY_NAME, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test AND m.name= :metricName") })
-@SecuredEntity(type=EntityType.TEST, parent="test")
+		@NamedQuery(name = TestMetric.GET_TEST, query = "SELECT tm.test from TestMetric tm inner join tm.test where tm= :entity"),
+		@NamedQuery(name = TestMetric.FIND_TEST_METRIC, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test and m.id= :metric"),
+		@NamedQuery(name = TestMetric.FIND_TEST_METRIC_BY_NAME, query = "SELECT tm from TestMetric tm JOIN tm.test t JOIN tm.metric m WHERE t.id= :test AND m.name= :metricName")})
+@SecuredEntity(type = EntityType.TEST, parent = "test")
 public class TestMetric implements Entity<TestMetric> {
 
-   private static final long serialVersionUID = 4140777839186789812L;
-   public static final String GET_TEST = "TestMetric.getTest";
-   public static final String FIND_TEST_METRIC = "TestMetric.findTestMetric";
-   public static final String FIND_TEST_METRIC_BY_NAME = "TestMetric.findTestMetricByName";
+	private static final long serialVersionUID = 4140777839186789812L;
+	public static final String GET_TEST = "TestMetric.getTest";
+	public static final String FIND_TEST_METRIC = "TestMetric.findTestMetric";
+	public static final String FIND_TEST_METRIC_BY_NAME = "TestMetric.findTestMetricByName";
 
-   @Id
-   @SequenceGenerator(name = "TEST_METRIC_ID_GENERATOR", sequenceName = "TEST_METRIC_SEQUENCE", allocationSize = 1)
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_METRIC_ID_GENERATOR")
-   private Long id;
+	@Id
+	@SequenceGenerator(name = "TEST_METRIC_ID_GENERATOR", sequenceName = "TEST_METRIC_SEQUENCE", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_METRIC_ID_GENERATOR")
+	private Long id;
 
-   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-   @JoinColumn(name = "metric_id", referencedColumnName = "id")
-   private Metric metric;
+	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "metric_id", referencedColumnName = "id")
+	private Metric metric;
 
-   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-   @JoinColumn(name = "test_id", referencedColumnName = "id")
-   private Test test;
+	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "test_id", referencedColumnName = "id")
+	private Test test;
 
-   public Long getId() {
-      return id;
-   }
+	public Long getId() {
+		return id;
+	}
 
-   public void setId(Long id) {
-      this.id = id;
-   }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-   public void setMetric(Metric metric) {
-      this.metric = metric;
-   }
+	public void setMetric(Metric metric) {
+		this.metric = metric;
+	}
 
-   public Metric getMetric() {
-      return this.metric;
-   }
+	public Metric getMetric() {
+		return this.metric;
+	}
 
-   public void setTest(Test test) {
-      this.test = test;
-   }
+	public void setTest(Test test) {
+		this.test = test;
+	}
 
-   public Test getTest() {
-      return this.test;
-   }
+	public Test getTest() {
+		return this.test;
+	}
 
-   @Override
-   public TestMetric clone() {
-      try {
-         return (TestMetric) super.clone();
-      } catch (CloneNotSupportedException e) {
-         throw new RuntimeException(e);
-      }
-   }
+	@Override
+	public TestMetric clone() {
+		try {
+			return (TestMetric) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

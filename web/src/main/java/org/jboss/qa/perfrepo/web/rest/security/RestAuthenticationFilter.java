@@ -1,6 +1,7 @@
 package org.jboss.qa.perfrepo.web.rest.security;
 
-import java.io.IOException;
+import org.jboss.qa.perfrepo.web.util.MessageUtils;
+import org.jboss.resteasy.util.Base64;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -11,14 +12,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 
-import org.jboss.qa.perfrepo.web.util.MessageUtils;
-import org.jboss.resteasy.util.Base64;
+import java.io.IOException;
 
 /**
  * Filter used to authenticate rest requests
  * The request should contain basic authentication header
- * @author Pavel Drozd
  *
+ * @author Pavel Drozd
  */
 @WebFilter(filterName = "RestAuthenticationFilter", urlPatterns = {"/rest/*"})
 public class RestAuthenticationFilter implements Filter {
@@ -36,7 +36,7 @@ public class RestAuthenticationFilter implements Filter {
 	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-		ServletException {
+			ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		String basicLogin = req.getHeader("Authorization");
 		String username = null;
