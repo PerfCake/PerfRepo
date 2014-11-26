@@ -1,23 +1,11 @@
 package org.jboss.qa.perfrepo.web.service;
 
-import org.jboss.qa.perfrepo.model.Metric;
-import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.model.TestMetric;
-import org.jboss.qa.perfrepo.model.auth.AccessLevel;
-import org.jboss.qa.perfrepo.model.auth.AccessType;
-import org.jboss.qa.perfrepo.model.auth.Permission;
-import org.jboss.qa.perfrepo.model.report.Report;
-import org.jboss.qa.perfrepo.model.report.ReportProperty;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO;
-import org.jboss.qa.perfrepo.model.user.User;
-import org.jboss.qa.perfrepo.web.dao.MetricDAO;
-import org.jboss.qa.perfrepo.web.dao.PermissionDAO;
-import org.jboss.qa.perfrepo.web.dao.ReportDAO;
-import org.jboss.qa.perfrepo.web.dao.TestDAO;
-import org.jboss.qa.perfrepo.web.dao.TestExecutionDAO;
-import org.jboss.qa.perfrepo.web.dao.TestMetricDAO;
-import org.jboss.qa.perfrepo.web.security.Secured;
-import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -27,12 +15,25 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.TestMetric;
+import org.jboss.qa.perfrepo.model.auth.AccessLevel;
+import org.jboss.qa.perfrepo.model.auth.AccessType;
+import org.jboss.qa.perfrepo.model.auth.Permission;
+import org.jboss.qa.perfrepo.model.report.Report;
+import org.jboss.qa.perfrepo.model.report.ReportProperty;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO;
+import org.jboss.qa.perfrepo.model.user.Group;
+import org.jboss.qa.perfrepo.model.user.User;
+import org.jboss.qa.perfrepo.web.dao.MetricDAO;
+import org.jboss.qa.perfrepo.web.dao.PermissionDAO;
+import org.jboss.qa.perfrepo.web.dao.ReportDAO;
+import org.jboss.qa.perfrepo.web.dao.TestDAO;
+import org.jboss.qa.perfrepo.web.dao.TestExecutionDAO;
+import org.jboss.qa.perfrepo.web.dao.TestMetricDAO;
+import org.jboss.qa.perfrepo.web.security.Secured;
+import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 
 /**
  * Implements @link{ReportService}.
@@ -69,6 +70,24 @@ public class ReportServiceBean implements ReportService {
 	@Override
 	public List<Report> getAllUsersReports() {
 		return getAllReports(userService.getLoggedUser().getUsername());
+	}
+
+	public List<Report> getAllReports() {
+		User user = userService.getLoggedUser();
+		List<Long> groupIds = new ArrayList<Long>();
+		for (Group group : user.getGroups()) {
+			groupIds.add(group.getId());
+		}
+		return reportDAO.getByAnyPermission(user.getId(), groupIds);
+	}
+
+	public List<Report> getAllGroupReports() {
+		User user = userService.getLoggedUser();
+		List<Long> groupIds = new ArrayList<Long>();
+		for (Group group : user.getGroups()) {
+			groupIds.add(group.getId());
+		}
+		return reportDAO.getByGroupPermission(groupIds);
 	}
 
 	@Override
@@ -265,8 +284,7 @@ public class ReportServiceBean implements ReportService {
 	 */
 	private List<Report> getAllReports(String username) {
 		List<Report> result = new ArrayList<Report>();
-		result.addAll(reportDAO.findReportsByUser(username));
-
+		result.addAll(reportDAO.getByUser(username));
 		return result;
 	}
 

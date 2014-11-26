@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:r="http://richfaces.org">
+      xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:r="http://richfaces.org" xmlns:a4j="http://richfaces.org/a4j">
 <h:body>
     <f:metadata>
         <f:event type="preRenderView" listener="#{reportList.preRender}"/>
@@ -8,7 +8,7 @@
     <ui:composition template="/layout/template.xhtml">
         <ui:define name="title">Reports</ui:define>
         <ui:define name="content">
-            <h3>Main reports</h3>
+            <h3>Add new report</h3>
             <table id="reportTable" class="table table-bordered smallpad">
                 <thead>
                 <tr>
@@ -35,8 +35,15 @@
                 </tr>
                 </tbody>
             </table>
-            <h3>Saved reports</h3>
+            <h3>Reports</h3>
             <h:form id="formSavedReports">
+            	<div style="width:100%;text-align:right">
+            		<span style="margin-right: 10px">Show reports:</span>
+            		<span style="margin-right: 10px"><a4j:commandLink action="#{reportList.setMyReports()}" render="@form" disabled="#{reportList.reportFilter == 'MY'}"><i class="icon-user" /> My reports</a4j:commandLink></span>            	
+            		<span style="margin-right: 10px"><a4j:commandLink action="#{reportList.setTeamReports()}" render="@form" disabled="#{reportList.reportFilter == 'TEAM'}"><i class="icon-group" /> Team reports</a4j:commandLink></span>
+            		<a4j:commandLink disabled="#{reportList.reportFilter == 'ALL'}" action="#{reportList.setAllReports()}" render="@form"><i class="icon-asterisk" /> All reports</a4j:commandLink>
+            	</div><br/>
+            	
                 <table id="savedReportTable" class="table table-bordered smallpad">
                     <thead>
                     <tr>

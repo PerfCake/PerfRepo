@@ -51,14 +51,18 @@ import java.util.Map;
 @SecuredEntity(type = EntityType.REPORT)
 @XmlRootElement(name = "report")
 @NamedQueries({
-		@NamedQuery(name = Report.FIND_BY_USERNAME, query = "SELECT report from Report report join report.user user where user.username = :username"),
+		@NamedQuery(name = Report.GET_BY_USERNAME, query = "SELECT distinct report from Report report join report.user user where user.username = :username"),
+		@NamedQuery(name = Report.GET_BY_GROUP_PERMISSION, query = "SELECT distinct report from Report report join report.permissions perm where perm.groupId in (:groupIds)"),
+		@NamedQuery(name = Report.GET_BY_ANY_PERMISSION, query = "SELECT distinct report from Report report join report.permissions perm where perm.level = 'PUBLIC' or perm.groupId in (:groupIds) or perm.userId= :userId"),
 		@NamedQuery(name = Report.FIND_MAX_ID, query = "SELECT max(report.id) from Report report")
 })
 public class Report implements Entity<Report>, Comparable<Report> {
 
 	private static final long serialVersionUID = -2188625358440509257L;
 
-	public static final String FIND_BY_USERNAME = "Report.findByUserName";
+	public static final String GET_BY_USERNAME = "Report.findByUserName";
+	public static final String GET_BY_GROUP_PERMISSION = "Report.getByGroupPermission";
+	public static final String GET_BY_ANY_PERMISSION = "Report.getByAnyPermission";
 	public static final String FIND_MAX_ID = "Report.findMaxId";
 
 	@Id
@@ -142,6 +146,49 @@ public class Report implements Entity<Report>, Comparable<Report> {
 
 	public void setPermissions(Collection<Permission> permissions) {
 		this.permissions = permissions;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Report other = (Report) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		if (user == null) {
+			if (other.user != null)
+				return false;
+		} else if (!user.equals(other.user))
+			return false;
+		return true;
 	}
 
 	@Override

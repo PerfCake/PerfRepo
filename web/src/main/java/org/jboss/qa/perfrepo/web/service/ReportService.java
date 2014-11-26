@@ -23,6 +23,18 @@ public interface ReportService {
 	public List<Report> getAllUsersReports();
 
 	/**
+	 * Get all reports for which exists any (READ, WRITE or PUBLIC) permission to logged user or user group.
+	 * @return List of {@link Report}
+	 */
+	public List<Report> getAllReports();
+
+	/**
+	 * Get all reports for which exists WRITE permission to any user group.
+	 * @return List of {@link Report}
+	 */
+	public List<Report> getAllGroupReports();
+
+	/**
 	 * Removes report
 	 *
 	 * @param id

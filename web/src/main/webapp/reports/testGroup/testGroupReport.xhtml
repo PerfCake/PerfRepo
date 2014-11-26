@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-        >
+      xmlns:rich="http://richfaces.org/rich" xmlns:c="http://java.sun.com/jsp/jstl/core">
 
 <h:body>
     <f:metadata>
@@ -222,36 +221,16 @@
                 <script>
                     var raw;
                     var data;
-                    <
-                    c:forEach
-                    var =
-                    "compareKey"
-                    items = "#{testGroupReportController.comparisonValues}" >
-                            < c
-                    :
-                    forEach
-                    var =
-                    "metric"
-                    items = "#{testGroupReportController.selectedMetrics}" >
-                            raw = [
-                        ['Test', 'Percentage', {role: 'style'}, { role: 'annotation' }],
-                            < c
-                    :
-                    forEach
-                    var =
-                    "row"
-                    items = "#{testGroupReportController.getChartData(metric, compareKey)}" >
-                            ['#{row.test}', #{row.result}, '#{row.color}', '#{row.label}'],
-                    <
-                    /c:forEach>
-                    ]
-                    ;
-                    data = google.visualization.arrayToDataTable(raw);
-                    google.setOnLoadCallback(drawChart('#{compareKey} - #{metric}', data, "#{metric}_#{compareKey.replaceAll(' ', '_')}"));
-                    <
-                    /c:forEach>
-                    < /c:forEach>
-
+                    <c:forEach var = "compareKey" items = "#{testGroupReportController.comparisonValues}" >
+                            <c:forEach var =  "metric" items = "#{testGroupReportController.selectedMetrics}" >
+                            	raw = [['Test', 'Percentage', {role: 'style'}, { role: 'annotation' }],
+                            	<c:forEach var = "row" items = "#{testGroupReportController.getChartData(metric, compareKey)}">
+                            		['#{row.test}', #{row.result}, '#{row.color}', '#{row.label}'],
+                    			</c:forEach>];
+                    			data = google.visualization.arrayToDataTable(raw);
+                    			google.setOnLoadCallback(drawChart('#{compareKey} - #{metric}', data, "#{metric}_#{compareKey.replaceAll(' ', '_')}"));
+                    		</c:forEach>
+                    </c:forEach>
 
                     function drawChart(title, data, div) {
                         var options = {
