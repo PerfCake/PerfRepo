@@ -930,29 +930,19 @@ LANGUAGE plpgsql VOLATILE;
 
 
 CREATE TABLE test_subscriber (
-    id bigint NOT NULL,
     test_id bigint NOT NULL,
     user_id bigint NOT NULL
 );
 
 ALTER TABLE public.test_subscriber OWNER TO perfrepo;
 
-CREATE SEQUENCE test_subscriber_sequence
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
+ALTER TABLE ONLY public.test_subscriber
+    ADD CONSTRAINT test_subscriber_pkey PRIMARY KEY (test_id, user_id);
 
-ALTER TABLE public.test_subscriber_sequence OWNER TO perfrepo;
-
-ALTER TABLE ONLY test_subscriber
-    ADD CONSTRAINT test_subscriber_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY test_subscriber
+ALTER TABLE ONLY public.test_subscriber
     ADD CONSTRAINT test_subscriber_test_fkey FOREIGN KEY (test_id) REFERENCES test(id);
 
-ALTER TABLE ONLY test_subscriber
+ALTER TABLE ONLY public.test_subscriber
     ADD CONSTRAINT test_subscriber_user_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
     
 CREATE INDEX test_subscriber_test ON test_subscriber(test_id);

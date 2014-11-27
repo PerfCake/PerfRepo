@@ -9,7 +9,7 @@ import javax.mail.MessagingException;
  */
 public interface EmailService {
 
-   public final String PERFREPOEMAIL = "perfrepo@redhat.com";
+   public static final String PERFREPO_EMAIL = "perfrepo@redhat.com";
 
    /**
     *

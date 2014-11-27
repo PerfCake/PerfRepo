@@ -10,11 +10,11 @@ tokens {
 }
 
 @lexer::header {
-  package org.jboss.qa.perfrepo.web.alerting;
+  package org.perfrepo.web.alerting;
 }
 
 @parser::header {
-  package org.jboss.qa.perfrepo.web.alerting;
+  package org.perfrepo.web.alerting;
 }
 
 WS : ( ' ' | '\t' | '\r' | '\n' )+ { $channel = HIDDEN; };

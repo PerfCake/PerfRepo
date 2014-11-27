@@ -20,6 +20,7 @@ package org.perfrepo.model.user;
 
 import org.perfrepo.model.Entity;
 import org.perfrepo.model.FavoriteParameter;
+import org.perfrepo.model.Test;
 import org.perfrepo.model.UserProperty;
 import org.hibernate.validator.constraints.Email;
 
@@ -84,10 +85,15 @@ public class User implements Entity<User>, Comparable<User> {
 	private Collection<FavoriteParameter> favoriteParameters;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "user_group", joinColumns = {
-			@JoinColumn(name = "user_id", nullable = false, updatable = false)},
-			inverseJoinColumns = {@JoinColumn(name = "group_id", nullable = false, updatable = false)})
+	@JoinTable(
+			name = "user_group",
+			joinColumns = {@JoinColumn(name = "user_id", nullable = false, updatable = false)},
+			inverseJoinColumns = {@JoinColumn(name = "group_id", nullable = false, updatable = false)}
+	)
 	private Collection<Group> groups;
+
+	@ManyToMany(mappedBy = "subscribers")
+	private Collection<Test> subscribedTests;
 
 	public Long getId() {
 		return id;
@@ -159,6 +165,14 @@ public class User implements Entity<User>, Comparable<User> {
 
 	public void setGroups(Collection<Group> groups) {
 		this.groups = groups;
+	}
+
+	public Collection<Test> getSubscribedTests() {
+		return subscribedTests;
+	}
+
+	public void setSubscribedTests(Collection<Test> subscribedTests) {
+		this.subscribedTests = subscribedTests;
 	}
 
 	@Override

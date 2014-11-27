@@ -21,11 +21,17 @@ package org.perfrepo.model;
 import org.perfrepo.model.auth.EntityType;
 import org.perfrepo.model.auth.SecuredEntity;
 import org.perfrepo.model.builder.TestBuilder;
+import org.perfrepo.model.user.User;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -84,8 +90,13 @@ public class Test implements Entity<Test> {
 	@OneToMany(mappedBy = "test")
 	private Collection<TestMetric> testMetrics;
 
-   @OneToMany(mappedBy = "test")
-   private Collection<TestSubscriber> testSubscribers;
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+			name = "test_subscriber",
+			joinColumns = {@JoinColumn(name = "test_id", nullable = false, updatable = false)},
+			inverseJoinColumns = {@JoinColumn(name = "user_id", nullable = false, updatable = false)}
+	)
+	private Collection<User> subscribers;
 
 	@Column(name = "uid")
 	@NotNull
@@ -143,18 +154,17 @@ public class Test implements Entity<Test> {
 		this.testMetrics = testMetrics;
 	}
 
-   public void setTestSubscribers(Collection<TestSubscriber> testSubscribers) {
-      this.testSubscribers = testSubscribers;
-   }
-
-   @XmlTransient
-   public Collection<TestSubscriber> getTestSubscribers() {
-      return this.testSubscribers;
-   }
-
 	@XmlTransient
 	public Collection<TestMetric> getTestMetrics() {
 		return this.testMetrics;
+   }
+
+	public Collection<User> getSubscribers() {
+		return subscribers;
+	}
+
+	public void setSubscribers(Collection<User> testSubscribers) {
+		this.subscribers = testSubscribers;
 	}
 
 	@XmlElementWrapper(name = "metrics")

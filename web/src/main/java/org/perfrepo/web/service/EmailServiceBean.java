@@ -26,7 +26,7 @@ public class EmailServiceBean implements EmailService {
    @Override
    public void sendEmail(String recipient, String subject, String body) throws MessagingException {
       Message message = new MimeMessage(emailSession);
-      message.setFrom(new InternetAddress(EmailService.PERFREPOEMAIL));
+      message.setFrom(new InternetAddress(EmailService.PERFREPO_EMAIL));
       Address toAddress = new InternetAddress(recipient);
       message.addRecipient(Message.RecipientType.TO, toAddress);
       message.setSubject(subject);

@@ -19,6 +19,7 @@
 package org.perfrepo.web.service;
 
 import org.apache.log4j.Logger;
+
 import org.perfrepo.model.*;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.to.TestExecutionSearchTO;
@@ -95,11 +96,8 @@ public class TestServiceBean implements TestService {
 	@Inject
 	private UserService userService;
 
-   @Inject
-   private TestSubscriberDAO testSubscriberDAO;
-
-   @Inject
-   private UserDAO userDAO;
+	@Inject
+	private UserDAO userDAO;
 
 	@Override
 	@Secured
@@ -267,6 +265,16 @@ public class TestServiceBean implements TestService {
 			}
 			test.setMetrics(metrics);
 		}
+
+		Collection<User> subscribers = test.getSubscribers();
+		if (subscribers != null) {
+			List<User> subscribersClone = new ArrayList<>();
+			for (User subscriber : subscribers) {
+				subscribersClone.add(subscriber.clone());
+			}
+			test.setSubscribers(subscribersClone);
+		}
+
 		return test;
 	}
 
@@ -294,9 +302,7 @@ public class TestServiceBean implements TestService {
 		for (TestExecution testExecution : freshTest.getTestExecutions()) {
 			removeTestExecution(testExecution);
 		}
-      for (TestSubscriber testSubscriber : freshTest.getTestSubscribers()) {
-         removeSubscriber(currentUser, freshTest);
-      }
+
 		Iterator<TestMetric> allTestMetrics = freshTest.getTestMetrics().iterator();
 		while (allTestMetrics.hasNext()) {
 			TestMetric testMetric = allTestMetrics.next();
@@ -732,36 +738,45 @@ public class TestServiceBean implements TestService {
 		return testDAO.get(id);
 	}
 
-   @Override
-   public TestSubscriber addSubscriber(User user, Test test) {
-      Test freshTest = testDAO.get(test.getId());
-      User freshUser = userDAO.get(user.getId());
-      TestSubscriber testSubscriber = new TestSubscriber();
-      testSubscriber.setTest(freshTest);
-      testSubscriber.setUser(freshUser);
-      return testSubscriberDAO.create(testSubscriber);
-   }
+	@Override
+	public void addSubscriber(User user, Test test) {
+		Test freshTest = testDAO.get(test.getId());
+		User freshUser = userDAO.get(user.getId());
 
-   @Override
-   public void removeSubscriber(User user, Test test) {
-      List<TestSubscriber> users = testSubscriberDAO.findByTest(test);
-      for (TestSubscriber testSubscriber : users) {
-         if (testSubscriber.getUser().getId().equals(user.getId())) {
-            testSubscriberDAO.remove(testSubscriber);
-         }
-      }
-   }
+		Collection<User> testSubscribers = freshTest.getSubscribers();
+		if(testSubscribers.contains(freshUser)) {
+			return;
+		}
 
-   @Override
-   public boolean isUserSubscribed(User user, Test test) {
-      List<TestSubscriber> tests = testSubscriberDAO.findByUser(user);
-      for (TestSubscriber testSubscriber : tests) {
-         if (testSubscriber.getTest().getId().equals(test.getId())) {
-            return true;
-         }
-      }
-      return false;
-   }
+		testSubscribers.add(freshUser);
+		testDAO.update(freshTest);
+	}
+
+	@Override
+	public void removeSubscriber(User user, Test test) {
+		Test freshTest = testDAO.get(test.getId());
+		Collection<User> testSubscribers = freshTest.getSubscribers();
+		for (User testSubscriber : testSubscribers) {
+			if (testSubscriber.getId().equals(user.getId())) {
+				testSubscribers.remove(testSubscriber);
+			}
+		}
+
+		testDAO.update(test);
+	}
+
+	@Override
+	public boolean isUserSubscribed(User user, Test test) {
+		Test freshTest = testDAO.get(test.getId());
+		Collection<User> testSubscribers = freshTest.getSubscribers();
+		for (User testSubscriber : testSubscribers) {
+			if (testSubscriber.getId().equals(user.getId())) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	private TestMetric createTestMetric(Test test, Metric metric) {
 		Metric existingMetric = metricDAO.get(metric.getId());

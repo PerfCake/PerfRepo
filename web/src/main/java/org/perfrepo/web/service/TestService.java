@@ -24,7 +24,6 @@ import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.TestExecutionAttachment;
 import org.perfrepo.model.TestExecutionParameter;
 import org.perfrepo.model.TestMetric;
-import org.perfrepo.model.TestSubscriber;
 import org.perfrepo.model.Value;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.model.to.TestSearchTO;
@@ -355,29 +354,29 @@ public interface TestService {
 	 */
 	public Test getTest(Long id);
 
-   /**
-    * Adds given user to the subscriber list of the given test.
-    *
-    * @param user
-    * @param test
-    * @return TestSubscriber
-    */
-   public TestSubscriber addSubscriber(User user, Test test);
+	/**
+	 * Adds given user to the subscriber list of the given test.
+	 *
+	 * @param user
+	 * @param test
+	 * @throws ServiceException if subscriber already exists
+	 */
+	public void addSubscriber(User user, Test test);
 
-   /**
-    * Removes given user from the subscriber list of the given test
-    *
-    * @param user
-    * @param test
-    */
-   public void removeSubscriber(User user, Test test);
+	/**
+	 * Removes given user from the subscriber list of the given test
+	 *
+	 * @param user
+	 * @param test
+	 */
+	public void removeSubscriber(User user, Test test);
 
-   /**
-    * Returns true if the given user is subscribed to given test
-    *
-    * @param user
-    * @param test
-    * @return boolean
-    */
-   public boolean isUserSubscribed(User user, Test test);
+	/**
+	 * Returns true if the given user is subscribed to given test
+	 *
+	 * @param user
+	 * @param test
+	 * @return boolean
+	 */
+	public boolean isUserSubscribed(User user, Test test);
 }
