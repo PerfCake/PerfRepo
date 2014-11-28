@@ -72,6 +72,7 @@ public class ReportServiceBean implements ReportService {
 		return getAllReports(userService.getLoggedUser().getUsername());
 	}
 
+	@Override
 	public List<Report> getAllReports() {
 		User user = userService.getLoggedUser();
 		List<Long> groupIds = new ArrayList<Long>();
@@ -81,6 +82,7 @@ public class ReportServiceBean implements ReportService {
 		return reportDAO.getByAnyPermission(user.getId(), groupIds);
 	}
 
+	@Override
 	public List<Report> getAllGroupReports() {
 		User user = userService.getLoggedUser();
 		List<Long> groupIds = new ArrayList<Long>();
@@ -306,7 +308,7 @@ public class ReportServiceBean implements ReportService {
 		if (user.getGroups() != null && user.getGroups().size() > 0) {
 			write.setGroupId(user.getGroups().iterator().next().getId());
 		} else {
-			throw new RuntimeException("User is not assigned in any group");
+			throw new IllegalStateException("User is not assigned in any group");
 		}
 		defaultPermissions.add(write);
 		return defaultPermissions;
