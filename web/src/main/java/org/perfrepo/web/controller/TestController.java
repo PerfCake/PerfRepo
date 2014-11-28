@@ -188,11 +188,13 @@ public class TestController extends BaseController {
    public void addSubscriber() {
       User currentUser = userService.getLoggedUser();
       testService.addSubscriber(currentUser, test);
+      redirectWithMessage("/test/" + testId, INFO, "page.test.subscribed");
    }
 
    public void removeSubscriber() {
       User currentUser = userService.getLoggedUser();
       testService.removeSubscriber(currentUser, test);
+      redirectWithMessage("/test/" + testId, INFO, "page.test.unsubscribed");
    }
 
    public boolean isSubscribed() {

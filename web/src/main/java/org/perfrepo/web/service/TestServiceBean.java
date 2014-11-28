@@ -755,13 +755,15 @@ public class TestServiceBean implements TestService {
 	@Override
 	public void removeSubscriber(User user, Test test) {
 		Test freshTest = testDAO.get(test.getId());
-		Collection<User> testSubscribers = freshTest.getSubscribers();
-		for (User testSubscriber : testSubscribers) {
+
+		Collection<User> testSubscribers = new ArrayList<>(freshTest.getSubscribers());
+		for (User testSubscriber : freshTest.getSubscribers()) {
 			if (testSubscriber.getId().equals(user.getId())) {
 				testSubscribers.remove(testSubscriber);
 			}
 		}
 
+		test.setSubscribers(testSubscribers);
 		testDAO.update(test);
 	}
 
