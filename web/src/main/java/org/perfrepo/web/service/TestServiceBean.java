@@ -261,6 +261,7 @@ public class TestServiceBean implements TestService {
 			for (TestMetric tm : tms) {
 				Metric metric = tm.getMetric().clone();
 				metric.setTestMetrics(null); // we don't need to infinitely recurse
+				metric.setAlerts(null);
 				metrics.add(metric);
 			}
 			test.setMetrics(metrics);
@@ -274,6 +275,8 @@ public class TestServiceBean implements TestService {
 			}
 			test.setSubscribers(subscribersClone);
 		}
+
+		test.setAlerts(null);
 
 		return test;
 	}

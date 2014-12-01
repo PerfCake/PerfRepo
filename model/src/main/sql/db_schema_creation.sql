@@ -948,3 +948,30 @@ ALTER TABLE ONLY public.test_subscriber
 CREATE INDEX test_subscriber_test ON test_subscriber(test_id);
 CREATE INDEX test_subscriber_user ON test_subscriber(user_id);
 
+
+CREATE TABLE alert (
+  id bigint NOT NULL,
+  name character varying(2097) NOT NULL,
+  description character varying(2097) NOT NULL,
+  condition character varying(2097) NOT NULL,
+  metric_id bigint NOT NULL,
+  test_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.alert OWNER TO perfrepo;
+ALTER TABLE ONLY public.alert
+ADD CONSTRAINT alert_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.alert
+ADD CONSTRAINT alert_metric_fkey FOREIGN KEY (metric_id) REFERENCES metric(id);
+ALTER TABLE ONLY public.alert
+ADD CONSTRAINT alert_test_fkey FOREIGN KEY (test_id) REFERENCES test(id);
+CREATE INDEX alert_metric_id ON alert(metric_id);
+CREATE INDEX alert_test_id ON alert(test_id);
+
+CREATE SEQUENCE alert_sequence
+START WITH 1
+INCREMENT BY 1
+NO MAXVALUE
+NO MINVALUE
+CACHE 1;

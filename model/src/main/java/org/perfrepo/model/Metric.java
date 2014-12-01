@@ -91,6 +91,9 @@ public class Metric implements Entity<Metric>, Comparable<Metric> {
 	@OneToMany(mappedBy = "metric")
 	private Collection<TestMetric> testMetrics;
 
+	@OneToMany(mappedBy = "metric")
+	private Collection<Alert> alerts;
+
 	@Column(name = "description")
 	@NotNull
 	@Size(max = 10239)
@@ -129,6 +132,14 @@ public class Metric implements Entity<Metric>, Comparable<Metric> {
 	@XmlAttribute(name = "id")
 	public String getStringId() {
 		return id == null ? null : String.valueOf(id);
+	}
+
+	public Collection<Alert> getAlerts() {
+		return alerts;
+	}
+
+	public void setAlerts(Collection<Alert> alerts) {
+		this.alerts = alerts;
 	}
 
 	public void setStringId(String id) {

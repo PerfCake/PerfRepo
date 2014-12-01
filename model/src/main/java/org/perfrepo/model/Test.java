@@ -98,6 +98,9 @@ public class Test implements Entity<Test> {
 	)
 	private Collection<User> subscribers;
 
+	@OneToMany(mappedBy = "test")
+	private Collection<Alert> alerts;
+
 	@Column(name = "uid")
 	@NotNull
 	@Size(max = 2047)
@@ -165,6 +168,14 @@ public class Test implements Entity<Test> {
 
 	public void setSubscribers(Collection<User> testSubscribers) {
 		this.subscribers = testSubscribers;
+	}
+
+	public Collection<Alert> getAlerts() {
+		return alerts;
+	}
+
+	public void setAlerts(Collection<Alert> alerts) {
+		this.alerts = alerts;
 	}
 
 	@XmlElementWrapper(name = "metrics")
