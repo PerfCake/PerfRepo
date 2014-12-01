@@ -64,10 +64,19 @@ public class TestREST {
 
 	@GET
 	@Produces(MediaType.TEXT_XML)
-	@Path("/{testId}")
+	@Path("/id/{testId}")
 	@Logged
 	public Response get(@PathParam("testId") Long testId) {
 		return Response.ok(testService.getFullTest(testId)).build();
+	}
+
+	@GET
+	@Produces(MediaType.TEXT_XML)
+	@Path("/uid/{testUid}")
+	@Logged
+	public Response getByUid(@PathParam("testUid") String testUid) {
+		Test test = testService.getTestByUID(testUid);
+		return Response.ok(testService.getFullTest(test.getId())).build();
 	}
 
 	@POST
@@ -80,7 +89,7 @@ public class TestREST {
 	}
 
 	@DELETE
-	@Path("/{testId}")
+	@Path("/id/{testId}")
 	@Logged
 	public Response delete(@PathParam("testId") Long testId) throws Exception {
 		Test test = testService.getTest(testId);
@@ -89,7 +98,7 @@ public class TestREST {
 	}
 
 	@POST
-	@Path("/{testId}/addMetric")
+	@Path("/id/{testId}/addMetric")
 	@Consumes(MediaType.TEXT_XML)
 	@Logged
 	public Response addMetric(@PathParam("testId") Long testId, Metric metric, @Context UriInfo uriInfo) throws Exception {

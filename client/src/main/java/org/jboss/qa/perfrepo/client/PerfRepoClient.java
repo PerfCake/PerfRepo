@@ -172,7 +172,31 @@ public class PerfRepoClient {
 	 * @throws Exception
 	 */
 	public Test getTest(Long id) throws Exception {
-		HttpGet get = createBasicGet("test/%s", id);
+		HttpGet get = createBasicGet("test/id/%s", id);
+		HttpResponse resp = httpClient.execute(get);
+		if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			Test obj = JAXB.unmarshal(resp.getEntity().getContent(), Test.class);
+			EntityUtils.consume(resp.getEntity());
+			return obj;
+		} else if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+			EntityUtils.consume(resp.getEntity());
+			return null;
+		} else {
+			logHttpError("Error while getting test", get, resp);
+			EntityUtils.consume(resp.getEntity());
+			return null;
+		}
+	}
+
+	/**
+	 * Get test by uid.
+	 *
+	 * @param uid
+	 * @return The test
+	 * @throws Exception
+	 */
+	public Test getTestByUid(String uid) throws Exception {
+		HttpGet get = createBasicGet("test/uid/%s", uid);
 		HttpResponse resp = httpClient.execute(get);
 		if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			Test obj = JAXB.unmarshal(resp.getEntity().getContent(), Test.class);
@@ -196,7 +220,7 @@ public class PerfRepoClient {
 	 * @throws Exception
 	 */
 	public boolean deleteTest(Long id) throws Exception {
-		HttpDelete delete = createBasicDelete("test/%s", id);
+		HttpDelete delete = createBasicDelete("test/id/%s", id);
 		HttpResponse resp = httpClient.execute(delete);
 		if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_NO_CONTENT) {
 			EntityUtils.consume(resp.getEntity());
@@ -288,7 +312,7 @@ public class PerfRepoClient {
 	 * @throws Exception
 	 */
 	public Long addMetric(Long testId, Metric metric) throws Exception {
-		HttpPost post = createBasicPost("test/%s/addMetric", testId);
+		HttpPost post = createBasicPost("test/id/%s/addMetric", testId);
 		setPostEntity(post, metric);
 		HttpResponse resp = httpClient.execute(post);
 		if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED) {

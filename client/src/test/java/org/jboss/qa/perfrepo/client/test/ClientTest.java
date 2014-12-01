@@ -103,6 +103,24 @@ public class ClientTest {
 	}
 
 	@org.junit.Test
+	public void testGetByUid() throws Exception {
+		Test test = createTest();
+		Long id = client.createTest(test);
+		assertNotNull(id);
+		Test test2 = client.getTestByUid(test.getUid());
+
+		assertEquals(test2.getName(), test.getName());
+		assertEquals(test2.getDescription(), test.getDescription());
+		assertEquals(test2.getGroupId(), test.getGroupId());
+		assertEquals(test2.getId(), id);
+		assertEquals(test2.getUid(), test.getUid());
+		assertEquals(test2.getTestExecutions(), null);
+		assertMetricListEquals(test2.getSortedMetrics(), test.getSortedMetrics());
+
+		client.deleteTest(id);
+	}
+
+	@org.junit.Test
 	public void testCreateDeleteTestExecution() throws Exception {
 		Test test = createTest();
 		Long testId = client.createTest(test);
