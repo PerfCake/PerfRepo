@@ -35,7 +35,7 @@ public class ViewUtils {
 				return "<a href=\"" + value + "\">" + value + "</a>";
 			}
 		} else if (value.length() > 100) {
-			return "<a href=\"/repo/param/" + param.getId() + "\">" + StringEscapeUtils.escapeHtml(value.substring(0, 96)) + " ...</a>";
+			return "<a href=\"/param/" + param.getId() + "\">" + StringEscapeUtils.escapeHtml(value.substring(0, 96)) + " ...</a>";
 		} else {
 			return StringEscapeUtils.escapeHtml(value);
 		}

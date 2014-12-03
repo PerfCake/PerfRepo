@@ -80,9 +80,13 @@ public class TestExecutionREST {
 	@Consumes(MediaType.TEXT_XML)
 	@Logged
 	public Response create(TestExecution testExecution, @Context UriInfo uriInfo) throws Exception {
-		Test test = testService.getFullTest(testExecution.getTest().getId());
+		Test test = null;
+		if (testExecution.getTest().getId() != null) {
+			test = testService.getFullTest(testExecution.getTest().getId());
+		} else {
+			test = testService.getTestByUID(testExecution.getTest().getUid());
+		}
 		testExecution.setTest(test);
-
 		Long id = testService.createTestExecution(testExecution).getId();
 		return Response.created(uriInfo.getBaseUriBuilder().path(TestExecutionREST.class).path(GET_TEST_EXECUTION_METHOD).build(id)).entity(id).build();
 	}

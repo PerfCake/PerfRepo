@@ -8,7 +8,7 @@
 </f:metadata>
 <ui:composition template="/layout/template.xhtml">
 <ui:define name="head">
-    <link href="/repo/rfRes/datatable.ecss.jsf?ln=org.richfaces" rel="stylesheet" type="text/css"></link>
+    <link href="/rfRes/datatable.ecss.jsf?ln=org.richfaces" rel="stylesheet" type="text/css"></link>
 </ui:define>
 <ui:define name="title">Search Test Execution</ui:define>
 <ui:define name="content">
@@ -248,9 +248,9 @@
                 <c:if test="#{testExecutionSearchController.isDisplayColumn('execId')}">
                     <td class="rf-dt-c">#{item.id}</td>
                 </c:if>
-                <td class="rf-dt-c" id="name-#{item.id}"><a href="/repo/exec/#{item.id}">#{item.name}</a></td>
+                <td class="rf-dt-c" id="name-#{item.id}"><a href="/exec/#{item.id}">#{item.name}</a></td>
                 <c:if test="#{testExecutionSearchController.isDisplayColumn('test')}">
-                    <td class="rf-dt-c"><a href="/repo/test/#{item.test.id}">#{item.test.name}</a></td>
+                    <td class="rf-dt-c"><a href="/test/#{item.test.id}">#{item.test.name}</a></td>
                 </c:if>
                 <td class="rf-dt-c">
                     <h:outputText value="#{item.started}"><f:convertDateTime pattern="dd.MM.yyyy HH:mm"
@@ -285,7 +285,7 @@
             </tr>
             <r:tooltip target="name-#{item.id}" followMouse="false" direction="topLeft">
 								<span><b>ID:</b> #{item.id}<br/> <b>Test name:</b> <a
-                                        href="/repo/test/#{item.test.id}">#{item.test.name}</a><br/> <b>Comment:</b><br/> <h:outputText
+                                        href="/test/#{item.test.id}">#{item.test.name}</a><br/> <b>Comment:</b><br/> <h:outputText
                                         value="#{item.comment}" escape="false"/> </span>
             </r:tooltip>
         </ui:repeat>

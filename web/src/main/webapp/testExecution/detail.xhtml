@@ -22,7 +22,7 @@
         <div id="control"
              style="text-align:right;float: right;line-height: 40px; margin: 10px 0;width:400px;height:40px;">
             <span style="margin:5px;"><a class="text-success"
-                                         href="/repo/exec/#{testExecutionController.testExecutionId}/edit"><i
+                                         href="/exec/#{testExecutionController.testExecutionId}/edit"><i
                     class="icon-edit" title="#{strings.edit}"/> Edit</a></span>
         </div>
     </div>
@@ -35,7 +35,7 @@
         <h:outputLabel class="detail-label">#{entityStrings.TestExecution_test}</h:outputLabel>
 
         <div class="detail-value">
-            <a href="/repo/test/#{testExecutionController.testExecution.test.id}">#{testExecutionController.testExecution.test.name}</a>
+            <a href="/test/#{testExecutionController.testExecution.test.id}">#{testExecutionController.testExecution.test.name}</a>
         </div>
         <h:outputLabel class="detail-label">Owner</h:outputLabel>
 

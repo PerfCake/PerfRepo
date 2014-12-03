@@ -248,7 +248,7 @@ public class CompareExecutionsController extends BaseController {
 	}
 
 	public String getPermaLink() {
-		return "/repo/reports/compare/exec?q=" + ParamUtil.generateExecQuery(testExecutions);
+		return "/reports/compare/exec?q=" + ParamUtil.generateExecQuery(testExecutions);
 	}
 
 	/**

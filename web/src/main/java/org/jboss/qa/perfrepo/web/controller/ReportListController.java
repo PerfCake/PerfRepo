@@ -28,7 +28,7 @@ import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
 
 /**
- * Controller for /repo/reports
+ * Controller for /reports
  *
  * @author Michal Linhard (mlinhard@redhat.com)
  * @author Jiri Holusa (jholusa@redhat.com)

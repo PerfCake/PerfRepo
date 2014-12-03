@@ -147,9 +147,9 @@ public class MetricReportController extends BaseController {
 
 	public String getLinkToReport() {
 		if (reportId == null) {
-			return "/repo/reports/metric";
+			return "/reports/metric";
 		} else {
-			return "/repo/reports/metric/saved/" + reportId;
+			return "/reports/metric/saved/" + reportId;
 		}
 	}
 

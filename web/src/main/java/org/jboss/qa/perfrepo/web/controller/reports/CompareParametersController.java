@@ -105,7 +105,7 @@ public class CompareParametersController extends BaseController {
 	}
 
 	public String getPermaLink() {
-		return "/repo/reports/compare/param?q=" + ParamUtil.generateExecQuery(testExecutions);
+		return "/reports/compare/param?q=" + ParamUtil.generateExecQuery(testExecutions);
 	}
 
 	/**
