@@ -53,7 +53,7 @@ public class PerfRepoClient {
 	private static final Logger log = Logger.getLogger(PerfRepoClient.class);
 
 	private static final String CONTENT_TYPE_XML = "text/xml";
-	private static final String REST_BASE_URL_TEMPLATE = "http://%s/%s/rest/";
+	private static final String REST_BASE_URL_TEMPLATE = "http://%s%s/rest/";
 	private String host;
 	private String url;
 	private String basicAuthHash;
@@ -64,11 +64,18 @@ public class PerfRepoClient {
 	 * Create the client.
 	 *
 	 * @param host Host (may contain port in form host:port)
+	 * @param url url of the PerfRepo instance on the server. If null or empty string provided,
+	 * 		it refers to root of the server. If some context path provided, slash is appended automatically.
+	 * 		I.e. new PerfRepoClient("localhost", "repository", "hash") is bounded to localhost/repository/
 	 * @param basicAuthHash Base64 encoded username:password for BASIC Authentication
 	 */
 	public PerfRepoClient(String host, String url, String basicAuthHash) {
 		this.host = host;
 		this.url = url;
+		if(this.url != null && !url.isEmpty()) {
+			this.url =  "/" + this.url;
+		}
+
 		this.basicAuthHash = basicAuthHash;
 		httpClient = new DefaultHttpClient();
 	}
