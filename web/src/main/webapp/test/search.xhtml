@@ -63,7 +63,7 @@
                 </div>
             </h:form>
 
-            <a href="/test/new" class="btn btn-primary" title="#{strings['page.testSearch.buCreateNewTest']}"><i
+            <a href="#{request.contextPath}/test/new" class="btn btn-primary" title="#{strings['page.testSearch.buCreateNewTest']}"><i
                     class="icon-plus"/>
                 #{strings['page.testSearch.buCreateNewTest']}</a>
 
@@ -92,7 +92,7 @@
                                 <f:ajax render="searchResultTable"/>
                             </a4j:commandLink>
                         </f:facet>
-                        <a href="/test/#{item.id}">#{item.name}</a>
+                        <a href="#{request.contextPath}/test/#{item.id}">#{item.name}</a>
                     </rich:column>
                     <rich:column sortable="true" sortOrder="#{testSearchController.sortsOrders['uid']}"
                                  sortBy="#{item.uid}">

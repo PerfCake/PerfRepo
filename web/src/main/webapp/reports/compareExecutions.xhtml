@@ -23,11 +23,11 @@
             <h:form id="executionsForm">
                 <p>
                     Executions for test <a
-                        href="/test/#{compareExecutionsController.test.id}">#{compareExecutionsController.test.name}</a>
+                        href="#{request.contextPath}/test/#{compareExecutionsController.test.id}">#{compareExecutionsController.test.name}</a>
                 </p>
 
                 <p>
-                    <a class="btn btn-primary" href="/reports/compare/param">Compare parameters</a>
+                    <a class="btn btn-primary" href="#{request.contextPath}/reports/compare/param">Compare parameters</a>
                 </p>
 
                 <h2>Test executions</h2>
@@ -56,7 +56,7 @@
                                 <f:ajax render="teTable"/>
                             </a4j:commandLink>
                         </f:facet>
-                        <a href="/exec/#{te.id}"><h:outputText value="#{te.name}"/></a>
+                        <a href="#{request.contextPath}/exec/#{te.id}"><h:outputText value="#{te.name}"/></a>
                     </rich:column>
 
                     <rich:column sortable="true" sortOrder="#{compareExecutionsController.sortsOrders['started']}"

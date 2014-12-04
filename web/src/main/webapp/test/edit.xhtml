@@ -49,7 +49,7 @@
                 </fieldset>
                 <div style="text-align:right">
                     <a class="btn btn-primary"
-                       href="#{testController.test.id != null ? '/test/'.concat(testController.test.id) : '/test/search'}">#{strings.cancel}</a>
+                       href="#{testController.test.id != null ? '#{request.contextPath}/test/'.concat(testController.test.id) : '/test/search'}">#{strings.cancel}</a>
                     <h:commandButton styleClass="btn btn-primary" action="#{testController.update}"
                                      value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}"
                                      rendered="#{!testController.createMode}"/>

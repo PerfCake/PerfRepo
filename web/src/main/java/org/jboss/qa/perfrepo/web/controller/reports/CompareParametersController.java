@@ -16,7 +16,6 @@
 package org.jboss.qa.perfrepo.web.controller.reports;
 
 import org.apache.log4j.Logger;
-
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
@@ -29,6 +28,7 @@ import org.jboss.qa.perfrepo.web.session.TEComparatorSession;
 import org.jboss.qa.perfrepo.web.util.ViewUtils;
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
 
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -105,7 +105,7 @@ public class CompareParametersController extends BaseController {
 	}
 
 	public String getPermaLink() {
-		return "/reports/compare/param?q=" + ParamUtil.generateExecQuery(testExecutions);
+		return FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/reports/compare/param?q=" + ParamUtil.generateExecQuery(testExecutions);
 	}
 
 	/**

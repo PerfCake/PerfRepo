@@ -13,16 +13,16 @@
 
                     <div class="nav-collapse">
                         <ul class="nav">
-                            <li><a href="#{facesContext.externalContext.requestContextPath}">#{strings.menuHome}</a>
+                            <li><a href="#{request.contextPath}">#{strings.menuHome}</a>
                             </li>
                             <li>
-                                <a href="#{facesContext.externalContext.requestContextPath}/test/search">#{strings.menuTests}</a>
+                                <a href="#{request.contextPath}/test/search">#{strings.menuTests}</a>
                             </li>
                             <li>
-                                <a href="#{facesContext.externalContext.requestContextPath}/exec/search">#{strings.menuExecs}</a>
+                                <a href="#{request.contextPath}/exec/search">#{strings.menuExecs}</a>
                             </li>
                             <li>
-                                <a href="#{facesContext.externalContext.requestContextPath}/reports">#{strings.menuReports}</a>
+                                <a href="#{request.contextPath}/reports">#{strings.menuReports}</a>
                             </li>
                         </ul>
 
@@ -30,7 +30,7 @@
                             <h:panelGroup id="compareMenuItemCompare"
                                           rendered="#{teComparatorSession.isAnyToCompare()}">
                                 <ul class="nav pull-right">
-                                    <li><a href="/reports/compare/exec"><i
+                                    <li><a href="#{request.contextPath}/reports/compare/exec"><i
                                             class="icon-shopping-cart"/> #{teComparatorSession.execIds.size()}</a></li>
                                     <ui:insert name="compareClean">
                                         <li><a4j:commandLink value=" " id="clearCompare"
@@ -42,8 +42,8 @@
                                         </a4j:commandLink></li>
                                     </ui:insert>
                                     <li class="divider-vertical"></li>
-                                    <li><a href="/profile" title="User profile"><i class="icon-user"/></a></li>
-                                    <li><a href="/profile" title="Logout"><i class="icon-long-arrow-right"/></a>
+                                    <li><a href="#{request.contextPath}/profile" title="User profile"><i class="icon-user"/></a></li>
+                                    <li><a href="#{request.contextPath}/profile" title="Logout"><i class="icon-long-arrow-right"/></a>
                                     </li>
                                 </ul>
                             </h:panelGroup>
@@ -52,7 +52,7 @@
                                 <ul class="nav pull-right">
                                     <ui:insert name="compareAddAll"></ui:insert>
                                     <li class="divider-vertical"></li>
-                                    <li><a href="/profile" title="User profile"><i class="icon-user"/></a></li>
+                                    <li><a href="#{request.contextPath}/profile" title="User profile"><i class="icon-user"/></a></li>
                                     <li><a4j:commandLink value=" " id="logout" alt="Logout" title="Logout"
                                                          action="#{userSession.logout()}"><i
                                             class="icon-long-arrow-right"/></a4j:commandLink></li>

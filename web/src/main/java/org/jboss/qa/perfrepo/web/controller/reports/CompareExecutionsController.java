@@ -16,7 +16,6 @@
 package org.jboss.qa.perfrepo.web.controller.reports;
 
 import org.apache.log4j.Logger;
-
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
@@ -30,11 +29,11 @@ import org.jboss.qa.perfrepo.web.util.MultiValue;
 import org.jboss.qa.perfrepo.web.util.MultiValue.ParamInfo;
 import org.jboss.qa.perfrepo.web.util.MultiValue.ValueInfo;
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
-
 import org.richfaces.ui.output.chart.ChartDataModel;
 import org.richfaces.ui.output.chart.ChartDataModel.ChartType;
 import org.richfaces.ui.output.chart.NumberChartDataModel;
 
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -248,7 +247,7 @@ public class CompareExecutionsController extends BaseController {
 	}
 
 	public String getPermaLink() {
-		return "/reports/compare/exec?q=" + ParamUtil.generateExecQuery(testExecutions);
+		return FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/reports/compare/exec?q=" + ParamUtil.generateExecQuery(testExecutions);
 	}
 
 	/**

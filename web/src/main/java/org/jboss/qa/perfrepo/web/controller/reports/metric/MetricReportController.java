@@ -16,7 +16,6 @@
 package org.jboss.qa.perfrepo.web.controller.reports.metric;
 
 import org.apache.log4j.Logger;
-
 import org.jboss.qa.perfrepo.model.FavoriteParameter;
 import org.jboss.qa.perfrepo.model.Metric;
 import org.jboss.qa.perfrepo.model.Test;
@@ -46,12 +45,12 @@ import org.jboss.qa.perfrepo.web.util.ReportUtils;
 import org.jboss.qa.perfrepo.web.util.TagUtils;
 import org.jboss.qa.perfrepo.web.util.ViewUtils;
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
-
 import org.richfaces.ui.output.chart.ChartDataModel.ChartType;
 import org.richfaces.ui.output.chart.NumberChartDataModel;
 import org.richfaces.ui.output.chart.PlotClickEvent;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -147,9 +146,9 @@ public class MetricReportController extends BaseController {
 
 	public String getLinkToReport() {
 		if (reportId == null) {
-			return "/reports/metric";
+			return FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/reports/metric";
 		} else {
-			return "/reports/metric/saved/" + reportId;
+			return FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/reports/metric/saved/" + reportId;
 		}
 	}
 
