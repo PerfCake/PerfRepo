@@ -59,7 +59,7 @@
                                    action="#{reportPermissionController.addNewPermission()}" value="OK" alt="OK"
                                    title="OK"
                                    render="@form :reportAccessRights reportPermissionsPopupMessagesPanel"
-                                   oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('reportPermissionsAddPopup')}.hide()"/>
+                                   oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('reportPermissionsAddPopup')}.hide()" disabled="#{!reportPermissionController.userAuthorized}"/>
                 <a4j:commandButton styleClass="btn btn-primary btn-small"
                                    action="#{reportPermissionController.clearPermission()}"
                                    oncomplete="#{rich:component('reportPermissionsAddPopup')}.hide()"

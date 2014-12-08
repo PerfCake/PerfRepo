@@ -6,10 +6,6 @@
         >
 
     <div style="text-align: right">
-        <!-- 		<h:commandLink -->
-        <!-- 			onclick="if (#{rich:element('reportAccessRights')}.style.display== 'none') {#{rich:element('reportAccessRights')}.style.display = 'block'} else {#{rich:element('reportAccessRights')}.style.display = 'none'}; return false;" -->
-        <!-- 			alt="Permission settings" title="Permission settings"> -->
-        <!-- 			<i class="icon-key" />Permission settings</h:commandLink> -->
         <r:commandLink action="#{reportPermissionController.togglePanel()}" alt="Permission settings"
                        title="Permission settings"
                        render="@form">
@@ -29,7 +25,7 @@
                 <th style="text-align: center; vertical-align: middle"><a4j:commandLink
                         oncomplete="#{rich:component('reportPermissionsAddPopup')}.show();"
                         render=":reportPermissionsAddPopup :reportPermissionsAddForm"
-                        alt="Add permission" title="Add permission">
+                        alt="Add permission" title="Add permission" disabled="#{!reportPermissionController.userAuthorized}">
                     <i class="icon-plus"/>
                 </a4j:commandLink></th>
             </tr>
@@ -43,7 +39,7 @@
                     <td>#{reportPermissionController.getPermissionGroup(p)}</td>
                     <td style="text-align: center"><a4j:commandLink alt="Remove"
                                                                     title="Remove" render=":reportAccessRights"
-                                                                    action="#{reportPermissionController.removePermission(p)}">
+                                                                    action="#{reportPermissionController.removePermission(p)}" disabled="#{!reportPermissionController.userAuthorized}">
                         <i class="icon-remove"/>
                     </a4j:commandLink></td>
                 </tr>

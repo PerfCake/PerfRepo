@@ -22,6 +22,7 @@ import org.jboss.qa.perfrepo.model.report.Report;
 import org.jboss.qa.perfrepo.model.user.Group;
 import org.jboss.qa.perfrepo.model.user.User;
 import org.jboss.qa.perfrepo.web.controller.BaseController;
+import org.jboss.qa.perfrepo.web.security.AuthorizationService;
 import org.jboss.qa.perfrepo.web.service.ReportService;
 import org.jboss.qa.perfrepo.web.service.UserService;
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
@@ -63,6 +64,11 @@ public class ReportPermissionController extends BaseController {
 
 	private boolean isPanelShown = false;
 
+	private boolean userAuthorized = false;
+
+	@Inject
+	private AuthorizationService authorizationService;
+
 	public AccessLevel[] getAccessLevels() {
 		return AccessLevel.values();
 	}
@@ -84,6 +90,11 @@ public class ReportPermissionController extends BaseController {
 		String reportIdParam = getRequestParam("reportId");
 		reportId = reportIdParam != null ? Long.parseLong(reportIdParam) : null;
 		permissions = reportService.getReportPermissions(new Report(reportId));
+		if (reportId != null) {
+			userAuthorized = authorizationService.isUserAuthorizedFor(AccessType.WRITE, new Report(reportId));
+		} else {
+			userAuthorized = true;
+		}
 	}
 
 	public void clearWorkingCopy() {
@@ -192,5 +203,13 @@ public class ReportPermissionController extends BaseController {
 
 	public void setPanelShown(boolean isPanelShown) {
 		this.isPanelShown = isPanelShown;
+	}
+
+	public boolean isUserAuthorized() {
+		return userAuthorized;
+	}
+
+	public void setUserAuthorized(boolean userAuthorized) {
+		this.userAuthorized = userAuthorized;
 	}
 }
