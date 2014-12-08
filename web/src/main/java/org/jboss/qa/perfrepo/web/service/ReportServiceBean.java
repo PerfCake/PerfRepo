@@ -89,7 +89,7 @@ public class ReportServiceBean implements ReportService {
 		for (Group group : user.getGroups()) {
 			groupIds.add(group.getId());
 		}
-		return reportDAO.getByGroupPermission(groupIds);
+		return reportDAO.getByGroupPermission(user.getId(), groupIds);
 	}
 
 	@Override
@@ -291,16 +291,12 @@ public class ReportServiceBean implements ReportService {
 	}
 
 	/**
-	 * Returns the default permissions WRITE group, READ PUBLIC
+	 * Returns the default permissions WRITE group
 	 *
 	 * @return
 	 */
 	private Collection<Permission> getDefaultPermission() {
 		List<Permission> defaultPermissions = new ArrayList<Permission>();
-		Permission read = new Permission();
-		read.setAccessType(AccessType.READ);
-		read.setLevel(AccessLevel.PUBLIC);
-		defaultPermissions.add(read);
 		Permission write = new Permission();
 		write.setAccessType(AccessType.WRITE);
 		write.setLevel(AccessLevel.GROUP);

@@ -37,9 +37,10 @@ public class ReportDAO extends DAO<Report, Long> {
 		return findByNamedQuery(Report.GET_BY_USERNAME, params);
 	}
 
-	public List<Report> getByGroupPermission(List<Long> groupIds) {
+	public List<Report> getByGroupPermission(Long userId, List<Long> groupIds) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("groupIds", groupIds);
+		params.put("userId", userId);
 		return findByNamedQuery(Report.GET_BY_GROUP_PERMISSION, params);
 	}
 
