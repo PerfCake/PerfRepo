@@ -1,5 +1,20 @@
 package org.jboss.qa.perfrepo.web.controller.reports.testgroup;
 
+import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.Value;
 import org.jboss.qa.perfrepo.model.auth.AccessType;
@@ -23,21 +38,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Named
 @ViewScoped
@@ -389,7 +389,7 @@ public class TestGroupReportController extends BaseController {
 		} else {
 			reportService.updateReport(report);
 		}
-		addSessionMessage(INFO, "page.reports.testGroup.reportSaved", reportId);
+		addSessionMessage(INFO, "page.reports.testGroup.reportSaved", reportName);
 		reloadSessionMessages();
 	}
 
@@ -750,7 +750,9 @@ public class TestGroupReportController extends BaseController {
 	public List<ChartRow> getChartData(String metric, String compareKey) {
 		if (comparison != null && !comparison.isEmpty() && comparison.containsKey(compareKey)) {
 			List<ChartRow> chartData = new ArrayList<ChartRow>();
-			for (String test : data.rowKeySet()) {
+			List<String> tests = Lists.newArrayList(data.rowKeySet());
+			Collections.sort(tests);;
+			for (String test : tests) {
 				ChartRow row = new ChartRow();
 				row.setTest(test);
 				row.setResult(Double.valueOf(compare(test, compareKey, metric)));
@@ -769,6 +771,20 @@ public class TestGroupReportController extends BaseController {
 
 	public void removeComparison(String label) {
 		comparisonCopy.remove(label);
+	}
+
+	public int getChartWidth() {
+		if (getMetrics().size() > 3) {
+			//two charts in row (450px)
+			return 450;
+		}
+		//one chart in row (900px)
+		return 900;
+	}
+
+	public int getChartHeight() {
+		//25px per test + 100px on legend and space
+		return getTests().size() * 25 + 100;
 	}
 
 	public void storeComparison() {

@@ -213,7 +213,7 @@
                 <ui:repeat value="#{testGroupReportController.comparisonValues}" var="compareKey">
                     <ui:repeat value="#{testGroupReportController.selectedMetrics}" var="metric">
                         <div id="#{metric}_#{compareKey.replaceAll(' ', '_')}"
-                             style="width: 450px; height: 250px;float:left"></div>
+                             style="width: #{testGroupReportController.chartWidth}px; height: #{testGroupReportController.chartHeight}px;float:left"></div>
                     </ui:repeat>
 
                     <div style="clear:both"/>
