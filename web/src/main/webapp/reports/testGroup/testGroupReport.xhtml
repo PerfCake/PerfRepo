@@ -194,13 +194,25 @@
                                               escape="false"/>
                                 <td>#{metric}</td>
                                 <ui:repeat value="#{testGroupReportController.tableTags}" var="tag">
-                                    <td>#{testGroupReportController.format(testGroupReportController.getValue(test, tag, metric).bestValue.resultValue)}</td>
+									<ui:param name="currentValue" value="#{testGroupReportController.getValue(test, tag, metric)}" />
+                                    <td id="result-#{currentValue.bestValue.id}">#{testGroupReportController.format(currentValue.bestValue.resultValue)}</td>
+                                    <rich:tooltip rendered="#{currentValue.bestValue != null}" target="result-#{currentValue.bestValue.id}" followMouse="false" direction="topLeft" horizontalOffset="0" verticalOffset="0">
+										<span>
+											<b>Test Execution: </b><a href="#{request.contextPath}/exec/#{currentValue.bestValue.testExecution.id}">#{currentValue.bestValue.testExecution.name}</a><br/>
+											#{currentValue.bestValue.resultValue}
+											<h:panelGroup rendered="#{currentValue.values.size() > 1}">
+												<br/><b>All merged values:</b><br/>
+												<ui:repeat value="#{currentValue.values}" var="otherValue">
+													<a href="#{request.contextPath}/exec/#{otherValue.testExecution.id}">#{otherValue.testExecution.name}</a> #{otherValue.resultValue}<br/>
+												</ui:repeat>
+											</h:panelGroup>
+                                        </span>
+									</rich:tooltip>
                                 </ui:repeat>
                                 <ui:repeat value="#{testGroupReportController.comparisonValues}" var="comparisonKey">
                                     <ui:param name="value"
                                               value="#{testGroupReportController.compare(test, comparisonKey, metric)}"/>
-                                    <td><span
-                                            style="color: #{testGroupReportController.getStyle(value)}">#{testGroupReportController.format(value)} %</span>
+                                    <td><span style="color: #{testGroupReportController.getStyle(value)}">#{testGroupReportController.format(value)} %</span>
                                     </td>
                                 </ui:repeat>
                             </ui:repeat>
