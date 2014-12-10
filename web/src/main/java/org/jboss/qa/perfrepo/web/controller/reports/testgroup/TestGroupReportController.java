@@ -109,6 +109,8 @@ public class TestGroupReportController extends BaseController {
 
 	private Double semiNegativeThreshold = -5.0;
 
+	private Double confThreshold;
+
 	private NumberFormat formatter = new DecimalFormat("#0.00");
 
 	private List<String> testsCopy;
@@ -286,7 +288,13 @@ public class TestGroupReportController extends BaseController {
 					if (metricsProperty != null) {
 						selectedMetrics.addAll(Lists.newArrayList(metricsProperty.split(", ")));
 					}
-					//TODO: threshold
+					// threshold
+					String thresholdProperty = properties.containsKey("configuration.threshold") ? properties.get("configuration.threshold").getValue() : null;
+					if (thresholdProperty != null) {
+						semiNegativeThreshold = Double.valueOf(thresholdProperty);
+					} else {
+						semiNegativeThreshold = -5.0;
+					}
 				}
 			}
 		} else if (teComparator.isAnyToCompare()) {
@@ -371,6 +379,7 @@ public class TestGroupReportController extends BaseController {
 			ReportUtils.createOrUpdateReportPropertyInMap(properties, "metrics",
 				metricsProperty.substring(0, metricsProperty.length() - 2), report);
 		}
+		ReportUtils.createOrUpdateReportPropertyInMap(properties, "configuration.threshold", String.valueOf(semiNegativeThreshold), report);
 		report.setProperties(properties);
 		report.setPermissions(reportAccessController.getPermissions());
 		if (report.getId() == null) {
@@ -521,8 +530,12 @@ public class TestGroupReportController extends BaseController {
 	public void storeTests() {
 		tests = testsCopy;
 		testsCopy = null;
-		//testIds.clear();
 		processTestExecutions();
+	}
+
+	public void storeConfiguration() {
+		semiNegativeThreshold = confThreshold;
+		confThreshold = null;
 	}
 
 	public List<String> getTestsCopy() {
@@ -727,6 +740,25 @@ public class TestGroupReportController extends BaseController {
 		this.missingTE = missingTE;
 	}
 
+	public Double getSemiNegativeThreshold() {
+		return semiNegativeThreshold;
+	}
+
+	public void setSemiNegativeThreshold(Double semiNegativeThreshold) {
+		this.semiNegativeThreshold = semiNegativeThreshold;
+	}
+
+	public Double getConfThreshold() {
+		if (confThreshold == null) {
+			confThreshold = semiNegativeThreshold;
+		}
+		return confThreshold;
+	}
+
+	public void setConfThreshold(Double confThreshold) {
+		this.confThreshold = confThreshold;
+	}
+
 	public List<ChartRow> getChartData(String metric, String compareKey) {
 		if (comparison != null && !comparison.isEmpty() && comparison.containsKey(compareKey)) {
 			List<ChartRow> chartData = new ArrayList<ChartRow>();
@@ -746,7 +778,7 @@ public class TestGroupReportController extends BaseController {
 	}
 
 	private String getChartColor(Double result) {
-		return (result < -5) ? CHART_COLOR_RED : (result < 0 ? CHART_COLOR_ORANGE : CHART_COLOR_GREEN);
+		return (result < semiNegativeThreshold) ? CHART_COLOR_RED : (result < 0 ? CHART_COLOR_ORANGE : CHART_COLOR_GREEN);
 	}
 
 	public void removeComparison(String label) {
