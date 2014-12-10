@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.jboss.qa.perfrepo.model.userproperty.GroupFilter;
+
 /**
  * Test execution search criteria.
  *

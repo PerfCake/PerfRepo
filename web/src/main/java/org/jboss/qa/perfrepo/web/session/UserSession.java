@@ -9,8 +9,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.qa.perfrepo.model.UserProperty;
-import org.jboss.qa.perfrepo.model.to.GroupFilter;
 import org.jboss.qa.perfrepo.model.user.User;
+import org.jboss.qa.perfrepo.model.userproperty.GroupFilter;
+import org.jboss.qa.perfrepo.model.userproperty.ReportFilter;
 import org.jboss.qa.perfrepo.web.service.UserService;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 
@@ -29,6 +30,11 @@ public class UserSession implements Serializable {
 	 * User property name of group filter - used to search tests and test executions
 	 */
 	private static final String USER_PARAM_GROUP_FILTER = "test.filter.group";
+
+	/**
+	 * User property name of report filter used on reports page
+	 */
+	private static final String USER_PARAM_REPORT_FILTER = "report.filter";
 
 	@Inject
 	private UserService userService;
@@ -62,7 +68,7 @@ public class UserSession implements Serializable {
 	}
 
 	/**
-	 * Returns user property {@value #USER_PARAM_GROUP_FILTER}
+	 * Returns the user property {@value #USER_PARAM_GROUP_FILTER}
 	 * @return
 	 */
 	public GroupFilter getGroupFilter() {
@@ -75,12 +81,35 @@ public class UserSession implements Serializable {
 	}
 
 	/**
-	 * Set user property {@value #USER_PARAM_GROUP_FILTER}
+	 * Set the user property {@value #USER_PARAM_GROUP_FILTER}
 	 * @param filter
 	 * @throws ServiceException
 	 */
 	public void setGroupFilter(GroupFilter filter) throws ServiceException {
 		userService.addUserProperty(USER_PARAM_GROUP_FILTER, filter.name());
+		refresh();
+	}
+
+	/**
+	 * Returns the user property {@value #USER_PARAM_GROUP_FILTER}
+	 * @return
+	 */
+	public ReportFilter getReportFilter() {
+		UserProperty reportFilter = findUserParameter(USER_PARAM_REPORT_FILTER);
+		if (reportFilter == null) {
+			return ReportFilter.TEAM;
+		} else {
+			return ReportFilter.valueOf(reportFilter.getValue());
+		}
+	}
+
+	/**
+	 * Set the user property {@value #USER_PARAM_GROUP_FILTER}
+	 * @param filter
+	 * @throws ServiceException
+	 */
+	public void setReportFilter(ReportFilter filter) throws ServiceException {
+		userService.addUserProperty(USER_PARAM_REPORT_FILTER, filter.name());
 		refresh();
 	}
 

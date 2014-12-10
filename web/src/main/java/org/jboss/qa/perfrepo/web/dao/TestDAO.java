@@ -17,8 +17,8 @@ package org.jboss.qa.perfrepo.web.dao;
 
 import org.jboss.qa.perfrepo.model.Entity;
 import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.model.to.GroupFilter;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
+import org.jboss.qa.perfrepo.model.userproperty.GroupFilter;
 
 import javax.inject.Named;
 import javax.persistence.Query;

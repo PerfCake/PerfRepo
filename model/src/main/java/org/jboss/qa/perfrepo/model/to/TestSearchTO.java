@@ -17,6 +17,8 @@ package org.jboss.qa.perfrepo.model.to;
 
 import java.io.Serializable;
 
+import org.jboss.qa.perfrepo.model.userproperty.GroupFilter;
+
 /**
  * Test search criteria.
  *

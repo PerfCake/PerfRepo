@@ -23,8 +23,10 @@ import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.report.Report;
+import org.jboss.qa.perfrepo.model.userproperty.ReportFilter;
 import org.jboss.qa.perfrepo.web.service.ReportService;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
+import org.jboss.qa.perfrepo.web.session.UserSession;
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
 
 /**
@@ -44,11 +46,10 @@ public class ReportListController extends BaseController {
 	@Inject
 	private ReportService reportService;
 
+	@Inject
+	private UserSession userSession;
+
 	private List<Report> savedReports;
-
-	private enum ReportFilter {MY, TEAM, ALL};
-
-	private ReportFilter reportFilter = ReportFilter.TEAM;
 
 	public List<Report> getSavedReports() {
 		return savedReports;
@@ -65,22 +66,34 @@ public class ReportListController extends BaseController {
 	}
 
 	public void setAllReports() {
-		setReportFilter(ReportFilter.ALL);
-		updateSavedReports();
+		try {
+			userSession.setReportFilter(ReportFilter.ALL);
+			updateSavedReports();
+		} catch(ServiceException se) {
+			addMessage(se);
+		}
 	}
 
 	public void setMyReports() {
-		setReportFilter(ReportFilter.MY);
-		updateSavedReports();
+		try {
+			userSession.setReportFilter(ReportFilter.MY);
+			updateSavedReports();
+		} catch(ServiceException se) {
+			addMessage(se);
+		}
 	}
 
 	public void setTeamReports() {
-		setReportFilter(ReportFilter.TEAM);
-		updateSavedReports();
+		try {
+			userSession.setReportFilter(ReportFilter.TEAM);
+			updateSavedReports();
+		} catch(ServiceException se) {
+			addMessage(se);
+		}
 	}
 
 	private void updateSavedReports() {
-		switch (reportFilter) {
+		switch (userSession.getReportFilter()) {
 			case MY:
 				savedReports = reportService.getAllUsersReports();
 				break;
@@ -94,7 +107,6 @@ public class ReportListController extends BaseController {
 				savedReports = reportService.getAllGroupReports();
 				break;
 		}
-		// when all types of reports have been added
 		Collections.sort(savedReports);
 	}
 
@@ -109,13 +121,5 @@ public class ReportListController extends BaseController {
 			addMessage(e);
 		}
 		updateSavedReports();
-	}
-
-	public ReportFilter getReportFilter() {
-		return reportFilter;
-	}
-
-	public void setReportFilter(ReportFilter reportFilter) {
-		this.reportFilter = reportFilter;
 	}
 }

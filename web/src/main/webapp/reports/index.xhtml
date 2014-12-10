@@ -39,9 +39,9 @@
             <h:form id="formSavedReports">
             	<div style="width:100%;text-align:right">
             		<span style="margin-right: 10px">Show reports:</span>
-            		<span style="margin-right: 10px"><a4j:commandLink action="#{reportList.setMyReports()}" render="@form" disabled="#{reportList.reportFilter == 'MY'}"><i class="icon-user" /> My reports</a4j:commandLink></span>            	
-            		<span style="margin-right: 10px"><a4j:commandLink action="#{reportList.setTeamReports()}" render="@form" disabled="#{reportList.reportFilter == 'TEAM'}"><i class="icon-group" /> Team reports</a4j:commandLink></span>
-            		<a4j:commandLink disabled="#{reportList.reportFilter == 'ALL'}" action="#{reportList.setAllReports()}" render="@form"><i class="icon-asterisk" /> All reports</a4j:commandLink>
+            		<span style="margin-right: 10px"><a4j:commandLink action="#{reportList.setMyReports()}" render="@form" disabled="#{userSession.getReportFilter() == 'MY'}"><i class="icon-user" /> My reports</a4j:commandLink></span>            	
+            		<span style="margin-right: 10px"><a4j:commandLink action="#{reportList.setTeamReports()}" render="@form" disabled="#{userSession.getReportFilter() == 'TEAM'}"><i class="icon-group" /> Team reports</a4j:commandLink></span>
+            		<a4j:commandLink disabled="#{userSession.getReportFilter() == 'ALL'}" action="#{reportList.setAllReports()}" render="@form"><i class="icon-asterisk" /> All reports</a4j:commandLink>
             	</div><br/>
             	
                 <table id="savedReportTable" class="table table-bordered smallpad">
