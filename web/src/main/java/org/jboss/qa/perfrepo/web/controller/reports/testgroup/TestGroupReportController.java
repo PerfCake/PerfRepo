@@ -342,16 +342,20 @@ public class TestGroupReportController extends BaseController {
 		for (Long id : testIds) {
 			idsProperty += id + ", ";
 		}
-		ReportUtils.createOrUpdateReportPropertyInMap(properties, "testIds",
+		if (idsProperty.length() > 0) {
+			ReportUtils.createOrUpdateReportPropertyInMap(properties, "testIds",
 				idsProperty.substring(0, idsProperty.length() - 2), report);
+		}
 
 		//tests
 		String testsProperty = "";
 		for (String test : tests) {
 			testsProperty += test + ", ";
 		}
-		ReportUtils.createOrUpdateReportPropertyInMap(properties, "tests",
+		if (testsProperty.length() > 0) {
+			ReportUtils.createOrUpdateReportPropertyInMap(properties, "tests",
 				testsProperty.substring(0, testsProperty.length() - 2), report);
+		}
 
 		//tags
 		int i = 1;
@@ -380,8 +384,10 @@ public class TestGroupReportController extends BaseController {
 			metricsProperty += metric + ", ";
 		}
 
-		ReportUtils.createOrUpdateReportPropertyInMap(properties, "metrics",
+		if (metricsProperty.length() > 0) {
+			ReportUtils.createOrUpdateReportPropertyInMap(properties, "metrics",
 				metricsProperty.substring(0, metricsProperty.length() - 2), report);
+		}
 		report.setProperties(properties);
 		report.setPermissions(reportAccessController.getPermissions());
 		if (report.getId() == null) {
