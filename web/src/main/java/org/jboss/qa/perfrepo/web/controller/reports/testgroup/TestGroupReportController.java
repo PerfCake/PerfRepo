@@ -93,20 +93,6 @@ public class TestGroupReportController extends BaseController {
 
 	private boolean userAuthorized = true;
 
-	//private List<String> baselineTags = Arrays.asList("FSW", "simple-12", "600ER8", "baseline");	
-	//format: report_prefix + reportId + "tag.1.alias", report_prefix + reportId + "tag.2.alias"	
-	//testGroupReport.FSW600CR2.compare.1.1=600CR1
-	//testGroupReport.FSW600CR2.compare.1.2=600CR2
-	//testGroupReport.FSW600CR2.compare.1.alias=600CR1 vs. 600CR2
-	//testGroupReport.FSW600CR2.tag.1=600CR1 FSW simple-12
-	//testGroupReport.FSW600CR2.tag.1.alias=600CR1
-	//testGroupReport.FSW600CR2.tag.2=600CR2 FSW simple-12
-	//testGroupReport.FSW600CR2.tag.2.alias=600CR2
-	//testGroupReport.FSW600CR2.tag.3=2nd.round 600CR2 FSW simple-12
-	//testGroupReport.FSW600CR2.tag.3.alias=600CR2
-	//testGroupReport.FSW600CR2.threshold=-5.0
-	//testGroupReport.FSW600CR2.tests=sy-binding-camel-jms,sy-binding-http-get,sy-binding-http-get-throttling
-
 	private List<String> tags = Lists.newArrayList();
 
 	private Map<String, String> tagAlias = new HashMap<String, String>();
@@ -172,7 +158,6 @@ public class TestGroupReportController extends BaseController {
 				if (selectedMetrics.isEmpty() || selectedMetrics.contains(metricName)) {
 					ColumnKey columnKeyFull = new ColumnKey(columnKey1, metricName);
 					ValueCell valueCell = data.get(te.getTestUid(), columnKeyFull);
-					//TODO: filter values according to metric
 					if (valueCell == null) {
 						data.put(te.getTestUid(), columnKeyFull, new ValueCell(value));
 					} else {
@@ -184,8 +169,6 @@ public class TestGroupReportController extends BaseController {
 		if (selectedMetrics.isEmpty()) {
 			selectedMetrics.addAll(metrics);
 		}
-		//filter tagAlias according to tags
-		//tagAlias = Maps.filterKeys(tagAlias, Predicates.in(tags));
 	}
 
 	public List<TestExecution> findTestExecutions() {
@@ -490,6 +473,15 @@ public class TestGroupReportController extends BaseController {
 		return tagAlias.get(tag);
 	}
 
+	public String getTestName(String testuid) {
+		for (TestExecution te : getTestExecutions()) {
+			if (testuid.equals(te.getTestUid())) {
+				return te.getTest().getName();
+			}
+		}
+		return null;
+	}
+
 	public Map<String, String> getTagAlias() {
 		return tagAlias;
 	}
@@ -690,24 +682,6 @@ public class TestGroupReportController extends BaseController {
 		}
 	}
 
-//	public ChartData dataset(String metric) {
-//		if (comparison != null && !comparison.isEmpty()) {
-//			String compareKey = (String) comparison.keySet().toArray()[0];
-//			List<String> testList = new ArrayList<String>();
-//			List<Double> valueList = new ArrayList<Double>();
-//			for (String test : data.rowKeySet()) {
-//				testList.add(test);
-//				valueList.add(Double.valueOf(compare(test, compareKey, metric)));
-//			}
-//			ChartData dataset = new TestGroupChartBean.ChartData();
-//			dataset.setTests(testList.toArray(new String[0]));
-//			dataset.setValues(valueList.toArray(new Double[0]));
-//			dataset.setTitle(compareKey + " - " + metric);
-//			return dataset;
-//		}
-//		return null;
-//	}
-
 	public void addAllMissingTestExecutions() {
 		if (!missingTE.isEmpty()) {
 			for (TestExecution te : missingTE) {
@@ -780,7 +754,7 @@ public class TestGroupReportController extends BaseController {
 	}
 
 	public int getChartWidth() {
-		if (getMetrics().size() > 3) {
+		if (getMetrics().size() * getComparison().size() > 3) {
 			//two charts in row (450px)
 			return 450;
 		}

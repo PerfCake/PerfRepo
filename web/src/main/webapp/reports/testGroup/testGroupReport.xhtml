@@ -187,7 +187,7 @@
                     <tbody>
                     <ui:repeat value="#{testGroupReportController.tests}" var="test">
                         <tr>
-                            <td rowspan="#{testGroupReportController.selectedMetrics.size()}">#{test}</td>
+                            <td rowspan="#{testGroupReportController.selectedMetrics.size()}">#{testGroupReportController.getTestName(test)}</td>
                             <ui:repeat value="#{testGroupReportController.selectedMetrics}" var="metric"
                                        varStatus="status">
                                 <h:outputText value="#{'&lt;/tr&gt;&lt;tr&gt;'}" rendered="#{status.index > 0}"
@@ -237,7 +237,7 @@
                             <c:forEach var =  "metric" items = "#{testGroupReportController.selectedMetrics}" >
                             	raw = [['Test', 'Percentage', {role: 'style'}, { role: 'annotation' }],
                             	<c:forEach var = "row" items = "#{testGroupReportController.getChartData(metric, compareKey)}">
-                            		['#{row.test}', #{row.result}, '#{row.color}', '#{row.label}'],
+									['#{testGroupReportController.getTestName(row.test)}', #{row.result}, '#{row.color}', '#{row.label}'],
                     			</c:forEach>];
                     			data = google.visualization.arrayToDataTable(raw);
                     			google.setOnLoadCallback(drawChart('#{compareKey} - #{metric}', data, "#{metric}_#{compareKey.replaceAll(' ', '_')}"));
