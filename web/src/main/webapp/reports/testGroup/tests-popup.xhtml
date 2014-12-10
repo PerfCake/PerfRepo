@@ -11,9 +11,8 @@
         <fieldset>
             <a4j:commandLink onclick="document.getElementById('testForm:info').style.display='block'" alt="Information"
                              title="Information"><i class="icon-info"/></a4j:commandLink>
-            <h:panelGroup id="info" layout="block" styleClass="alert alert-info" style="display:none">
+            <h:panelGroup id="info" layout="block" styleClass="alert alert-info" style="display:none;width:300px;overflow:auto;">
                 <p>The report requires the definition of tests for which is report generated. The tests can be added by entering test uid.</p>
-
                 <p>The test executions which will be compared in the report are selected according to defined tests and tags. You can enter the tags on popup 'Tags' of the report</p>
             </h:panelGroup>
             <h5>Add new test</h5>
@@ -32,25 +31,27 @@
                                disabled="#{!testGroupReportController.userAuthorized}"/>
             <br/><br/>
             <h5>Tests:</h5>
-            <table id="values" class="table table-bordered smallpad">
-                <thead>
-                <tr>
-                    <th style="text-align: center; vertical-align: middle">Test</th>
-                    <th style="text-align: center; vertical-align: middle"></th>
-                </tr>
-                </thead>
-                <tbody>
-                <ui:repeat value="#{testGroupReportController.testsCopy}" var="test">
-                    <tr>
-                        <td style="text-align: left; vertical-align: middle">#{test}</td>
-                        <td style="text-align: left; vertical-align: middle"><a4j:commandLink
-                                disabled="#{!testGroupReportController.userAuthorized}"
-                                action="#{testGroupReportController.removeTest(test)}" render="@form :testForm"
-                                alt="Delete Test" title="Delete Test"><i class="icon-remove"/></a4j:commandLink></td>
-                    </tr>
-                </ui:repeat>
-                </tbody>
-            </table>
+            <h:panelGroup id="testValuesPanel" layout="block" style="width:300px;height:300px;overflow:auto;">
+	            <table id="values" class="table table-bordered smallpad">
+	                <thead>
+	                <tr>
+	                    <th style="text-align: center; vertical-align: middle">Test</th>
+	                    <th style="text-align: center; vertical-align: middle"></th>
+	                </tr>
+	                </thead>
+	                <tbody>
+	                <ui:repeat value="#{testGroupReportController.testsCopy}" var="test">
+	                    <tr>
+	                        <td style="text-align: left; vertical-align: middle">#{test}</td>
+	                        <td style="text-align: left; vertical-align: middle"><a4j:commandLink
+	                                disabled="#{!testGroupReportController.userAuthorized}"
+	                                action="#{testGroupReportController.removeTest(test)}" render="@form :testForm"
+	                                alt="Delete Test" title="Delete Test"><i class="icon-remove"/></a4j:commandLink></td>
+	                    </tr>
+	                </ui:repeat>
+	                </tbody>
+	            </table>
+            </h:panelGroup><br/>
             <div style="text-align:right">
                 <a4j:commandButton styleClass="btn btn-primary btn-small"
                                    action="#{testGroupReportController.storeTests()}" value="OK" alt="OK" title="OK"

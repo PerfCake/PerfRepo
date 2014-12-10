@@ -12,8 +12,8 @@
         <fieldset>
             <a4j:commandLink onclick="document.getElementById('compareForm:info').style.display='block'"
                              alt="Information" title="Information"><i class="icon-info"/></a4j:commandLink>
-            <h:panelGroup id="info" layout="block" styleClass="alert alert-info" style="display:none">
-                <p>If you want to compare results of the test executions, you need to add the comparison by selecting baselines.</p>
+            <h:panelGroup id="info" layout="block" styleClass="alert alert-info" style="display:none;width:380px;overflow:auto;">
+                <p>If you want to compare results of the test executions, you need to add the comparison by selecting the baselines.</p>
             </h:panelGroup>
             <h5>Add new comparison:</h5>
 
@@ -51,30 +51,32 @@
             </div>
             <br/><br/>
             <h5>Defined comparison:</h5>
-            <table id="compareValues" class="table table-bordered smallpad">
-                <thead>
-                <tr>
-                    <th style="text-align: center; vertical-align: middle">Baseline 1</th>
-                    <th style="text-align: center; vertical-align: middle">Baseline 2</th>
-                    <th style="text-align: center; vertical-align: middle">Label</th>
-                    <th style="text-align: center; vertical-align: middle"></th>
-                </tr>
-                </thead>
-                <tbody>
-                <ui:repeat value="#{testGroupReportController.comparisonLabels}" var="label">
-                    <tr>
-                        <td style="text-align: left; vertical-align: middle">#{testGroupReportController.comparisonCopy[label].get(0)}</td>
-                        <td style="text-align: left; vertical-align: middle">#{testGroupReportController.comparisonCopy[label].get(1)}</td>
-                        <td style="text-align: left; vertical-align: middle">#{label}</td>
-                        <td style="text-align: left; vertical-align: middle"><a4j:commandLink
-                                action="#{testGroupReportController.removeComparison(label)}"
-                                render="@form :compareForm" disabled="#{!testGroupReportController.userAuthorized}"
-                                alt="Delete Comparison" title="Delete Comparison"><i
-                                class="icon-remove"/></a4j:commandLink></td>
-                    </tr>
-                </ui:repeat>
-                </tbody>
-            </table>
+            <h:panelGroup id="compareValuesPanel" layout="block" style="width:380px;height:300px;overflow:auto;">
+	            <table id="compareValues" class="table table-bordered smallpad">
+	                <thead>
+	                <tr>
+	                    <th style="text-align: center; vertical-align: middle">Baseline 1</th>
+	                    <th style="text-align: center; vertical-align: middle">Baseline 2</th>
+	                    <th style="text-align: center; vertical-align: middle">Label</th>
+	                    <th style="text-align: center; vertical-align: middle"></th>
+	                </tr>
+	                </thead>
+	                <tbody>
+	                <ui:repeat value="#{testGroupReportController.comparisonLabels}" var="label">
+	                    <tr>
+	                        <td style="text-align: left; vertical-align: middle">#{testGroupReportController.comparisonCopy[label].get(0)}</td>
+	                        <td style="text-align: left; vertical-align: middle">#{testGroupReportController.comparisonCopy[label].get(1)}</td>
+	                        <td style="text-align: left; vertical-align: middle">#{label}</td>
+	                        <td style="text-align: left; vertical-align: middle"><a4j:commandLink
+	                                action="#{testGroupReportController.removeComparison(label)}"
+	                                render="@form :compareForm" disabled="#{!testGroupReportController.userAuthorized}"
+	                                alt="Delete Comparison" title="Delete Comparison"><i
+	                                class="icon-remove"/></a4j:commandLink></td>
+	                    </tr>
+	                </ui:repeat>
+	                </tbody>
+	            </table>
+            </h:panelGroup><br/>
             <div style="text-align:right">
                 <a4j:commandButton styleClass="btn btn-primary btn-small"
                                    action="#{testGroupReportController.storeComparison()}" value="OK" alt="OK"
