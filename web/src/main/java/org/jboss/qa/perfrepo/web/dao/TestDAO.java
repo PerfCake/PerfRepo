@@ -17,6 +17,7 @@ package org.jboss.qa.perfrepo.web.dao;
 
 import org.jboss.qa.perfrepo.model.Entity;
 import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.to.GroupFilter;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 
 import javax.inject.Named;
@@ -51,7 +52,7 @@ public class TestDAO extends DAO<Test, Long> {
 		return null;
 	}
 
-	public List<Test> searchTests(TestSearchTO search) {
+	public List<Test> searchTests(TestSearchTO search, List<String> userGroupNames) {
 		CriteriaQuery<Test> criteria = createCriteria();
 		Root<Test> root = criteria.from(Test.class);
 		criteria.select(root);
@@ -65,6 +66,9 @@ public class TestDAO extends DAO<Test, Long> {
 		}
 		if (search.getGroupId() != null && !"".equals(search.getGroupId())) {
 			predicates.add(cb.equal(root.get("groupId"), search.getGroupId()));
+		}
+		if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
+			predicates.add(cb.and(root.get("groupId").in(userGroupNames)));
 		}
 		if (predicates.size() > 0) {
 			criteria.where(predicates.toArray(new Predicate[0]));

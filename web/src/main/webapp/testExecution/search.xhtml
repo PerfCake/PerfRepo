@@ -118,6 +118,21 @@
                 </div>
             </div>
         </h:panelGroup>
+        <div class="control-group">
+            <h:outputLabel class="control-label"></h:outputLabel>
+            <div class="controls">
+                <div class="btn-group">
+                	<r:commandLink styleClass="btn #{userSession.getGroupFilter() == 'MY_GROUPS' ? 'active' : '' }" render="@form" alt="Search My Groups Only" title="Search My Groups Only"
+                        action="#{userSession.setMyGroupFilter()}">
+						<i class="icon-group" /> Search My Groups Only
+                    </r:commandLink>
+                    <r:commandLink styleClass="btn #{userSession.getGroupFilter() == 'ALL_GROUPS' ? 'active' : '' }" render="@form" alt="Search All Groups" title="Search All Groups"
+                        action="#{userSession.setAllGroupFilter()}">
+						<i class="icon-asterisk" /> Search All Groups
+                    </r:commandLink>
+    			</div>
+            </div>
+        </div>
     </fieldset>
 
     <div class="form-actions">

@@ -15,18 +15,14 @@
  */
 package org.jboss.qa.perfrepo.web.dao;
 
-import org.jboss.qa.perfrepo.model.Metric;
-import org.jboss.qa.perfrepo.model.Tag;
-import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.model.TestExecution;
-import org.jboss.qa.perfrepo.model.TestExecutionParameter;
-import org.jboss.qa.perfrepo.model.TestExecutionTag;
-import org.jboss.qa.perfrepo.model.Value;
-import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
-import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
-import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
-import org.jboss.qa.perfrepo.model.util.EntityUtils;
-import org.jboss.qa.perfrepo.web.util.TagUtils;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
@@ -37,14 +33,19 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.Tag;
+import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.TestExecution;
+import org.jboss.qa.perfrepo.model.TestExecutionParameter;
+import org.jboss.qa.perfrepo.model.TestExecutionTag;
+import org.jboss.qa.perfrepo.model.Value;
+import org.jboss.qa.perfrepo.model.to.GroupFilter;
+import org.jboss.qa.perfrepo.model.to.MetricReportTO.DataPoint;
+import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
+import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
+import org.jboss.qa.perfrepo.model.util.EntityUtils;
+import org.jboss.qa.perfrepo.web.util.TagUtils;
 
 /**
  * DAO for {@link TestExecution}
@@ -128,7 +129,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 		return testExecution;
 	}
 
-	public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, TestExecutionParameterDAO paramDAO) {
+	public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, TestExecutionParameterDAO paramDAO, List<String> userGroups) {
 		CriteriaQuery<TestExecution> criteria = createCriteria();
 		CriteriaBuilder cb = criteriaBuilder();
 		List<String> tags = TagUtils.parseTags(search.getTags() != null ? search.getTags().toLowerCase() : "");
@@ -160,6 +161,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 		Predicate pExcludedTags = cb.and();
 		Predicate pTestName = cb.and();
 		Predicate pTestUID = cb.and();
+		Predicate pTestGroups = cb.and();
 		Predicate pParamsMatch = cb.and();
 		Predicate pHavingAllTagsPresent = cb.and();
 
@@ -195,6 +197,10 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 			Join<TestExecution, Test> rTest = rExec.join("test");
 			pTestUID = cb.like(rTest.<String>get("uid"), cb.parameter(String.class, "testUID"));
 		}
+		if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
+			Join<TestExecution, Test> rTest = rExec.join("test");
+			pTestGroups = cb.and(rTest.<String>get("groupId").in(cb.parameter(List.class, "groupNames")));
+		}
 		List<String> displayedParams = null;
 		if (search.getParameters() != null && !search.getParameters().isEmpty()) {
 			displayedParams = new ArrayList<String>(search.getParameters().size());
@@ -215,7 +221,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
 		// construct query
 		criteria.select(rExec);
-		criteria.where(cb.and(pStartedFrom, pStartedTo, pTagNameInFixedList, pExcludedTags, pTestName, pTestUID, pParamsMatch));
+		criteria.where(cb.and(pStartedFrom, pStartedTo, pTagNameInFixedList, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch));
 		criteria.having(pHavingAllTagsPresent);
 		// this isn't very ellegant, but Postgres 8.4 doesn't allow GROUP BY only with id
 		// this feature is allowed only since Postgres 9.1+
@@ -241,6 +247,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 		}
 		if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
 			query.setParameter("testUID", search.getTestUID());
+		}
+		if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
+			query.setParameter("groupNames", userGroups);
 		}
 		if (search.getParameters() != null && !search.getParameters().isEmpty()) {
 			int pCount = 1;

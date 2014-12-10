@@ -15,17 +15,18 @@
  */
 package org.jboss.qa.perfrepo.web.controller;
 
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 import org.jboss.qa.perfrepo.web.service.TestService;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.web.session.SearchCriteriaSession;
+import org.jboss.qa.perfrepo.web.session.UserSession;
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import java.util.List;
 
 /**
  * Search tests.
@@ -45,6 +46,9 @@ public class TestSearchController extends BaseController {
 	@Inject
 	private SearchCriteriaSession criteriaSession;
 
+	@Inject
+	private UserSession userSession;
+
 	private TestSearchTO criteria = null;
 
 	private List<Test> result;
@@ -57,6 +61,7 @@ public class TestSearchController extends BaseController {
 	}
 
 	public void search() {
+		criteria.setGroupFilter(userSession.getGroupFilter());
 		result = testService.searchTest(criteria);
 	}
 

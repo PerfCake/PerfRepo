@@ -1,7 +1,26 @@
 package org.jboss.qa.perfrepo.web.service;
 
-import org.apache.commons.codec.binary.Base64;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.annotation.Resource;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.apache.commons.codec.binary.Base64;
 import org.jboss.qa.perfrepo.model.FavoriteParameter;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.UserProperty;
@@ -14,27 +33,6 @@ import org.jboss.qa.perfrepo.web.dao.TestDAO;
 import org.jboss.qa.perfrepo.web.dao.UserDAO;
 import org.jboss.qa.perfrepo.web.dao.UserPropertyDAO;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
-
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.validation.Validator;
-
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Named
 @Stateless
@@ -59,9 +57,6 @@ public class UserServiceBean implements UserService {
 
 	@Resource
 	private SessionContext sessionContext;
-
-	@Inject
-	private Validator validator;
 
 	@Override
 	public User createUser(User user) throws ServiceException {
@@ -138,6 +133,19 @@ public class UserServiceBean implements UserService {
 	}
 
 	@Override
+	public void addUserProperty(String name, String value) throws ServiceException {
+		User user = userDAO.get(getLoggedUser().getId());
+		UserProperty up = userPropertyDAO.findByUserIdAndName(user.getId(), name);
+		if (up == null) {
+			up = new UserProperty();
+		}
+		up.setName(name);
+		up.setValue(value);
+		up.setUser(user);
+		userPropertyDAO.create(up);
+	}
+
+	@Override
 	public void removeFavoriteParameter(Test test, String paramName) throws ServiceException {
 		FavoriteParameter fp = favoriteParameterDAO.findByTestAndParamName(paramName, test.getId(), getLoggedUser().getId());
 
@@ -178,6 +186,16 @@ public class UserServiceBean implements UserService {
 	@Override
 	public List<Group> getGroups() {
 		return groupDAO.getAll();
+	}
+
+	@Override
+	public List<String> getLoggedUserGroupNames() {
+		List<String> names = new ArrayList<String>();
+		Collection<Group> gs = getLoggedUser().getGroups();
+		for (Group group : gs) {
+			names.add(group.getName());
+		}
+		return names;
 	}
 
 	@Override

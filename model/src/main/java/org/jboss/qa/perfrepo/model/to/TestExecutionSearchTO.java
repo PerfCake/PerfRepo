@@ -28,6 +28,7 @@ import java.util.List;
  */
 public class TestExecutionSearchTO implements Serializable {
 
+	private static final long serialVersionUID = -2274979571623499791L;
 	//means "Test executed after"
 	private Date startedFrom;
 	//means "Test executed before"
@@ -37,8 +38,11 @@ public class TestExecutionSearchTO implements Serializable {
 	private String testName;
 	private List<ParamCriteria> parameters = new ArrayList<ParamCriteria>();
 	private int limit;
+	private GroupFilter groupFilter;
 
 	public static class ParamCriteria implements Serializable {
+
+		private static final long serialVersionUID = -2562642308678063396L;
 		private String name;
 		private String value;
 
@@ -119,5 +123,13 @@ public class TestExecutionSearchTO implements Serializable {
 
 	public void setLimit(int limit) {
 		this.limit = limit;
+	}
+
+	public GroupFilter getGroupFilter() {
+		return groupFilter;
+	}
+
+	public void setGroupFilter(GroupFilter groupFilter) {
+		this.groupFilter = groupFilter;
 	}
 }

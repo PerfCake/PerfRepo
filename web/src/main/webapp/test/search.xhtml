@@ -43,6 +43,21 @@
                                          value="#{testSearchController.criteria.groupId}"/>
                         </div>
                     </div>
+                    <div class="control-group">
+            			<h:outputLabel class="control-label"></h:outputLabel>
+			            <div class="controls">
+			                <div class="btn-group">
+			                	<a4j:commandLink styleClass="btn #{userSession.getGroupFilter() == 'MY_GROUPS' ? 'active' : '' }" render="@form" alt="Search My Groups Only" title="Search My Groups Only"
+			                        action="#{userSession.setMyGroupFilter()}">
+									<i class="icon-group" /> Search My Groups Only
+			                    </a4j:commandLink>
+			                    <a4j:commandLink styleClass="btn #{userSession.getGroupFilter() == 'ALL_GROUPS' ? 'active' : '' }" render="@form" alt="Search All Groups" title="Search All Groups"
+			                        action="#{userSession.setAllGroupFilter()}">
+									<i class="icon-asterisk" /> Search All Groups
+			                    </a4j:commandLink>
+			    			</div>
+			            </div>
+        			</div>
 
                 </fieldset>
 

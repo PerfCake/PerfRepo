@@ -175,7 +175,7 @@ public class TestServiceBean implements TestService {
 
 	@Override
 	public List<Test> searchTest(TestSearchTO search) {
-		return testDAO.searchTests(search);
+		return testDAO.searchTests(search, userService.getLoggedUserGroupNames());
 	}
 
 	@Override
@@ -189,7 +189,8 @@ public class TestServiceBean implements TestService {
 				}
 			}
 		}
-		List<TestExecution> result = testExecutionDAO.searchTestExecutions(search, testExecutionParameterDAO);
+		userService.getGroups();
+		List<TestExecution> result = testExecutionDAO.searchTestExecutions(search, testExecutionParameterDAO, userService.getLoggedUserGroupNames());
 		return result;
 	}
 

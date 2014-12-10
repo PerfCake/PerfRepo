@@ -72,6 +72,12 @@ public interface UserService {
 	public List<Group> getGroups();
 
 	/**
+	 * Retrieves all user group names
+	 * @return
+	 */
+	public List<String> getLoggedUserGroupNames();
+
+	/**
 	 * Retrieves currently logged user
 	 *
 	 * @return
@@ -118,6 +124,14 @@ public interface UserService {
 	 * @param label
 	 */
 	public void addFavoriteParameter(Test test, String paramName, String label) throws ServiceException;
+
+	/**
+	 * Adds user parameter
+	 *
+	 * @param paramName
+	 * @param value
+	 */
+	public void addUserProperty(String paramName, String value) throws ServiceException;
 
 	/**
 	 * Removes favorite parameter of the test from user

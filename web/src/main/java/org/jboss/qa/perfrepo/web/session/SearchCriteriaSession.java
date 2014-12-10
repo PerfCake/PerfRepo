@@ -1,14 +1,15 @@
 package org.jboss.qa.perfrepo.web.session;
 
+import java.io.Serializable;
+import java.util.Calendar;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestSearchTO;
 import org.jboss.qa.perfrepo.model.util.ExecutionSort;
-
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
-
-import java.io.Serializable;
-import java.util.Calendar;
 
 /**
  * Session storage for search criteria.
@@ -18,6 +19,8 @@ import java.util.Calendar;
 @Named(value = "searchCriteriaSession")
 @SessionScoped
 public class SearchCriteriaSession implements Serializable {
+
+	private static final long serialVersionUID = 9050986914006178498L;
 
 	private TestExecutionSearchTO executionSearchCriteria;
 

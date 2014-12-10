@@ -25,11 +25,15 @@ import java.io.Serializable;
  */
 public class TestSearchTO implements Serializable {
 
+	private static final long serialVersionUID = -2549234530526625783L;
+
 	private String name;
 
 	private String uid;
 
 	private String groupId;
+
+	private GroupFilter groupFilter;
 
 	public String getName() {
 		return name;
@@ -53,5 +57,13 @@ public class TestSearchTO implements Serializable {
 
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
+	}
+
+	public GroupFilter getGroupFilter() {
+		return groupFilter;
+	}
+
+	public void setGroupFilter(GroupFilter groupFilter) {
+		this.groupFilter = groupFilter;
 	}
 }

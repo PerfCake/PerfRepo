@@ -15,6 +15,13 @@
  */
 package org.jboss.qa.perfrepo.web.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
@@ -25,16 +32,10 @@ import org.jboss.qa.perfrepo.web.service.TestService;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.web.session.SearchCriteriaSession;
 import org.jboss.qa.perfrepo.web.session.TEComparatorSession;
+import org.jboss.qa.perfrepo.web.session.UserSession;
 import org.jboss.qa.perfrepo.web.util.TagUtils;
 import org.jboss.qa.perfrepo.web.util.ViewUtils;
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Search test executions.
@@ -51,6 +52,9 @@ public class TestExecutionSearchController extends BaseController {
 
 	@Inject
 	private TestService testService;
+
+	@Inject
+	private UserSession userSession;
 
 	@Inject
 	private SearchCriteriaSession criteriaSession;
@@ -101,6 +105,7 @@ public class TestExecutionSearchController extends BaseController {
 
 	public void search() {
 		TestExecutionSearchTO criteria = criteriaSession.getExecutionSearchCriteria();
+		criteria.setGroupFilter(userSession.getGroupFilter());
 		result = testService.searchTestExecutions(criteria);
 		paramColumns = new ArrayList<String>(3);
 		for (ParamCriteria pc : criteria.getParameters()) {
