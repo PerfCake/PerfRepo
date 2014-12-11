@@ -15,23 +15,23 @@
  */
 package org.jboss.qa.perfrepo.web.controller;
 
-import org.apache.log4j.Logger;
-
-import org.jboss.qa.perfrepo.model.Metric;
-import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
-import org.jboss.qa.perfrepo.web.service.TestService;
-import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
-import org.jboss.qa.perfrepo.web.session.SearchCriteriaSession;
-import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.ejb.EJBException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.apache.log4j.Logger;
+import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
+import org.jboss.qa.perfrepo.web.service.TestService;
+import org.jboss.qa.perfrepo.web.service.UserService;
+import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
+import org.jboss.qa.perfrepo.web.session.SearchCriteriaSession;
+import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
 
 /**
  * Backing bean for editing and displaying details of {@link Test}.
@@ -51,6 +51,9 @@ public class TestController extends BaseController {
 
 	@Inject
 	private TestService testService;
+
+	@Inject
+	private UserService userService;
 
 	@Inject
 	private SearchCriteriaSession criteriaSession;
@@ -170,6 +173,10 @@ public class TestController extends BaseController {
 
 	public MetricDetails getMetricDetails() {
 		return metricDetails;
+	}
+
+	public List<String> getUserGroups() {
+		return userService.getLoggedUserGroupNames();
 	}
 
 	public class MetricDetails {

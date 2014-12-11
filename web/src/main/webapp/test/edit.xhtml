@@ -36,7 +36,9 @@
                         <h:outputLabel class="control-label">#{entityStrings.Test_groupid}</h:outputLabel>
 
                         <div class="controls">
-                            <h:inputText styleClass="input-text" value="#{testController.test.groupId}"/>
+                            <h:selectOneMenu id="selectGroup" value="#{testController.test.groupId}">
+                                <f:selectItems value="#{testController.getUserGroups()}"/>
+                            </h:selectOneMenu>
                         </div>
                     </div>
                     <div class="control-group">
