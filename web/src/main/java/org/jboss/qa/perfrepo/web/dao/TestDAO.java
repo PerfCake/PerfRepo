@@ -59,10 +59,20 @@ public class TestDAO extends DAO<Test, Long> {
 		CriteriaBuilder cb = criteriaBuilder();
 		List<Predicate> predicates = new ArrayList<Predicate>();
 		if (search.getName() != null && !"".equals(search.getName())) {
-			predicates.add(cb.equal(root.get("name"), search.getName()));
+			if (search.getName().endsWith("*")) {
+				String pattern = search.getName().substring(0, search.getName().length() -1).concat("%").toLowerCase();
+				predicates.add(cb.like(cb.lower(root.<String>get("name")), pattern));
+			} else {
+				predicates.add(cb.equal(cb.lower(root.<String>get("name")), search.getName()));
+			}
 		}
 		if (search.getUid() != null && !"".equals(search.getUid())) {
-			predicates.add(cb.equal(root.get("uid"), search.getUid()));
+			if (search.getUid().endsWith("*")) {
+				String pattern = search.getUid().substring(0, search.getUid().length() -1).concat("%").toLowerCase();
+				predicates.add(cb.like(cb.lower(root.<String>get("uid")), pattern));
+			} else {
+				predicates.add(cb.equal(cb.lower(root.<String>get("uid")), search.getUid()));
+			}
 		}
 		if (search.getGroupId() != null && !"".equals(search.getGroupId())) {
 			predicates.add(cb.equal(root.get("groupId"), search.getGroupId()));

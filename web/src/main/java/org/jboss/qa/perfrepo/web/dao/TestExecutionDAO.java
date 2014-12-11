@@ -180,10 +180,10 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 			}
 
 			if (!excludedTags.isEmpty()) {
-				Subquery<TestExecution> sq = criteria.subquery(TestExecution.class);
-				Root sqRoot = sq.from(TestExecution.class);
+				Subquery<Long> sq = criteria.subquery(Long.class);
+				Root<TestExecution> sqRoot = sq.from(TestExecution.class);
 				Join<TestExecution, Tag> sqTag = sqRoot.joinCollection("testExecutionTags").join("tag");
-				sq.select(sqRoot.get("id"));
+				sq.select(sqRoot.<Long>get("id"));
 				sq.where(cb.lower(sqTag.<String>get("name")).in(cb.parameter(List.class, "excludedTagList")));
 
 				pExcludedTags = cb.not(rExec.get("id").in(sq));
@@ -191,11 +191,11 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 		}
 		if (search.getTestName() != null && !"".equals(search.getTestName())) {
 			Join<TestExecution, Test> rTest = rExec.join("test");
-			pTestName = cb.like(rTest.<String>get("name"), cb.parameter(String.class, "testName"));
+			pTestName = cb.like(cb.lower(rTest.<String>get("name")), cb.parameter(String.class, "testName"));
 		}
 		if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
 			Join<TestExecution, Test> rTest = rExec.join("test");
-			pTestUID = cb.like(rTest.<String>get("uid"), cb.parameter(String.class, "testUID"));
+			pTestUID = cb.like(cb.lower(rTest.<String>get("uid")), cb.parameter(String.class, "testUID"));
 		}
 		if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
 			Join<TestExecution, Test> rTest = rExec.join("test");
@@ -245,10 +245,20 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 			query.setParameter("excludedTagList", excludedTags);
 		}
 		if (search.getTestName() != null && !"".equals(search.getTestName())) {
-			query.setParameter("testName", search.getTestName());
+			if (search.getTestName().endsWith("*")) {
+				String pattern = search.getTestName().substring(0, search.getTestName().length() -1).concat("%").toLowerCase();
+				query.setParameter("testName", pattern);
+			} else {
+				query.setParameter("testName", search.getTestName().toLowerCase());
+			}
 		}
 		if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
-			query.setParameter("testUID", search.getTestUID());
+			if (search.getTestUID().endsWith("*")) {
+				String pattern = search.getTestUID().substring(0, search.getTestUID().length() -1).concat("%").toLowerCase();
+				query.setParameter("testUID", pattern);
+			} else {
+				query.setParameter("testUID", search.getTestUID().toLowerCase());
+			}
 		}
 		if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
 			query.setParameter("groupNames", userGroups);

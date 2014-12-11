@@ -6010,6 +6010,13 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
     color: #555555 !important;
 }
 
+.rf-tt-cntr {
+    border: 1px solid #37A7E8 !important;
+    border-radius: 3px 3px 3px 3px !important;
+    padding: 3px !important;
+    background-color: #EEEEEE !important;
+}
+
 .compare_exec_baseline {
     background: #FFF58A;
 }
@@ -6040,11 +6047,11 @@ td.rf-tab-hdr-inact.rf-tab-hdr-top:hover {
 }
 
 .table-hover tbody tr:hover>td, .table-hover tbody tr:hover>th {
-    background-color: #FFF58A;
+    background-color: #EEEEEE;/*#FFF58A;*/
 }
 
 .table-hover tbody tr.neq:hover>td, .table-hover tbody tr.neq:hover>th {
-    background-color: #FFF58A;
+    background-color: #EEEEEE;/*#FFF58A;*/
 }
 
 td.numvalcolumn {

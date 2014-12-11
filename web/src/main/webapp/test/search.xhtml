@@ -19,6 +19,10 @@
                         <div class="controls">
                             <h:inputText type="text" class="input-xlarge" id="testName"
                                          value="#{testSearchController.criteria.name}"/>
+							<a href="#"><i id="testName-info" class="icon-info"/></a>
+							<rich:tooltip target="testName-info" followMouse="false" direction="topRight">
+								<div style="width:200px;">#{strings['page.search.asteriskTooltip']}</div>
+							</rich:tooltip>
                         </div>
                     </div>
 
@@ -31,6 +35,10 @@
                                                autofill="false"
                                                autocompleteMethod="#{testSearchController.autocompleteTest}"
                                                value="#{testSearchController.criteria.uid}"/>
+							<a href="#"><i id="testName-uid" class="icon-info"/></a>
+							<rich:tooltip target="testName-uid" followMouse="false" direction="topRight">
+								<div style="width:200px;">#{strings['page.search.asteriskTooltip']}</div>
+							</rich:tooltip>
                         </div>
                     </div>
 

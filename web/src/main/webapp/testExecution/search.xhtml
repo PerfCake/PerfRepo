@@ -21,17 +21,24 @@
             <div class="controls">
                 <h:inputText type="text" class="input-xlarge" id="testName"
                              value="#{searchCriteriaSession.executionSearchCriteria.testName}"/>
+                <a href="#"><i id="testName-info" class="icon-info"/></a>
+                <r:tooltip target="testName-info" followMouse="false" direction="topRight">
+					<div style="width:200px;">#{strings['page.search.asteriskTooltip']}</div>
+				</r:tooltip>
             </div>
         </div>
 
         <div class="control-group">
             <h:outputLabel class="control-label" for="testUID">Test UID</h:outputLabel>
-
             <div class="controls">
                 <rich:autocomplete id="testUID" styleClass="input-xlarge" mode="cachedAjax" minChars="2"
                                    autofill="false"
                                    autocompleteMethod="#{testExecutionSearchController.autocompleteTest}"
                                    value="#{searchCriteriaSession.executionSearchCriteria.testUID}"/>
+				<a href="#"><i id="testUID-info" class="icon-info"/></a>
+                <r:tooltip target="testUID-info" followMouse="false" direction="topRight">
+					<div style="width:200px;">#{strings['page.search.asteriskTooltip']}</div>
+				</r:tooltip>
             </div>
         </div>
 
@@ -61,6 +68,10 @@
                                    tokens=" "
                                    autocompleteMethod="#{testExecutionSearchController.autocompleteTags}"
                                    value="#{searchCriteriaSession.executionSearchCriteria.tags}"/>
+				<a href="#"><i id="tags-info" class="icon-info"/></a>
+                <r:tooltip target="tags-info" followMouse="false" direction="topRight">
+					<div style="width:200px;">#{strings['page.search.tags']}</div>
+				</r:tooltip>
             </div>
         </div>
         <div class="control-group">
