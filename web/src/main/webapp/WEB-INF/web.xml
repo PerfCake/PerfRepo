@@ -136,4 +136,7 @@
 		<description/>
 		<role-name>*</role-name>
 	</security-role>
+	<session-config>
+		<session-timeout>120</session-timeout>
+	</session-config>
 </web-app>
