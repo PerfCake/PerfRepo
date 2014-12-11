@@ -73,6 +73,8 @@ public class TestDAO extends DAO<Test, Long> {
 		if (predicates.size() > 0) {
 			criteria.where(predicates.toArray(new Predicate[0]));
 		}
+		// sorting by name
+		criteria.orderBy(cb.asc(root.get("name")));
 		return query(criteria).getResultList();
 	}
 
