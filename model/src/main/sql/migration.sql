@@ -44,3 +44,5 @@ ALTER TABLE 'user' ADD COLUMN last_name varchar(2047);
 
 ALTER TABLE permission ADD COLUMN report_id bigint;
 
+UPDATE metric set comparator='HB';
+
