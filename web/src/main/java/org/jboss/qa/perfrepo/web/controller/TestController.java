@@ -25,12 +25,14 @@ import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.MetricComparator;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.to.TestExecutionSearchTO;
 import org.jboss.qa.perfrepo.web.service.TestService;
 import org.jboss.qa.perfrepo.web.service.UserService;
 import org.jboss.qa.perfrepo.web.service.exceptions.ServiceException;
 import org.jboss.qa.perfrepo.web.session.SearchCriteriaSession;
+import org.jboss.qa.perfrepo.web.util.MessageUtils;
 import org.jboss.qa.perfrepo.web.viewscope.ViewScoped;
 
 /**
@@ -248,6 +250,14 @@ public class TestController extends BaseController {
 					redirect("/test/" + testId);
 				}
 			}
+		}
+
+		public MetricComparator[] getMetricComparators() {
+			return MetricComparator.values();
+		}
+
+		public String getEnumLabel(MetricComparator mc) {
+			return MessageUtils.getEnum(mc);
 		}
 
 		public void createMetric() {

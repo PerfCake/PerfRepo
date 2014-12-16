@@ -15,12 +15,13 @@
  */
 package org.jboss.qa.perfrepo.model.builder;
 
-import org.jboss.qa.perfrepo.model.Metric;
-import org.jboss.qa.perfrepo.model.Test;
-import org.jboss.qa.perfrepo.model.TestMetric;
-
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.MetricComparator;
+import org.jboss.qa.perfrepo.model.Test;
+import org.jboss.qa.perfrepo.model.TestMetric;
 
 /**
  * {@link Test} builder.
@@ -98,7 +99,7 @@ public class TestBuilder {
 	 * @param description
 	 * @return this {@link TestBuilder}
 	 */
-	public TestBuilder metric(String name, String comparator, String description) {
+	public TestBuilder metric(String name, MetricComparator comparator, String description) {
 		return metric().name(name).comparator(comparator).description(description).test();
 	}
 
@@ -110,7 +111,7 @@ public class TestBuilder {
 	 * @return this {@link TestBuilder}
 	 */
 	public TestBuilder metric(String name, String description) {
-		return metric().name(name).description(description).test();
+		return metric().name(name).description(description).comparator(MetricComparator.HB).test();
 	}
 
 	/**

@@ -20,6 +20,8 @@ import org.jboss.qa.perfrepo.model.auth.SecuredEntity;
 import org.jboss.qa.perfrepo.model.builder.MetricBuilder;
 
 import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -72,8 +74,8 @@ public class Metric implements Entity<Metric>, Comparable<Metric> {
 	private Long id;
 
 	@Column(name = "comparator")
-	@Size(max = 255)
-	private String comparator;
+	@Enumerated(EnumType.STRING)
+	private MetricComparator comparator;
 
 	@Column(name = "name")
 	@NotNull
@@ -104,7 +106,7 @@ public class Metric implements Entity<Metric>, Comparable<Metric> {
 		}
 	}
 
-	public Metric(String name, String comparator, String description) {
+	public Metric(String name, MetricComparator comparator, String description) {
 		super();
 		this.name = name;
 		this.comparator = comparator;
@@ -130,12 +132,12 @@ public class Metric implements Entity<Metric>, Comparable<Metric> {
 		this.id = Long.valueOf(id);
 	}
 
-	public void setComparator(String comparator) {
+	public void setComparator(MetricComparator comparator) {
 		this.comparator = comparator;
 	}
 
 	@XmlAttribute(name = "comparator")
-	public String getComparator() {
+	public MetricComparator getComparator() {
 		return this.comparator;
 	}
 

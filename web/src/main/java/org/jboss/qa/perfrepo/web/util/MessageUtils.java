@@ -31,7 +31,7 @@ public class MessageUtils {
 	 * @param anEnum
 	 * @return String
 	 */
-	public String getEnum(Enum<?> anEnum) {
+	public static String getEnum(Enum<?> anEnum) {
 		return bundle.getString("enum." + anEnum.getClass().getName() + "." + anEnum.toString());
 	}
 

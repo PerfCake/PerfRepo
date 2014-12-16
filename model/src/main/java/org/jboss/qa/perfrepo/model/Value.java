@@ -134,11 +134,11 @@ public class Value implements Entity<Value> {
 	}
 
 	@XmlAttribute(name = "metricComparator")
-	public String getMetricComparator() {
+	public MetricComparator getMetricComparator() {
 		return metric == null ? null : metric.getComparator();
 	}
 
-	public void setMetricComparator(String metricComparator) {
+	public void setMetricComparator(MetricComparator metricComparator) {
 		if (metric == null) {
 			metric = new Metric();
 		}

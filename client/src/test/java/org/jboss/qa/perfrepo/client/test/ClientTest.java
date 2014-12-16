@@ -2,15 +2,14 @@ package org.jboss.qa.perfrepo.client.test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import static junit.framework.Assert.assertEquals;
 
 import org.apache.commons.codec.binary.Base64;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.qa.perfrepo.client.PerfRepoClient;
 import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.MetricComparator;
 import org.jboss.qa.perfrepo.model.Test;
 import org.jboss.qa.perfrepo.model.TestExecution;
 import org.jboss.qa.perfrepo.model.Value;
@@ -21,7 +20,6 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.FileAsset;
 import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -257,9 +255,9 @@ public class ClientTest {
 				.groupId(clientGroup)
 				.uid("testtestuid" + salt)
 				.description("this is a test test")
-				.metric("metric1", "0", "this is a test metric 1")
-				.metric("metric2", "1", "this is a test metric 2")
-				.metric("multimetric", "1", "this is a metric with multiple values")
+				.metric("metric1", MetricComparator.LB, "this is a test metric 1")
+				.metric("metric2", "this is a test metric 2")
+				.metric("multimetric", MetricComparator.HB, "this is a metric with multiple values")
 				.build();
 	}
 

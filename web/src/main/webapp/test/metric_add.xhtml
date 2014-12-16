@@ -54,11 +54,15 @@
                     <div class="control-group">
                         <h:outputLabel class="control-label"
                                        for="selectMetric">#{entityStrings.Metric_comparator}</h:outputLabel>
-
                         <div class="controls">
-                            <h:inputText styleClass="input-text"
-                                         value="#{testController.metricDetails.metric.comparator}"/>
-                        </div>
+							<rich:select id="selectMetric" value="#{testController.metricDetails.metric.comparator}">
+								<f:selectItems value="#{testController.metricDetails.metricComparators}" var="mc" itemLabel="#{testController.metricDetails.getEnumLabel(mc)}"/>
+							</rich:select>
+							<a href="#"><i id="comparator-info" class="icon-info"/></a>
+							<rich:tooltip target="comparator-info" followMouse="false" direction="topRight">
+								<div style="width:200px;">#{strings['page.test.metric.comparatorTooltip']}</div>
+							</rich:tooltip>
+						</div>
                     </div>
                     <div class="control-group">
                         <h:outputLabel class="control-label"

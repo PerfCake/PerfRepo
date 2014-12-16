@@ -17,6 +17,8 @@ import java.util.Collection;
 @Table(name = "\"group\"")
 public class Group implements Entity<Group>, Comparable<Group> {
 
+	private static final long serialVersionUID = -9158731656089441951L;
+
 	@Id
 	@SequenceGenerator(name = "GROUP_ID_GENERATOR", sequenceName = "GROUP_SEQUENCE", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "GROUP_ID_GENERATOR")

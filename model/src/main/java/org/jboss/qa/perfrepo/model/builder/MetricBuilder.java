@@ -16,6 +16,7 @@
 package org.jboss.qa.perfrepo.model.builder;
 
 import org.jboss.qa.perfrepo.model.Metric;
+import org.jboss.qa.perfrepo.model.MetricComparator;
 
 /**
  * {@link Metric} builder.
@@ -37,7 +38,7 @@ public class MetricBuilder {
 		return this;
 	}
 
-	public MetricBuilder comparator(String comparator) {
+	public MetricBuilder comparator(MetricComparator comparator) {
 		metric.setComparator(comparator);
 		return this;
 	}
