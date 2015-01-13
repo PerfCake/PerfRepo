@@ -22,10 +22,10 @@
 			<default-locale>en</default-locale>
 			<supported-locale>cs</supported-locale>
 		</locale-config>
-		<view-handler>org.jboss.qa.perfrepo.web.controller.PerfrepoViewHandler</view-handler>
+		<view-handler>org.perfrepo.web.controller.PerfrepoViewHandler</view-handler>
 	</application>
 	<factory>
-		<exception-handler-factory>org.jboss.qa.perfrepo.web.exceptions.PerfRepoExceptionHandlerFactory
+		<exception-handler-factory>org.perfrepo.web.exceptions.PerfRepoExceptionHandlerFactory
 		</exception-handler-factory>
 	</factory>
 </faces-config>

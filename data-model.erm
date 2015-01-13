@@ -71,7 +71,7 @@
 			<comment_replace_string></comment_replace_string>
 			<export_java_setting>
 				<java_output></java_output>
-				<package_name>org.jboss.qa.perf_repo.model</package_name>
+				<package_name>org.perfrepo.model</package_name>
 				<class_name_suffix></class_name_suffix>
 				<src_file_encoding>UTF-8</src_file_encoding>
 				<with_hibernate>false</with_hibernate>
