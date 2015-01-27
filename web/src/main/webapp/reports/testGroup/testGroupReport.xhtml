@@ -24,11 +24,19 @@
             <ui:include src="/reports/testGroup/compare-popup.xhtml"/>
             <ui:include src="/reports/testGroup/clone-popup.xhtml"/>
             <ui:include src="/reports/testGroup/metric-popup.xhtml"/>
+            <ui:include src="/reports/testGroup/name-popup.xhtml"/>
             <ui:include src="/reports/testGroup/configuration-popup.xhtml"/>
             <ui:include src="/reports/report-permissions-add-popup.xhtml"/>
             <h:form id="testGroupReport">
-                <h1><h:outputText value="#{testGroupReportController.reportName}"
-                                  rendered="#{testGroupReportController.reportName != null}"/></h1>
+                <h1>
+					<h:outputText value="#{testGroupReportController.reportName}" rendered="#{testGroupReportController.reportName != null}"/>
+					<span style="font-size:14px;">
+						<a4j:commandLink styleClass="text-success" rendered="#{testGroupReportController.reportId != null}"
+							disabled="#{!testGroupReportController.userAuthorized}" oncomplete="#{rich:component('namePopup')}.show();" alt="Update Report Name"
+							title="Update Report Name">
+							<i class="icon-pencil"/></a4j:commandLink>
+					</span>
+				</h1>
                 <ui:include src="/reports/report-permission-panel.xhtml"/>
 
                 <div id="control" style="text-align: right;line-height: 30px;">

@@ -318,6 +318,7 @@ public class TestGroupReportController extends BaseController {
 		} else if (teComparator.isAnyToCompare()) {
 			testIds.addAll(teComparator.getExecIds());
 		}
+		newReportName = reportName;
 		processTestExecutions();
 	}
 
@@ -413,6 +414,10 @@ public class TestGroupReportController extends BaseController {
 		reportId = null;
 		saveReport(newReportName);
 		redirectWithMessage("/reports", INFO, "page.reports.testGroup.reportSaved", newReportName);
+	}
+
+	public void updateReportName() {
+		reportName = newReportName;
 	}
 
 	public List<String> getTests() {
