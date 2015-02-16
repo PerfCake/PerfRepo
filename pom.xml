@@ -5,7 +5,7 @@
 
 	<groupId>org.perfrepo</groupId>
 	<artifactId>perfrepo-parent</artifactId>
-	<version>1.1</version>
+	<version>1.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Performance Results Repository - Parent</name>
 
