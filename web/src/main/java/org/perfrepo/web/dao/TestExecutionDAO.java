@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -55,6 +56,7 @@ import org.perfrepo.web.util.TagUtils;
  *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  */
 @Named
 public class TestExecutionDAO extends DAO<TestExecution, Long> {
@@ -64,16 +66,6 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 		test.setId(testId);
 		return getAllByProperty("test", test);
 	}
-
-   /**
-    * Shortcut for getLast(howMany, howMany), i.e. returns last (ordered by started date) <howMany> test executions
-    *
-    * @param howMany
-    * @return
-    */
-   public List<TestExecution> getLast(int howMany) {
-      return getLast(howMany, howMany);
-   }
 
    /**
     * Returns interval of test executions ordered by started date asc. The interval is defined as
@@ -110,12 +102,13 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    }
 
    /**
-    * TODO: document this
+    * Returns test executions with property value between selected boundaries. This can be applied only on
+    * Comparable values, otherwise the result is undefined.
     *
-    * @param propertyName
-    * @param from
-    * @param to
-    * @return
+    * @param propertyName property to be search (filtered) on
+    * @param from lower boundary
+    * @param to upper boundary
+    * @return list of according test executions
     */
    public <T extends Comparable<? super T>> List<TestExecution> getAllByPropertyBetween(String propertyName, T from, T to) {
       CriteriaQuery<TestExecution> resultQuery = createCriteria();
@@ -371,36 +364,74 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 		return r;
 	}
 
-	public List<TestExecution> getTestExecutions(List<String> tags, List<String> testUIDs) {
-		CriteriaQuery<TestExecution> criteria = createCriteria();
-		CriteriaBuilder cb = criteriaBuilder();
-		Root<TestExecution> rExec = criteria.from(TestExecution.class);
-		Join<TestExecution, Test> rTest = rExec.join("test");
-		Predicate pTestUID = rTest.<String>get("uid").in(cb.parameter(List.class, "testUID"));
-		Join<TestExecution, Tag> rTag = rExec.join("testExecutionTags").join("tag");
-		Predicate pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
-		Predicate pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
+   /**
+    * Shortcut for getTestExecutions(tags, testUIDs, null, null)
+    *
+    * @param tags
+    * @param testUIDs
+    * @return
+    */
+   public List<TestExecution> getTestExecutions(List<String> tags, List<String> testUIDs) {
+      return getTestExecutions(tags, testUIDs, null, null);
+   }
 
-		criteria.select(rExec);
-		criteria.where(cb.and(pTagNameInFixedList, pTestUID));
-		criteria.having(pHavingAllTagsPresent);
-		criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("started"), rExec.get("comment"));
+   /**
+    * This method retrieves all test executions that belong to one of the specified tests and have
+    * ALL the tags. The 'lastFrom' and 'howMany' parameters works as a LIMIT in SQL, e.g. lastFrom = 5, howMany = 3
+    * will return 3 last test executions shifted by 2 (last 2 test executions will not be in the result)
+    *
+    * @param tags ALL tags that test execution must have
+    * @param testUIDs ID's of the tests
+    * @param lastFrom see comment above. null = all test executions will be retrieved (both lastFrom and howMany must be set to take effect)
+    * @param howMany see comment above. null = all test executions will be retrieved (both lastFrom and howMany must be set to take effect)
+    * @return
+    */
+   public List<TestExecution> getTestExecutions(List<String> tags, List<String> testUIDs, Integer lastFrom, Integer howMany) {
+      CriteriaBuilder cb = criteriaBuilder();
 
-		TypedQuery<TestExecution> query = query(criteria);
-		query.setParameter("testUID", testUIDs);
-		query.setParameter("tagList", tags);
-		query.setParameter("tagListSize", new Long(tags.size()));
+      Long count = null;
+      //we want to you 'last' boundaries, we must compute the number of test executions that
+      //match the requirements - have selected tags and belong to selected tests
+      if(lastFrom != null && howMany != null) {
+         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+         Root<TestExecution> root = countQuery.from(TestExecution.class);
+         countQuery.select(cb.countDistinct(root));
 
-		List<TestExecution> result = EntityUtils.clone(query.getResultList());
-		for (TestExecution exec : result) {
-			TestExecutionDAO.fetchTest(exec);
-			TestExecutionDAO.fetchParameters(exec);
-			TestExecutionDAO.fetchTags(exec);
-			TestExecutionDAO.fetchValues(exec);
-		}
+         Subquery<Long> subquery = (Subquery) createSubqueryByTags(countQuery.subquery(Long.class));
+         Root<TestExecution> subqueryRoot = (Root<TestExecution>)subquery.getRoots().toArray()[0];
+         subquery.select(subqueryRoot.<Long>get("id"));
 
-		return result;
-	}
+         countQuery.where(cb.in(root.get("id")).value(subquery));
+         TypedQuery<Long> typedCountQuery = createTypedQueryByTags(countQuery, testUIDs, tags);
+         count = typedCountQuery.getSingleResult();
+      }
+
+      //now we can retrieve the actual result
+      CriteriaQuery<TestExecution> criteriaQuery = (CriteriaQuery) createSubqueryByTags(cb.createQuery(TestExecution.class));
+      Root<TestExecution> root = (Root<TestExecution>)criteriaQuery.getRoots().toArray()[0];
+      criteriaQuery.select(root);
+      criteriaQuery.orderBy(cb.asc(root.get("started")));
+
+      TypedQuery<TestExecution> query = createTypedQueryByTags(criteriaQuery, testUIDs, tags);
+      //we're using 'last' parameters, set the paging
+      if(count != null) {
+         int firstResult = count.intValue() - lastFrom;
+         query.setFirstResult(firstResult < 0 ? 0 : firstResult);
+         query.setMaxResults(howMany);
+      }
+
+      List<TestExecution> result = query.getResultList();
+
+      List<TestExecution> resultClone = EntityUtils.clone(result);
+      for (TestExecution exec : resultClone) {
+         TestExecutionDAO.fetchTest(exec);
+         TestExecutionDAO.fetchParameters(exec);
+         TestExecutionDAO.fetchTags(exec);
+         TestExecutionDAO.fetchValues(exec);
+      }
+
+      return resultClone;
+   }
 
 	/**
 	 * Finds all values used for computing MetricHistory report
@@ -490,4 +521,53 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 			return r.get(0);
 		}
 	}
+
+   /**
+    * Helper method. Because when trying to retrieve count of test executions according to
+    * some restrictions (like tags etc, in general when the query has having, where, group by together) via
+    * Criteria API, there is no way to reuse the query even though it differs in two lines.
+    *
+    * Hence, the basics of the query are extracted to this method to avoid code duplication.
+    *
+    * @param criteriaQuery
+    * @return
+    */
+   private AbstractQuery createSubqueryByTags(AbstractQuery criteriaQuery) {
+      CriteriaBuilder cb = criteriaBuilder();
+
+      AbstractQuery query = criteriaQuery;
+      Root<TestExecution> rExec = query.from(TestExecution.class);
+      Join<TestExecution, Test> rTest = rExec.join("test");
+      Predicate pTestUID = rTest.<String>get("uid").in(cb.parameter(List.class, "testUID"));
+      Join<TestExecution, Tag> rTag = rExec.join("testExecutionTags").join("tag");
+      Predicate pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
+      Predicate pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
+
+      query.where(cb.and(pTagNameInFixedList, pTestUID));
+      query.having(pHavingAllTagsPresent);
+      query.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("started"), rExec.get("comment"));
+
+      return query;
+   }
+
+   /**
+    * Helper method. Because when trying to retrieve count of test executions according to
+    * some restrictions (like tags etc, in general when the query has having, where, group by together) via
+    * Criteria API, there is no way to reuse the query even though it differs in two lines.
+    *
+    * Hence, the basics of the query are extracted to this method to avoid code duplication.
+    *
+    * @param criteriaQuery
+    * @param testUIDs
+    * @param tags
+    * @return
+    */
+   private TypedQuery createTypedQueryByTags(CriteriaQuery criteriaQuery, List<String> testUIDs, List<String> tags) {
+      TypedQuery<TestExecution> query = query(criteriaQuery);
+      query.setParameter("testUID", testUIDs);
+      query.setParameter("tagList", tags);
+      query.setParameter("tagListSize", new Long(tags.size()));
+
+      return query;
+   }
 }

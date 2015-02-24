@@ -1,5 +1,6 @@
 package org.perfrepo.test;
 
+import com.google.common.collect.Lists;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -14,12 +15,16 @@ import org.junit.runner.RunWith;
 import org.perfrepo.model.Entity;
 import org.perfrepo.model.Metric;
 import org.perfrepo.model.MetricComparator;
+import org.perfrepo.model.Tag;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
+import org.perfrepo.model.TestExecutionTag;
 import org.perfrepo.model.Value;
 import org.perfrepo.web.dao.DAO;
+import org.perfrepo.web.dao.TagDAO;
 import org.perfrepo.web.dao.TestDAO;
 import org.perfrepo.web.dao.TestExecutionDAO;
+import org.perfrepo.web.dao.TestExecutionTagDAO;
 
 import javax.inject.Inject;
 import javax.transaction.HeuristicMixedException;
@@ -32,7 +37,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -54,6 +61,12 @@ public class TestExecutionDAOTest {
    private TestDAO testDAO;
 
    @Inject
+   private TestExecutionTagDAO testExecutionTagDAO;
+
+   @Inject
+   private TagDAO tagDAO;
+
+   @Inject
    private UserTransaction userTransaction;
 
    private Test test;
@@ -62,7 +75,6 @@ public class TestExecutionDAOTest {
    private TestExecution te3;
    private TestExecution te4;
    private Calendar calendar = Calendar.getInstance();
-
 
    @Deployment
    public static Archive<?> createDeployment() {
@@ -75,7 +87,7 @@ public class TestExecutionDAOTest {
    }
 
    @Before
-   public void init() throws SystemException, NotSupportedException {
+   public void init() throws Exception {
       userTransaction.begin();
 
       test = testDAO.create(createTest());
@@ -84,15 +96,39 @@ public class TestExecutionDAOTest {
       te3 = testExecutionDao.create(createTestExecution3());
       te4 = testExecutionDao.create(createTestExecution4());
 
+      createTestExecutionTag("tag1", te1);
+      createTestExecutionTag("tag2", te1);
+      createTestExecutionTag("tag3", te1);
+      createTestExecutionTag("tag1", te2);
+      createTestExecutionTag("tag2", te2);
+      createTestExecutionTag("tag1", te3);
+      createTestExecutionTag("tag3", te3);
+      createTestExecutionTag("tag4", te4);
+
       assertEquals(4, testExecutionDao.getAll().size());
    }
 
+   /**
+    * Clean up
+    *
+    * @throws Exception
+    */
    @After
-   public void destroy() throws HeuristicRollbackException, RollbackException, HeuristicMixedException, SystemException {
-      testExecutionDao.remove(te1);
-      testExecutionDao.remove(te2);
-      testExecutionDao.remove(te3);
-      testExecutionDao.remove(te4);
+   public void destroy() throws Exception {
+      List<TestExecutionTag> testExecutionTags = testExecutionTagDAO.getAll();
+      for(TestExecutionTag testExecutionTag: testExecutionTags) {
+         testExecutionTagDAO.remove(testExecutionTag);
+      }
+
+      List<Tag> tags = tagDAO.getAll();
+      for(Tag tag: tags) {
+         tagDAO.remove(tag);
+      }
+
+      List<TestExecution> testExecutions = testExecutionDao.getAll();
+      for(TestExecution testExecution: testExecutions) {
+         testExecutionDao.remove(testExecution);
+      }
 
       assertTrue(testExecutionDao.getAll().isEmpty());
 
@@ -102,7 +138,7 @@ public class TestExecutionDAOTest {
 
    @org.junit.Test
    public void testGetLastSimple() {
-      List<TestExecution> result = testExecutionDao.getLast(2);
+      List<TestExecution> result = testExecutionDao.getLast(2, 2);
       assertEquals(2, result.size());
 
       for(TestExecution testExecution: result) {
@@ -114,7 +150,7 @@ public class TestExecutionDAOTest {
 
    @org.junit.Test
    public void testGetLastRange() {
-      List<TestExecution> result = testExecutionDao.getLast(3,2);
+      List<TestExecution> result = testExecutionDao.getLast(3, 2);
       assertEquals(2, result.size());
 
       for(TestExecution testExecution: result) {
@@ -166,6 +202,65 @@ public class TestExecutionDAOTest {
             fail("TestExecutionDAO.getAllByPropertyIn returned unexpected test execution.");
          }
       }
+   }
+
+   @org.junit.Test
+   public void testGetTestExecutionsByTags() {
+      List<String> tags = new ArrayList<>();
+      tags.add("tag1");
+      tags.add("tag2");
+      List<String> testUid = new ArrayList<>();
+      testUid.add(test.getUid());
+
+      List<TestExecution> result = testExecutionDao.getTestExecutions(tags, testUid);
+      assertEquals(2, result.size());
+
+      for(TestExecution testExecution: result) {
+         if(testExecution.getId() != te1.getId() && testExecution.getId() != te2.getId()) {
+            fail("TestExecutionDAO.getTestExecutions() returned unexpected test execution.");
+         }
+      }
+   }
+
+   @org.junit.Test
+   public void testGetTestExecutionsByTagsWithLast1() {
+      List<String> tags = new ArrayList<>();
+      tags.add("tag1");
+      List<String> testUid = new ArrayList<>();
+      testUid.add(test.getUid());
+
+      List<TestExecution> result = testExecutionDao.getTestExecutions(tags, testUid, 3, 2);
+      assertEquals(2, result.size());
+
+      for(TestExecution testExecution: result) {
+         if(testExecution.getId() != te1.getId() && testExecution.getId() != te2.getId()) {
+            fail("TestExecutionDAO.getTestExecutions() returned unexpected test execution.");
+         }
+      }
+   }
+
+   @org.junit.Test
+   public void testGetTestExecutionsByTagsWithLast2() {
+      List<String> tags = new ArrayList<>();
+      tags.add("tag1");
+      List<String> testUid = new ArrayList<>();
+      testUid.add(test.getUid());
+
+      List<TestExecution> result = testExecutionDao.getTestExecutions(tags, testUid, 1, 1);
+      assertEquals(1, result.size());
+      assertEquals(te3.getId(), result.get(0).getId());
+   }
+
+   @org.junit.Test
+   public void testGetTestExecutionsByTagsWithLast3() {
+      List<String> tags = new ArrayList<>();
+      tags.add("tag1");
+      tags.add("tag4");
+      List<String> testUid = new ArrayList<>();
+      testUid.add(test.getUid());
+
+      List<TestExecution> result = testExecutionDao.getTestExecutions(tags, testUid, 5, 3);
+      assertTrue(result.isEmpty());
    }
 
    private Test createTest() {
@@ -246,11 +341,34 @@ public class TestExecutionDAOTest {
       return te;
    }
 
-   private static Metric createMetric() {
+   private Metric createMetric() {
       Metric metric = new Metric();
       metric.setName("metric1");
 
       return metric;
+   }
+
+   private TestExecutionTag createTestExecutionTag(String tagName, TestExecution storedTestExecution) {
+      Tag storedTag = tagDAO.findByName(tagName);
+      if (storedTag == null) {
+         Tag tag = new Tag();
+         tag.setName(tagName);
+         storedTag = tagDAO.create(tag);
+      }
+
+      TestExecutionTag testExecutionTag = new TestExecutionTag();
+      testExecutionTag.setTag(storedTag);
+      testExecutionTag.setTestExecution(storedTestExecution);
+      TestExecutionTag storedTestExecutionTag = testExecutionTagDAO.create(testExecutionTag);
+
+      Collection<TestExecutionTag> testExecutionTags = storedTestExecution.getTestExecutionTags();
+      if(testExecutionTags == null) {
+         testExecutionTags = new ArrayList<>();
+      }
+      testExecutionTags.add(storedTestExecutionTag);
+      storedTestExecution.setTestExecutionTags(testExecutionTags);
+
+      return storedTestExecutionTag;
    }
 
    private Date createStartDate(int daysToShift) {
