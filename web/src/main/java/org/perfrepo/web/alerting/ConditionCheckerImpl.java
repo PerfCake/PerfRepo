@@ -295,11 +295,12 @@ public class ConditionCheckerImpl implements ConditionChecker {
    }
 
    /**
-    * TODO: document this
+    * Helper method. Retrieves test executions according to the name of the property that is in the WHERE
+    * condition, e.g. there is a different process of retrieving test execution by ID and with specific tags
     *
-    * @param propertyName
-    * @param propertyValue
-    * @param parsedLast
+    * @param propertyName name of the property
+    * @param propertyValue value that is supplied for the property, might have different meaning with different property
+    * @param parsedLast if there is also LAST clause, it's parsed in this Map. See processLast() method for details.
     * @return
     */
    private List<TestExecution> callActionByPropertyName(String propertyName, String propertyValue, Map<String, Integer> parsedLast) {
@@ -323,9 +324,11 @@ public class ConditionCheckerImpl implements ConditionChecker {
    }
 
    /**
-    * TODO: document this
+    * Helper method. Parses the LAST clause and retrieves information about it. It retrieves a Map of size 2
+    * with keys "lastFrom" and "howMany". "lastFrom" is the first parameter of LAST, "howMany" is the second.
+    * See documentation for alerting for details.
     *
-    * @param last
+    * @param last root of the LAST clause in AST
     * @return
     */
    private Map<String, Integer> processLast(Tree last) {

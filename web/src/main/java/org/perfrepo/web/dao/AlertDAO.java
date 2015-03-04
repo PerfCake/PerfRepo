@@ -18,33 +18,35 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.user.User;
+import org.perfrepo.model.Alert;
+import org.perfrepo.model.Metric;
+import org.perfrepo.model.Test;
 
 import javax.inject.Named;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * DAO for {@link User}
+ * DAO for {@link org.perfrepo.model.Alert}
  *
- * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  */
 @Named
-public class UserDAO extends DAO<User, Long> {
+public class AlertDAO extends DAO<Alert, Long> {
 
-   public User findByUsername(String name) {
-		List<User> users = getAllByProperty("username", name);
-		if (users.size() > 0) {
-			return users.get(0);
-		}
-		return null;
-	}
-
-   public List<User> findSubscribersForTest(Long testId) {
+   /**
+    * TODO: document this
+    *
+    * @param test
+    * @param metric
+    * @return
+    */
+   public List<Alert> getByTestAndMetric(Test test, Metric metric) {
       Map<String, Object> params = new HashMap<String, Object>();
-      params.put("testId", testId);
-      return findByNamedQuery(User.GET_SUBSCRIBERS_FOR_TEST, params);
+      params.put("testId", test.getId());
+      params.put("metricId", metric.getId());
+      return findByNamedQuery(Alert.GET_BY_TEST_AND_METRIC, params);
    }
+
 }

@@ -12,21 +12,29 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 /**
- * Implements @link{EmailService}.
+ * Utility class that encapsulates usage of mailing mechanism.
  *
  * @author Jakub Markos <jmarkos@redhat.com>
+ * @author Jiri Holusa (jholusa@redhat.com)
  */
-@Named
-@Stateless
-public class EmailServiceBean implements EmailService {
+public class Mailer {
+
+   public static final String PERFREPO_EMAIL = "perfrepo@redhat.com";
 
    @Resource(mappedName = "java:jboss/mail/redhatsmtp")
    private Session emailSession;
 
-   @Override
+   /**
+    * Sends a mail.
+    *
+    * @param recipient email address of the recipient
+    * @param subject
+    * @param body text of the email
+    * @throws javax.mail.MessagingException
+    */
    public void sendEmail(String recipient, String subject, String body) throws MessagingException {
       Message message = new MimeMessage(emailSession);
-      message.setFrom(new InternetAddress(EmailService.PERFREPO_EMAIL));
+      message.setFrom(new InternetAddress(PERFREPO_EMAIL));
       Address toAddress = new InternetAddress(recipient);
       message.addRecipient(Message.RecipientType.TO, toAddress);
       message.setSubject(subject);

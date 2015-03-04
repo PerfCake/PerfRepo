@@ -27,11 +27,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
+import org.perfrepo.model.Alert;
 import org.perfrepo.model.Metric;
 import org.perfrepo.model.MetricComparator;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.model.user.User;
+import org.perfrepo.web.service.AlertingService;
 import org.perfrepo.web.service.TestService;
 import org.perfrepo.web.service.UserService;
 import org.perfrepo.web.service.exceptions.ServiceException;
@@ -43,6 +45,7 @@ import org.perfrepo.web.viewscope.ViewScoped;
  * Backing bean for editing and displaying details of {@link Test}.
  *
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  */
 @Named
 @ViewScoped
@@ -64,8 +67,12 @@ public class TestController extends BaseController {
 	@Inject
 	private SearchCriteriaSession criteriaSession;
 
+   @Inject
+   private AlertingService alertingService;
+
 	private Test test = null;
 	private MetricDetails metricDetails = new MetricDetails();
+   private AlertDetails alertDetails = new AlertDetails();
 
 	/**
 	 * called on preRenderView
@@ -94,6 +101,36 @@ public class TestController extends BaseController {
 		}
 	}
 
+   public String create() {
+      if (test == null) {
+         throw new IllegalStateException("test is null");
+      }
+      try {
+         Test createdTest = testService.createTest(test);
+         redirectWithMessage("/test/" + createdTest.getId(), INFO, "page.test.createdSuccesfully", createdTest.getId());
+      } catch (ServiceException e) {
+         addMessage(e);
+      } catch (SecurityException e) {
+         addMessage(ERROR, "page.test.errorSecurityException", e.getMessage());
+      } catch (EJBException e) {
+         if (e.getCause() != null && e.getCause().getClass() == SecurityException.class) {
+            addMessage(ERROR, "page.test.errorSecurityException", e.getCause().getMessage());
+         } else {
+            throw e;
+         }
+      }
+      return null;
+   }
+
+   public String update() {
+      if (test == null) {
+         throw new IllegalStateException("test is null");
+      }
+      testService.updateTest(test);
+      redirectWithMessage("/test/" + testId, INFO, "page.test.updatedSuccessfully");
+      return null;
+   }
+
 	public void listTestExecutions() {
 		//clear criterias
 		TestExecutionSearchTO criteriaSession = this.criteriaSession.getExecutionSearchCriteria();
@@ -106,52 +143,72 @@ public class TestController extends BaseController {
 		redirect("/exec/search");
 	}
 
-	public Test getTest() {
-		return test;
-	}
-
-	public void setTest(Test test) {
-		this.test = test;
-	}
-
-	public String update() {
-		if (test == null) {
-			throw new IllegalStateException("test is null");
-		}
-		testService.updateTest(test);
-		redirectWithMessage("/test/" + testId, INFO, "page.test.updatedSuccessfully");
-		return null;
-	}
-
 	public List<Metric> getMetricsList() {
-		List<Metric> mlist = new ArrayList<Metric>();
+		List<Metric> metricList = new ArrayList<Metric>();
 		if (test != null) {
-			mlist.addAll(test.getMetrics());
+			metricList.addAll(test.getMetrics());
 		}
-		Collections.sort(mlist);
-		return mlist;
+		Collections.sort(metricList);
+		return metricList;
 	}
 
-	public String create() {
-		if (test == null) {
-			throw new IllegalStateException("test is null");
-		}
-		try {
-			Test createdTest = testService.createTest(test);
-			redirectWithMessage("/test/" + createdTest.getId(), INFO, "page.test.createdSuccesfully", createdTest.getId());
-		} catch (ServiceException e) {
-			addMessage(e);
-		} catch (SecurityException e) {
-			addMessage(ERROR, "page.test.errorSecurityException", e.getMessage());
-		} catch (EJBException e) {
-			if (e.getCause() != null && e.getCause().getClass() == SecurityException.class) {
-				addMessage(ERROR, "page.test.errorSecurityException", e.getCause().getMessage());
-			} else {
-				throw e;
-			}
-		}
-		return null;
-	}
+   public List<Alert> getAlertsList() {
+      Test fullTest = testService.getFullTest(test.getId());
+
+      return alertingService.getAlertsList(fullTest);
+   }
+
+   public void processAlert() {
+      Alert alert = new Alert();
+      alert.setName(alertDetails.getName());
+      alert.setCondition(alertDetails.getCondition());
+      alert.setDescription(alertDetails.getDescription());
+
+      Metric metric = testService.getFullMetric(alertDetails.getMetricId());
+      alert.setMetric(metric);
+
+      Test test = testService.getFullTest(this.test.getId());
+      alert.setTest(test);
+
+      if(alertDetails.getId() == null) {
+         alertingService.createAlert(alert);
+         redirectWithMessage("/test/" + testId, INFO, "page.alert.createdSuccesfully");
+      }
+      else {
+         alert.setId(alertDetails.getId());
+         alertingService.updateAlert(alert);
+         redirectWithMessage("/test/" + testId, INFO, "page.alert.updatedSuccesfully");
+      }
+   }
+
+   /** --------------- Subscription for alerting ----------------- **/
+
+   public void addSubscriber() {
+      User currentUser = userService.getLoggedUser();
+      testService.addSubscriber(currentUser, test);
+      redirectWithMessage("/test/" + testId, INFO, "page.test.subscribed");
+   }
+
+   public void removeSubscriber() {
+      User currentUser = userService.getLoggedUser();
+      testService.removeSubscriber(currentUser, test);
+      redirectWithMessage("/test/" + testId, INFO, "page.test.unsubscribed");
+   }
+
+   public boolean isSubscribed() {
+      User currentUser = userService.getLoggedUser();
+      return testService.isUserSubscribed(currentUser, test);
+   }
+
+   /** --------------- Getters/Setters ---------------- **/
+
+   public Test getTest() {
+      return test;
+   }
+
+   public void setTest(Test test) {
+      this.test = test;
+   }
 
 	public Long getTestId() {
 		return testId;
@@ -181,27 +238,19 @@ public class TestController extends BaseController {
 		return metricDetails;
 	}
 
-	public List<String> getUserGroups() {
+   public AlertDetails getAlertDetails() {
+      return alertDetails;
+   }
+
+   public List<String> getUserGroups() {
 		return userService.getLoggedUserGroupNames();
 	}
 
-   public void addSubscriber() {
-      User currentUser = userService.getLoggedUser();
-      testService.addSubscriber(currentUser, test);
-      redirectWithMessage("/test/" + testId, INFO, "page.test.subscribed");
-   }
+   /** ----------------------------------- Helper inner classes --------------------------- **/
 
-   public void removeSubscriber() {
-      User currentUser = userService.getLoggedUser();
-      testService.removeSubscriber(currentUser, test);
-      redirectWithMessage("/test/" + testId, INFO, "page.test.unsubscribed");
-   }
-
-   public boolean isSubscribed() {
-      User currentUser = userService.getLoggedUser();
-      return testService.isUserSubscribed(currentUser, test);
-   }
-
+   /**
+    * Helper class for pop-up for creating and editing metrics
+    */
 	public class MetricDetails {
 		private boolean createMode;
 		private Metric metric;
@@ -310,4 +359,76 @@ public class TestController extends BaseController {
 			}
 		}
 	}
+
+   /**
+    * Helper class for pop-up for creating and editing alerts.
+    */
+   public class AlertDetails {
+
+      private Long id;
+      private String name;
+      private String description;
+      private String condition;
+      private Long metricId;
+
+      public Long getId() {
+         return id;
+      }
+
+      public void setId(Long id) {
+         this.id = id;
+      }
+
+      public String getName() {
+         return name;
+      }
+
+      public void setName(String name) {
+         this.name = name;
+      }
+
+      public String getDescription() {
+         return description;
+      }
+
+      public void setDescription(String description) {
+         this.description = description;
+      }
+
+      public String getCondition() {
+         return condition;
+      }
+
+      public void setCondition(String condition) {
+         this.condition = condition;
+      }
+
+      public Long getMetricId() {
+         return metricId;
+      }
+
+      public void setMetricId(Long metricId) {
+         this.metricId = metricId;
+      }
+
+      public Long getTestId() {
+         return testId;
+      }
+
+      public void unset() {
+         this.id = null;
+         this.name = null;
+         this.condition = null;
+         this.description = null;
+         this.metricId = null;
+      }
+
+      public void setAlertForUpdate(Alert alert) {
+         this.id = alert.getId();
+         this.name = alert.getName();
+         this.condition = alert.getCondition();
+         this.description = alert.getDescription();
+         this.metricId = alert.getMetric().getId();
+      }
+   }
 }

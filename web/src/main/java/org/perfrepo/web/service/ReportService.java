@@ -55,7 +55,7 @@ public interface ReportService {
 	/**
 	 * Removes report
 	 *
-	 * @param id
+	 * @param report
 	 * @throws org.perfrepo.web.service.exceptions.ServiceException
 	 */
 	public void removeReport(Report report) throws ServiceException;

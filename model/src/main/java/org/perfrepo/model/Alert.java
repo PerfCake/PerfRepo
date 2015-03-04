@@ -1,14 +1,6 @@
 package org.perfrepo.model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -19,7 +11,12 @@ import javax.validation.constraints.Size;
  */
 @javax.persistence.Entity
 @Table(name = "alert")
+@NamedQueries({
+    @NamedQuery(name = Alert.GET_BY_TEST_AND_METRIC, query = "SELECT distinct alert from Alert alert join alert.test test join alert.metric metric where test.id = :testId and metric.id = :metricId")
+})
 public class Alert implements Entity<Alert> {
+
+   public static final String GET_BY_TEST_AND_METRIC = "Alert.getByTestAndMetric";
 
 	@Id
 	@SequenceGenerator(name = "ALERT_ID_GENERATOR", sequenceName = "ALERT_SEQUENCE", allocationSize = 1)
@@ -47,7 +44,7 @@ public class Alert implements Entity<Alert> {
 	private Metric metric;
 
 	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "test_id", referencedColumnName ="id")
+	@JoinColumn(name = "test_id", referencedColumnName = "id")
 	@NotNull
 	private Test test;
 

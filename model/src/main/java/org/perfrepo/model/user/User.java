@@ -24,18 +24,7 @@ import org.perfrepo.model.Test;
 import org.perfrepo.model.UserProperty;
 import org.hibernate.validator.constraints.Email;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -43,9 +32,14 @@ import java.util.Collection;
 
 @javax.persistence.Entity
 @Table(name = "\"user\"")
+@NamedQueries({
+    @NamedQuery(name = User.GET_SUBSCRIBERS_FOR_TEST, query = "SELECT distinct user from User user join user.subscribedTests test where test.id = :testId")
+})
 public class User implements Entity<User>, Comparable<User> {
 
 	private static final long serialVersionUID = 4616015836066622075L;
+
+   public static final String GET_SUBSCRIBERS_FOR_TEST = "User.getSubscribersForTest";
 
 	@Id
 	@SequenceGenerator(name = "USER_ID_GENERATOR", sequenceName = "USER_SEQUENCE", allocationSize = 1)
