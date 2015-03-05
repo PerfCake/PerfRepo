@@ -15,10 +15,7 @@
 <ui:include src="/reports/report-permissions-add-popup.xhtml"/>
 
 <h:form id="formReportConfig">
-    <h1>
-        #{metricReportBean.reportName} <a href="#{metricReportBean.linkToReport}"><i class="icon-link"
-                                                                                     title="Permanent link to report"/></a>
-    </h1>
+    <h1>#{metricReportBean.reportName}</h1>
     <r:commandLink styleClass="btn btn-primary btn-small" action="#{metricReportBean.showConfig}"
                    alt="Show configuration" title="Show configuration"
                    render=":formReportConfig :messagesPanel" rendered="#{!metricReportBean.configVisible}">

@@ -147,14 +147,6 @@ public class MetricReportController extends BaseController {
 		return r;
 	}
 
-	public String getLinkToReport() {
-		if (reportId == null) {
-			return FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/reports/metric";
-		} else {
-			return FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/reports/metric/saved/" + reportId;
-		}
-	}
-
 	/**
 	 * called on preRenderView
 	 */
