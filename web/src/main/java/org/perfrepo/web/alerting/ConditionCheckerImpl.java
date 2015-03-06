@@ -349,6 +349,16 @@ public class ConditionCheckerImpl implements ConditionChecker {
          throw new IllegalArgumentException("Wrong syntax, LAST has to have exactly one or two arguments.");
       }
 
+      /**
+       * -----IMPORTANT------
+       * because we assume that we have already entered the test execution that we want to process alert
+       * with, we don't want to include it into the last X test executions,
+       * e.g. CONDITION result > x DEFINE x = (SELECT LAST 1) would always fail, since the last test
+       * execution is the currently entered one.
+       * As a solution we do lastFrom - 1
+       **/
+      result.put("lastFrom", result.get("lastFrom") + 1);
+
       return result;
    }
 }

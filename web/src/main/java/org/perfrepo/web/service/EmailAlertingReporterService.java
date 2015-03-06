@@ -24,10 +24,14 @@ public class EmailAlertingReporterService implements AlertingReporterService {
    private UserDAO userDAO;
 
    @Override
-   public void reportAlert(Alert alert, TestExecution testExecution) {
+   public void reportAlert(List<Alert> alerts, TestExecution testExecution) {
+      if(alerts == null || alerts.isEmpty()) {
+         return;
+      }
+
       List<User> subscribers = userDAO.findSubscribersForTest(testExecution.getTest().getId());
 
-      String message = composeMessage(alert, testExecution);
+      String message = composeMessage(alerts, testExecution);
       String subject = composeSubject(testExecution);
       for(User subscriber: subscribers) {
          try {
@@ -42,7 +46,7 @@ public class EmailAlertingReporterService implements AlertingReporterService {
       return "PerfRepo - some alerts on test " + testExecution.getTest().getName() + " failed.";
    }
 
-   private String composeMessage(Alert alert, TestExecution testExecution) {
+   private String composeMessage(List<Alert> alerts, TestExecution testExecution) {
       StringBuilder message = new StringBuilder();
 
       message.append("Hello,\n\n");
@@ -53,17 +57,17 @@ public class EmailAlertingReporterService implements AlertingReporterService {
       message.append("Test execution name: " + testExecution.getName() + "\n");
       message.append("Execution date: " + testExecution.getStarted() + "\n");
 
-      message.append("\n\n");
+      message.append("\n");
 
-      message.append("some of the alerts conditions failed.");
-      message.append("Alert that failed: \n\n");
-      message.append("Alert name: " + alert.getName() + "\n");
-      message.append("Alert condition: " + alert.getCondition() + "\n");
-      message.append("Description: " + alert.getDescription() + "\n");
+      message.append("some of the alerts conditions failed. ");
+      message.append("Alerts that failed: \n\n");
+      for(Alert alert: alerts) {
+         message.append("Alert name: " + alert.getName() + "\n");
+      }
 
-      message.append("\n\n");
+      message.append("\n");
 
-      message.append("It's possible that regression occurred. Please, take a lot at this test execution. \n\n");
+      message.append("It's possible that regression occurred. Please, take a look at this test execution. \n\n");
       message.append("Sincerely yours,\n");
       message.append("PerfRepo Alerting");
 

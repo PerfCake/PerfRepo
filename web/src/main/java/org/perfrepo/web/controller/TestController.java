@@ -181,6 +181,11 @@ public class TestController extends BaseController {
       }
    }
 
+   public void deleteAlert(Alert alert) {
+      alertingService.removeAlert(alert);
+      redirectWithMessage("/test/" + testId, INFO, "page.alert.removedSuccesfully");
+   }
+
    /** --------------- Subscription for alerting ----------------- **/
 
    public void addSubscriber() {

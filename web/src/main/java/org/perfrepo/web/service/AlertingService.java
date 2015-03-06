@@ -14,7 +14,7 @@ import java.util.List;
 public interface AlertingService {
 
    /**
-    * Creates new alert
+    * Creates new alert.
     *
     * @param alert
     * @return
@@ -22,12 +22,19 @@ public interface AlertingService {
    public Alert createAlert(Alert alert);
 
    /**
-    * Updates existing alert
+    * Updates existing alert.
     *
     * @param alert
     * @return
     */
    public Alert updateAlert(Alert alert);
+
+   /**
+    * Removes existing alert.
+    *
+    * @param alert
+    */
+   public void removeAlert(Alert alert);
 
    /**
     * Retrieves all alerts assigned to test provided.

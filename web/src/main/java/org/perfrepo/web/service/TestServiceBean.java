@@ -99,6 +99,9 @@ public class TestServiceBean implements TestService {
 	@Inject
 	private UserDAO userDAO;
 
+   @Inject
+   private AlertingService alertingService;
+
 	@Override
 	@Secured
 	public TestExecution createTestExecution(TestExecution testExecution) throws ServiceException {
@@ -146,8 +149,12 @@ public class TestServiceBean implements TestService {
 				}
 			}
 		}
+
 		TestExecution clone = cloneAndFetch(storedTestExecution, true, true, true, true, true);
 		log.debug("Created new test execution " + clone.getId());
+
+      alertingService.processAlerts(clone);
+
 		return clone;
 	}
 

@@ -53,9 +53,9 @@ public class ConditionCheckerTest {
       //and Mockito needs the parameters type to match, otherwise doesn't retrieve correct result
       when(mockedTestExecutionDAO.getAllByProperty("id", "1")).thenReturn(returnedTestExecutionsFor1);
       when(mockedTestExecutionDAO.getAllByProperty("id", "2")).thenReturn(returnedTestExecutionsFor2);
-      when(mockedTestExecutionDAO.getLast(1, 1)).thenReturn(returnedTestExecutionsFor1);
-      when(mockedTestExecutionDAO.getLast(10, 10)).thenReturn(returnedTestExecutionsForMultiSelect);
-      when(mockedTestExecutionDAO.getLast(10, 5)).thenReturn(returnedTestExecutionsForMultiSelect);
+      when(mockedTestExecutionDAO.getLast(2, 1)).thenReturn(returnedTestExecutionsFor1);
+      when(mockedTestExecutionDAO.getLast(11, 10)).thenReturn(returnedTestExecutionsForMultiSelect);
+      when(mockedTestExecutionDAO.getLast(11, 5)).thenReturn(returnedTestExecutionsForMultiSelect);
 
       Collection<Object> inIds = new ArrayList<>();
       inIds.add("1");
@@ -75,8 +75,8 @@ public class ConditionCheckerTest {
       List<String> tags = Lists.newArrayList("firstTag", "secondTag");
       List<String> test = Lists.newArrayList(createTest().getUid());
       when(mockedTestExecutionDAO.getTestExecutions(tags, test)).thenReturn(returnedTestExecutionsForMultiSelect);
-      when(mockedTestExecutionDAO.getTestExecutions(tags, test, 1, 1)).thenReturn(returnedTestExecutionsFor1);
-      when(mockedTestExecutionDAO.getTestExecutions(tags, test, 3, 2)).thenReturn(returnedTestExecutionsForTagsAndMultiLast);
+      when(mockedTestExecutionDAO.getTestExecutions(tags, test, 2, 1)).thenReturn(returnedTestExecutionsFor1);
+      when(mockedTestExecutionDAO.getTestExecutions(tags, test, 4, 2)).thenReturn(returnedTestExecutionsForTagsAndMultiLast);
 
       conditionChecker.setTestExecutionDAO(mockedTestExecutionDAO);
    }

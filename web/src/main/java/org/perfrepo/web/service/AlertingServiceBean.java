@@ -65,6 +65,12 @@ public class AlertingServiceBean implements AlertingService {
    }
 
    @Override
+   public void removeAlert(Alert alert) {
+      Alert freshAlert = alertDAO.get(alert.getId());
+      alertDAO.remove(freshAlert);
+   }
+
+   @Override
    public List<Alert> getAlertsList(Test test) {
       List<Alert> alertsList = new ArrayList<>();
       if(test != null) {
@@ -79,19 +85,26 @@ public class AlertingServiceBean implements AlertingService {
       Test test = testExecution.getTest();
       Collection<Value> values = testExecution.getValues();
 
+      if(values == null || values.isEmpty()) {
+         return;
+      }
+
       Map<Metric, Double> results = new HashMap<>();
       for(Value value: values) {
          results.put(value.getMetric(), value.getResultValue());
       }
 
+      List<Alert> failedAlerts = new ArrayList<>();
       for(Metric metric: results.keySet()) {
          List<Alert> alerts = alertDAO.getByTestAndMetric(test, metric);
          for(Alert alert: alerts) {
             if(!conditionChecker.checkCondition(alert.getCondition(), results.get(metric), test, metric)) {
-               alertingReporterService.reportAlert(alert, testExecution);
+               failedAlerts.add(alert);
             }
          }
       }
+
+      alertingReporterService.reportAlert(failedAlerts, testExecution);
    }
 
    /**

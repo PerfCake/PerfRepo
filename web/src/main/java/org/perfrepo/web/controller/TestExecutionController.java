@@ -33,6 +33,7 @@ import org.perfrepo.model.user.User;
 import org.perfrepo.model.util.EntityUtils;
 import org.perfrepo.web.controller.reports.charts.RfChartSeries;
 import org.perfrepo.web.rest.TestExecutionREST;
+import org.perfrepo.web.service.AlertingService;
 import org.perfrepo.web.service.TestService;
 import org.perfrepo.web.service.UserService;
 import org.perfrepo.web.service.exceptions.ServiceException;
@@ -86,6 +87,9 @@ public class TestExecutionController extends BaseController {
 
 	@Inject
 	private UserService userService;
+
+   @Inject
+   private AlertingService alertingService;
 
 	private TestExecution testExecution = null;
 	private Test test = null;
@@ -442,33 +446,44 @@ public class TestExecutionController extends BaseController {
 
 	// this is also create method for value
 	public void updateEditedValue() {
-		if (editedValue != null) {
-			TestExecution idHolder = new TestExecution();
-			idHolder.setId(testExecutionId);
-			editedValue.setTestExecution(idHolder);
-			try {
-				Value freshValue = null;
-				if (editedValue.getId() == null) {
-					Metric selectedMetric = EntityUtils.findById(test.getMetrics(), editedValueMetricSelectionId);
-					if (selectedMetric == null) {
-						addMessage(ERROR, "page.exec.errorMetricMandatory");
-						return;
-					}
-					editedValue.setMetric(selectedMetric.clone());
-					freshValue = testService.addValue(editedValue);
-				} else {
-					freshValue = testService.updateValue(editedValue);
-					EntityUtils.removeById(testExecution.getValues(), freshValue.getId());
-				}
-				testExecution.getValues().add(freshValue);
-				editedValue = null;
-				ValueInfo prevValueInfo = MultiValue.find(values, freshValue);
-				values = MultiValue.createFrom(testExecution);
-				showMultiValue(prevValueInfo == null ? null : prevValueInfo.getMetricName());
-			} catch (ServiceException e) {
-				addMessage(e);
-			}
-		}
+      if(editedValue == null) {
+         return;
+      }
+
+      TestExecution idHolder = new TestExecution();
+      idHolder.setId(testExecutionId);
+      editedValue.setTestExecution(idHolder);
+
+      Value freshValue = null;
+      try {
+         if (editedValue.getId() == null) {
+            Metric selectedMetric = EntityUtils.findById(test.getMetrics(), editedValueMetricSelectionId);
+
+            if (selectedMetric == null) {
+               addMessage(ERROR, "page.exec.errorMetricMandatory");
+               return;
+            }
+
+            editedValue.setMetric(selectedMetric.clone());
+            freshValue = testService.addValue(editedValue);
+         } else {
+            freshValue = testService.updateValue(editedValue);
+            EntityUtils.removeById(testExecution.getValues(), freshValue.getId());
+         }
+
+         testExecution.getValues().add(freshValue);
+
+         alertingService.processAlerts(testExecution);
+
+         editedValue = null;
+
+         ValueInfo prevValueInfo = MultiValue.find(values, freshValue);
+         values = MultiValue.createFrom(testExecution);
+
+         showMultiValue(prevValueInfo == null ? null : prevValueInfo.getMetricName());
+      } catch (ServiceException e) {
+         addMessage(e);
+      }
 	}
 
 	public List<Metric> getTestMetric() {
