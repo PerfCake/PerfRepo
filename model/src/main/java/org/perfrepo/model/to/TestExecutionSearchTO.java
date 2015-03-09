@@ -45,37 +45,6 @@ public class TestExecutionSearchTO implements Serializable {
 	private int limit;
 	private GroupFilter groupFilter;
 
-	public static class ParamCriteria implements Serializable {
-
-		private static final long serialVersionUID = -2562642308678063396L;
-		private String name;
-		private String value;
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getValue() {
-			return value;
-		}
-
-		public void setValue(String value) {
-			this.value = value;
-		}
-
-		public boolean isDisplayed() {
-			return isNameEmpty() || value == null || "".equals(value.trim()) || value.contains("%");
-		}
-
-		public boolean isNameEmpty() {
-			return name == null || "".equals(name.trim());
-		}
-	}
-
 	//means "Test executed after"
 	public Date getStartedFrom() {
 		return startedFrom;
@@ -137,4 +106,35 @@ public class TestExecutionSearchTO implements Serializable {
 	public void setGroupFilter(GroupFilter groupFilter) {
 		this.groupFilter = groupFilter;
 	}
+
+   public static class ParamCriteria implements Serializable {
+
+      private static final long serialVersionUID = -2562642308678063396L;
+      private String name;
+      private String value;
+
+      public String getName() {
+         return name;
+      }
+
+      public void setName(String name) {
+         this.name = name;
+      }
+
+      public String getValue() {
+         return value;
+      }
+
+      public void setValue(String value) {
+         this.value = value;
+      }
+
+      public boolean isDisplayed() {
+         return isNameEmpty() || value == null || "".equals(value.trim()) || value.contains("%");
+      }
+
+      public boolean isNameEmpty() {
+         return name == null || "".equals(name.trim());
+      }
+   }
 }

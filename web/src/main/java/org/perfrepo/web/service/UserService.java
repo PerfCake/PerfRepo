@@ -84,7 +84,6 @@ public interface UserService {
 	/**
 	 * Retrieves all groups
 	 *
-	 * @param prefix
 	 * @return
 	 */
 	public List<Group> getGroups();

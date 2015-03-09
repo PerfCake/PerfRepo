@@ -45,8 +45,8 @@ public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long>
 	 * Discovers if test execution already has the parameter, in other word
 	 * if it breaks the unique (testExecutionId, name) constraint
 	 *
-	 * @param testId
-	 * @param paramName
+	 * @param testExecutionId
+	 * @param param
 	 * @return true if there's already test execution parameter with same pair (testExecutionId, param_name)
 	 */
 	public boolean hasTestParam(Long testExecutionId, TestExecutionParameter param) {
@@ -65,23 +65,36 @@ public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long>
 		TypedQuery<TestExecutionParameter> query = query(criteria);
 		query.setParameter("testExecutionId", testExecutionId);
 		query.setParameter("paramName", param.getName());
-		List<TestExecutionParameter> tparams = query.getResultList();
-		return tparams.size() > 0 && !tparams.get(0).getId().equals(param.getId());
+		List<TestExecutionParameter> params = query.getResultList();
+
+      return params.size() > 0 && !params.get(0).getId().equals(param.getId());
 	}
 
+   /**
+    * TODO: document this
+    *
+    * @param execIdList
+    * @param paramNameList
+    * @return
+    */
 	public List<TestExecutionParameter> find(List<Long> execIdList, List<String> paramNameList) {
 		CriteriaBuilder cb = criteriaBuilder();
 		CriteriaQuery<TestExecutionParameter> criteria = cb.createQuery(TestExecutionParameter.class);
 
 		Root<TestExecutionParameter> rParam = criteria.from(TestExecutionParameter.class);
-		Predicate pParamNameInList = rParam.get("name").in(cb.parameter(List.class, "paramNameList"));
+
+      Predicate pParamNameInList = rParam.get("name").in(cb.parameter(List.class, "paramNameList"));
 		Predicate pExecIdInList = rParam.get("testExecution").get("id").in(cb.parameter(List.class, "execIdList"));
-		rParam.fetch("testExecution");
-		criteria.where(cb.and(pParamNameInList, pExecIdInList));
+
+      rParam.fetch("testExecution");
+
+      criteria.where(cb.and(pParamNameInList, pExecIdInList));
 		criteria.select(rParam);
-		TypedQuery<TestExecutionParameter> query = query(criteria);
+
+      TypedQuery<TestExecutionParameter> query = query(criteria);
 		query.setParameter("paramNameList", paramNameList);
 		query.setParameter("execIdList", execIdList);
-		return query.getResultList();
+
+      return query.getResultList();
 	}
 }

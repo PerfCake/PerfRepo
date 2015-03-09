@@ -186,8 +186,8 @@ public class TestServiceBean implements TestService {
 				}
 			}
 		}
-		userService.getGroups();
-		List<TestExecution> result = testExecutionDAO.searchTestExecutions(search, testExecutionParameterDAO, userService.getLoggedUserGroupNames());
+
+		List<TestExecution> result = testExecutionDAO.searchTestExecutions(search, userService.getLoggedUserGroupNames());
 		return result;
 	}
 

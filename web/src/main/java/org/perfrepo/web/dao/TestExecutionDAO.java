@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.AbstractQuery;
@@ -60,6 +61,9 @@ import org.perfrepo.web.util.TagUtils;
  */
 @Named
 public class TestExecutionDAO extends DAO<TestExecution, Long> {
+
+   @Inject
+   private TestExecutionParameterDAO testExecutionParameterDAO;
 
 	public List<TestExecution> getByTest(Long testId) {
 		Test test = new Test();
@@ -121,248 +125,30 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       return query(resultQuery).getResultList();
    }
 
-	/**
-	 * Fetch test via JPA relationship.
-	 *
-	 * @param exec
-	 * @return
-	 */
-	public static TestExecution fetchTest(TestExecution exec) {
-		exec.setTest(exec.getTest().clone());
-		exec.getTest().setTestExecutions(null);
-		exec.getTest().setTestMetrics(null);
-		return exec;
-	}
+   /**
+    * Allows to search test executions by many complex criterias.
+    *
+    * @param search
+    * @param userGroups
+    * @return
+    */
+   public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, List<String> userGroups) {
+      List<String> tags = TagUtils.parseTags(search.getTags() != null ? search.getTags().toLowerCase() : "");
+      List<String> excludedTags = new ArrayList<>();
+      List<String> includedTags = new ArrayList<>();
+      divideTags(tags, includedTags, excludedTags);
 
-	/**
-	 * Fetch tags via JPA relationships.
-	 *
-	 * @param testExecution
-	 * @return TestExecution with fetched tags
-	 */
-	public static TestExecution fetchTags(TestExecution testExecution) {
-		Collection<TestExecutionTag> cloneTags = new ArrayList<TestExecutionTag>();
-		for (TestExecutionTag interObject : testExecution.getTestExecutionTags()) {
-			cloneTags.add(interObject.cloneWithTag());
-		}
-		testExecution.setTestExecutionTags(cloneTags);
-		return testExecution;
-	}
+      CriteriaQuery<TestExecution> criteria = constructSearchCriteria(search, includedTags, excludedTags);
 
-	/**
-	 * Fetch parameters via JPA relationships.
-	 *
-	 * @param testExecution
-	 * @return TestExecution with fetched parameters
-	 */
-	public static TestExecution fetchParameters(TestExecution testExecution) {
-		testExecution.setParameters(EntityUtils.clone(testExecution.getParameters()));
-		return testExecution;
-	}
+      TypedQuery<TestExecution> query = query(criteria);
+      fillParameterValues(query, search, includedTags, excludedTags, userGroups);
 
-	/**
-	 * Fetch attachments via JPA relationships.
-	 *
-	 * @param testExecution
-	 * @return TestExecution with fetched attachments
-	 */
-	public static TestExecution fetchAttachments(TestExecution testExecution) {
-		testExecution.setAttachments(EntityUtils.clone(testExecution.getAttachments()));
-		return testExecution;
-	}
+      List<TestExecution> result = query.getResultList();
+      List<TestExecution> clonedResult = EntityUtils.clone(result);
+      filterResultByParameters(clonedResult, search);
 
-	/**
-	 * Fetch values with parameters via JPA relationships.
-	 *
-	 * @param testExecution
-	 * @return TestExecution with fetched values
-	 */
-	public static TestExecution fetchValues(TestExecution testExecution) {
-		List<Value> cloneValues = new ArrayList<Value>();
-		if (testExecution.getValues() != null) {
-			for (Value v : testExecution.getValues()) {
-				cloneValues.add(v.cloneWithParameters());
-			}
-			testExecution.setValues(cloneValues);
-		}
-		return testExecution;
-	}
-
-	public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, TestExecutionParameterDAO paramDAO, List<String> userGroups) {
-		CriteriaQuery<TestExecution> criteria = createCriteria();
-		CriteriaBuilder cb = criteriaBuilder();
-		List<String> tags = TagUtils.parseTags(search.getTags() != null ? search.getTags().toLowerCase() : "");
-		List<String> tmpTags = new ArrayList<String>();
-		List<String> excludedTags = new ArrayList<String>();
-
-		//tags beginning with "-" put into separate list and without into different one, not using
-		//remove() because of UnsupportedOperationException
-		Iterator<String> iterator = tags.iterator();
-		while (iterator.hasNext()) {
-			String value = iterator.next();
-			if (value.isEmpty()) {
-				continue;
-			}
-
-			if (value.startsWith("-")) {
-				excludedTags.add(value.substring(1));
-			} else {
-				tmpTags.add(value);
-			}
-		}
-		tags = tmpTags;
-
-		Root<TestExecution> rExec = criteria.from(TestExecution.class);
-
-		Predicate pStartedFrom = cb.and();
-		Predicate pStartedTo = cb.and();
-		Predicate pTagNameInFixedList = cb.and();
-		Predicate pExcludedTags = cb.and();
-		Predicate pTestName = cb.and();
-		Predicate pTestUID = cb.and();
-		Predicate pTestGroups = cb.and();
-		Predicate pParamsMatch = cb.and();
-		Predicate pHavingAllTagsPresent = cb.and();
-
-		// construct criteria
-		if (search.getStartedFrom() != null) {
-			pStartedFrom = cb.greaterThanOrEqualTo(rExec.<Date>get("started"), cb.parameter(Date.class, "startedFrom"));
-		}
-		if (search.getStartedTo() != null) {
-			pStartedTo = cb.lessThanOrEqualTo(rExec.<Date>get("started"), cb.parameter(Date.class, "startedTo"));
-		}
-		if (!tags.isEmpty() || !excludedTags.isEmpty()) {
-			Join<TestExecution, Tag> rTag = rExec.joinCollection("testExecutionTags").join("tag");
-			if (!tags.isEmpty()) {
-				pTagNameInFixedList = cb.lower(rTag.<String>get("name")).in(cb.parameter(List.class, "tagList"));
-				pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
-			}
-
-			if (!excludedTags.isEmpty()) {
-				Subquery<Long> sq = criteria.subquery(Long.class);
-				Root<TestExecution> sqRoot = sq.from(TestExecution.class);
-				Join<TestExecution, Tag> sqTag = sqRoot.joinCollection("testExecutionTags").join("tag");
-				sq.select(sqRoot.<Long>get("id"));
-				sq.where(cb.lower(sqTag.<String>get("name")).in(cb.parameter(List.class, "excludedTagList")));
-
-				pExcludedTags = cb.not(rExec.get("id").in(sq));
-			}
-		}
-		if (search.getTestName() != null && !"".equals(search.getTestName())) {
-			Join<TestExecution, Test> rTest = rExec.join("test");
-			pTestName = cb.like(cb.lower(rTest.<String>get("name")), cb.parameter(String.class, "testName"));
-		}
-		if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
-			Join<TestExecution, Test> rTest = rExec.join("test");
-			pTestUID = cb.like(cb.lower(rTest.<String>get("uid")), cb.parameter(String.class, "testUID"));
-		}
-		if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
-			Join<TestExecution, Test> rTest = rExec.join("test");
-			pTestGroups = cb.and(rTest.<String>get("groupId").in(cb.parameter(List.class, "groupNames")));
-		}
-		List<String> displayedParams = null;
-		if (search.getParameters() != null && !search.getParameters().isEmpty()) {
-			displayedParams = new ArrayList<String>(search.getParameters().size());
-			for (ParamCriteria pc : search.getParameters()) {
-				if (pc.isDisplayed()) {
-					displayedParams.add(pc.getName());
-				}
-				if (pc.getValue() == null || "".equals(pc.getValue().trim())) {
-					pc.setValue("%");
-				}
-			}
-			for (int pCount = 1; pCount < search.getParameters().size() + 1; pCount++) {
-				Join<TestExecution, TestExecutionParameter> rParam = rExec.join("parameters");
-				pParamsMatch = cb.and(pParamsMatch, cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName" + pCount)));
-				pParamsMatch = cb.and(pParamsMatch, cb.like(rParam.<String>get("value"), cb.parameter(String.class, "paramValue" + pCount)));
-			}
-		}
-
-		// construct query
-		criteria.select(rExec);
-		criteria.where(cb.and(pStartedFrom, pStartedTo, pTagNameInFixedList, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch));
-		criteria.having(pHavingAllTagsPresent);
-		// this isn't very ellegant, but Postgres 8.4 doesn't allow GROUP BY only with id
-		// this feature is allowed only since Postgres 9.1+
-		criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("started"), rExec.get("comment"));
-		// sorting by started time
-		criteria.orderBy(cb.asc(rExec.get("started")));
-		TypedQuery<TestExecution> query = query(criteria);
-
-		// set parameters
-		if (search.getStartedFrom() != null) {
-			query.setParameter("startedFrom", search.getStartedFrom());
-		}
-		if (search.getStartedTo() != null) {
-			query.setParameter("startedTo", search.getStartedTo());
-		}
-		if (!tags.isEmpty()) {
-			query.setParameter("tagList", tags);
-			query.setParameter("tagListSize", new Long(tags.size()));
-		}
-		if (!excludedTags.isEmpty()) {
-			query.setParameter("excludedTagList", excludedTags);
-		}
-		if (search.getTestName() != null && !"".equals(search.getTestName())) {
-			if (search.getTestName().endsWith("*")) {
-				String pattern = search.getTestName().substring(0, search.getTestName().length() -1).concat("%").toLowerCase();
-				query.setParameter("testName", pattern);
-			} else {
-				query.setParameter("testName", search.getTestName().toLowerCase());
-			}
-		}
-		if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
-			if (search.getTestUID().endsWith("*")) {
-				String pattern = search.getTestUID().substring(0, search.getTestUID().length() -1).concat("%").toLowerCase();
-				query.setParameter("testUID", pattern);
-			} else {
-				query.setParameter("testUID", search.getTestUID().toLowerCase());
-			}
-		}
-		if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
-			query.setParameter("groupNames", userGroups);
-		}
-		if (search.getParameters() != null && !search.getParameters().isEmpty()) {
-			int pCount = 1;
-			for (ParamCriteria paramCriteria : search.getParameters()) {
-				query.setParameter("paramName" + pCount, paramCriteria.getName());
-				query.setParameter("paramValue" + pCount, paramCriteria.getValue());
-				pCount++;
-			}
-		}
-		List<TestExecution> tmp = query.getResultList();
-		List<TestExecution> r = EntityUtils.clone(tmp);
-		List<Long> execIds = EntityUtils.extractIds(r);
-		if (displayedParams != null && !displayedParams.isEmpty() && !execIds.isEmpty() && paramDAO != null) {
-			List<TestExecutionParameter> allParams = paramDAO.find(execIds, displayedParams);
-			Map<Long, List<TestExecutionParameter>> paramsByExecId = new HashMap<Long, List<TestExecutionParameter>>();
-			for (TestExecutionParameter param : allParams) {
-				List<TestExecutionParameter> paramListForExec = paramsByExecId.get(param.getTestExecution().getId());
-				if (paramListForExec == null) {
-					paramListForExec = new ArrayList<TestExecutionParameter>(displayedParams.size());
-					paramsByExecId.put(param.getTestExecution().getId(), paramListForExec);
-				}
-				paramListForExec.add(param);
-			}
-			for (TestExecution exec : r) {
-				List<TestExecutionParameter> paramListForExec = paramsByExecId.get(exec.getId());
-				exec.setParameters(paramListForExec == null ? Collections.<TestExecutionParameter>emptyList() : paramListForExec);
-				exec.setTestExecutionTags(EntityUtils.clone(exec.getTestExecutionTags()));
-				for (TestExecutionTag tet : exec.getTestExecutionTags()) {
-					tet.setTag(tet.getTag().clone());
-				}
-			}
-		} else {
-			for (TestExecution exec : r) {
-				exec.setParameters(Collections.<TestExecutionParameter>emptyList());
-				exec.setTestExecutionTags(EntityUtils.clone(exec.getTestExecutionTags()));
-				for (TestExecutionTag tet : exec.getTestExecutionTags()) {
-					tet.setTag(tet.getTag().clone());
-				}
-			}
-		}
-		return r;
-	}
+      return clonedResult;
+   }
 
    /**
     * Shortcut for getTestExecutions(tags, testUIDs, null, null)
@@ -523,6 +309,143 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 	}
 
    /**
+    * Creates a criteria query of Criteria API for searching of test executions.
+    *
+    * @param search
+    */
+   private CriteriaQuery<TestExecution> constructSearchCriteria(TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags) {
+      CriteriaQuery<TestExecution> criteria = createCriteria();
+      CriteriaBuilder cb = criteriaBuilder();
+
+      //initialize predicates
+      Predicate pStartedFrom = cb.and();
+      Predicate pStartedTo = cb.and();
+      Predicate pTagNameInFixedList = cb.and();
+      Predicate pExcludedTags = cb.and();
+      Predicate pTestName = cb.and();
+      Predicate pTestUID = cb.and();
+      Predicate pTestGroups = cb.and();
+      Predicate pParamsMatch = cb.and();
+      Predicate pHavingAllTagsPresent = cb.and();
+
+      Root<TestExecution> rExec = criteria.from(TestExecution.class);
+
+      // construct criteria
+      if (search.getStartedFrom() != null) {
+         pStartedFrom = cb.greaterThanOrEqualTo(rExec.<Date>get("started"), cb.parameter(Date.class, "startedFrom"));
+      }
+      if (search.getStartedTo() != null) {
+         pStartedTo = cb.lessThanOrEqualTo(rExec.<Date>get("started"), cb.parameter(Date.class, "startedTo"));
+      }
+      if (!includedTags.isEmpty() || !excludedTags.isEmpty()) {
+         Join<TestExecution, Tag> rTag = rExec.joinCollection("testExecutionTags").join("tag");
+         if (!includedTags.isEmpty()) {
+            pTagNameInFixedList = cb.lower(rTag.<String>get("name")).in(cb.parameter(List.class, "tagList"));
+            pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
+         }
+
+         if (!excludedTags.isEmpty()) {
+            Subquery<Long> sq = criteria.subquery(Long.class);
+            Root<TestExecution> sqRoot = sq.from(TestExecution.class);
+            Join<TestExecution, Tag> sqTag = sqRoot.joinCollection("testExecutionTags").join("tag");
+            sq.select(sqRoot.<Long>get("id"));
+            sq.where(cb.lower(sqTag.<String>get("name")).in(cb.parameter(List.class, "excludedTagList")));
+
+            pExcludedTags = cb.not(rExec.get("id").in(sq));
+         }
+      }
+      if (search.getTestName() != null && !"".equals(search.getTestName())) {
+         Join<TestExecution, Test> rTest = rExec.join("test");
+         pTestName = cb.like(cb.lower(rTest.<String>get("name")), cb.parameter(String.class, "testName"));
+      }
+      if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
+         Join<TestExecution, Test> rTest = rExec.join("test");
+         pTestUID = cb.like(cb.lower(rTest.<String>get("uid")), cb.parameter(String.class, "testUID"));
+      }
+      if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
+         Join<TestExecution, Test> rTest = rExec.join("test");
+         pTestGroups = cb.and(rTest.<String>get("groupId").in(cb.parameter(List.class, "groupNames")));
+      }
+      if (search.getParameters() != null && !search.getParameters().isEmpty()) {
+         for (int pCount = 1; pCount < search.getParameters().size() + 1; pCount++) {
+            Join<TestExecution, TestExecutionParameter> rParam = rExec.join("parameters");
+            pParamsMatch = cb.and(pParamsMatch, cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName" + pCount)));
+            pParamsMatch = cb.and(pParamsMatch, cb.like(rParam.<String>get("value"), cb.parameter(String.class, "paramValue" + pCount)));
+         }
+      }
+
+      // construct query
+      criteria.select(rExec);
+      criteria.where(cb.and(pStartedFrom, pStartedTo, pTagNameInFixedList, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch));
+      criteria.having(pHavingAllTagsPresent);
+      // this isn't very elegant, but Postgres 8.4 doesn't allow GROUP BY only with id
+      // this feature is allowed only since Postgres 9.1+
+      criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("started"), rExec.get("comment"));
+      // sorting by started time
+      criteria.orderBy(cb.asc(rExec.get("started")));
+
+      return criteria;
+   }
+
+   /**
+    * After search of test executions with various properties, now we want to filter them
+    * according to test execution parameters. This method does the filtering.
+    *
+    * @param result
+    * @param search
+    */
+   private void filterResultByParameters(List<TestExecution> result, TestExecutionSearchTO search) {
+      List<String> displayedParams = null;
+      //go through the entered test parameters
+      //if the parameter doesn't have the value, add % as the value,
+      //i.e. check if the test execution has this parameter
+      if (search.getParameters() != null && !search.getParameters().isEmpty()) {
+         displayedParams = new ArrayList<String>(search.getParameters().size());
+         for (ParamCriteria pc : search.getParameters()) {
+            if (pc.isDisplayed()) {
+               displayedParams.add(pc.getName());
+            }
+            if (pc.getValue() == null || "".equals(pc.getValue().trim())) {
+               pc.setValue("%");
+            }
+         }
+      }
+
+      List<Long> execIds = EntityUtils.extractIds(result);
+      if (displayedParams != null && !displayedParams.isEmpty() && !execIds.isEmpty()) {
+         List<TestExecutionParameter> allParams = testExecutionParameterDAO.find(execIds, displayedParams);
+         Map<Long, List<TestExecutionParameter>> paramsByExecId = new HashMap<Long, List<TestExecutionParameter>>();
+
+         for (TestExecutionParameter param: allParams) {
+            List<TestExecutionParameter> paramListForExec = paramsByExecId.get(param.getTestExecution().getId());
+            if (paramListForExec == null) {
+               paramListForExec = new ArrayList<TestExecutionParameter>(displayedParams.size());
+               paramsByExecId.put(param.getTestExecution().getId(), paramListForExec);
+            }
+
+            paramListForExec.add(param);
+         }
+
+         for (TestExecution exec: result) {
+            List<TestExecutionParameter> paramListForExec = paramsByExecId.get(exec.getId());
+            exec.setParameters(paramListForExec == null ? Collections.<TestExecutionParameter>emptyList() : paramListForExec);
+            exec.setTestExecutionTags(EntityUtils.clone(exec.getTestExecutionTags()));
+            for (TestExecutionTag tet : exec.getTestExecutionTags()) {
+               tet.setTag(tet.getTag().clone());
+            }
+         }
+      } else {
+         for (TestExecution exec: result) {
+            exec.setParameters(Collections.<TestExecutionParameter>emptyList());
+            exec.setTestExecutionTags(EntityUtils.clone(exec.getTestExecutionTags()));
+            for (TestExecutionTag tet : exec.getTestExecutionTags()) {
+               tet.setTag(tet.getTag().clone());
+            }
+         }
+      }
+   }
+
+   /**
     * Helper method. Because when trying to retrieve count of test executions according to
     * some restrictions (like tags etc, in general when the query has having, where, group by together) via
     * Criteria API, there is no way to reuse the query even though it differs in two lines.
@@ -551,6 +474,59 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    }
 
    /**
+    * Helper method. Search query is quite complicated and has a lot of parameters. This method
+    * assigns the value to every predefined parameter.
+    *
+    * @param query
+    * @param search
+    * @param includedTags
+    * @param excludedTags
+    * @param userGroups
+    */
+   private void fillParameterValues(TypedQuery<TestExecution> query, TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags,  List<String> userGroups) {
+      if (search.getStartedFrom() != null) {
+         query.setParameter("startedFrom", search.getStartedFrom());
+      }
+      if (search.getStartedTo() != null) {
+         query.setParameter("startedTo", search.getStartedTo());
+      }
+      if (!includedTags.isEmpty()) {
+         query.setParameter("tagList", includedTags);
+         query.setParameter("tagListSize", new Long(includedTags.size()));
+      }
+      if (!excludedTags.isEmpty()) {
+         query.setParameter("excludedTagList", excludedTags);
+      }
+      if (search.getTestName() != null && !"".equals(search.getTestName())) {
+         if (search.getTestName().endsWith("*")) {
+            String pattern = search.getTestName().substring(0, search.getTestName().length() -1).concat("%").toLowerCase();
+            query.setParameter("testName", pattern);
+         } else {
+            query.setParameter("testName", search.getTestName().toLowerCase());
+         }
+      }
+      if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
+         if (search.getTestUID().endsWith("*")) {
+            String pattern = search.getTestUID().substring(0, search.getTestUID().length() -1).concat("%").toLowerCase();
+            query.setParameter("testUID", pattern);
+         } else {
+            query.setParameter("testUID", search.getTestUID().toLowerCase());
+         }
+      }
+      if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
+         query.setParameter("groupNames", userGroups);
+      }
+      if (search.getParameters() != null && !search.getParameters().isEmpty()) {
+         int pCount = 1;
+         for (ParamCriteria paramCriteria : search.getParameters()) {
+            query.setParameter("paramName" + pCount, paramCriteria.getName());
+            query.setParameter("paramValue" + pCount, paramCriteria.getValue());
+            pCount++;
+         }
+      }
+   }
+
+   /**
     * Helper method. Because when trying to retrieve count of test executions according to
     * some restrictions (like tags etc, in general when the query has having, where, group by together) via
     * Criteria API, there is no way to reuse the query even though it differs in two lines.
@@ -569,5 +545,98 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       query.setParameter("tagListSize", new Long(tags.size()));
 
       return query;
+   }
+
+   /**
+    * Helper method. Divides the list of tags to two groups - included and excluded tags. Excluded tags have
+    * prefix '-'. Divides and stores it into the parameters.
+    *
+    * @param inputTags
+    * @param outputExcluded
+    * @param outputIncluded
+    * @return
+    */
+   private void divideTags(List<String> inputTags, List<String> outputIncluded, List<String> outputExcluded) {
+      Iterator<String> iterator = inputTags.iterator();
+      while (iterator.hasNext()) {
+         String value = iterator.next();
+         if (value.isEmpty()) {
+            continue;
+         }
+
+         if (value.startsWith("-")) {
+            outputExcluded.add(value.substring(1));
+         }
+         else {
+            outputIncluded.add(value);
+         }
+      }
+   }
+
+   /**
+    * Fetch test via JPA relationship.
+    *
+    * @param exec
+    * @return
+    */
+   public static TestExecution fetchTest(TestExecution exec) {
+      exec.setTest(exec.getTest().clone());
+      exec.getTest().setTestExecutions(null);
+      exec.getTest().setTestMetrics(null);
+      return exec;
+   }
+
+   /**
+    * Fetch tags via JPA relationships.
+    *
+    * @param testExecution
+    * @return TestExecution with fetched tags
+    */
+   public static TestExecution fetchTags(TestExecution testExecution) {
+      Collection<TestExecutionTag> cloneTags = new ArrayList<TestExecutionTag>();
+      for (TestExecutionTag interObject : testExecution.getTestExecutionTags()) {
+         cloneTags.add(interObject.cloneWithTag());
+      }
+      testExecution.setTestExecutionTags(cloneTags);
+      return testExecution;
+   }
+
+   /**
+    * Fetch parameters via JPA relationships.
+    *
+    * @param testExecution
+    * @return TestExecution with fetched parameters
+    */
+   public static TestExecution fetchParameters(TestExecution testExecution) {
+      testExecution.setParameters(EntityUtils.clone(testExecution.getParameters()));
+      return testExecution;
+   }
+
+   /**
+    * Fetch attachments via JPA relationships.
+    *
+    * @param testExecution
+    * @return TestExecution with fetched attachments
+    */
+   public static TestExecution fetchAttachments(TestExecution testExecution) {
+      testExecution.setAttachments(EntityUtils.clone(testExecution.getAttachments()));
+      return testExecution;
+   }
+
+   /**
+    * Fetch values with parameters via JPA relationships.
+    *
+    * @param testExecution
+    * @return TestExecution with fetched values
+    */
+   public static TestExecution fetchValues(TestExecution testExecution) {
+      List<Value> cloneValues = new ArrayList<Value>();
+      if (testExecution.getValues() != null) {
+         for (Value v : testExecution.getValues()) {
+            cloneValues.add(v.cloneWithParameters());
+         }
+         testExecution.setValues(cloneValues);
+      }
+      return testExecution;
    }
 }
