@@ -42,7 +42,8 @@ public class TestExecutionSearchTO implements Serializable {
 	private String testUID;
 	private String testName;
 	private List<ParamCriteria> parameters = new ArrayList<ParamCriteria>();
-	private int limit;
+	private Integer limitFrom;
+   private Integer limitHowMany;
 	private GroupFilter groupFilter;
 
 	//means "Test executed after"
@@ -91,15 +92,23 @@ public class TestExecutionSearchTO implements Serializable {
 		return parameters;
 	}
 
-	public int getLimit() {
-		return limit;
+	public Integer getLimitFrom() {
+		return limitFrom;
 	}
 
-	public void setLimit(int limit) {
-		this.limit = limit;
+	public void setLimitFrom(Integer limitFrom) {
+		this.limitFrom = limitFrom;
 	}
 
-	public GroupFilter getGroupFilter() {
+   public Integer getLimitHowMany() {
+      return limitHowMany;
+   }
+
+   public void setLimitHowMany(Integer limitHowMany) {
+      this.limitHowMany = limitHowMany;
+   }
+
+   public GroupFilter getGroupFilter() {
 		return groupFilter;
 	}
 

@@ -133,15 +133,31 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @return
     */
    public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, List<String> userGroups) {
+      CriteriaBuilder cb = criteriaBuilder();
+
       List<String> tags = TagUtils.parseTags(search.getTags() != null ? search.getTags().toLowerCase() : "");
       List<String> excludedTags = new ArrayList<>();
       List<String> includedTags = new ArrayList<>();
       divideTags(tags, includedTags, excludedTags);
 
-      CriteriaQuery<TestExecution> criteria = constructSearchCriteria(search, includedTags, excludedTags);
+      Long count = null;
+      if(search.getLimitFrom() != null && search.getLimitHowMany() != null) {
+         count = processSearchCountQuery(search, includedTags, excludedTags, userGroups);
+      }
+
+      CriteriaQuery<TestExecution> criteria = (CriteriaQuery) createSearchSubquery(cb.createQuery(TestExecution.class), search, includedTags, excludedTags);
+      Root<TestExecution> root = (Root<TestExecution>) criteria.getRoots().toArray()[0];
+      criteria.select(root);
+      criteria.orderBy(cb.asc(root.get("started")));
 
       TypedQuery<TestExecution> query = query(criteria);
       fillParameterValues(query, search, includedTags, excludedTags, userGroups);
+
+      if(count != null) {
+         int firstResult = count.intValue() - search.getLimitFrom();
+         query.setFirstResult(firstResult < 0 ? 0 : firstResult);
+         query.setMaxResults(search.getLimitHowMany());
+      }
 
       List<TestExecution> result = query.getResultList();
       List<TestExecution> clonedResult = EntityUtils.clone(result);
@@ -309,12 +325,15 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 	}
 
    /**
-    * Creates a criteria query of Criteria API for searching of test executions.
+    * Helper method. Creates a criteria query of Criteria API for searching of test executions. Because we also
+    * sometimes need to limit the number of results and it's not possible to easily reuse the query for both
+    * count query and actual retrieval, this construction of criteria is extracted into this method to avoid code
+    * duplication. Also makes the code more readable.
     *
     * @param search
     */
-   private CriteriaQuery<TestExecution> constructSearchCriteria(TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags) {
-      CriteriaQuery<TestExecution> criteria = createCriteria();
+   private AbstractQuery createSearchSubquery(AbstractQuery criteriaQuery, TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags) {
+      AbstractQuery criteria = criteriaQuery;
       CriteriaBuilder cb = criteriaBuilder();
 
       //initialize predicates
@@ -375,16 +394,42 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       }
 
       // construct query
-      criteria.select(rExec);
       criteria.where(cb.and(pStartedFrom, pStartedTo, pTagNameInFixedList, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch));
       criteria.having(pHavingAllTagsPresent);
       // this isn't very elegant, but Postgres 8.4 doesn't allow GROUP BY only with id
       // this feature is allowed only since Postgres 9.1+
       criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("started"), rExec.get("comment"));
-      // sorting by started time
-      criteria.orderBy(cb.asc(rExec.get("started")));
 
       return criteria;
+   }
+
+   /**
+    * Helper method. During the search of test executions, if there is a limit set, we have to count
+    * the test executions suit the conditions.
+    *
+    * @param search
+    * @param includedTags
+    * @param excludedTags
+    * @param userGroups
+    * @return
+    */
+   private Long processSearchCountQuery(TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags, List<String> userGroups) {
+      CriteriaBuilder cb = criteriaBuilder();
+
+      CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+      Root<TestExecution> root = countQuery.from(TestExecution.class);
+      countQuery.select(cb.countDistinct(root));
+
+      Subquery<Long> subquery = (Subquery) createSearchSubquery(countQuery.subquery(Long.class), search, includedTags, excludedTags);
+      Root<TestExecution> subqueryRoot = (Root<TestExecution>)subquery.getRoots().toArray()[0];
+      subquery.select(subqueryRoot.<Long>get("id"));
+
+      countQuery.where(cb.in(root.get("id")).value(subquery));
+      TypedQuery<Long> typedCountQuery = query(countQuery);
+      fillParameterValues(typedCountQuery, search, includedTags, excludedTags, userGroups);
+
+      Long count = typedCountQuery.getSingleResult();
+      return count;
    }
 
    /**
@@ -483,7 +528,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param excludedTags
     * @param userGroups
     */
-   private void fillParameterValues(TypedQuery<TestExecution> query, TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags,  List<String> userGroups) {
+   private void fillParameterValues(TypedQuery query, TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags,  List<String> userGroups) {
       if (search.getStartedFrom() != null) {
          query.setParameter("startedFrom", search.getStartedFrom());
       }
