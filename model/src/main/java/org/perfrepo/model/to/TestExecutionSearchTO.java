@@ -34,10 +34,12 @@ import org.perfrepo.model.userproperty.GroupFilter;
 public class TestExecutionSearchTO implements Serializable {
 
 	private static final long serialVersionUID = -2274979571623499791L;
+
+   private List<Long> ids;
 	//means "Test executed after"
 	private Date startedFrom;
 	//means "Test executed before"
-	private Date startedTo;
+   private Date startedTo;
 	private String tags;
 	private String testUID;
 	private String testName;
@@ -46,7 +48,15 @@ public class TestExecutionSearchTO implements Serializable {
    private Integer limitHowMany;
 	private GroupFilter groupFilter;
 
-	//means "Test executed after"
+   public List<Long> getIds() {
+      return ids;
+   }
+
+   public void setIds(List<Long> ids) {
+      this.ids = ids;
+   }
+
+   //means "Test executed after"
 	public Date getStartedFrom() {
 		return startedFrom;
 	}
@@ -115,6 +125,42 @@ public class TestExecutionSearchTO implements Serializable {
 	public void setGroupFilter(GroupFilter groupFilter) {
 		this.groupFilter = groupFilter;
 	}
+
+   @Override
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      TestExecutionSearchTO that = (TestExecutionSearchTO) o;
+
+      if (groupFilter != that.groupFilter) return false;
+      if (ids != null ? !ids.equals(that.ids) : that.ids != null) return false;
+      if (limitFrom != null ? !limitFrom.equals(that.limitFrom) : that.limitFrom != null) return false;
+      if (limitHowMany != null ? !limitHowMany.equals(that.limitHowMany) : that.limitHowMany != null) return false;
+      if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) return false;
+      if (startedFrom != null ? !startedFrom.equals(that.startedFrom) : that.startedFrom != null) return false;
+      if (startedTo != null ? !startedTo.equals(that.startedTo) : that.startedTo != null) return false;
+      if (tags != null ? !tags.equals(that.tags) : that.tags != null) return false;
+      if (testName != null ? !testName.equals(that.testName) : that.testName != null) return false;
+      if (testUID != null ? !testUID.equals(that.testUID) : that.testUID != null) return false;
+
+      return true;
+   }
+
+   @Override
+   public int hashCode() {
+      int result = ids != null ? ids.hashCode() : 0;
+      result = 31 * result + (startedFrom != null ? startedFrom.hashCode() : 0);
+      result = 31 * result + (startedTo != null ? startedTo.hashCode() : 0);
+      result = 31 * result + (tags != null ? tags.hashCode() : 0);
+      result = 31 * result + (testUID != null ? testUID.hashCode() : 0);
+      result = 31 * result + (testName != null ? testName.hashCode() : 0);
+      result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
+      result = 31 * result + (limitFrom != null ? limitFrom.hashCode() : 0);
+      result = 31 * result + (limitHowMany != null ? limitHowMany.hashCode() : 0);
+      result = 31 * result + (groupFilter != null ? groupFilter.hashCode() : 0);
+      return result;
+   }
 
    public static class ParamCriteria implements Serializable {
 

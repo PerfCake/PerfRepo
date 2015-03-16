@@ -23,10 +23,11 @@ SELECT               : 'SELECT';
 DEFINE               : 'DEFINE';
 CONDITION            : 'CONDITION';
 WHERE                : 'WHERE';
-BETWEEN              : 'BETWEEN';
 AND                  : 'AND';
 LAST                 : 'LAST';
 ASSIGN               : '=';
+LTE                  : '<=';
+GTE                  : '>=';
 IN                   : 'IN';
 AVG                  : 'AVG';
 MIN                  : 'MIN';
@@ -59,18 +60,21 @@ simple_select     : SELECT^ equals_where simple_last? | SELECT^ simple_last;
 
 multi_select      : SELECT^ equals_where multi_last? |
                     SELECT^ in_where |
-                    SELECT^ between_where |
                     SELECT^ multi_last;
 
-equals_where      : WHERE^ equals_condition;
+equals_where      : WHERE^ equals_condition (AND! equals_condition)*;
 in_where          : WHERE^ in_condition;
-between_where     : WHERE^ between_condition;
 simple_last       : LAST^ ONE;
 multi_last        : LAST^ number | LAST^ number ','! number;
 
-equals_condition  : any ASSIGN^ any | any ASSIGN^ '"'! any '"'!;
+equals_condition  : any ASSIGN^ any |
+                    any ASSIGN^ '"'! any '"'! |
+                    any LTE^ any |
+                    any LTE^ '"'! any '"'! |
+                    any GTE^ any |
+                    any GTE^ '"'! any '"'!;
+
 in_condition      : any IN^ '('! any (','! any)* ')'!;
-between_condition : any BETWEEN^ any AND! any;
 
 number            : (NUMBER_NOT_ONE | ONE)* -> ANY[$text];
 any_with_equals   : ('=' | '(' | ')' | ANY_CHAR | NUMBER_NOT_ONE | ONE)* -> ANY[$text];

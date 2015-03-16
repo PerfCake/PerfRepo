@@ -36,7 +36,7 @@ import java.util.Map;
 public class AlertDAO extends DAO<Alert, Long> {
 
    /**
-    * TODO: document this
+    * Retrieves all alerts associated with specified test and metric.
     *
     * @param test
     * @param metric

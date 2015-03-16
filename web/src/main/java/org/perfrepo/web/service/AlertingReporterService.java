@@ -13,7 +13,8 @@ import java.util.List;
 public interface AlertingReporterService {
 
    /**
-    * TODO: document this
+    * Suppose that the alert has failed. Calling this method will trigger appropriate procedure
+    * of reporting the failed alert, e.g. send an email, log it into file etc. Depends on the implementation.
     *
     * @param alerts
     * @param testExecution

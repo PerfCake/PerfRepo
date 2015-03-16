@@ -1,23 +1,26 @@
 package org.perfrepo.test;
 
-import com.google.common.collect.Lists;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.perfrepo.model.Metric;
 import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.Value;
+import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.web.alerting.ConditionCheckerImpl;
-import org.junit.Before;
-import org.junit.Test;
 import org.perfrepo.web.dao.TestExecutionDAO;
+import org.perfrepo.web.service.UserService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,46 +42,62 @@ public class ConditionCheckerTest {
       conditionChecker = new ConditionCheckerImpl();
 
       TestExecutionDAO mockedTestExecutionDAO = mock(TestExecutionDAO.class);
-      List<TestExecution> returnedTestExecutionsFor1 = new ArrayList<>();
-      returnedTestExecutionsFor1.add(createTestExecution1());
+      List<TestExecution> te1 = Arrays.asList(createTestExecution1());
+      List<TestExecution> te2 = Arrays.asList(createTestExecution2());
 
-      List<TestExecution> returnedTestExecutionsFor2 = new ArrayList<>();
-      returnedTestExecutionsFor2.add(createTestExecution2());
+      List<TestExecution> te1And2 = new ArrayList<>();
+      te1And2.addAll(te1);
+      te1And2.addAll(te2);
 
-      List<TestExecution> returnedTestExecutionsForMultiSelect = new ArrayList<>();
-      returnedTestExecutionsForMultiSelect.addAll(returnedTestExecutionsFor1);
-      returnedTestExecutionsForMultiSelect.addAll(returnedTestExecutionsFor2);
+      TestExecutionSearchTO searchTe1 = createSearchCriteria(Arrays.asList(1L), null, null, null, null, null);
+      TestExecutionSearchTO searchTe2 = createSearchCriteria(Arrays.asList(2L), null, null, null, null, null);
+      TestExecutionSearchTO searchTe1And2 = createSearchCriteria(Arrays.asList(1L, 2L), null, null, null, null, null);
 
-      //number 1 is of type string because when we extract it from a AST, it's a string
-      //and Mockito needs the parameters type to match, otherwise doesn't retrieve correct result
-      when(mockedTestExecutionDAO.getAllByProperty("id", "1")).thenReturn(returnedTestExecutionsFor1);
-      when(mockedTestExecutionDAO.getAllByProperty("id", "2")).thenReturn(returnedTestExecutionsFor2);
-      when(mockedTestExecutionDAO.getLast(2, 1)).thenReturn(returnedTestExecutionsFor1);
-      when(mockedTestExecutionDAO.getLast(11, 10)).thenReturn(returnedTestExecutionsForMultiSelect);
-      when(mockedTestExecutionDAO.getLast(11, 5)).thenReturn(returnedTestExecutionsForMultiSelect);
+      TestExecutionSearchTO searchLast1 = createSearchCriteria(null, null, 2, 1, null, null);
+      TestExecutionSearchTO searchLast10 = createSearchCriteria(null, null, 11, 10, null, null);
+      TestExecutionSearchTO search5FromLast10 = createSearchCriteria(null, null, 11, 5, null, null);
 
-      Collection<Object> inIds = new ArrayList<>();
-      inIds.add("1");
-      inIds.add("2");
-      when(mockedTestExecutionDAO.getAllByPropertyIn("id", inIds)).thenReturn(returnedTestExecutionsForMultiSelect);
+      when(mockedTestExecutionDAO.searchTestExecutions(searchTe1, Arrays.asList("testuser"))).thenReturn(te1);
+      when(mockedTestExecutionDAO.searchTestExecutions(searchTe2, Arrays.asList("testuser"))).thenReturn(te2);
+      when(mockedTestExecutionDAO.searchTestExecutions(searchLast1, Arrays.asList("testuser"))).thenReturn(te2);
+      when(mockedTestExecutionDAO.searchTestExecutions(searchLast10, Arrays.asList("testuser"))).thenReturn(te1And2);
+      when(mockedTestExecutionDAO.searchTestExecutions(search5FromLast10, Arrays.asList("testuser"))).thenReturn(te1And2);
+      when(mockedTestExecutionDAO.searchTestExecutions(searchTe1And2, Arrays.asList("testuser"))).thenReturn(te1And2);
 
-      List<TestExecution> returnedTestExecutionsForBetween = new ArrayList<>();
-      returnedTestExecutionsForBetween.add(createTestExecution2());
-      returnedTestExecutionsForBetween.add(createTestExecution3());
-      returnedTestExecutionsForBetween.add(createTestExecution4());
-      when(mockedTestExecutionDAO.getAllByPropertyBetween("id", 2L, 4L)).thenReturn(returnedTestExecutionsForBetween);
+      List<TestExecution> tesWithTags = Arrays.asList(createTestExecution3(), createTestExecution4());
 
-      List<TestExecution> returnedTestExecutionsForTagsAndMultiLast = new ArrayList<>();
-      returnedTestExecutionsForTagsAndMultiLast.add(createTestExecution3());
-      returnedTestExecutionsForTagsAndMultiLast.add(createTestExecution4());
+      TestExecutionSearchTO searchTesWithTags = createSearchCriteria(null, "firstTag secondTag", null, null, null, null);
+      TestExecutionSearchTO searchTesWithTagsAndLast1 = createSearchCriteria(null, "firstTag secondTag", 2, 1, null, null);
+      TestExecutionSearchTO searchTesWithTagsAnd2FromLast3 = createSearchCriteria(null, "firstTag secondTag", 4, 2, null, null);
 
-      List<String> tags = Lists.newArrayList("firstTag", "secondTag");
-      List<String> test = Lists.newArrayList(createTest().getUid());
-      when(mockedTestExecutionDAO.getTestExecutions(tags, test)).thenReturn(returnedTestExecutionsForMultiSelect);
-      when(mockedTestExecutionDAO.getTestExecutions(tags, test, 2, 1)).thenReturn(returnedTestExecutionsFor1);
-      when(mockedTestExecutionDAO.getTestExecutions(tags, test, 4, 2)).thenReturn(returnedTestExecutionsForTagsAndMultiLast);
+      when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTags,  Arrays.asList("testuser"))).thenReturn(tesWithTags);
+      when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTagsAndLast1, Arrays.asList("testuser"))).thenReturn(te1);
+      when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTagsAnd2FromLast3, Arrays.asList("testuser"))).thenReturn(tesWithTags);
+
+      Calendar calendar = Calendar.getInstance();
+      calendar.set(2015, 0, 1, 0, 0, 0);
+      Date dateFrom = calendar.getTime();
+
+      calendar.set(2015, 1, 1, 0, 0, 0);
+      Date dateTo = calendar.getTime();
+
+      TestExecutionSearchTO searchTesWithOnlyDateFrom = createSearchCriteria(null, null, null, null, dateFrom, null);
+      TestExecutionSearchTO searchTesWithOnlyDateTo = createSearchCriteria(null, null, null, null, null, dateTo);
+      TestExecutionSearchTO searchTesWithDates = createSearchCriteria(null, null, null, null, dateFrom, dateTo);
+      TestExecutionSearchTO searchTesWithTagsAndDates = createSearchCriteria(null, "firstTag secondTag", null, null, dateFrom, dateTo);
+
+      List<TestExecution> tesWithTagsAndDates = Arrays.asList(createTestExecution1(), createTestExecution4());
+
+      when(mockedTestExecutionDAO.searchTestExecutions(argThat(new SearchCriteriaMatcher(searchTesWithOnlyDateFrom)), eq(Arrays.asList("testuser")))).thenReturn(tesWithTags);
+      when(mockedTestExecutionDAO.searchTestExecutions(argThat(new SearchCriteriaMatcher(searchTesWithOnlyDateTo)), eq(Arrays.asList("testuser")))).thenReturn(tesWithTags);
+      when(mockedTestExecutionDAO.searchTestExecutions(argThat(new SearchCriteriaMatcher(searchTesWithDates)), eq(Arrays.asList("testuser")))).thenReturn(tesWithTagsAndDates);
+      when(mockedTestExecutionDAO.searchTestExecutions(argThat(new SearchCriteriaMatcher(searchTesWithTagsAndDates)), eq(Arrays.asList("testuser")))).thenReturn(tesWithTagsAndDates);
+
+      UserService mockedUserService = mock(UserService.class);
+      when(mockedUserService.getLoggedUserGroupNames()).thenReturn(Arrays.asList("testuser"));
 
       conditionChecker.setTestExecutionDAO(mockedTestExecutionDAO);
+      conditionChecker.setUserService(mockedUserService);
    }
 
    @Test
@@ -98,12 +117,10 @@ public class ConditionCheckerTest {
       catch (IllegalArgumentException ex) {} //expected
    }
 
-   @Test
+   @Test(expected = IllegalArgumentException.class)
    public void testWrongSyntaxMultiSelectWithoutGroupFunction() {
-      try {
-         String condition = "CONDITION x == result DEFINE x = (SELECT WHERE id IN (1,2))";
-      }
-      catch(IllegalArgumentException ex) {} //expected
+      String condition = "CONDITION x == result DEFINE x = (SELECT WHERE id IN (1,2))";
+      conditionChecker.checkCondition(condition, 0, createTest(), createMetric());
    }
 
    @Test
@@ -123,6 +140,7 @@ public class ConditionCheckerTest {
       condition = "CONDITION x < 10 DEFINE x = (SELECT LAST 1)";
       assertFalse(conditionChecker.checkCondition(condition, 0, createTest(), createMetric()));
    }
+
 
    @Test
    public void testSimpleSelectOptionalParentheses() {
@@ -154,16 +172,11 @@ public class ConditionCheckerTest {
       assertTrue(conditionChecker.checkCondition(condition, 56, createTest(), createMetric()));
    }
 
+
    @Test
    public void testMultiSelectInWhere() {
       String condition = "CONDITION x == result DEFINE x = AVG(SELECT WHERE id IN (1,2))";
       assertTrue(conditionChecker.checkCondition(condition, 56, createTest(), createMetric()));
-   }
-
-   @Test
-   public void testMultiSelectBetweenWhereId() {
-      String condition = "CONDITION x == result DEFINE x = AVG(SELECT WHERE id BETWEEN 2 AND 4)";
-      assertTrue(conditionChecker.checkCondition(condition, 417, createTest(), createMetric()));
    }
 
    @Test
@@ -181,7 +194,7 @@ public class ConditionCheckerTest {
    @Test
    public void testSelectWithTags() {
       String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE tags = \"firstTag secondTag\")";
-      assertTrue(conditionChecker.checkCondition(condition, 100, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 1001, createTest(), createMetric()));
    }
 
    @Test
@@ -203,6 +216,42 @@ public class ConditionCheckerTest {
 
       condition = "CONDITION x == result DEFINE x = MIN(SELECT WHERE tags = \"firstTag secondTag\" LAST 3, 2)";
       assertTrue(conditionChecker.checkCondition(condition, 150, createTest(), createMetric()));
+   }
+
+   @Test
+   public void testSelectWithOnlyDateFrom() {
+      String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE date >= \"2015-01-01 00:00\")";
+      assertTrue(conditionChecker.checkCondition(condition, 1001, createTest(), createMetric()));
+
+      condition = "CONDITION x == result DEFINE x = MIN(SELECT WHERE date >= \"2015-01-01 00:00\")";
+      assertTrue(conditionChecker.checkCondition(condition, 150, createTest(), createMetric()));
+   }
+
+   @Test
+   public void testSelectWithOnlyDateTo() {
+      String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE date <= \"2015-02-01 00:00\")";
+      assertTrue(conditionChecker.checkCondition(condition, 1001, createTest(), createMetric()));
+
+      condition = "CONDITION x == result DEFINE x = MIN(SELECT WHERE date <= \"2015-02-01 00:00\")";
+      assertTrue(conditionChecker.checkCondition(condition, 150, createTest(), createMetric()));
+   }
+
+   @Test
+   public void testSelectWithDates() {
+      String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE date >= \"2015-01-01 00:00\" AND date <= \"2015-02-01 00:00\")";
+      assertTrue(conditionChecker.checkCondition(condition, 1001, createTest(), createMetric()));
+
+      condition = "CONDITION x == result DEFINE x = MIN(SELECT WHERE date >= \"2015-01-01 00:00\" AND date <= \"2015-02-01 00:00\")";
+      assertTrue(conditionChecker.checkCondition(condition, 12, createTest(), createMetric()));
+   }
+
+   @Test
+   public void testSelectWithTagsAndDates() {
+      String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE tags = \"firstTag secondTag\" AND date >= \"2015-01-01 00:00\" AND date <= \"2015-02-01 00:00\")";
+      assertTrue(conditionChecker.checkCondition(condition, 1001, createTest(), createMetric()));
+
+      condition = "CONDITION x == result DEFINE x = MIN(SELECT WHERE tags = \"firstTag secondTag\" AND date >= \"2015-01-01 00:00\" AND date <= \"2015-02-01 00:00\")";
+      assertTrue(conditionChecker.checkCondition(condition, 12, createTest(), createMetric()));
    }
 
    private TestExecution createTestExecution1() {
@@ -276,4 +325,92 @@ public class ConditionCheckerTest {
       return metric;
    }
 
+   private TestExecutionSearchTO createSearchCriteria(List<Long> ids, String tags, Integer limitFrom, Integer limitHowMany, Date dateFrom, Date dateTo) {
+      TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
+      searchCriteria.setIds(ids);
+      searchCriteria.setTags(tags);
+      searchCriteria.setLimitFrom(limitFrom);
+      searchCriteria.setLimitHowMany(limitHowMany);
+      searchCriteria.setStartedFrom(dateFrom);
+      searchCriteria.setStartedTo(dateTo);
+
+      return searchCriteria;
+   }
+
+   /**
+    * Helper class. When mocking objects with Mockito, Mockito by default uses Object.equals method
+    * to distinguish which method to call. There is a problem with Date objects. Even is two Date objects
+    * are created with the same Date (like year, month, day, hour and minute), calling equals returns false.
+    * This is the reason why this ArgumentMatcher class is used, to do the matching manually.
+    */
+   private class SearchCriteriaMatcher extends ArgumentMatcher<TestExecutionSearchTO> {
+
+      private TestExecutionSearchTO searchCriteria;
+
+      public SearchCriteriaMatcher(TestExecutionSearchTO searchCriteria) {
+         this.searchCriteria = searchCriteria;
+      }
+
+      @Override
+      public boolean matches(Object o) {
+         if(!(o instanceof TestExecutionSearchTO)) {
+            return false;
+         }
+
+         TestExecutionSearchTO object = (TestExecutionSearchTO) o;
+
+         if(!((searchCriteria.getTags() == null && object.getTags() == null) ||
+                  (searchCriteria.getTags() != null && object.getTags() != null))) {
+            return false;
+         }
+
+         Date otherDateFrom = object.getStartedFrom();
+         Date otherDateTo = object.getStartedTo();
+         
+         if(!((searchCriteria.getStartedFrom() == null && otherDateFrom == null) ||
+             (searchCriteria.getStartedFrom() != null && otherDateFrom != null))) {
+            return false;
+         }
+
+         if(!((searchCriteria.getStartedTo() == null && otherDateTo == null) ||
+                  (searchCriteria.getStartedTo() != null && otherDateTo != null))) {
+            return false;
+         }
+         
+         Calendar thisCalendar = Calendar.getInstance();
+         Calendar otherCalendar = Calendar.getInstance();
+
+         if(searchCriteria.getStartedFrom() != null) {
+            thisCalendar.setTime(searchCriteria.getStartedFrom());
+            otherCalendar.setTime(otherDateFrom);
+
+            if((thisCalendar.get(Calendar.YEAR) != otherCalendar.get(Calendar.YEAR)) ||
+               (thisCalendar.get(Calendar.MONTH) != otherCalendar.get(Calendar.MONTH)) ||
+               (thisCalendar.get(Calendar.DAY_OF_MONTH) != otherCalendar.get(Calendar.DAY_OF_MONTH)) ||
+               (thisCalendar.get(Calendar.HOUR) != otherCalendar.get(Calendar.HOUR)) ||
+               (thisCalendar.get(Calendar.MINUTE) != otherCalendar.get(Calendar.MINUTE))) {
+               return false;
+            }
+         }
+
+         if(searchCriteria.getStartedTo() != null) {
+            thisCalendar.setTime(searchCriteria.getStartedTo());
+            otherCalendar.setTime(otherDateTo);
+
+            if((thisCalendar.get(Calendar.YEAR) != otherCalendar.get(Calendar.YEAR)) ||
+                (thisCalendar.get(Calendar.MONTH) != otherCalendar.get(Calendar.MONTH)) ||
+                (thisCalendar.get(Calendar.DAY_OF_MONTH) != otherCalendar.get(Calendar.DAY_OF_MONTH)) ||
+                (thisCalendar.get(Calendar.HOUR) != otherCalendar.get(Calendar.HOUR)) ||
+                (thisCalendar.get(Calendar.MINUTE) != otherCalendar.get(Calendar.MINUTE))) {
+               return false;
+            }
+         }
+
+         if(searchCriteria.getTags() != null && !searchCriteria.getTags().equals(object.getTags())) {
+            return false;
+         }
+
+         return true;
+      }
+   }
 }

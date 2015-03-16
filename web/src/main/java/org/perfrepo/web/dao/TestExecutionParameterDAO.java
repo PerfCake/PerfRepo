@@ -42,7 +42,7 @@ import java.util.List;
 public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long> {
 
 	/**
-	 * Discovers if test execution already has the parameter, in other word
+	 * Discovers if test execution already has the parameter, in other words
 	 * if it breaks the unique (testExecutionId, name) constraint
 	 *
 	 * @param testExecutionId
@@ -71,7 +71,8 @@ public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long>
 	}
 
    /**
-    * TODO: document this
+    * Finds all the test execution parameters associated with specified test execution and
+    * parameter name provided. In other words, it allows to search by test execution parameters.
     *
     * @param execIdList
     * @param paramNameList

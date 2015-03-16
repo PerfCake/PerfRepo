@@ -1,6 +1,5 @@
 package org.perfrepo.web.alerting;
 
-import com.google.common.collect.Lists;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
@@ -11,7 +10,9 @@ import org.perfrepo.model.Metric;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.Value;
+import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.web.dao.TestExecutionDAO;
+import org.perfrepo.web.service.UserService;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -39,10 +40,13 @@ import java.util.*;
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class ConditionCheckerImpl implements ConditionChecker {
 
-   private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
+   private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
    @Inject
    private TestExecutionDAO testExecutionDAO;
+
+   @Inject
+   private UserService userService;
 
    private String expression;
    private Map<String, Object> variables;
@@ -78,10 +82,6 @@ public class ConditionCheckerImpl implements ConditionChecker {
       }
 
       return ((Boolean) result).booleanValue();
-   }
-
-   public void setTestExecutionDAO(TestExecutionDAO testExecutionDAO) {
-      this.testExecutionDAO = testExecutionDAO;
    }
 
    /**
@@ -144,7 +144,7 @@ public class ConditionCheckerImpl implements ConditionChecker {
       }
       else { //single select
          testExecutions = handleSelect(groupFunctionOrSelect);
-         if(testExecutions == null || testExecutions.size() > 2) {
+         if(testExecutions == null || testExecutions.size() > 1) {
             throw new IllegalArgumentException("Error occurred or there is more than one test execution found, but no grouping function applied.");
          }
          variableValue = getValueFromMetric(testExecutions.get(0));
@@ -164,13 +164,15 @@ public class ConditionCheckerImpl implements ConditionChecker {
          throw new IllegalArgumentException("Wrong syntax, expected SELECT.");
       }
 
+      TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
       List<TestExecution> testExecutions = null;
       Tree whereOrLast = select.getChild(0);
       Map<String, Integer> parsedLast = null;
 
       if(select.getChildCount() == 1 && whereOrLast.getText().equalsIgnoreCase("LAST")) { //SELECT only with LAST
          parsedLast = processLast(whereOrLast);
-         testExecutions = testExecutionDAO.getLast(parsedLast.get("lastFrom"), parsedLast.get("howMany"));
+         searchCriteria.setLimitFrom(parsedLast.get("lastFrom"));
+         searchCriteria.setLimitHowMany(parsedLast.get("howMany"));
       }
       else if(select.getChildCount() == 2 && select.getChild(1).getText().equalsIgnoreCase("LAST")) { //SELECT with WHERE and LAST
          parsedLast = processLast(select.getChild(1));
@@ -179,37 +181,32 @@ public class ConditionCheckerImpl implements ConditionChecker {
       }
 
       if(whereOrLast.getText().equalsIgnoreCase("WHERE")) { //WHERE
-         Tree simpleOrInOrBetween = whereOrLast.getChild(0);
+         for(int i = 0; i < whereOrLast.getChildCount(); i++) { //going through all AND clauses
+            Tree simpleOrIn = whereOrLast.getChild(i);
 
-         if(simpleOrInOrBetween.getText().equalsIgnoreCase("=")) { //WHERE with '='
-            String property = simpleOrInOrBetween.getChild(0).getText();
-            String propertyValue = simpleOrInOrBetween.getChild(1).getText();
+            if(simpleOrIn.getText().equalsIgnoreCase("=") || simpleOrIn.getText().equalsIgnoreCase(">=") || simpleOrIn.getText().equalsIgnoreCase("<=")) { //WHERE with '=', '>=' or '<='
+               String property = simpleOrIn.getChild(0).getText();
+               String propertyValue = simpleOrIn.getChild(1).getText();
 
-            testExecutions = callActionByPropertyName(property, propertyValue, parsedLast);
-         }
-         else if(simpleOrInOrBetween.getText().equalsIgnoreCase("IN")) { //IN where
-            String propertyName = simpleOrInOrBetween.getChild(0).getText();
-            Collection<Object> values = new ArrayList<>();
-
-            for(int i = 1; i < simpleOrInOrBetween.getChildCount(); i++) { //starting from 1 because child(0) is property name
-               values.add(simpleOrInOrBetween.getChild(i).getText());
+               addCriteriaByPropertyName(searchCriteria, property, propertyValue, parsedLast, simpleOrIn.getText());
             }
+            else if(simpleOrIn.getText().equalsIgnoreCase("IN")) { //IN where
+               String propertyName = simpleOrIn.getChild(0).getText();
+               Collection<String> values = new ArrayList<>();
 
-            testExecutions = testExecutionDAO.getAllByPropertyIn(propertyName, values);
-         }
-         else if(simpleOrInOrBetween.getText().equalsIgnoreCase("BETWEEN")) { //BETWEEN where
-            //boundaries for between are stored directly as children
-            //AND keyword is omitted from the AST
-            String propertyName = simpleOrInOrBetween.getChild(0).getText();
-            Comparable from = parseBetweenArgument(simpleOrInOrBetween.getChild(1).getText());
-            Comparable to = parseBetweenArgument(simpleOrInOrBetween.getChild(2).getText());
+               for(int j = 1; j < simpleOrIn.getChildCount(); j++) { //starting from 1 because child(0) is property name
+                  values.add(simpleOrIn.getChild(j).getText());
+               }
 
-            testExecutions = testExecutionDAO.getAllByPropertyBetween(propertyName, from, to);
-         }
-         else {
-            throw new IllegalArgumentException("Wrong syntax, expected '=', IN or BETWEEN.");
+               addCriteriaByPropertyIn(searchCriteria, propertyName, values);
+            }
+            else {
+               throw new IllegalArgumentException("Wrong syntax, expected '=', '<=', '>=' or IN.");
+            }
          }
       }
+
+      testExecutions = testExecutionDAO.searchTestExecutions(searchCriteria, userService.getLoggedUserGroupNames());
 
       return testExecutions;
    }
@@ -275,52 +272,68 @@ public class ConditionCheckerImpl implements ConditionChecker {
    }
 
    /**
-    * Tries to parse an object to specific type for BETWEEN operator
-    *
-    * @param argument
-    * @return
-    */
-   private Comparable parseBetweenArgument(String argument) {
-      try {
-         return Long.parseLong(argument);
-      }
-      catch(NumberFormatException ex) {} //OK, continue
-
-      try {
-         return DATE_FORMAT.parse(argument);
-      }
-      catch(ParseException e) {} //OK, continue
-
-      return argument;
-   }
-
-   /**
     * Helper method. Retrieves test executions according to the name of the property that is in the WHERE
     * condition, e.g. there is a different process of retrieving test execution by ID and with specific tags
     *
     * @param propertyName name of the property
     * @param propertyValue value that is supplied for the property, might have different meaning with different property
     * @param parsedLast if there is also LAST clause, it's parsed in this Map. See processLast() method for details.
+    * @param operator operator of the condition, e.g. '=', '>=', '<=' ...
     * @return
     */
-   private List<TestExecution> callActionByPropertyName(String propertyName, String propertyValue, Map<String, Integer> parsedLast) {
-      List<TestExecution> testExecutions = null;
-
+   private void addCriteriaByPropertyName(TestExecutionSearchTO searchCriteria, String propertyName, String propertyValue, Map<String, Integer> parsedLast, String operator) {
       if(propertyName.equalsIgnoreCase("tags")) {
-         List<String> tags = Arrays.asList(propertyValue.split(" "));
+         searchCriteria.setTags(propertyValue);
 
-         if(parsedLast == null) { //LAST is not present, get all
-            testExecutions = testExecutionDAO.getTestExecutions(tags, Lists.newArrayList(test.getUid()));
+         if(parsedLast != null) { //LAST is present
+            searchCriteria.setLimitFrom(parsedLast.get("lastFrom"));
+            searchCriteria.setLimitHowMany(parsedLast.get("howMany"));
          }
-         else { //LAST is present
-            testExecutions = testExecutionDAO.getTestExecutions(tags, Lists.newArrayList(test.getUid()), parsedLast.get("lastFrom"), parsedLast.get("howMany"));
+      }
+      else if(propertyName.equalsIgnoreCase("id")) {
+         List<Long> ids = Arrays.asList(Long.parseLong(propertyValue));
+         searchCriteria.setIds(ids);
+      }
+      else if(propertyName.equalsIgnoreCase("date")) {
+         Date parsedDate = null;
+         try {
+            parsedDate = DATE_FORMAT.parse(propertyValue);
+         } catch (ParseException e) {
+            throw new IllegalArgumentException("Date is in a wrong format. Accepted format is " + DATE_FORMAT.toPattern());
+         }
+
+         if(operator.equals(">=")) {
+            searchCriteria.setStartedFrom(parsedDate);
+         }
+         else if(operator.equals("<=")) {
+            searchCriteria.setStartedTo(parsedDate);
          }
       }
       else {
-         testExecutions = testExecutionDAO.getAllByProperty(propertyName, propertyValue);
+         throw new UnsupportedOperationException("Currently supported properties with operator '=' are 'id', 'tags', 'date'.");
+      }
+   }
+
+   /**
+    * Adds IDs to search criteria using the IN operator, i.e. ID must belong to the set of IDs provided.
+    *
+    * @param searchCriteria
+    * @param propertyName
+    * @param values
+    * @return
+    */
+   private void addCriteriaByPropertyIn(TestExecutionSearchTO searchCriteria, String propertyName, Collection<String> values) {
+      if(propertyName.equalsIgnoreCase("id")) {
+         List<Long> ids = new ArrayList<>();
+         for(String id: values) {
+            ids.add(Long.parseLong(id));
+         }
+         searchCriteria.setIds(ids);
+
+         return;
       }
 
-      return testExecutions;
+      throw new UnsupportedOperationException("Only property 'id' is supported with IN operator right now.");
    }
 
    /**
@@ -360,5 +373,13 @@ public class ConditionCheckerImpl implements ConditionChecker {
       result.put("lastFrom", result.get("lastFrom") + 1);
 
       return result;
+   }
+
+   public void setTestExecutionDAO(TestExecutionDAO testExecutionDAO) {
+      this.testExecutionDAO = testExecutionDAO;
+   }
+
+   public void setUserService(UserService userService) {
+      this.userService = userService;
    }
 }

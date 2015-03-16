@@ -72,40 +72,6 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 	}
 
    /**
-    * Returns interval of test executions ordered by started date asc. The interval is defined as
-    * <number_of_executions - from, number_of_executions - from + howMany>, i.e. behaves exactly as
-    * SQL LIMIT clause, goes back in past by <from> executions and from that test execution takes <howMany>
-    * following test executions.
-    *
-    * @param from
-    * @param howMany
-    * @return
-    */
-   public List<TestExecution> getLast(int from, int howMany) {
-      CriteriaBuilder criteriaBuilder = criteriaBuilder();
-
-      CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-      countQuery.select(criteriaBuilder.count(countQuery.from(TestExecution.class)));
-
-      Long count = query(countQuery).getSingleResult();
-
-      CriteriaQuery<TestExecution> resultQuery = createCriteria();
-
-      Root<TestExecution> root = resultQuery.from(TestExecution.class);
-
-      resultQuery.select(root);
-      resultQuery.orderBy(criteriaBuilder.asc(root.get("started")));
-
-      TypedQuery<TestExecution> typedQuery = query(resultQuery);
-      typedQuery.setFirstResult(count.intValue() - from);
-      typedQuery.setMaxResults(howMany);
-
-      List<TestExecution> result = typedQuery.getResultList();
-
-      return result;
-   }
-
-   /**
     * Returns test executions with property value between selected boundaries. This can be applied only on
     * Comparable values, otherwise the result is undefined.
     *
@@ -337,6 +303,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       CriteriaBuilder cb = criteriaBuilder();
 
       //initialize predicates
+      Predicate pIds = cb.and();
       Predicate pStartedFrom = cb.and();
       Predicate pStartedTo = cb.and();
       Predicate pTagNameInFixedList = cb.and();
@@ -350,6 +317,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Root<TestExecution> rExec = criteria.from(TestExecution.class);
 
       // construct criteria
+      if (search.getIds() != null && !search.getIds().isEmpty()) {
+         pIds = rExec.<Long>get("id").in(cb.parameter(List.class, "ids"));
+      }
       if (search.getStartedFrom() != null) {
          pStartedFrom = cb.greaterThanOrEqualTo(rExec.<Date>get("started"), cb.parameter(Date.class, "startedFrom"));
       }
@@ -394,7 +364,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       }
 
       // construct query
-      criteria.where(cb.and(pStartedFrom, pStartedTo, pTagNameInFixedList, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch));
+      criteria.where(cb.and(pIds, pStartedFrom, pStartedTo, pTagNameInFixedList, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch));
       criteria.having(pHavingAllTagsPresent);
       // this isn't very elegant, but Postgres 8.4 doesn't allow GROUP BY only with id
       // this feature is allowed only since Postgres 9.1+
@@ -529,6 +499,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param userGroups
     */
    private void fillParameterValues(TypedQuery query, TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags,  List<String> userGroups) {
+      if (search.getIds() != null) {
+         query.setParameter("ids", search.getIds());
+      }
       if (search.getStartedFrom() != null) {
          query.setParameter("startedFrom", search.getStartedFrom());
       }
