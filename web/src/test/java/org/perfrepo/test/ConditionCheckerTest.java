@@ -104,15 +104,22 @@ public class ConditionCheckerTest {
    public void testWrongSyntax() {
       String condition = "CONDITION x < 1 x = SELECT WHERE id = 1";
       try {
-         conditionChecker.checkCondition(condition, 0, createTest(), createMetric());
+         conditionChecker.checkCondition(condition, 0, createMetric());
          fail("Query without DEFINE should fail.");
       }
       catch (IllegalArgumentException ex) {} //expected
 
       condition = "x < 1 DEFINE x = SELECT WHERE id = 1";
       try {
-         conditionChecker.checkCondition(condition, 0, createTest(), createMetric());
+         conditionChecker.checkCondition(condition, 0, createMetric());
          fail("Query without CONDITION should fail.");
+      }
+      catch (IllegalArgumentException ex) {} //expected
+
+      condition = "CONDITION x < 1 DEFINE x = (SELECT WHERE id = 1) y = (SELECT WHERE id = 1)";
+      try {
+         conditionChecker.checkCondition(condition, 0, createMetric());
+         fail("Query, where definitions are not separated by comma, should fail.");
       }
       catch (IllegalArgumentException ex) {} //expected
    }
@@ -120,138 +127,138 @@ public class ConditionCheckerTest {
    @Test(expected = IllegalArgumentException.class)
    public void testWrongSyntaxMultiSelectWithoutGroupFunction() {
       String condition = "CONDITION x == result DEFINE x = (SELECT WHERE id IN (1,2))";
-      conditionChecker.checkCondition(condition, 0, createTest(), createMetric());
+      conditionChecker.checkCondition(condition, 0, createMetric());
    }
 
    @Test
    public void testSimpleSelect() {
       String condition = "CONDITION x > 10 DEFINE x = (SELECT WHERE id = 1)";
-      assertTrue(conditionChecker.checkCondition(condition, 0, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 0, createMetric()));
 
       condition = "CONDITION x < 10 DEFINE x = (SELECT WHERE id = 1)";
-      assertFalse(conditionChecker.checkCondition(condition, 0, createTest(), createMetric()));
+      assertFalse(conditionChecker.checkCondition(condition, 0, createMetric()));
    }
 
    @Test
    public void testSimpleSelectSimpleLast() {
       String condition = "CONDITION x > 10 DEFINE x = (SELECT LAST 1)";
-      assertTrue(conditionChecker.checkCondition(condition, 0, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 0, createMetric()));
 
       condition = "CONDITION x < 10 DEFINE x = (SELECT LAST 1)";
-      assertFalse(conditionChecker.checkCondition(condition, 0, createTest(), createMetric()));
+      assertFalse(conditionChecker.checkCondition(condition, 0, createMetric()));
    }
 
 
    @Test
    public void testSimpleSelectOptionalParentheses() {
       String condition = "CONDITION x > 10 DEFINE x = SELECT WHERE id = 1";
-      assertTrue(conditionChecker.checkCondition(condition, 0, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 0, createMetric()));
 
       condition = "CONDITION x < 10 DEFINE x = SELECT WHERE id = 1";
-      assertFalse(conditionChecker.checkCondition(condition, 0, createTest(), createMetric()));
+      assertFalse(conditionChecker.checkCondition(condition, 0, createMetric()));
    }
 
    @Test
    public void testManySimpleSelects() {
       String condition = "CONDITION x > 10 && result > 0.95*y DEFINE x = (SELECT WHERE id = 1), y = (SELECT WHERE id = 2)";
-      assertTrue(conditionChecker.checkCondition(condition, 100, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 100, createMetric()));
 
       condition = "CONDITION x > 10 && result > (0.95*y)+10 DEFINE x = (SELECT WHERE id = 1), y = (SELECT WHERE id = 2)";
-      assertFalse(conditionChecker.checkCondition(condition, 100, createTest(), createMetric()));
+      assertFalse(conditionChecker.checkCondition(condition, 100, createMetric()));
    }
 
    @Test
    public void testMultiSelectSimpleLast() {
       String condition = "CONDITION x == result DEFINE x = AVG(SELECT LAST 10)";
-      assertTrue(conditionChecker.checkCondition(condition, 56, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 56, createMetric()));
    }
 
    @Test
    public void testMultiSelectIntervalLast() {
       String condition = "CONDITION x == result DEFINE x = AVG(SELECT LAST 10, 5)";
-      assertTrue(conditionChecker.checkCondition(condition, 56, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 56, createMetric()));
    }
 
 
    @Test
    public void testMultiSelectInWhere() {
       String condition = "CONDITION x == result DEFINE x = AVG(SELECT WHERE id IN (1,2))";
-      assertTrue(conditionChecker.checkCondition(condition, 56, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 56, createMetric()));
    }
 
    @Test
    public void testGroupFunctionMin() {
       String condition = "CONDITION x == result DEFINE x = MIN(SELECT WHERE id IN (1,2))";
-      assertTrue(conditionChecker.checkCondition(condition, 12, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 12, createMetric()));
    }
 
    @Test
    public void testGroupFunctionMax() {
       String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE id IN (1,2))";
-      assertTrue(conditionChecker.checkCondition(condition, 100, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 100, createMetric()));
    }
 
    @Test
    public void testSelectWithTags() {
       String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE tags = \"firstTag secondTag\")";
-      assertTrue(conditionChecker.checkCondition(condition, 1001, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 1001, createMetric()));
    }
 
    @Test
    public void testSelectWithTagsAndSimpleLast() {
       String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE tags = \"firstTag secondTag\" LAST 1)";
-      assertTrue(conditionChecker.checkCondition(condition, 12, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 12, createMetric()));
    }
 
    @Test
    public void testSimpleSelectWithTagsAndSimpleLast() {
       String condition = "CONDITION x == result DEFINE x = (SELECT WHERE tags = \"firstTag secondTag\" LAST 1)";
-      assertTrue(conditionChecker.checkCondition(condition, 12, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 12, createMetric()));
    }
 
    @Test
    public void testSelectWithTagsAndMultiLast() {
       String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE tags = \"firstTag secondTag\" LAST 3, 2)";
-      assertTrue(conditionChecker.checkCondition(condition, 1001, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 1001, createMetric()));
 
       condition = "CONDITION x == result DEFINE x = MIN(SELECT WHERE tags = \"firstTag secondTag\" LAST 3, 2)";
-      assertTrue(conditionChecker.checkCondition(condition, 150, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 150, createMetric()));
    }
 
    @Test
    public void testSelectWithOnlyDateFrom() {
       String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE date >= \"2015-01-01 00:00\")";
-      assertTrue(conditionChecker.checkCondition(condition, 1001, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 1001, createMetric()));
 
       condition = "CONDITION x == result DEFINE x = MIN(SELECT WHERE date >= \"2015-01-01 00:00\")";
-      assertTrue(conditionChecker.checkCondition(condition, 150, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 150, createMetric()));
    }
 
    @Test
    public void testSelectWithOnlyDateTo() {
       String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE date <= \"2015-02-01 00:00\")";
-      assertTrue(conditionChecker.checkCondition(condition, 1001, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 1001, createMetric()));
 
       condition = "CONDITION x == result DEFINE x = MIN(SELECT WHERE date <= \"2015-02-01 00:00\")";
-      assertTrue(conditionChecker.checkCondition(condition, 150, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 150, createMetric()));
    }
 
    @Test
    public void testSelectWithDates() {
       String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE date >= \"2015-01-01 00:00\" AND date <= \"2015-02-01 00:00\")";
-      assertTrue(conditionChecker.checkCondition(condition, 1001, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 1001, createMetric()));
 
       condition = "CONDITION x == result DEFINE x = MIN(SELECT WHERE date >= \"2015-01-01 00:00\" AND date <= \"2015-02-01 00:00\")";
-      assertTrue(conditionChecker.checkCondition(condition, 12, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 12, createMetric()));
    }
 
    @Test
    public void testSelectWithTagsAndDates() {
       String condition = "CONDITION x == result DEFINE x = MAX(SELECT WHERE tags = \"firstTag secondTag\" AND date >= \"2015-01-01 00:00\" AND date <= \"2015-02-01 00:00\")";
-      assertTrue(conditionChecker.checkCondition(condition, 1001, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 1001, createMetric()));
 
       condition = "CONDITION x == result DEFINE x = MIN(SELECT WHERE tags = \"firstTag secondTag\" AND date >= \"2015-01-01 00:00\" AND date <= \"2015-02-01 00:00\")";
-      assertTrue(conditionChecker.checkCondition(condition, 12, createTest(), createMetric()));
+      assertTrue(conditionChecker.checkCondition(condition, 12, createMetric()));
    }
 
    private TestExecution createTestExecution1() {

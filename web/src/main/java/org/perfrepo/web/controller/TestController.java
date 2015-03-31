@@ -159,12 +159,21 @@ public class TestController extends BaseController {
    }
 
    public void processAlert() {
+      Metric metric = testService.getFullMetric(alertDetails.getMetricId());
+
+      try {
+         alertingService.checkConditionSyntax(alertDetails.getCondition(), metric);
+      } catch (RuntimeException ex) {
+         addSessionMessage(ERROR, "alerting.conditionSyntax.error", ex.getMessage());
+         reloadSessionMessages();
+         return;
+      }
+
       Alert alert = new Alert();
       alert.setName(alertDetails.getName());
       alert.setCondition(alertDetails.getCondition());
       alert.setDescription(alertDetails.getDescription());
 
-      Metric metric = testService.getFullMetric(alertDetails.getMetricId());
       alert.setMetric(metric);
 
       Test test = testService.getFullTest(this.test.getId());

@@ -98,13 +98,18 @@ public class AlertingServiceBean implements AlertingService {
       for(Metric metric: results.keySet()) {
          List<Alert> alerts = alertDAO.getByTestAndMetric(test, metric);
          for(Alert alert: alerts) {
-            if(!conditionChecker.checkCondition(alert.getCondition(), results.get(metric), test, metric)) {
+            if(!conditionChecker.checkCondition(alert.getCondition(), results.get(metric), metric)) {
                failedAlerts.add(alert);
             }
          }
       }
 
       alertingReporterService.reportAlert(failedAlerts, testExecution);
+   }
+
+   @Override
+   public void checkConditionSyntax(String condition, Metric metric) {
+      conditionChecker.checkCondition(condition, 0, metric);
    }
 
    /**

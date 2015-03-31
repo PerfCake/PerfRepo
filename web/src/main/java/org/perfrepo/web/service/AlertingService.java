@@ -1,6 +1,7 @@
 package org.perfrepo.web.service;
 
 import org.perfrepo.model.Alert;
+import org.perfrepo.model.Metric;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
 
@@ -51,4 +52,12 @@ public interface AlertingService {
     * @param testExecution
     */
    public void processAlerts(TestExecution testExecution);
+
+   /**
+    * Parses the condition string and checks for all the syntax errors.
+    *
+    * @param condition
+    * @param metric
+    */
+   public void checkConditionSyntax(String condition, Metric metric);
 }

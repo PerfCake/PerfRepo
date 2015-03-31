@@ -4,10 +4,13 @@
         xmlns:a4j="http://richfaces.org/a4j"
         xmlns:rich="http://richfaces.org/rich"
         id="dialogAlertForm">
-   <rich:popupPanel id="dialogAlert" modal="true" autosized="true" resizeable="false" width="685" height="540" domElementAttachment="form">
+   <rich:popupPanel id="dialogAlert" modal="true" autosized="true" resizeable="false" width="685" domElementAttachment="form">
        <f:facet name="header">
            <h:outputText value="#{testController.alertDetails.id == null ? 'Add alert' : 'Edit alert'}"/>
        </f:facet>
+       <a4j:outputPanel id="dialogAlertMessagesPanel">
+            <h:messages errorClass="alert alert-error" infoClass="alert alert-success" fatalClass="alert alert-error" warnClass="alert alert-info"/>
+       </a4j:outputPanel>
        <fieldset>
            <div class="control-group">
                <h:outputLabel class="control-label">Alert name</h:outputLabel>
@@ -49,9 +52,10 @@
                                   oncomplete="#{rich:component('dialogAlert')}.hide()"
                                   value="#{strings.cancel}"
                                   alt="#{strings.cancel}" title="#{strings.cancel}"/>
-               <h:commandButton styleClass="btn btn-primary btn-small"
+               <a4j:commandButton styleClass="btn btn-primary btn-small"
                                 action="#{testController.processAlert}"
-                                render=":alertList"
+                                render=":dialogAlertMessagesPanel :alertList"
+                                oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('dialogAlert')}.hide()"
                                 value="Submit"
                                 alt="Submit"
                                 title="Submit"/>

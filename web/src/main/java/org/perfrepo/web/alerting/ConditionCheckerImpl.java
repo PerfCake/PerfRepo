@@ -50,15 +50,13 @@ public class ConditionCheckerImpl implements ConditionChecker {
 
    private String expression;
    private Map<String, Object> variables;
-   private Test test;
    private Metric metric;
 
    @Override
-   public boolean checkCondition(String condition, double currentResult, Test test, Metric metric) {
+   public boolean checkCondition(String condition, double currentResult, Metric metric) {
       expression = null;
       variables = new HashMap<>();
       variables.put("result", currentResult);
-      this.test = test;
       this.metric = metric;
 
       CommonTree ast = parseTree(condition);
@@ -95,7 +93,13 @@ public class ConditionCheckerImpl implements ConditionChecker {
       }
 
       if(!tree.getChild(0).getText().equalsIgnoreCase("CONDITION") || !tree.getChild(1).getText().equalsIgnoreCase("DEFINE")) {
-         throw new IllegalArgumentException("Doesn't have exactly 1 CONDITION and 1 DEFINE statements ");
+         throw new IllegalArgumentException("Doesn't have exactly 1 CONDITION and 1 DEFINE statements.");
+      }
+
+      //<missing EOF>. I haven't figured out any better way to recognize this error.
+      // TODO: figure something out
+      if(tree.getChild(2).getText().contains("missing")) {
+         throw new IllegalArgumentException("Unexpected end of condition.");
       }
 
       String equation = tree.getChild(0).getChild(0).getText(); //equation after condition
@@ -140,7 +144,7 @@ public class ConditionCheckerImpl implements ConditionChecker {
          }
 
          List<Double> values = getValuesFromTestExecutions(testExecutions);
-         variableValue = groupingFunction.compute(values);
+         variableValue = (values == null || values.isEmpty()) ? null : groupingFunction.compute(values);
       }
       else { //single select
          testExecutions = handleSelect(groupFunctionOrSelect);

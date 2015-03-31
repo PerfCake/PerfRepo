@@ -19,9 +19,7 @@ import javax.mail.internet.MimeMessage;
  */
 public class Mailer {
 
-   public static final String PERFREPO_EMAIL = "perfrepo@redhat.com";
-
-   @Resource(mappedName = "java:jboss/mail/redhatsmtp")
+   @Resource(mappedName = "java:jboss/mail/perfreposmtp")
    private Session emailSession;
 
    /**
@@ -34,7 +32,6 @@ public class Mailer {
     */
    public void sendEmail(String recipient, String subject, String body) throws MessagingException {
       Message message = new MimeMessage(emailSession);
-      message.setFrom(new InternetAddress(PERFREPO_EMAIL));
       Address toAddress = new InternetAddress(recipient);
       message.addRecipient(Message.RecipientType.TO, toAddress);
       message.setSubject(subject);

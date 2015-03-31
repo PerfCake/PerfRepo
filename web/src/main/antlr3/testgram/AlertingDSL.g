@@ -34,6 +34,7 @@ MIN                  : 'MIN';
 MAX                  : 'MAX';
 NUMBER_NOT_ONE       : ('0' | '2'..'9');
 ONE                  : '1';
+COMMA                : ',';
 ANY_CHAR             : . ;
 
 
@@ -44,7 +45,7 @@ expression : condition define EOF;
 
 condition         : CONDITION^ any_with_equals;
 define            : DEFINE^ assign_sequence;
-assign_sequence   : assign  (','! assign)*;
+assign_sequence   : assign  (COMMA! assign)*;
 
 assign            : any ASSIGN^ '('! simple_select ')'! |
                     any ASSIGN^ simple_select |
@@ -65,7 +66,7 @@ multi_select      : SELECT^ equals_where multi_last? |
 equals_where      : WHERE^ equals_condition (AND! equals_condition)*;
 in_where          : WHERE^ in_condition;
 simple_last       : LAST^ ONE;
-multi_last        : LAST^ number | LAST^ number ','! number;
+multi_last        : LAST^ number | LAST^ number COMMA! number;
 
 equals_condition  : any ASSIGN^ any |
                     any ASSIGN^ '"'! any '"'! |
@@ -74,7 +75,7 @@ equals_condition  : any ASSIGN^ any |
                     any GTE^ any |
                     any GTE^ '"'! any '"'!;
 
-in_condition      : any IN^ '('! any (','! any)* ')'!;
+in_condition      : any IN^ '('! any (COMMA! any)* ')'!;
 
 number            : (NUMBER_NOT_ONE | ONE)* -> ANY[$text];
 any_with_equals   : ('=' | '(' | ')' | ANY_CHAR | NUMBER_NOT_ONE | ONE)* -> ANY[$text];
