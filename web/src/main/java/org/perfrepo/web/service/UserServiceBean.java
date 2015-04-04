@@ -191,6 +191,16 @@ public class UserServiceBean implements UserService {
 		return clonedUser;
 	}
 
+   @Override
+   public User getFullUser(String username) {
+      User user = userDAO.findByUsername(username);
+      if (user == null) {
+         return null;
+      }
+
+      return getFullUser(user.getId());
+   }
+
 	@Override
 	public User getUser(Long id) {
 		return userDAO.get(id);

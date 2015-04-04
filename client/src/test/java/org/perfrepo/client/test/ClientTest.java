@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static junit.framework.Assert.assertEquals;
 
+import junit.framework.Assert;
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -41,6 +42,8 @@ import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.Value;
 import org.perfrepo.model.ValueParameter;
+import org.perfrepo.model.report.Report;
+import org.perfrepo.model.report.ReportProperty;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,8 +54,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -205,6 +210,24 @@ public class ClientTest {
 		client.deleteTest(testId);
 	}
 
+   @org.junit.Test
+   public void testCreateReport() throws Exception {
+      Report report = createReport();
+      Long reportId = client.createReport(report);
+
+      assertNotNull(reportId);
+      Report retrievedReport = client.getReport(reportId);
+
+      assertEquals(report.getName(), retrievedReport.getName());
+      assertEquals(report.getType(), retrievedReport.getType());
+      assertEquals(report.getProperties().size(), retrievedReport.getProperties().size());
+
+      assertEquals(report.getProperties().get("key").getName(), retrievedReport.getProperties().get("key").getName());
+      assertEquals(report.getProperties().get("key").getValue(), retrievedReport.getProperties().get("key").getValue());
+
+      client.deleteReport(reportId);
+   }
+
 	private Double getFirstValueHavingMetricAndParameter(TestExecution testExecution, String metric, String propName, String propValue) {
 		return getValuesHavingMetricAndParameter(testExecution, metric, propName, propValue).get(0).getResultValue();
 	}
@@ -306,6 +329,25 @@ public class ClientTest {
 				.value("metric2", 8.0d)
 				.build();
 	}
+
+   private Report createReport() {
+      Report report = new Report();
+      report.setName("report");
+      report.setType("TestReport");
+
+      ReportProperty property = new ReportProperty();
+      property.setName("key");
+      property.setValue("value");
+      property.setReport(report);
+
+      Map<String, ReportProperty> properties = new HashMap<>();
+      properties.put("key", property);
+
+      report.setProperties(properties);
+      report.setUsername(clientUsername);
+
+      return report;
+   }
 
 	private static void assertMetricEquals(Metric actual, Metric expected) {
 		assertEquals(actual.getComparator(), expected.getComparator());

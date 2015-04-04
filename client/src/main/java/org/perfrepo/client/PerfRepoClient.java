@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.perfrepo.model.Metric;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
+import org.perfrepo.model.report.Report;
 
 import javax.xml.bind.JAXB;
 
@@ -436,4 +437,74 @@ public class PerfRepoClient {
 			return false;
 		}
 	}
+
+   /**
+    * Get report by id.
+    *
+    * @param id
+    * @return The report
+    * @throws Exception
+    */
+   public Report getReport(Long id) throws Exception {
+      HttpGet get = createBasicGet("report/id/%s", id);
+      HttpResponse resp = httpClient.execute(get);
+      if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+         Report obj = JAXB.unmarshal(resp.getEntity().getContent(), Report.class);
+         EntityUtils.consume(resp.getEntity());
+         return obj;
+      } else if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+         EntityUtils.consume(resp.getEntity());
+         return null;
+      } else {
+         logHttpError("Error while getting report.", get, resp);
+         EntityUtils.consume(resp.getEntity());
+         return null;
+      }
+   }
+
+   /**
+    * Create a new report.
+    *
+    * @param report The new report.
+    * @return ID of new report.
+    * @throws Exception
+    */
+   public Long createReport(Report report) throws Exception {
+      HttpPost post = createBasicPost("report/create");
+      setPostEntity(post, report);
+      HttpResponse resp = httpClient.execute(post);
+      if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED) {
+         logHttpError("Error while creating report.", post, resp);
+         EntityUtils.consume(resp.getEntity());
+         return null;
+      }
+      Header[] locations = resp.getHeaders(HttpHeaders.LOCATION);
+      if (locations != null && locations.length > 0) {
+         log.debug("Created new report at: " + locations[0].getValue());
+      }
+      Long id = new Long(EntityUtils.toString(resp.getEntity()));
+      EntityUtils.consume(resp.getEntity());
+      return id;
+   }
+
+   /**
+    * Delete a report.
+    *
+    * @param id
+    * @return True on success
+    * @throws Exception
+    */
+   public boolean deleteReport(Long id) throws Exception {
+      HttpDelete delete = createBasicDelete("report/id/%s", id);
+      HttpResponse resp = httpClient.execute(delete);
+      if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+         EntityUtils.consume(resp.getEntity());
+         log.debug("Deleted report: " + id);
+         return true;
+      } else {
+         logHttpError("Error while deleting report", delete, resp);
+         EntityUtils.consume(resp.getEntity());
+         return false;
+      }
+   }
 }

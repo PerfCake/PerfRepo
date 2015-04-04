@@ -127,6 +127,14 @@ public interface UserService {
 	 */
 	public User getFullUser(Long id);
 
+   /**
+    * Return all information about user as detached entity (e.g. cloned)
+    *
+    * @param username
+    * @return User with properties.
+    */
+   public User getFullUser(String username);
+
 	/**
 	 * Returns all user properties
 	 *

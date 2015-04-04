@@ -33,6 +33,7 @@ public class PerfRepoRESTApplication extends Application {
 		classes.add(MetricREST.class);
 		classes.add(TestExecutionREST.class);
 		classes.add(TestREST.class);
+		classes.add(ReportREST.class);
 	}
 
 	@Override

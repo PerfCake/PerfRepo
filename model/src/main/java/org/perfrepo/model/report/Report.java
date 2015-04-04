@@ -24,22 +24,14 @@ import org.perfrepo.model.auth.Permission;
 import org.perfrepo.model.auth.SecuredEntity;
 import org.perfrepo.model.user.User;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapKey;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import java.util.Collection;
 import java.util.Map;
@@ -95,6 +87,9 @@ public class Report implements Entity<Report>, Comparable<Report> {
 	@OneToMany(mappedBy = "report")
 	private Collection<Permission> permissions;
 
+   @Transient
+   private String username;
+
 	public Report() {
 		super();
 	}
@@ -103,6 +98,7 @@ public class Report implements Entity<Report>, Comparable<Report> {
 		this.id = id;
 	}
 
+   @XmlAttribute(name = "id")
 	public Long getId() {
 		return id;
 	}
@@ -111,6 +107,7 @@ public class Report implements Entity<Report>, Comparable<Report> {
 		this.id = id;
 	}
 
+   @XmlAttribute(name = "name")
 	public String getName() {
 		return name;
 	}
@@ -119,6 +116,7 @@ public class Report implements Entity<Report>, Comparable<Report> {
 		this.name = name;
 	}
 
+   @XmlAttribute(name = "type")
 	public String getType() {
 		return type;
 	}
@@ -127,6 +125,7 @@ public class Report implements Entity<Report>, Comparable<Report> {
 		this.type = type;
 	}
 
+   @XmlTransient
 	public User getUser() {
 		return user;
 	}
@@ -135,6 +134,8 @@ public class Report implements Entity<Report>, Comparable<Report> {
 		this.user = user;
 	}
 
+   @XmlElementWrapper(name = "properties")
+   @XmlElement(name = "property")
 	public Map<String, ReportProperty> getProperties() {
 		return properties;
 	}
@@ -143,6 +144,7 @@ public class Report implements Entity<Report>, Comparable<Report> {
 		this.properties = properties;
 	}
 
+   @XmlTransient
 	public Collection<Permission> getPermissions() {
 		return permissions;
 	}
@@ -151,7 +153,16 @@ public class Report implements Entity<Report>, Comparable<Report> {
 		this.permissions = permissions;
 	}
 
-	@Override
+   @XmlAttribute(name = "user")
+   public String getUsername() {
+      return username;
+   }
+
+   public void setUsername(String username) {
+      this.username = username;
+   }
+
+   @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
