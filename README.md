@@ -74,6 +74,21 @@ Following text assumes PostgreSQL and JBoss EAP's `standalone.xml`.
     </security-domain>
 ```
 
+* Add SMTP server configuration for alerting
+```xml
+    <subsystem xmlns="urn:jboss:domain:mail:1.1">
+        <mail-session jndi-name="java:jboss/mail/perfreposmtp">
+            <smtp-server outbound-socket-binding-ref="mail-smtp"/>
+        </mail-session>
+    </subsystem>
+    
+    and add this into <socket-binding-group> tag
+    
+    <outbound-socket-binding name="mail-smtp">
+        <remote-destination host="<your SMTP host>" port="25"/>
+    </outbound-socket-binding>
+```
+
 * Start server
 * Install PerfRepo using Maven, e.g. run `mvn clean install -DskipTests` in the root directory of PerfRepo
 * Deploy the WAR, i.e. go to `web` directory and run `mvn clean package jboss-as:deploy -DskipTests`
