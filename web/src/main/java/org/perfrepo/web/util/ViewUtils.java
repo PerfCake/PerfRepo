@@ -21,6 +21,8 @@ package org.perfrepo.web.util;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.perfrepo.model.TestExecutionParameter;
 
+import javax.faces.context.FacesContext;
+
 /**
  * Various utility methods for view.
  *
@@ -52,7 +54,7 @@ public class ViewUtils {
 				return "<a href=\"" + value + "\">" + value + "</a>";
 			}
 		} else if (value.length() > 100) {
-			return "<a href=\"#{request.contextPath}/param/" + param.getId() + "\">" + StringEscapeUtils.escapeHtml(value.substring(0, 96)) + " ...</a>";
+			return "<a href=\"" +  FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/param/" + param.getId() + "\">" + StringEscapeUtils.escapeHtml(value.substring(0, 96)) + " ...</a>";
 		} else {
 			return StringEscapeUtils.escapeHtml(value);
 		}
