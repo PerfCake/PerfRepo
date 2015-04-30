@@ -100,3 +100,28 @@ INCREMENT BY 1
 NO MAXVALUE
 NO MINVALUE
 CACHE 1;
+
+-----------------------------------------------------------------------------------------------
+--                                                                                           --
+-- Upgrade of db schema in version 1.2 - enhancement of alerting feature                     --
+--                                                                                           --
+-----------------------------------------------------------------------------------------------
+
+CREATE TABLE alert_tag (
+    alert_id bigint NOT NULL,
+    tag_id bigint NOT NULL
+);
+
+ALTER TABLE public.alert_tag OWNER TO perfrepo;
+
+ALTER TABLE ONLY public.alert_tag
+    ADD CONSTRAINT alert_tag_pkey PRIMARY KEY (alert_id, tag_id);
+
+ALTER TABLE ONLY public.alert_tag
+    ADD CONSTRAINT alert_tag_alert_fkey FOREIGN KEY (alert_id) REFERENCES alert(id);
+
+ALTER TABLE ONLY public.alert_tag
+    ADD CONSTRAINT alert_tag_tag_fkey FOREIGN KEY (tag_id) REFERENCES tag(id);
+
+CREATE INDEX alert_tag_alert ON alert_tag(alert_id);
+CREATE INDEX alert_tag_tag ON alert_tag(tag_id);

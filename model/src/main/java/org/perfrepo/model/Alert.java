@@ -3,6 +3,8 @@ package org.perfrepo.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Represents alert condition defined on test
@@ -42,6 +44,14 @@ public class Alert implements Entity<Alert> {
 	@JoinColumn(name = "metric_id", referencedColumnName = "id")
 	@NotNull
 	private Metric metric;
+
+   @ManyToMany(fetch = FetchType.LAZY)
+   @JoinTable(
+       name = "alert_tag",
+       joinColumns = {@JoinColumn(name = "alert_id", nullable = false, updatable = false)},
+       inverseJoinColumns = {@JoinColumn(name = "tag_id", nullable = false, updatable = false)}
+   )
+   private Collection<Tag> tags;
 
 	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "test_id", referencedColumnName = "id")
@@ -96,7 +106,15 @@ public class Alert implements Entity<Alert> {
 		this.metric = metric;
 	}
 
-	@Override
+   public Collection<Tag> getTags() {
+      return tags;
+   }
+
+   public void setTags(Collection<Tag> tags) {
+      this.tags = tags;
+   }
+
+   @Override
 	public Alert clone() {
 		try {
 			return (Alert) super.clone();

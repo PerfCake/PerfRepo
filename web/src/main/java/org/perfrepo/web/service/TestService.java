@@ -19,6 +19,7 @@
 package org.perfrepo.web.service;
 
 import org.perfrepo.model.Metric;
+import org.perfrepo.model.Tag;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.TestExecutionAttachment;

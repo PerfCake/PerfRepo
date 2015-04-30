@@ -287,7 +287,13 @@ public class TestServiceBean implements TestService {
       if (alerts != null) {
          List<Alert> alertsClone = new ArrayList<>();
          for (Alert alert : alerts) {
-            alertsClone.add(alert.clone());
+            List<Tag> tagsClone = new ArrayList<>();
+            for(Tag tag: alert.getTags()) {
+               tagsClone.add(tag.clone());
+            }
+            Alert alertClone = alert.clone();
+            alertClone.setTags(tagsClone);
+            alertsClone.add(alertClone);
          }
          test.setAlerts(alertsClone);
       }

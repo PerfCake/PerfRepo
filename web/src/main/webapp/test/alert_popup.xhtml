@@ -38,6 +38,17 @@
            </div>
 
            <div class="control-group">
+               <h:outputLabel class="control-label" for="tags">Tags</h:outputLabel>
+
+               <div class="controls">
+                  <rich:autocomplete id="tags" styleClass="input-xlarge" mode="cachedAjax" minChars="2" autofill="false"
+                                   tokens=" "
+                                   autocompleteMethod="#{testExecutionSearchController.autocompleteTags}"
+                                   value="#{testController.alertDetails.tags}"/>
+             </div>
+          </div>
+
+           <div class="control-group">
                <h:outputLabel class="control-label">Description</h:outputLabel>
 
                <div class="controls">

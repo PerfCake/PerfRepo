@@ -19,6 +19,7 @@
 package org.perfrepo.web.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,10 +27,12 @@ import javax.ejb.EJBException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.perfrepo.model.Alert;
 import org.perfrepo.model.Metric;
 import org.perfrepo.model.MetricComparator;
+import org.perfrepo.model.Tag;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.model.user.User;
@@ -178,6 +181,16 @@ public class TestController extends BaseController {
 
       Test test = testService.getFullTest(this.test.getId());
       alert.setTest(test);
+
+      List<String> tagSplit = Arrays.asList(StringUtils.split(alertDetails.getTags()));
+      List<Tag> tags = new ArrayList<>();
+      for(String tagString: tagSplit) {
+         Tag tag = new Tag();
+         tag.setName(tagString);
+         tags.add(tag);
+      }
+
+      alert.setTags(tags);
 
       if(alertDetails.getId() == null) {
          alertingService.createAlert(alert);
@@ -384,6 +397,7 @@ public class TestController extends BaseController {
       private String description;
       private String condition;
       private Long metricId;
+      private String tags;
 
       public Long getId() {
          return id;
@@ -429,12 +443,21 @@ public class TestController extends BaseController {
          return testId;
       }
 
+      public String getTags() {
+         return tags;
+      }
+
+      public void setTags(String tags) {
+         this.tags = tags;
+      }
+
       public void unset() {
          this.id = null;
          this.name = null;
          this.condition = null;
          this.description = null;
          this.metricId = null;
+         this.tags = null;
       }
 
       public void setAlertForUpdate(Alert alert) {
@@ -443,6 +466,12 @@ public class TestController extends BaseController {
          this.condition = alert.getCondition();
          this.description = alert.getDescription();
          this.metricId = alert.getMetric().getId();
+
+         List<String> tagsString = new ArrayList<>();
+         for(Tag tag: alert.getTags()) {
+            tagsString.add(tag.getName());
+         }
+         this.tags = StringUtils.join(tagsString, " ");
       }
    }
 }

@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
 import java.util.Collection;
 
 @javax.persistence.Entity
@@ -89,7 +88,7 @@ public class Tag implements Entity<Tag>, Comparable<Tag> {
 		return this.testExecutionTags;
 	}
 
-	@Override
+   @Override
 	public int compareTo(Tag o) {
 		return this.getName().compareTo(o.getName());
 	}
