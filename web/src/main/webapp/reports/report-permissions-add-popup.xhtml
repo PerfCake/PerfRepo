@@ -39,7 +39,7 @@
 
                 <div class="controls">
                     <rich:select id="groupSelect" value="#{reportPermissionController.groupId}">
-                        <f:selectItems value="#{reportPermissionController.groups}" var="group" itemValue="#{group.id}"
+                        <f:selectItems value="#{reportPermissionController.groupsForSelection}" var="group" itemValue="#{group.id}"
                                        itemLabel="#{group.name}"/>
                     </rich:select>
                 </div>
@@ -49,7 +49,7 @@
 
                 <div class="controls">
                     <rich:select id="userSelect" value="#{reportPermissionController.userId}">
-                        <f:selectItems value="#{reportPermissionController.users}" var="user" itemValue="#{user.id}"
+                        <f:selectItems value="#{reportPermissionController.usersForSelection}" var="user" itemValue="#{user.id}"
                                        itemLabel="#{user.username}"/>
                     </rich:select>
                 </div>

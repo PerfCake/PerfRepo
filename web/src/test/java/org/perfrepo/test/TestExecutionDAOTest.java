@@ -1,6 +1,5 @@
 package org.perfrepo.test;
 
-import com.google.common.collect.Lists;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -10,43 +9,35 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.perfrepo.model.Entity;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.MetricComparator;
-import org.perfrepo.model.Tag;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionTag;
-import org.perfrepo.model.Value;
+import org.perfrepo.model.*;
+import org.perfrepo.model.to.MultiValueResultWrapper;
+import org.perfrepo.model.to.OrderBy;
+import org.perfrepo.model.to.ResultWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.web.dao.DAO;
+import org.perfrepo.web.dao.MetricDAO;
 import org.perfrepo.web.dao.TagDAO;
 import org.perfrepo.web.dao.TestDAO;
 import org.perfrepo.web.dao.TestExecutionDAO;
+import org.perfrepo.web.dao.TestExecutionParameterDAO;
 import org.perfrepo.web.dao.TestExecutionTagDAO;
+import org.perfrepo.web.dao.ValueDAO;
+import org.perfrepo.web.dao.ValueParameterDAO;
 import org.perfrepo.web.util.TagUtils;
 
 import javax.inject.Inject;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
+import javax.transaction.Status;
 import javax.transaction.UserTransaction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.IntStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link org.perfrepo.web.dao.TestExecutionDAO}
@@ -58,7 +49,7 @@ import static org.junit.Assert.fail;
 public class TestExecutionDAOTest {
 
    @Inject
-   private TestExecutionDAO testExecutionDao;
+   private TestExecutionDAO testExecutionDAO;
 
    @Inject
    private TestDAO testDAO;
@@ -70,15 +61,25 @@ public class TestExecutionDAOTest {
    private TagDAO tagDAO;
 
    @Inject
+   private MetricDAO metricDAO;
+
+   @Inject
+   private ValueDAO valueDAO;
+
+   @Inject
+   private ValueParameterDAO valueParameterDAO;
+
+   @Inject
+   private TestExecutionParameterDAO testExecutionParameterDAO;
+
+   @Inject
    private UserTransaction userTransaction;
 
-   private Test test1;
-   private Test test2;
-   private TestExecution te1;
-   private TestExecution te2;
-   private TestExecution te3;
-   private TestExecution te4;
-   private TestExecution te5;
+   private Test[] tests;
+   private Value[] values;
+   private TestExecution[] testExecutions;
+   private Metric[] metrics;
+
    private Calendar calendar = Calendar.getInstance();
 
    @Deployment
@@ -95,98 +96,112 @@ public class TestExecutionDAOTest {
    @Before
    public void init() throws Exception {
       userTransaction.begin();
+      tests = new Test[] { testDAO.create(createTest("testuser1", "uid1")),
+                           testDAO.create(createTest("testuser1", "uid2"))};
 
-      test1 = testDAO.create(createTest("testuser1", "uid1"));
-      test2 = testDAO.create(createTest("testuser1", "uid2"));
-      te1 = testExecutionDao.create(createTestExecution1());
-      te2 = testExecutionDao.create(createTestExecution2());
-      te3 = testExecutionDao.create(createTestExecution3());
-      te4 = testExecutionDao.create(createTestExecution4());
-      te5 = testExecutionDao.create(createTestExecution5());
+      metrics = new Metric[] { metricDAO.create(createMetric("metric1")),
+                               metricDAO.create(createMetric("metric2"))};
 
-      createTestExecutionTag("tag1", te1);
-      createTestExecutionTag("tag2", te1);
-      createTestExecutionTag("tag3", te1);
-      createTestExecutionTag("tag1", te2);
-      createTestExecutionTag("tag2", te2);
-      createTestExecutionTag("tag1", te3);
-      createTestExecutionTag("tag3", te3);
-      createTestExecutionTag("tag4", te4);
 
-      assertEquals(5, testExecutionDao.getAll().size());
+      testExecutions = new TestExecution[] { testExecutionDAO.create(createTestExecution("test execution 1", createStartDate(-8), tests[0])),
+                                             testExecutionDAO.create(createTestExecution("test execution 2", createStartDate(-6), tests[0])),
+                                             testExecutionDAO.create(createTestExecution("test execution 3", createStartDate(-4), tests[0])),
+                                             testExecutionDAO.create(createTestExecution("test execution 4", createStartDate(-2), tests[0])),
+                                             testExecutionDAO.create(createTestExecution("test execution 5", createStartDate(-1), tests[1])),
+                                             testExecutionDAO.create(createTestExecution("test execution 6", createStartDate(11), tests[1])),};
+
+      values = new Value[] { createValue(10d, testExecutions[0], metrics[0]),
+                             createValue(20d, testExecutions[1], metrics[0]),
+                             createValue(30d, testExecutions[2], metrics[0]),
+                             createValue(40d, testExecutions[3], metrics[0]),
+                             createValue(1000d, testExecutions[4], metrics[0]),
+                             createMultiValue(2000d, testExecutions[5], metrics[1], "Iteration", "1", "Client load", "10"),
+                             createMultiValue(3000d, testExecutions[5], metrics[1], "Iteration", "2", "Client load", "20")};
+
+      createTestExecutionParameter("param", "3", testExecutions[0]);
+      createTestExecutionParameter("param", "1", testExecutions[1]);
+      createTestExecutionParameter("param", "4", testExecutions[2]);
+      createTestExecutionParameter("param", "2", testExecutions[3]);
+
+
+
+      createTestExecutionTag("tag1", testExecutions[0]);
+      createTestExecutionTag("tag2", testExecutions[0]);
+      createTestExecutionTag("tag3", testExecutions[0]);
+      createTestExecutionTag("tag1", testExecutions[1]);
+      createTestExecutionTag("tag2", testExecutions[1]);
+      createTestExecutionTag("tag1", testExecutions[2]);
+      createTestExecutionTag("tag3", testExecutions[2]);
+      createTestExecutionTag("tag4", testExecutions[3]);
+
+      userTransaction.commit();
+      userTransaction.begin();
    }
 
-   /**
-    * Clean up
-    *
-    * @throws Exception
-    */
    @After
-   public void destroy() throws Exception {
-      List<TestExecutionTag> testExecutionTags = testExecutionTagDAO.getAll();
-      for(TestExecutionTag testExecutionTag: testExecutionTags) {
-         testExecutionTagDAO.remove(testExecutionTag);
+   public void cleanUp() throws Exception {
+      if(userTransaction.getStatus() == Status.STATUS_ACTIVE) {
+         userTransaction.commit();
+      }
+      else {
+         userTransaction.rollback();
       }
 
-      List<Tag> tags = tagDAO.getAll();
-      for(Tag tag: tags) {
-         tagDAO.remove(tag);
-      }
+      userTransaction.begin();
 
-      List<TestExecution> testExecutions = testExecutionDao.getAll();
-      for(TestExecution testExecution: testExecutions) {
-         testExecutionDao.remove(testExecution);
-      }
+      testExecutionTagDAO.getAll().forEach(testExecutionTagDAO::remove);
+      tagDAO.getAll().forEach(tagDAO::remove);
+      valueParameterDAO.getAll().forEach(valueParameterDAO::remove);
+      valueDAO.getAll().forEach(valueDAO::remove);
+      metricDAO.getAll().forEach(metricDAO::remove);
+      testExecutionParameterDAO.getAll().forEach(testExecutionParameterDAO::remove);
+      testExecutionDAO.getAll().forEach(testExecutionDAO::remove);
+      testDAO.getAll().forEach(testDAO::remove);
 
-      assertTrue(testExecutionDao.getAll().isEmpty());
-
-      testDAO.remove(test1);
-      testDAO.remove(test2);
       userTransaction.commit();
    }
 
    @org.junit.Test
    public void testGetAllByPropertyIn() {
       Collection<Object> ids = new ArrayList<>();
-      ids.add(te1.getId());
-      ids.add(te4.getId());
+      ids.add(testExecutions[0].getId());
+      ids.add(testExecutions[3].getId());
 
-      List<TestExecution> result = testExecutionDao.getAllByPropertyIn("id", ids);
+      List<TestExecution> result = testExecutionDAO.getAllByPropertyIn("id", ids);
       assertEquals(2, result.size());
 
-      for(TestExecution testExecution: result) {
-         if(testExecution.getId() != te1.getId() && testExecution.getId() != te4.getId()) {
-            fail("TestExecutionDAO.getAllByPropertyIn returned unexpected test execution.");
-         }
-      }
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[3].getId());
+
+      assertTrue(expectedResultIds.stream().
+          allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
    }
 
    @org.junit.Test
    public void testGetAllByPropertyIdBetween() {
-      Comparable from = te2.getId();
-      Comparable to = te4.getId();
-      List<TestExecution> result = testExecutionDao.getAllByPropertyBetween("id", from, to);
+      Comparable from = testExecutions[1].getId();
+      Comparable to = testExecutions[3].getId();
+      List<TestExecution> result = testExecutionDAO.getAllByPropertyBetween("id", from, to);
       assertEquals(3, result.size());
 
-      for(TestExecution testExecution: result) {
-         if(testExecution.getId() != te2.getId() && testExecution.getId() != te3.getId() && testExecution.getId() != te4.getId()) {
-            fail("TestExecutionDAO.getAllByPropertyIn returned unexpected test execution.");
-         }
-      }
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[1].getId(),
+                                                   testExecutions[2].getId(),
+                                                   testExecutions[3].getId());
+
+      assertTrue(expectedResultIds.stream().
+          allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
    }
 
    @org.junit.Test
    public void testGetAllByPropertyDateBetween() {
       Comparable from = createStartDate(-7);
       Comparable to = createStartDate(-3);
-      List<TestExecution> result = testExecutionDao.getAllByPropertyBetween("started", from, to);
+      List<TestExecution> result = testExecutionDAO.getAllByPropertyBetween("started", from, to);
       assertEquals(2, result.size());
 
-      for(TestExecution testExecution: result) {
-         if(testExecution.getId() != te2.getId() && testExecution.getId() != te3.getId()) {
-            fail("TestExecutionDAO.getAllByPropertyIn returned unexpected test execution.");
-         }
-      }
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[1].getId(), testExecutions[2].getId());
+
+      assertTrue(expectedResultIds.stream().
+          allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
    }
 
    @org.junit.Test
@@ -195,16 +210,15 @@ public class TestExecutionDAOTest {
       tags.add("tag1");
       tags.add("tag2");
       List<String> testUid = new ArrayList<>();
-      testUid.add(test1.getUid());
+      testUid.add(tests[0].getUid());
 
-      List<TestExecution> result = testExecutionDao.getTestExecutions(tags, testUid);
+      List<TestExecution> result = testExecutionDAO.getTestExecutions(tags, testUid);
       assertEquals(2, result.size());
 
-      for(TestExecution testExecution: result) {
-         if(testExecution.getId() != te1.getId() && testExecution.getId() != te2.getId()) {
-            fail("TestExecutionDAO.getTestExecutions() returned unexpected test execution.");
-         }
-      }
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId());
+
+      assertTrue(expectedResultIds.stream().
+          allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
    }
 
    @org.junit.Test
@@ -212,16 +226,15 @@ public class TestExecutionDAOTest {
       List<String> tags = new ArrayList<>();
       tags.add("tag1");
       List<String> testUid = new ArrayList<>();
-      testUid.add(test1.getUid());
+      testUid.add(tests[0].getUid());
 
-      List<TestExecution> result = testExecutionDao.getTestExecutions(tags, testUid, 3, 2);
+      List<TestExecution> result = testExecutionDAO.getTestExecutions(tags, testUid, 3, 2);
       assertEquals(2, result.size());
 
-      for(TestExecution testExecution: result) {
-         if(testExecution.getId() != te1.getId() && testExecution.getId() != te2.getId()) {
-            fail("TestExecutionDAO.getTestExecutions() returned unexpected test execution.");
-         }
-      }
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId());
+
+      assertTrue(expectedResultIds.stream().
+          allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
    }
 
    @org.junit.Test
@@ -229,11 +242,11 @@ public class TestExecutionDAOTest {
       List<String> tags = new ArrayList<>();
       tags.add("tag1");
       List<String> testUid = new ArrayList<>();
-      testUid.add(test1.getUid());
+      testUid.add(tests[0].getUid());
 
-      List<TestExecution> result = testExecutionDao.getTestExecutions(tags, testUid, 1, 1);
+      List<TestExecution> result = testExecutionDAO.getTestExecutions(tags, testUid, 1, 1);
       assertEquals(1, result.size());
-      assertEquals(te3.getId(), result.get(0).getId());
+      assertEquals(testExecutions[2].getId(), result.get(0).getId());
    }
 
    @org.junit.Test
@@ -242,18 +255,18 @@ public class TestExecutionDAOTest {
       tags.add("tag1");
       tags.add("tag4");
       List<String> testUid = new ArrayList<>();
-      testUid.add(test1.getUid());
+      testUid.add(tests[0].getUid());
 
-      List<TestExecution> result = testExecutionDao.getTestExecutions(tags, testUid, 5, 3);
+      List<TestExecution> result = testExecutionDAO.getTestExecutions(tags, testUid, 5, 3);
       assertTrue(result.isEmpty());
    }
 
    @org.junit.Test
    public void testSearchByTestUID() {
       TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
-      searchCriteria.setTestUID(test1.getUid());
+      searchCriteria.setTestUID(tests[0].getUid());
 
-      assertEquals("Search by test UID retrieved unexpected results.", 4, testExecutionDao.searchTestExecutions(searchCriteria, Arrays.asList(test1.getGroupId())).size());
+      assertEquals("Search by test UID retrieved unexpected results.", 4, testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).size());
    }
 
    @org.junit.Test
@@ -265,14 +278,13 @@ public class TestExecutionDAOTest {
       searchCriteria.setStartedFrom(from);
       searchCriteria.setStartedTo(to);
 
-      List<TestExecution> result = testExecutionDao.searchTestExecutions(searchCriteria, Arrays.asList(test1.getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
       assertEquals(2, result.size());
 
-      for(TestExecution testExecution: result) {
-         if(testExecution.getId() != te2.getId() && testExecution.getId() != te3.getId()) {
-            fail("TestExecutionDAO.searchTestExecutions() returned unexpected test execution.");
-         }
-      }
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[1].getId(), testExecutions[2].getId());
+
+      assertTrue(expectedResultIds.stream().
+          allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
    }
 
    @org.junit.Test
@@ -280,14 +292,13 @@ public class TestExecutionDAOTest {
       TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
       searchCriteria.setTags("tag1 tag2");
 
-      List<TestExecution> result = testExecutionDao.searchTestExecutions(searchCriteria, Arrays.asList(test1.getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
       assertEquals(2, result.size());
 
-      for(TestExecution testExecution: result) {
-         if(testExecution.getId() != te1.getId() && testExecution.getId() != te2.getId()) {
-            fail("TestExecutionDAO.searchTestExecutions() returned unexpected test execution.");
-         }
-      }
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId());
+
+      assertTrue(expectedResultIds.stream().
+          allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
    }
 
    @org.junit.Test
@@ -297,31 +308,187 @@ public class TestExecutionDAOTest {
       searchCriteria.setLimitFrom(3);
       searchCriteria.setLimitHowMany(2);
 
-      List<TestExecution> result = testExecutionDao.searchTestExecutions(searchCriteria, Arrays.asList(test1.getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
       assertEquals(2, result.size());
 
-      for(TestExecution testExecution: result) {
-         if(testExecution.getId() != te1.getId() && testExecution.getId() != te2.getId()) {
-            fail("TestExecutionDAO.searchTestExecutions() returned unexpected test execution.");
-         }
-      }
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId());
+
+      assertTrue(expectedResultIds.stream().
+          allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
    }
 
    @org.junit.Test
    public void testSearchIdsInList() {
       TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
-      List<Long> ids = Arrays.asList(te1.getId(), te2.getId());
+      List<Long> ids = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId());
       searchCriteria.setIds(ids);
 
-      List<TestExecution> result = testExecutionDao.searchTestExecutions(searchCriteria, Arrays.asList(test1.getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
       assertEquals(2, result.size());
 
-      for(TestExecution testExecution: result) {
-         if(testExecution.getId() != te1.getId() && testExecution.getId() != te2.getId()) {
-            fail("TestExecutionDAO.searchTestExecutions() returned unexpected test execution.");
-         }
-      }
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId());
+
+      assertTrue(expectedResultIds.stream().
+          allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
    }
+
+   @org.junit.Test
+   public void testSearchWithDateAscendingOrdering() {
+      TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
+      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setOrderBy(OrderBy.DATE_ASC);
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      assertEquals(4, result.size());
+
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(),
+                                                   testExecutions[1].getId(),
+                                                   testExecutions[2].getId(),
+                                                   testExecutions[3].getId());
+
+      IntStream.range(0, expectedResultIds.size())
+          .forEach(index -> assertEquals(expectedResultIds.get(index), result.get(index).getId()));
+   }
+
+   @org.junit.Test
+   public void testSearchWithDateDescendingOrdering() {
+      TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
+      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setOrderBy(OrderBy.DATE_DESC);
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      assertEquals(4, result.size());
+
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[3].getId(),
+                                                   testExecutions[2].getId(),
+                                                   testExecutions[1].getId(),
+                                                   testExecutions[0].getId());
+
+      IntStream.range(0, expectedResultIds.size())
+          .forEach(index -> assertEquals(expectedResultIds.get(index), result.get(index).getId()));
+   }
+
+   @org.junit.Test
+   public void testSearchWithParameterAscendingOrdering() {
+      TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
+      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setOrderBy(OrderBy.PARAMETER_ASC);
+      searchCriteria.setOrderByParameter("param");
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      assertEquals(4, result.size());
+
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[1].getId(),
+                                                   testExecutions[3].getId(),
+                                                   testExecutions[0].getId(),
+                                                   testExecutions[2].getId());
+
+      IntStream.range(0, expectedResultIds.size())
+          .forEach(index -> assertEquals(expectedResultIds.get(index), result.get(index).getId()));
+   }
+
+   @org.junit.Test
+   public void testSearchWithParameterDescendingOrdering() {
+      TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
+      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setOrderBy(OrderBy.PARAMETER_DESC);
+      searchCriteria.setOrderByParameter("param");
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      assertEquals(4, result.size());
+
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[2].getId(),
+                                                   testExecutions[0].getId(),
+                                                   testExecutions[3].getId(),
+                                                   testExecutions[1].getId());
+      IntStream.range(0, expectedResultIds.size())
+          .forEach(index -> assertEquals(expectedResultIds.get(index), result.get(index).getId()));
+   }
+
+   @org.junit.Test
+   public void testSearchByVersionAscendingOrdering() {
+      TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
+      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setOrderBy(OrderBy.PARAMETER_ASC);
+      searchCriteria.setOrderByParameter("param");
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      assertEquals(4, result.size());
+
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[1].getId(),
+                                                   testExecutions[3].getId(),
+                                                   testExecutions[0].getId(),
+                                                   testExecutions[2].getId());
+
+      IntStream.range(0, expectedResultIds.size())
+          .forEach(index -> assertEquals(expectedResultIds.get(index), result.get(index).getId()));
+   }
+
+   @org.junit.Test
+   public void testSearchByVersionDescendingOrdering() {
+      TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
+      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setOrderBy(OrderBy.PARAMETER_DESC);
+      searchCriteria.setOrderByParameter("param");
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      assertEquals(4, result.size());
+
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[2].getId(),
+                                                   testExecutions[0].getId(),
+                                                   testExecutions[3].getId(),
+                                                   testExecutions[1].getId());
+      IntStream.range(0, expectedResultIds.size())
+          .forEach(index -> assertEquals(expectedResultIds.get(index), result.get(index).getId()));
+   }
+
+   @org.junit.Test
+   public void testSearchValuesWithEmptyCriteria() {
+      TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
+      Metric metric = metricDAO.get(metrics[0].getId());
+
+      List<ResultWrapper> result = testExecutionDAO.searchValues(searchCriteria, metric, Arrays.asList(tests[0].getGroupId()));
+      List<Double> expectedResult = Arrays.asList(values[0].getResultValue(),
+                                                  values[1].getResultValue(),
+                                                  values[2].getResultValue(),
+                                                  values[3].getResultValue(),
+                                                  values[4].getResultValue());
+
+      IntStream.range(0, expectedResult.size())
+          .forEach(index -> assertEquals(expectedResult.get(index), result.get(index).getValue()));
+   }
+
+   @org.junit.Test
+   public void testSearchValuesWithSomeCriteria() {
+      TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
+      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setStartedFrom(createStartDate(-7));
+      searchCriteria.setStartedTo(createStartDate(-3));
+
+      Metric metric = metricDAO.get(metrics[0].getId());
+
+      List<ResultWrapper> result = testExecutionDAO.searchValues(searchCriteria, metric, Arrays.asList(tests[0].getGroupId()));
+      List<Double> expectedResult = Arrays.asList(values[1].getResultValue(),
+                                                  values[2].getResultValue());
+      IntStream.range(0, expectedResult.size())
+          .forEach(index -> assertEquals(expectedResult.get(index), result.get(index).getValue()));
+   }
+
+   @org.junit.Test
+   public void testSearchMultiValues() {
+      TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
+      Metric metric = metricDAO.get(metrics[1].getId());
+
+      List<MultiValueResultWrapper> result = testExecutionDAO.searchMultiValues(searchCriteria, metric, Arrays.asList(tests[1].getGroupId()));
+      List<Double> expectedResult = Arrays.asList(values[5].getResultValue(),
+                                                  values[6].getResultValue());
+
+      assertTrue(expectedResult.stream().
+          allMatch(expected -> result.get(0).getValues().get("Iteration").values()
+              .stream().anyMatch(actual -> expected.equals(actual))));
+   }
+
+   /** ------------ Helper methods for creation of test environment ------------ */
 
    private Test createTest(String groupId, String uid) {
       return Test.builder()
@@ -333,94 +500,20 @@ public class TestExecutionDAOTest {
             .build();
    }
 
-   private TestExecution createTestExecution1() {
-      Value value = new Value();
-      value.setResultValue(10d);
-      value.setMetric(createMetric());
-
-      Collection<Value> values = new ArrayList<>();
-      values.add(value);
-
+   private TestExecution createTestExecution(String name, Date startedDate, Test test) {
       TestExecution te = new TestExecution();
-      te.setStarted(createStartDate(-8));
-      te.setName("test execution 1");
-      te.setTest(test1);
-      te.setValues(values);
+      te.setStarted(startedDate);
+      te.setName(name);
+      te.setTest(test);
 
       return te;
    }
 
-   private TestExecution createTestExecution2() {
-      Value value = new Value();
-      value.setResultValue(20d);
-      value.setMetric(createMetric());
-
-      Collection<Value> values = new ArrayList<>();
-      values.add(value);
-
-      TestExecution te = new TestExecution();
-      te.setStarted(createStartDate(-6));
-      te.setName("test execution 2");
-      te.setTest(test1);
-      te.setValues(values);
-
-      return te;
-   }
-
-   private TestExecution createTestExecution3() {
-      Value value = new Value();
-      value.setResultValue(30d);
-      value.setMetric(createMetric());
-
-      Collection<Value> values = new ArrayList<>();
-      values.add(value);
-
-      TestExecution te = new TestExecution();
-      te.setStarted(createStartDate(-4));
-      te.setName("test execution 3");
-      te.setTest(test1);
-      te.setValues(values);
-
-      return te;
-   }
-
-   private TestExecution createTestExecution4() {
-      Value value = new Value();
-      value.setResultValue(40d);
-      value.setMetric(createMetric());
-
-      Collection<Value> values = new ArrayList<>();
-      values.add(value);
-
-      TestExecution te = new TestExecution();
-      te.setStarted(createStartDate(-2));
-      te.setName("test execution 4");
-      te.setTest(test1);
-      te.setValues(values);
-
-      return te;
-   }
-
-   private TestExecution createTestExecution5() {
-      Value value = new Value();
-      value.setResultValue(1000d);
-      value.setMetric(createMetric());
-
-      Collection<Value> values = new ArrayList<>();
-      values.add(value);
-
-      TestExecution te = new TestExecution();
-      te.setStarted(createStartDate(-1));
-      te.setName("test execution 5");
-      te.setTest(test2);
-      te.setValues(values);
-
-      return te;
-   }
-
-   private Metric createMetric() {
+   private Metric createMetric(String name) {
       Metric metric = new Metric();
-      metric.setName("metric1");
+      metric.setName(name);
+      metric.setComparator(MetricComparator.HB);
+      metric.setDescription("this is a test " + name);
 
       return metric;
    }
@@ -446,6 +539,77 @@ public class TestExecutionDAOTest {
       storedTestExecution.setTestExecutionTags(testExecutionTags);
 
       return storedTestExecutionTag;
+   }
+
+   private Value createValue(Double resultValue, TestExecution testExecution, Metric metric) {
+      Value value = new Value();
+      value.setResultValue(resultValue);
+      value.setMetric(metric);
+      value.setTestExecution(testExecution);
+
+      Value storedValue = valueDAO.create(value);
+      Collection<Value> values = testExecution.getValues();
+      if(values == null) {
+         values = new ArrayList<>();
+      }
+      values.add(storedValue);
+      testExecution.setValues(values);
+      testExecutionDAO.update(testExecution);
+
+      return storedValue;
+   }
+
+   private TestExecutionParameter createTestExecutionParameter(String key, String value, TestExecution testExecution) {
+      TestExecutionParameter parameter = new TestExecutionParameter();
+      parameter.setName(key);
+      parameter.setValue(value);
+      parameter.setTestExecution(testExecution);
+      TestExecutionParameter storedParameter = testExecutionParameterDAO.create(parameter);
+
+      Collection<TestExecutionParameter> parameters = testExecution.getParameters();
+      if(parameters == null) {
+         parameters = new ArrayList<>();
+      }
+      parameters.add(storedParameter);
+      testExecution.setParameters(parameters);
+      testExecutionDAO.update(testExecution);
+
+      return storedParameter;
+   }
+
+   /**
+    * Creates multivalue
+    *
+    * @param testExecution
+    * @param metric
+    * @param valueParameters format: parameter name, parameter value, parameter name, parameter value ...
+    * @return
+    */
+   private Value createMultiValue(Double value, TestExecution testExecution, Metric metric, String... valueParameters) {
+      if(valueParameters.length % 2 != 0) {
+         throw new IllegalArgumentException("Number of values arguments must be divisible by 2.");
+      }
+
+      Value storedValue = createValue(value, testExecution, metric);
+
+      for(int i = 0; i < valueParameters.length; i += 2) {
+         ValueParameter valueParameter = new ValueParameter();
+         valueParameter.setName(valueParameters[i]);
+         valueParameter.setParamValue(valueParameters[i + 1]);
+         valueParameter.setValue(storedValue);
+
+         ValueParameter storedValueParameter = valueParameterDAO.create(valueParameter);
+
+         Collection<ValueParameter> valueParameterCollection = storedValue.getParameters();
+         if(valueParameterCollection == null) {
+            valueParameterCollection = new ArrayList<>();
+         }
+         valueParameterCollection.add(storedValueParameter);
+         storedValue.setParameters(valueParameterCollection);
+         valueDAO.update(storedValue);
+      }
+
+      return storedValue;
    }
 
    private Date createStartDate(int daysToShift) {

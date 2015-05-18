@@ -54,6 +54,10 @@ public class ReportUtils {
 	 * @param report
 	 */
 	public static void createOrUpdateReportPropertyInMap(Map<String, ReportProperty> reportProperties, String name, String value, Report report) {
+		if(value == null) { //null would violate the not-null constraint in database
+			return;
+		}
+
 		if (reportProperties.containsKey(name)) {
 			reportProperties.get(name).setValue(value);
 		} else {

@@ -52,6 +52,7 @@ public class ServiceException extends Exception {
 		static final int USERNAME_ALREADY_EXISTS = 1700;
 		static final int PASSWORD_IS_EMPTY = 1800;
 		static final int PASSWORD_DOESNT_MATCH = 1900;
+		static final int REPORT_NOT_FOUND = 2000;
 	}
 
 	private int code;

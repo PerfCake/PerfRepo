@@ -98,4 +98,22 @@ public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long>
 
       return query.getResultList();
 	}
+
+	/**
+	 * Finds all test execution parameters with matching prefix
+	 *
+	 * @param prefix
+	 * @return
+	 */
+	public List<TestExecutionParameter> findByPrefix(String prefix) {
+		CriteriaBuilder cb = criteriaBuilder();
+		CriteriaQuery<TestExecutionParameter> criteria = cb.createQuery(TestExecutionParameter.class);
+
+		Root<TestExecutionParameter> testExecutionParameter = criteria.from(TestExecutionParameter.class);
+
+		criteria.select(testExecutionParameter);
+		criteria.where(cb.like(cb.lower(testExecutionParameter.<String>get("name")), prefix.toLowerCase() + "%"));
+
+		return query(criteria).getResultList();
+	}
 }

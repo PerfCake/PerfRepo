@@ -302,6 +302,11 @@ public interface TestService {
 	public List<Test> getAllTests();
 
 	/**
+	 * @return list of all test belonging to one of the groups current logged user is in.
+	 */
+	public List<Test> getAvailableTests();
+
+	/**
 	 * @param testId
 	 * @return All metrics for given testId
 	 */
@@ -314,6 +319,14 @@ public interface TestService {
 	 * @return test prefixes
 	 */
 	public List<String> getTestsByPrefix(String prefix);
+
+	/**
+	 * Returns test execution parameters names matching prefix
+	 *
+	 * @param prefix
+	 * @return
+	 */
+	public List<String> getParametersByPrefix(String prefix);
 
 	/**
 	 * Returns tags matching prefix

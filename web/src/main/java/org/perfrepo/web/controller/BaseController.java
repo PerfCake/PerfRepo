@@ -68,6 +68,10 @@ public class BaseController implements Serializable {
 	}
 
 	protected Long getRequestParamLong(String name) {
+		if(getRequestParams().get(name) == null) {
+			return null;
+		}
+
 		return new Long(getRequestParams().get(name));
 	}
 

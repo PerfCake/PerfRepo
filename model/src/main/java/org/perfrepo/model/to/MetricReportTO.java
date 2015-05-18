@@ -379,6 +379,7 @@ public class MetricReportTO {
 	/**
 	 * Data point for charts.
 	 */
+	@Deprecated
 	public static class DataPoint implements Serializable, Comparable<DataPoint> {
 
 		public static final Double CONFLICT = 1.0d;

@@ -30,6 +30,7 @@ import org.perfrepo.model.userproperty.GroupFilter;
  *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  */
 public class TestExecutionSearchTO implements Serializable {
 
@@ -47,6 +48,11 @@ public class TestExecutionSearchTO implements Serializable {
 	private Integer limitFrom;
    private Integer limitHowMany;
 	private GroupFilter groupFilter;
+
+   private OrderBy orderBy = OrderBy.DATE_ASC;
+   private String orderByParameter;
+
+   private String labelParameter;
 
    public List<Long> getIds() {
       return ids;
@@ -125,6 +131,30 @@ public class TestExecutionSearchTO implements Serializable {
 	public void setGroupFilter(GroupFilter groupFilter) {
 		this.groupFilter = groupFilter;
 	}
+
+   public OrderBy getOrderBy() {
+      return orderBy;
+   }
+
+   public void setOrderBy(OrderBy orderBy) {
+      this.orderBy = orderBy;
+   }
+
+   public String getOrderByParameter() {
+      return orderByParameter;
+   }
+
+   public void setOrderByParameter(String orderByParameter) {
+      this.orderByParameter = orderByParameter;
+   }
+
+   public String getLabelParameter() {
+      return labelParameter;
+   }
+
+   public void setLabelParameter(String labelParameter) {
+      this.labelParameter = labelParameter;
+   }
 
    @Override
    public boolean equals(Object o) {

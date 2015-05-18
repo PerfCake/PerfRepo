@@ -26,6 +26,7 @@ import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.model.to.TestSearchTO;
 import org.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.perfrepo.model.user.User;
+import org.perfrepo.model.userproperty.GroupFilter;
 import org.perfrepo.model.util.EntityUtils;
 import org.perfrepo.model.util.EntityUtils.UpdateSet;
 import org.perfrepo.web.dao.*;
@@ -677,6 +678,15 @@ public class TestServiceBean implements TestService {
 	}
 
 	@Override
+	public List<Test> getAvailableTests() {
+		TestSearchTO search = new TestSearchTO();
+		search.setGroupFilter(GroupFilter.MY_GROUPS);
+		List<String> groups = userService.getLoggedUserGroupNames();
+
+		return testDAO.searchTests(search, groups);
+	}
+
+	@Override
 	public List<Metric> getAllMetrics(Long testId) {
 		return metricDAO.getMetricByTest(testId);
 	}
@@ -691,6 +701,16 @@ public class TestServiceBean implements TestService {
 			}
 		}
 		return testuids;
+	}
+
+	@Override
+	public List<String> getParametersByPrefix(String prefix) {
+		List<TestExecutionParameter> parameters = testExecutionParameterDAO.findByPrefix(prefix);
+		List<String> result = new ArrayList<>();
+		for (TestExecutionParameter parameter : parameters) {
+			result.add(parameter.getName());
+		}
+		return result;
 	}
 
 	@Override

@@ -257,6 +257,10 @@ public class TestExecutionSearchController extends BaseController {
 		return testService.getTestsByPrefix(test);
 	}
 
+	public List<String> autocompleteParameter(String parameter) {
+		return testService.getParametersByPrefix(parameter);
+	}
+
 	public List<String> autocompleteTags(String tag) {
 		String returnPrefix = "";
 		if (tag.startsWith("-")) {

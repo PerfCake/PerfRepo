@@ -47,6 +47,7 @@ import org.perfrepo.model.user.User;
 import org.perfrepo.web.dao.MetricDAO;
 import org.perfrepo.web.dao.PermissionDAO;
 import org.perfrepo.web.dao.ReportDAO;
+import org.perfrepo.web.dao.ReportPropertyDAO;
 import org.perfrepo.web.dao.TestDAO;
 import org.perfrepo.web.dao.TestExecutionDAO;
 import org.perfrepo.web.dao.TestMetricDAO;
@@ -84,6 +85,9 @@ public class ReportServiceBean implements ReportService {
 
 	@Inject
 	private UserService userService;
+
+	@Inject
+	private ReportPropertyDAO reportPropertyDAO;
 
 	@Override
 	public List<Report> getAllUsersReports() {
@@ -145,6 +149,7 @@ public class ReportServiceBean implements ReportService {
 		// somebody is able to write report
 		// the updater is able to write report
 		saveReportPermissions(report, report.getPermissions());
+		updateReportProperties(report, report.getProperties());
 		return reportDAO.update(report);
 	}
 
@@ -283,6 +288,27 @@ public class ReportServiceBean implements ReportService {
 				permissionDAO.remove(oldPerm);
 			}
 		}
+	}
+
+	/**
+	 * TODO: document this
+	 *
+	 * @param report
+	 * @param newProperties
+	 */
+	private void updateReportProperties(Report report, Map<String, ReportProperty> newProperties) {
+		Report managedReport = reportDAO.get(report.getId());
+		Map<String, ReportProperty> properties = managedReport.getProperties();
+
+		//add newly created properties
+		newProperties.keySet().stream().filter(key -> !properties.containsKey(key)).forEach(newKey -> properties.put(newKey, newProperties.get(newKey)));
+
+		//modify existing properties
+		newProperties.keySet().stream().filter(key -> properties.containsKey(key))
+			 .forEach(key -> properties.get(key).setValue(newProperties.get(key).getValue()));
+
+		//delete no more existing properties
+		properties.keySet().stream().filter(key -> !newProperties.containsKey(key)).forEach(key -> reportPropertyDAO.remove(properties.get(key)));
 	}
 
 	/**

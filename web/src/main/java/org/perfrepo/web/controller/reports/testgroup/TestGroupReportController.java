@@ -412,7 +412,7 @@ public class TestGroupReportController extends BaseController {
 		}
 		ReportUtils.createOrUpdateReportPropertyInMap(properties, "configuration.threshold", String.valueOf(semiNegativeThreshold), report);
 		report.setProperties(properties);
-		report.setPermissions(reportAccessController.getPermissions());
+		report.setPermissions(reportAccessController.getPermissionsOld());
 		if (report.getId() == null) {
 			reportService.createReport(report);
 		} else {
@@ -428,7 +428,7 @@ public class TestGroupReportController extends BaseController {
 	public void cloneReport() {
 		reportId = null;
 		//copy permissions to new report
-		reportAccessController.setPermissions(copyPermissions());
+		reportAccessController.setPermissionsOld(copyPermissions());
 		saveReport(newReportName);
 		redirectWithMessage("/reports", INFO, "page.reports.testGroup.reportSaved", newReportName);
 	}
@@ -438,7 +438,7 @@ public class TestGroupReportController extends BaseController {
 	 * @return Copied permissions
 	 */
 	private Collection<Permission> copyPermissions() {
-		Collection<Permission> permissions = reportAccessController.getPermissions();
+		Collection<Permission> permissions = reportAccessController.getPermissionsOld();
 		List<Permission> clonedPermissions = new ArrayList<Permission>();
 		for (Permission p : permissions) {
 			Permission newPerm = p.clone();

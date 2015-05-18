@@ -1,0 +1,81 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:a4j="http://richfaces.org/a4j"
+        xmlns:rich="http://richfaces.org/rich"
+        xmlns:r="http://richfaces.org">
+
+   <r:repeat value="#{boxplotReportBean.charts}" var="chart">
+      <div>
+         <h3>
+            Series of chart: #{chart.name}
+            <r:commandLink styleClass="btn btn-primary btn-small" action="#{boxplotReportBean.addSeries(chart)}"
+                           alt="Add series" title="Add series"
+                           render=":wizardPanel :messagesPanel">
+               <i class="icon-plus"></i>
+            </r:commandLink>
+         </h3>
+
+         <h:outputText rendered="#{empty chart.seriesList}"
+                       value='There are currently no series assigned to this chart. Add some with the "+" button above.' />
+
+         <h:dataTable styleClass="table table-bordered table-striped"
+                      columnClasses="inputCell,inputCell,inputCell,actionCell"
+                      value="#{chart.seriesList}"
+                      var="series"
+                      rendered="#{not empty chart.seriesList}">
+
+            <h:column headerClass="width31Percent">
+               <f:facet name="header">Series name (label)</f:facet>
+               <h:inputText value="#{series.name}" />
+            </h:column>
+
+            <h:column headerClass="width31Percent">
+               <f:facet name="header">Associated metric</f:facet>
+               <h:selectOneMenu value="#{series.metricId}">
+                  <f:selectItems value="#{boxplotReportBean.getMetricsForSelection(chart)}" var="metric"
+                                 itemLabel="#{metric.name}" itemValue="#{metric.id}" />
+               </h:selectOneMenu>
+            </h:column>
+
+            <h:column headerClass="width31Percent">
+               <f:facet name="header">Filtering tags</f:facet>
+               <rich:autocomplete mode="cachedAjax" minChars="2" autofill="false"
+                                  style="width: 100%;"
+                                  styleClass="input-xlarge"
+                                  tokens=" "
+                                  autocompleteMethod="#{testExecutionSearchController.autocompleteTags}"
+                                  value="#{series.tags}"/>
+            </h:column>
+
+            <h:column headerClass="width7Percent">
+               <f:facet name="header"></f:facet>
+               <r:commandLink styleClass="btn btn-primary btn-small"
+                              action="#{boxplotReportBean.removeSeries(chart, series)}" alt="Remove" title="Remove"
+                              render=":wizardPanel :messagesPanel">
+                  <i class="icon-minus"></i>
+               </r:commandLink>
+            </h:column>
+         </h:dataTable>
+
+         <hr />
+      </div>
+   </r:repeat>
+
+   <div id="wizardControls">
+      <a4j:commandButton
+            styleClass="btn btn-primary btn-large buttonPrevious"
+            value="Previous">
+         <rich:toggleControl targetItem="@prev" event="click" />
+      </a4j:commandButton>
+
+      <a4j:commandButton
+            styleClass="btn btn-primary btn-large buttonNext"
+            disabled="#{empty boxplotReportBean.charts}"
+            value="Next">
+         <rich:toggleControl targetItem="@next" event="click" />
+      </a4j:commandButton>
+   </div>
+</ui:composition>

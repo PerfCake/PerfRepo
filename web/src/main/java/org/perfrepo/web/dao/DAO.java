@@ -214,6 +214,10 @@ public abstract class DAO<T extends Entity<T>, PK extends Serializable> {
 		return em.createNamedQuery(name, clazz);
 	}
 
+	protected EntityManager entityManager() {
+		return em;
+	}
+
 	private T getSingleOrNoneResult(TypedQuery<T> query) {
 		query.setMaxResults(1);
 		List<T> result = query.getResultList();

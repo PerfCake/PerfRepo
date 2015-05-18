@@ -53,7 +53,6 @@ import org.richfaces.ui.output.chart.NumberChartDataModel;
 import org.richfaces.ui.output.chart.PlotClickEvent;
 
 import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -201,7 +200,7 @@ public class MetricReportController extends BaseController {
 		}
 
 		report.setProperties(reportProperties);
-		report.setPermissions(reportAccessController.getPermissions());
+		report.setPermissions(reportAccessController.getPermissionsOld());
 		if (reportId == null) {
 			reportService.createReport(report);
 		} else {

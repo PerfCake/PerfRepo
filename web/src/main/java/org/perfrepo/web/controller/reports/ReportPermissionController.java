@@ -42,57 +42,43 @@ import java.util.List;
 @ViewScoped
 public class ReportPermissionController extends BaseController {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 5444130093765337514L;
-
 	@Inject
 	ReportService reportService;
 
 	@Inject
 	UserService userService;
 
-	private Collection<Permission> permissions = new ArrayList<Permission>();
-
+   @Deprecated
+	private Collection<Permission> permissionsOld = new ArrayList<Permission>();
+   @Deprecated
 	private Collection<Permission> workingCopy = new ArrayList<Permission>();
-
+   @Deprecated
 	private String userId;
-
+   @Deprecated
 	private String groupId;
-
+   @Deprecated
 	private Permission permission = new Permission();
 
 	private Long reportId;
-
 	private boolean isPanelShown = false;
-
 	private boolean userAuthorized = false;
+
+   //part after refactoring
+   private List<Permission> permissions;
+
+   private List<User> usersForSelection;
+   private List<Group> groupsForSelection;
 
 	@Inject
 	private AuthorizationService authorizationService;
-
-	public AccessLevel[] getAccessLevels() {
-		return AccessLevel.values();
-	}
-
-	public AccessType[] getAccessTypes() {
-		return AccessType.values();
-	}
-
-	public Collection<Permission> getPermissions() {
-		return permissions;
-	}
-
-	public void setPermissions(Collection<Permission> permissions) {
-		this.permissions = permissions;
-	}
 
 	@PostConstruct
 	public void initialize() {
 		String reportIdParam = getRequestParam("reportId");
 		reportId = reportIdParam != null ? Long.parseLong(reportIdParam) : null;
-		permissions = reportService.getReportPermissions(new Report(reportId));
+      //this will be removed, currently present for backwards compatibility
+		permissionsOld = reportService.getReportPermissions(new Report(reportId));
+		permissions = new ArrayList<>(reportService.getReportPermissions(new Report(reportId)));
 		if (reportId != null) {
 			userAuthorized = authorizationService.isUserAuthorizedFor(AccessType.WRITE, new Report(reportId));
 		} else {
@@ -100,67 +86,70 @@ public class ReportPermissionController extends BaseController {
 		}
 	}
 
-	public void clearWorkingCopy() {
-		workingCopy.clear();
+	public List<User> getUsersForSelection() {
+      if(usersForSelection == null) {
+         usersForSelection = userService.getUsers();
+      }
+
+		return usersForSelection;
 	}
 
-	public String getPermissionGroup(Permission p) {
-		if (AccessLevel.GROUP.equals(p.getLevel())) {
-			Group group = userService.getGroup(p.getGroupId());
-			return group.getName();
-		} else {
-			return null;
-		}
+	public List<Group> getGroupsForSelection() {
+      if(groupsForSelection == null) {
+         groupsForSelection = userService.getGroups();
+      }
+
+		return groupsForSelection;
 	}
 
-	public String getPermissionUser(Permission p) {
-		if (AccessLevel.USER.equals(p.getLevel())) {
-			User user = userService.getUser(p.getUserId());
-			return user.getUsername();
-		} else {
-			return null;
-		}
-	}
+   public void addPermission() {
+      if(permissions == null) {
+         permissions = new ArrayList<>();
+      }
 
-	public List<User> getUsers() {
-		return userService.getUsers();
-	}
+      Permission permission = new Permission();
+      permission.setLevel(AccessLevel.PUBLIC);
+      permission.setAccessType(AccessType.READ);
 
-	public List<Group> getGroups() {
-		return userService.getGroups();
-	}
+      permissions.add(permission);
+   }
 
-	public void clearPermission() {
-		permission = new Permission();
-		userId = "";
-		groupId = "";
-	}
+   public void removePermission(Permission permission) {
+      permissions.remove(permission);
+   }
 
-	public void removePermission(Permission p) {
-		permissions.remove(p);
-	}
+   public void initDefaultPermissions() {
+      if(permissions == null) {
+         permissions = new ArrayList<>();
 
-	public void addNewPermission() {
-		if (AccessLevel.GROUP.equals(permission.getLevel())) {
-			permission.setGroupId(Long.valueOf(groupId));
-		} else if (AccessLevel.USER.equals(permission.getLevel())) {
-			permission.setUserId(Long.valueOf(userId));
-		}
-		permissions.add(permission);
-		permission = new Permission();
-		userId = "";
-		groupId = "";
-	}
+         Permission permission = new Permission();
+         permission.setLevel(AccessLevel.GROUP);
+         permission.setAccessType(AccessType.WRITE);
 
-	public Collection<Permission> getWorkingCopy() {
-		return workingCopy;
-	}
+         Collection<Group> groups = userService.getFullUser(userService.getLoggedUser().getId()).getGroups();
+         permission.setGroupId(groups.stream().findFirst().get().getId());
 
-	public void setWorkingCopy(Collection<Permission> workingCopy) {
-		this.workingCopy = workingCopy;
-	}
+         permissions.add(permission);
+      }
+   }
 
-	public Long getReportId() {
+   public AccessLevel[] getAccessLevels() {
+      return AccessLevel.values();
+   }
+
+   public AccessType[] getAccessTypes() {
+      return AccessType.values();
+   }
+
+   public List<Permission> getPermissions() {
+      return permissions;
+   }
+
+   public void setPermissions(List<Permission> permissions) {
+      this.permissions = permissions;
+   }
+
+   public Long getReportId() {
 		return reportId;
 	}
 
@@ -168,36 +157,8 @@ public class ReportPermissionController extends BaseController {
 		this.reportId = reportId;
 	}
 
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getGroupId() {
-		return groupId;
-	}
-
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
-
-	public Permission getPermission() {
-		return permission;
-	}
-
-	public void setPermission(Permission permission) {
-		this.permission = permission;
-	}
-
 	public void togglePanel() {
-		if (isPanelShown) {
-			isPanelShown = false;
-		} else {
-			isPanelShown = true;
-		}
+		isPanelShown = !isPanelShown;
 	}
 
 	public boolean isPanelShown() {
@@ -215,4 +176,104 @@ public class ReportPermissionController extends BaseController {
 	public void setUserAuthorized(boolean userAuthorized) {
 		this.userAuthorized = userAuthorized;
 	}
+
+   @Deprecated
+   public String getPermissionGroup(Permission p) {
+      if (AccessLevel.GROUP.equals(p.getLevel())) {
+         Group group = userService.getGroup(p.getGroupId());
+         return group.getName();
+      } else {
+         return null;
+      }
+   }
+
+   @Deprecated
+   public String getPermissionUser(Permission p) {
+      if (AccessLevel.USER.equals(p.getLevel())) {
+         User user = userService.getUser(p.getUserId());
+         return user.getUsername();
+      } else {
+         return null;
+      }
+   }
+
+   @Deprecated
+   public Collection<Permission> getPermissionsOld() {
+      return permissionsOld;
+   }
+
+   @Deprecated
+   public void setPermissionsOld(Collection<Permission> permissions) {
+      this.permissionsOld = permissions;
+   }
+
+   @Deprecated
+   public void clearWorkingCopy() {
+      workingCopy.clear();
+   }
+
+   @Deprecated
+   public void clearPermission() {
+      permission = new Permission();
+      userId = "";
+      groupId = "";
+   }
+
+   @Deprecated
+   public void removePermissionOld(Permission p) {
+      permissionsOld.remove(p);
+   }
+
+   @Deprecated
+   public void addNewPermission() {
+      if (AccessLevel.GROUP.equals(permission.getLevel())) {
+         permission.setGroupId(Long.valueOf(groupId));
+      } else if (AccessLevel.USER.equals(permission.getLevel())) {
+         permission.setUserId(Long.valueOf(userId));
+      }
+      permissionsOld.add(permission);
+      permission = new Permission();
+      userId = "";
+      groupId = "";
+   }
+
+   @Deprecated
+   public Collection<Permission> getWorkingCopy() {
+      return workingCopy;
+   }
+
+   @Deprecated
+   public void setWorkingCopy(Collection<Permission> workingCopy) {
+      this.workingCopy = workingCopy;
+   }
+
+   @Deprecated
+   public String getUserId() {
+      return userId;
+   }
+
+   @Deprecated
+   public void setUserId(String userId) {
+      this.userId = userId;
+   }
+
+   @Deprecated
+   public String getGroupId() {
+      return groupId;
+   }
+
+   @Deprecated
+   public void setGroupId(String groupId) {
+      this.groupId = groupId;
+   }
+
+   @Deprecated
+   public Permission getPermission() {
+      return permission;
+   }
+
+   @Deprecated
+   public void setPermission(Permission permission) {
+      this.permission = permission;
+   }
 }

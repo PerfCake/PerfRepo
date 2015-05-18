@@ -137,6 +137,26 @@
 		<set name="formActionURL">/reports/metric/$1</set>
 	</rule>
 
+   <rule>
+      <from>^/reports/boxplot$</from>
+      <to type="forward" last="true">/reports/boxplot/index.jsf</to>
+      <set name="formActionURL">/reports/boxplot</set>
+   </rule>
+
+	<rule>
+		<!-- /reports/boxplot/{reportId} -->
+		<from>^/reports/boxplot/([\d]+)$</from>
+		<to type="forward" last="true">/reports/boxplot/boxplot.jsf?reportId=$1</to>
+		<set name="formActionURL">/reports/boxplot/$1</set>
+	</rule>
+
+	<rule>
+		<!-- /reports/boxplot/{reportId}/edit -->
+		<from>^/reports/boxplot/([\d]+)/edit$</from>
+		<to type="forward" last="true">/reports/boxplot/index.jsf?reportId=$1</to>
+		<set name="formActionURL">/reports/boxplot/$1/edit</set>
+	</rule>
+
 	<rule>
 		<from>^/reports/simple$</from>
 		<to type="forward" last="true">/reports/simpleReport.jsf</to>

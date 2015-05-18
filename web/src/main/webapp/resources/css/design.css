@@ -1178,6 +1178,11 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
     width: 270px
 }
 
+.input-xlarge input {
+    width: 270px !important;
+    padding: 4px 6px 4px 6px !important;
+}
+
 .input-xxlarge {
     width: 530px
 }
@@ -1271,7 +1276,7 @@ input.span1, textarea.span1, .uneditable-input.span1 {
 
 input[disabled], select[disabled], textarea[disabled], input[readonly], select[readonly], textarea[readonly] {
     cursor: not-allowed;
-    background-color: #f5f5f5
+    background-color: #f5f5f5;
 }
 
 input[type="radio"][disabled], input[type="checkbox"][disabled], input[type="radio"][readonly], input[type="checkbox"][readonly] {
@@ -6058,14 +6063,6 @@ td.numvalcolumn {
     text-align: right;
 }
 
-table.editableEntryTable td {
-    padding: 1px;
-}
-
-table.editableEntryTable input {
-    width: inherit;
-}
-
 table.searchResult {
     width: 940px;
 }
@@ -6102,9 +6099,7 @@ table.pointDetails td.pointDetailsValue {
 }
 
 input.rf-au-inp {
-    width: 206px !important;
     border: 1px solid #CCCCCC !important;
-    padding: 4px !important;
 }
 
 div #massOperations {
@@ -6126,4 +6121,191 @@ div #massOperations table td.secondColumn {
 
 div #massOperations table td.statusColumn {
     padding-left: 15px;
+}
+
+.wizard {
+    border: none !important;
+}
+
+.wizard #wizardControls {
+    clear: both;
+    margin-top: 20px;
+}
+
+.wizard #wizardControls .buttonNext {
+    float:right;
+}
+
+.wizard #wizardControls .buttonPrevious {
+    float:left;
+}
+
+.wizard div.boxplotReportChart {
+}
+
+.wizard div.boxplotReportChart hr {
+    margin: 20px 0 20px 0;
+    border-color: #BBBBBB;
+}
+
+.wizard div.boxplotReportChart table {
+    margin-left: 9px;
+}
+
+.wizard div.boxplotReportChart table td {
+    padding: 5px;
+}
+
+.wizard div.boxplotReportChart table th {
+    width: 200px;
+    vertical-align: middle;
+    padding-right: 5px;
+    text-align: left;
+}
+
+.wizard div.boxplotReportChart table td input[type=text] {
+    padding: 4px !important;
+    width: 250px !important;
+    margin-bottom: 0px;
+}
+
+.wizard div.boxplotReportChart table td input[type=radio] {
+    float: left;
+    margin-left: 20px;
+}
+
+.wizard div.boxplotReportChart table td table tr td:first-child input[type=radio] {
+    margin-left: 0px !important;
+}
+
+.wizard div.boxplotReportChart table td table {
+    float: left;
+}
+
+.wizard div.boxplotReportChart table td input[type=text].parameterValue {
+    float: left;
+    margin-left: 10px;
+}
+
+.wizard div.boxplotReportChart table td span.parameterValue input[disabled] {
+    background-color: #F5F5F5 !important;
+}
+
+.wizard div.boxplotReportChart table td label {
+    float: right;
+    margin-left: 10px;
+    margin-top: 3px;
+}
+
+.wizard div.boxplotReportChart table td select {
+    margin-bottom: 0px;
+    width: 260px !important;
+}
+
+.wizard input.hidden {
+    display: none;
+}
+
+.wizard div.boxplotReportSeries {
+}
+
+.wizard div.boxplotReportSeries hr {
+    margin: 20px 0 20px 0;
+    border-color: #BBBBBB;
+}
+
+.wizard div.boxplotReportSeries table {
+    margin-left: 9px;
+}
+
+.wizard div.boxplotReportSeries table td {
+    padding: 5px;
+}
+
+.wizard div.boxplotReportSeries table th {
+    width: 85px;
+    vertical-align: middle;
+    padding-right: 5px;
+    text-align: left;
+}
+
+.wizard div.boxplotReportSeries table td input {
+    padding: 4px !important;
+    width: 250px !important;
+    margin-bottom: 0px;
+}
+
+.wizard div.boxplotReportSeries table td select {
+    margin-bottom: 0px;
+    width: 260px !important;
+}
+
+.wizard div.boxplotReportSeries fieldset {
+    padding: 8px;
+    border: 1px solid #CCCCCC;
+}
+
+.wizard div.boxplotReportSeries fieldset legend {
+    width: auto;
+    padding: 3px;
+    margin-bottom: 0px;
+    font-size: 16px;
+    line-height: normal;
+    border: none;
+}
+
+.wizard div.boxplotReportSeries fieldset table {
+    margin-left: 0px;
+    height: 375px;
+}
+
+.wizard div.boxplotReportSeries fieldset table td.boxplotImage {
+    vertical-align: middle;
+}
+
+.wizard div.boxplotReportSeries fieldset table td.dashedLine {
+    width: 175px;
+    background: url("/resources/images/dashline.png") repeat-x center;
+}
+
+table td.inputCell  {
+    padding: 0 12px 0 8px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+table td.inputCell input {
+    width: 98%;
+    margin-bottom: 0px;
+    margin-right: 8px;
+}
+
+table td.inputCell select {
+    width: 100%;
+    margin-bottom: 0px;
+}
+
+table td.actionCell {
+    vertical-align: middle;
+    text-align: center;
+}
+
+table td.actionCell a {
+    margin-left: 0px !important;
+}
+
+table th.width50Percent {
+    width: 50%;
+}
+
+table th.width43Percent {
+    width: 43%;
+}
+
+table th.width7Percent {
+    width: 7%;
+}
+
+table th.width31Percent {
+    width: 31%;
 }

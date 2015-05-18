@@ -47,6 +47,7 @@
 
             <div class="controls">
                 <r:calendar value="#{searchCriteriaSession.executionSearchCriteria.startedFrom}"
+                            styleClass="input-xlarge"
                             datePattern="yyyy-MM-dd HH:mm" id="testStartedFrom"/>
             </div>
         </div>
@@ -56,6 +57,7 @@
 
             <div class="controls">
                 <r:calendar value="#{searchCriteriaSession.executionSearchCriteria.startedTo}"
+                            styleClass="input-xlarge"
                             datePattern="yyyy-MM-dd HH:mm" id="testStartedTo"/>
             </div>
         </div>
@@ -78,7 +80,7 @@
             <h:outputLabel class="control-label" for="tags">Additional columns</h:outputLabel>
 
             <div class="controls">
-                <h:selectManyListbox value="#{testExecutionSearchController.extraColumns}">
+                <h:selectManyListbox value="#{testExecutionSearchController.extraColumns}" style="width: 284px;">
                     <f:selectItem itemValue="execId" itemLabel="Execution Id"/>
                     <f:selectItem itemValue="test" itemLabel="Test"/>
                 </h:selectManyListbox>

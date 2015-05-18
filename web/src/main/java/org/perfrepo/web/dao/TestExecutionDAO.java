@@ -18,26 +18,23 @@
  */
 package org.perfrepo.web.dao;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.perfrepo.model.Metric;
 import org.perfrepo.model.Tag;
 import org.perfrepo.model.Test;
@@ -45,8 +42,12 @@ import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.TestExecutionParameter;
 import org.perfrepo.model.TestExecutionTag;
 import org.perfrepo.model.Value;
+import org.perfrepo.model.ValueParameter;
+import org.perfrepo.model.to.MetricReportTO;
+import org.perfrepo.model.to.MultiValueResultWrapper;
+import org.perfrepo.model.to.OrderBy;
+import org.perfrepo.model.to.ResultWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
-import org.perfrepo.model.to.MetricReportTO.DataPoint;
 import org.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.perfrepo.model.userproperty.GroupFilter;
 import org.perfrepo.model.util.EntityUtils;
@@ -114,7 +115,10 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       CriteriaQuery<TestExecution> criteria = (CriteriaQuery) createSearchSubquery(cb.createQuery(TestExecution.class), search, includedTags, excludedTags);
       Root<TestExecution> root = (Root<TestExecution>) criteria.getRoots().toArray()[0];
       criteria.select(root);
-      criteria.orderBy(cb.asc(root.get("started")));
+      //ignoring other OrderBy options (like PARAMETER), because it's not possible to order
+      //by values for specific parameter name in SQL. Therefore if the the option is PARAMETER(ASC|DESC)
+      //it's ordered afterwards, just like filterResultByParameters, see orderResultsByParameters below
+      criteria.orderBy(search.getOrderBy() == OrderBy.DATE_DESC ? cb.desc(root.get("started")) : cb.asc(root.get("started")));
 
       TypedQuery<TestExecution> query = query(criteria);
       fillParameterValues(query, search, includedTags, excludedTags, userGroups);
@@ -128,6 +132,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       List<TestExecution> result = query.getResultList();
       List<TestExecution> clonedResult = EntityUtils.clone(result);
       filterResultByParameters(clonedResult, search);
+      orderResultsByParameters(clonedResult, search);
 
       return clonedResult;
    }
@@ -158,7 +163,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       CriteriaBuilder cb = criteriaBuilder();
 
       Long count = null;
-      //we want to you 'last' boundaries, we must compute the number of test executions that
+      //we want to use 'last' boundaries, we must compute the number of test executions that
       //match the requirements - have selected tags and belong to selected tests
       if(lastFrom != null && howMany != null) {
          CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
@@ -201,6 +206,113 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       return resultClone;
    }
 
+   /**
+    * Retrieves result values of the test executions assigned to specific metric.
+    * Behaviour on multi-value test execution in undefined
+    *
+    * @param search search criteria object
+    * @param metric
+    * @param userGroups
+    * @return
+    */
+   public List<ResultWrapper> searchValues(TestExecutionSearchTO search, Metric metric, List<String> userGroups) {
+      CriteriaBuilder cb = criteriaBuilder();
+      CriteriaQuery<ResultWrapper> criteriaQuery = cb.createQuery(ResultWrapper.class);
+
+      List<TestExecution> testExecutions = searchTestExecutions(search, userGroups);
+      List<Long> testExecutionIds = testExecutions.stream().map(TestExecution::getId).collect(Collectors.toList());
+
+      Root<TestExecution> testExecution = criteriaQuery.from(TestExecution.class);
+      Join<TestExecution, Value> valueJoin = testExecution.join("values");
+      Join<Value, Metric> metricJoin = valueJoin.join("metric");
+
+      Predicate selectedMetric = cb.equal(metricJoin.get("id"), metric.getId());
+      Predicate selectedTestExecutions = testExecution.get("id").in(testExecutionIds);
+
+      criteriaQuery.select(cb.construct(ResultWrapper.class, valueJoin.get("resultValue"), testExecution.get("id"), testExecution.get("started")));
+      criteriaQuery.where(cb.and(selectedMetric, selectedTestExecutions));
+      //TODO: this won't work correctly with ordering by parameter value, fix it according to searchMultiValues
+      //TODO: this will be fixed when re-doing Metric history report
+      criteriaQuery.orderBy(cb.asc(testExecution.get("started")));
+      criteriaQuery.groupBy(testExecution.get("id"), valueJoin.get("resultValue"), testExecution.get("started"));
+
+      TypedQuery<ResultWrapper> query = query(criteriaQuery);
+
+      return query.getResultList();
+   }
+
+   /**
+    * Retrieves result multi-values of the test executions assigned to specific metric.
+    * Behaviour on singe-value test execution in undefined.
+    *
+    * @param search search criteria object
+    * @param metric
+    * @param userGroups
+    * @return
+    */
+   public List<MultiValueResultWrapper> searchMultiValues(TestExecutionSearchTO search, Metric metric, List<String> userGroups) {
+      CriteriaBuilder cb = criteriaBuilder();
+      CriteriaQuery<Tuple> criteriaQuery = cb.createQuery(Tuple.class);
+
+      List<TestExecution> testExecutions = searchTestExecutions(search, userGroups);
+      List<Long> testExecutionIds = testExecutions.stream().map(TestExecution::getId).collect(Collectors.toList());
+
+      Root<TestExecution> testExecution = criteriaQuery.from(TestExecution.class);
+      Join<TestExecution, Value> valueJoin = testExecution.join("values");
+      Join<Value, Metric> metricJoin = valueJoin.join("metric");
+      Join<Value, ValueParameter> valueParameterJoin = valueJoin.join("parameters");
+      Join<TestExecution, TestExecutionParameter> executionParameterJoin = null;
+
+      Predicate selectedMetric = cb.equal(metricJoin.get("id"), metric.getId());
+      Predicate selectedTestExecutions = testExecution.get("id").in(testExecutionIds);
+      Predicate labelParameter = cb.and();
+
+      Path<?> labelPath = testExecution.get("started");
+
+      if(search.getLabelParameter() != null) {
+         executionParameterJoin = testExecution.join("parameters");
+         labelParameter = cb.equal(executionParameterJoin.get("name"), search.getLabelParameter());
+         labelPath = executionParameterJoin.get("value");
+      }
+
+      criteriaQuery.multiselect(valueJoin.get("resultValue").alias("resultValue"),
+                                valueParameterJoin.get("name").alias("valueParameterName"),
+                                valueParameterJoin.get("paramValue").alias("valueParameterValue"),
+                                testExecution.get("id").alias("execId"),
+                                labelPath.alias("label")
+                               );
+
+      criteriaQuery.where(cb.and(selectedMetric, selectedTestExecutions, labelParameter));
+      criteriaQuery.orderBy(cb.asc(testExecution.get("started")));
+      criteriaQuery.groupBy(testExecution.get("id"), valueJoin.get("resultValue"), valueParameterJoin.get("name"), valueParameterJoin.get("paramValue"), labelPath);
+
+      TypedQuery<Tuple> query = query(criteriaQuery);
+      List<Tuple> queryResult = query.getResultList();
+
+      Map<Long, MultiValueResultWrapper> unsortedResult = new HashMap<>();
+
+      //this way of computing might seem strange, but is necessary. We need to keep ordering by
+      //test executions. However, retrieved tuples are one for every value. Therefore, we perform
+      //something like "group by test execution ID" on the results and construct result wrappers.
+      for(Tuple tuple: queryResult) {
+         Long execId = tuple.get("execId", Long.class);
+
+         unsortedResult.putIfAbsent(execId, new MultiValueResultWrapper(execId, tuple.get("label")));
+
+         String valueParameterName = tuple.get("valueParameterName", String.class);
+         String valueParameterValue = tuple.get("valueParameterValue", String.class);
+         Double resultValue = tuple.get("resultValue", Double.class);
+
+         unsortedResult.get(execId).addValue(valueParameterName, valueParameterValue, resultValue);
+      }
+
+      //perform after-sort, the ResultWrappers have to be in the same order as retrieved test executions
+      List<MultiValueResultWrapper> finalSortedResult = new ArrayList<>();
+      testExecutions.stream().filter(execution -> unsortedResult.keySet().contains(execution.getId())).forEach(execution -> finalSortedResult.add(unsortedResult.get(execution.getId())));
+
+      return finalSortedResult;
+   }
+
 	/**
 	 * Finds all values used for computing MetricHistory report
 	 *
@@ -208,12 +320,12 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 	 * @param metricName
 	 * @param tagList
 	 * @param limitSize
-	 * @return List of DataPoint objects
+	 * @return List of ResultWrapper objects
 	 */
-	public List<DataPoint> searchValues(Long testId, String metricName, List<String> tagList, int limitSize) {
+	public List<MetricReportTO.DataPoint> searchValues(Long testId, String metricName, List<String> tagList, int limitSize) {
 		boolean useTags = tagList != null && !tagList.isEmpty();
 		CriteriaBuilder cb = criteriaBuilder();
-		CriteriaQuery<DataPoint> criteria = cb.createQuery(DataPoint.class);
+		CriteriaQuery<MetricReportTO.DataPoint> criteria = cb.createQuery(MetricReportTO.DataPoint.class);
 		// test executions
 		Root<TestExecution> rExec = criteria.from(TestExecution.class);
 		// test joined via test exec.
@@ -239,14 +351,14 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 		Predicate pMetricFromSameTest = cb.equal(rTest_Metric.get("id"), rTest_Exec.get("id"));
 
 		//sort by date
-		criteria.select(cb.construct(DataPoint.class, rExec.get("started"), rValue.get("resultValue"), rExec.get("id")));
+		criteria.select(cb.construct(MetricReportTO.DataPoint.class, rExec.get("started"), rValue.get("resultValue"), rExec.get("id")));
 		criteria.where(cb.and(pMetricNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
 		criteria.groupBy(rValue.get("resultValue"), rExec.get("id"), rExec.get("started"));
 		criteria.orderBy(cb.desc(rExec.get("started")));
 
 		criteria.having(pHavingAllTagsPresent);
 
-		TypedQuery<DataPoint> query = query(criteria);
+		TypedQuery<MetricReportTO.DataPoint> query = query(criteria);
 		query.setParameter("testId", testId);
 		query.setParameter("metricName", metricName);
 
@@ -362,7 +474,6 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
             pParamsMatch = cb.and(pParamsMatch, cb.like(rParam.<String>get("value"), cb.parameter(String.class, "paramValue" + pCount)));
          }
       }
-
       // construct query
       criteria.where(cb.and(pIds, pStartedFrom, pStartedTo, pTagNameInFixedList, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch));
       criteria.having(pHavingAllTagsPresent);
@@ -405,6 +516,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    /**
     * After search of test executions with various properties, now we want to filter them
     * according to test execution parameters. This method does the filtering.
+    * TODO: change the description, it's not true! This method does something else, find out what exactly and document it
     *
     * @param result
     * @param search
@@ -451,6 +563,10 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          }
       } else {
          for (TestExecution exec: result) {
+            if(exec.getTestExecutionTags() == null) {
+               continue;
+            }
+
             exec.setParameters(Collections.<TestExecutionParameter>emptyList());
             exec.setTestExecutionTags(EntityUtils.clone(exec.getTestExecutionTags()));
             for (TestExecutionTag tet : exec.getTestExecutionTags()) {
@@ -458,6 +574,56 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
             }
          }
       }
+   }
+
+   /**
+    * Performs ordering on test executions by values of specified parameter.
+    *
+    * @param testExecutions
+    * @param search
+    */
+   private void orderResultsByParameters(List<TestExecution> testExecutions, TestExecutionSearchTO search) {
+      if(!Arrays.asList(OrderBy.PARAMETER_ASC,
+                        OrderBy.PARAMETER_DESC,
+                        OrderBy.VERSION_ASC,
+                        OrderBy.VERSION_DESC).contains(search.getOrderBy())) {
+         return;
+      }
+
+      List<Long> executionIds = testExecutions.stream().map(TestExecution::getId).collect(Collectors.toList());
+      List<TestExecutionParameter> parameters = testExecutionParameterDAO.find(executionIds, Arrays.asList(search.getOrderByParameter()));
+      Map<Long, List<TestExecutionParameter>> parametersByExecution = parameters.stream().collect(Collectors.groupingBy(parameter -> parameter.getTestExecution().getId()));
+      testExecutions.stream().forEach(execution -> execution.setParameters(parametersByExecution.get(execution.getId())));
+
+      Collections.sort(testExecutions,
+                       (o1, o2) ->  {
+                          String o1paramValue = o1.getParametersAsMap().get(search.getOrderByParameter());
+                          int orderCoefficient = search.getOrderBy() == OrderBy.PARAMETER_ASC || search.getOrderBy() == OrderBy.VERSION_ASC ? 1 : -1;
+                          if(o1paramValue == null) {
+                             return orderCoefficient * 1;
+                          }
+
+                          return orderCoefficient * performCompare(o1paramValue, o2.getParametersAsMap().get(search.getOrderByParameter()), search);
+                       });
+   }
+
+   /**
+    * According to selected ordering mechanism, this method performs the comparison.
+    *
+    * @param value1
+    * @param value2
+    * @param search
+    * @return
+    */
+   private int performCompare(String value1, String value2, TestExecutionSearchTO search) {
+      if(search.getOrderBy() == OrderBy.VERSION_ASC || search.getOrderBy() == OrderBy.VERSION_DESC) {
+         DefaultArtifactVersion version1 = new DefaultArtifactVersion(value1);
+         DefaultArtifactVersion version2 = new DefaultArtifactVersion(value2);
+
+         return version1.compareTo(version2);
+      }
+
+      return value1.compareTo(value2);
    }
 
    /**
@@ -611,10 +777,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @return TestExecution with fetched tags
     */
    public static TestExecution fetchTags(TestExecution testExecution) {
-      Collection<TestExecutionTag> cloneTags = new ArrayList<TestExecutionTag>();
-      for (TestExecutionTag interObject : testExecution.getTestExecutionTags()) {
-         cloneTags.add(interObject.cloneWithTag());
-      }
+      Collection<TestExecutionTag> cloneTags = new ArrayList<>();
+      testExecution.getTestExecutionTags().stream().forEach(interObject -> cloneTags.add(interObject));
       testExecution.setTestExecutionTags(cloneTags);
       return testExecution;
    }
@@ -648,11 +812,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @return TestExecution with fetched values
     */
    public static TestExecution fetchValues(TestExecution testExecution) {
-      List<Value> cloneValues = new ArrayList<Value>();
+      List<Value> cloneValues = new ArrayList<>();
       if (testExecution.getValues() != null) {
-         for (Value v : testExecution.getValues()) {
-            cloneValues.add(v.cloneWithParameters());
-         }
+         testExecution.getValues().stream().forEach(value -> cloneValues.add(value.cloneWithParameters()));
          testExecution.setValues(cloneValues);
       }
       return testExecution;

@@ -31,7 +31,7 @@
             </tr>
             </thead>
             <tbody>
-            <ui:repeat value="#{reportPermissionController.permissions}" var="p">
+            <ui:repeat value="#{reportPermissionController.permissionsOld}" var="p">
                 <tr>
                     <td>#{p.accessType}</td>
                     <td>#{p.level}</td>
@@ -39,7 +39,7 @@
                     <td>#{reportPermissionController.getPermissionGroup(p)}</td>
                     <td style="text-align: center"><a4j:commandLink alt="Remove"
                                                                     title="Remove" render=":reportAccessRights"
-                                                                    action="#{reportPermissionController.removePermission(p)}" disabled="#{!reportPermissionController.userAuthorized}">
+                                                                    action="#{reportPermissionController.removePermissionOld(p)}" disabled="#{!reportPermissionController.userAuthorized}">
                         <i class="icon-remove"/>
                     </a4j:commandLink></td>
                 </tr>

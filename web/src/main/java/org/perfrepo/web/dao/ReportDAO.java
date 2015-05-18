@@ -34,12 +34,25 @@ import java.util.Map;
 @Named
 public class ReportDAO extends DAO<Report, Long> {
 
+	/**
+	 * Retrieves all reports belonging to specific user by his username.
+	 *
+	 * @param username
+	 * @return
+	 */
 	public List<Report> getByUser(String username) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("username", username);
 		return findByNamedQuery(Report.GET_BY_USERNAME, params);
 	}
 
+	/**
+	 * Retrieves all reports that are accessible by specified user or groups.
+	 *
+	 * @param userId
+	 * @param groupIds
+	 * @return
+	 */
 	public List<Report> getByGroupPermission(Long userId, List<Long> groupIds) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("groupIds", groupIds);
@@ -47,6 +60,14 @@ public class ReportDAO extends DAO<Report, Long> {
 		return findByNamedQuery(Report.GET_BY_GROUP_PERMISSION, params);
 	}
 
+	/**
+	 * Retrieves all reports that are accessible by specified user or groups or have public
+	 * access.
+	 *
+	 * @param userId
+	 * @param groupIds
+	 * @return
+	 */
 	public List<Report> getByAnyPermission(Long userId, List<Long> groupIds) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("groupIds", groupIds);
