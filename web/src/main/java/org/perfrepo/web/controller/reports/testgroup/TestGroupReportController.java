@@ -36,6 +36,7 @@ import javax.inject.Named;
 import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.Value;
 import org.perfrepo.model.auth.AccessType;
+import org.perfrepo.model.auth.Permission;
 import org.perfrepo.model.report.Report;
 import org.perfrepo.model.report.ReportProperty;
 import org.perfrepo.model.user.User;
@@ -410,10 +411,31 @@ public class TestGroupReportController extends BaseController {
 		reloadSessionMessages();
 	}
 
+	/**
+	 * Method responsible for clone existing report.
+	 */
 	public void cloneReport() {
 		reportId = null;
+		//copy permissions to new report
+		reportAccessController.setPermissions(copyPermissions());
 		saveReport(newReportName);
 		redirectWithMessage("/reports", INFO, "page.reports.testGroup.reportSaved", newReportName);
+	}
+
+	/**
+	 * Helper method used for clone Report functionality. It copies permissions from existing report to new one.
+	 * @return Copied permissions
+	 */
+	private Collection<Permission> copyPermissions() {
+		Collection<Permission> permissions = reportAccessController.getPermissions();
+		List<Permission> clonedPermissions = new ArrayList<Permission>();
+		for (Permission p : permissions) {
+			Permission newPerm = p.clone();
+			newPerm.setId(null);
+			newPerm.setReport(null);
+			clonedPermissions.add(newPerm);
+		}
+		return clonedPermissions;
 	}
 
 	public void updateReportName() {
