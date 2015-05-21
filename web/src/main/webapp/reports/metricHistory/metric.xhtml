@@ -183,8 +183,8 @@
     </h:panelGroup>
 </h:form>
 <h:form id="formChart">
-    <r:repeat value="#{metricReportBean.chartSpecs}" var="chartItem" id="repeat">
-        <h2>
+    <r:repeat value="#{metricReportBean.chartSpecs}" var="chartItem" rowKeyVar="chartIndex" id="repeat">
+        <h2 id="chart#{chartIndex + 1}">
             <h:outputText value="#{chartItem.chartName}"/>
         </h2>
 

@@ -61,6 +61,20 @@ public class AlertingServiceBean implements AlertingService {
    private AlertingReporterService alertingReporterService;
 
    @Override
+   public Alert getAlert(Long id) {
+      Alert alert = alertDAO.get(id);
+      Collection<Tag> tags = alert.getTags();
+
+      List<Tag> clonedTags = new ArrayList<>();
+      for(Tag tag: tags) {
+         clonedTags.add(tag.clone());
+      }
+      alert.setTags(clonedTags);
+
+      return alert;
+   }
+
+   @Override
    public Alert createAlert(Alert alert) {
       makeManaged(alert);
       return alertDAO.create(alert);
@@ -103,6 +117,7 @@ public class AlertingServiceBean implements AlertingService {
       }
 
       List<Alert> failedAlerts = new ArrayList<>();
+      Map<Alert, Map<String, Object>> failedAlertsVariables = new HashMap<>();
       for(Metric metric: results.keySet()) {
          List<Alert> alerts = alertDAO.getByTestAndMetric(test, metric);
          for(Alert alert: alerts) {
@@ -112,10 +127,12 @@ public class AlertingServiceBean implements AlertingService {
 
             if(!conditionChecker.checkCondition(alert.getCondition(), results.get(metric), metric)) {
                failedAlerts.add(alert);
+               failedAlertsVariables.put(alert, conditionChecker.getEvaluatedVariables());
             }
          }
       }
 
+      alertingReporterService.setConditionVariables(failedAlertsVariables);
       alertingReporterService.reportAlert(failedAlerts, testExecution);
    }
 

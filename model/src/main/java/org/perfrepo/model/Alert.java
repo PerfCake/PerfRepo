@@ -40,6 +40,9 @@ public class Alert implements Entity<Alert> {
 	@Size(max = 2097)
 	private String condition;
 
+   @Column(name = "links")
+   private String links;
+
 	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "metric_id", referencedColumnName = "id")
 	@NotNull
@@ -90,7 +93,15 @@ public class Alert implements Entity<Alert> {
 		this.condition = condition;
 	}
 
-	public Test getTest() {
+   public String getLinks() {
+      return links;
+   }
+
+   public void setLinks(String links) {
+      this.links = links;
+   }
+
+   public Test getTest() {
 		return test;
 	}
 

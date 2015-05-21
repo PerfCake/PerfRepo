@@ -4,6 +4,7 @@ import org.perfrepo.model.Alert;
 import org.perfrepo.model.TestExecution;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Generic interface for how to react when some alert on test fails.
@@ -20,5 +21,13 @@ public interface AlertingReporterService {
     * @param testExecution
     */
    public void reportAlert(List<Alert> alerts, TestExecution testExecution);
+
+   /**
+    * Allows to pass the values of variables used in the condition that failed (for every alert). This can be used for creating more
+    * user-friendly alert messages.
+    *
+    * @param variables
+    */
+   public void setConditionVariables(Map<Alert, Map<String, Object>> variables);
 
 }

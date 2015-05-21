@@ -19,6 +19,7 @@
                    <h:inputText styleClass="input-text" style="width: 650px;" value="#{testController.alertDetails.name}"/>
                </div>
            </div>
+
            <div class="control-group">
                <h:outputLabel class="control-label">Condition</h:outputLabel>
 
@@ -46,7 +47,15 @@
                                    autocompleteMethod="#{testExecutionSearchController.autocompleteTags}"
                                    value="#{testController.alertDetails.tags}"/>
              </div>
-          </div>
+           </div>
+
+           <div class="control-group">
+               <h:outputLabel class="control-label">Links</h:outputLabel>
+
+               <div class="controls">
+                  <h:inputText styleClass="input-text" style="width: 650px;" value="#{testController.alertDetails.links}"/>
+               </div>
+           </div>
 
            <div class="control-group">
                <h:outputLabel class="control-label">Description</h:outputLabel>
@@ -55,7 +64,6 @@
                   <h:inputTextarea value="#{testController.alertDetails.description}" style="width: 650px; height: 120px;" />
                </div>
            </div>
-
 
            <div style="text-align:right">
                <a4j:commandButton styleClass="btn btn-secondary btn-small"

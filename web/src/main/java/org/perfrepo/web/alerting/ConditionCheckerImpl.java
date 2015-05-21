@@ -386,4 +386,9 @@ public class ConditionCheckerImpl implements ConditionChecker {
    public void setUserService(UserService userService) {
       this.userService = userService;
    }
+
+   @Override
+   public Map<String, Object> getEvaluatedVariables() {
+      return variables;
+   }
 }

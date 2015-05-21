@@ -111,6 +111,13 @@
 		<set name="formActionURL">/param/$1</set>
 	</rule>
 
+   <rule>
+      <!-- /alert/{alertId} -->
+      <from>^/alert/([\d]+)$</from>
+      <to type="forward" last="true">/test/alert_detail.jsf?alertId=$1</to>
+      <set name="formActionURL">/alert/$1</set>
+   </rule>
+
 	<rule>
 		<from>^/reports$</from>
 		<to type="forward" last="true">/reports/index.jsf</to>

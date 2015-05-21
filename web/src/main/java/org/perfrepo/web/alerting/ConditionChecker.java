@@ -22,6 +22,8 @@ package org.perfrepo.web.alerting;
 import org.perfrepo.model.Metric;
 import org.perfrepo.model.Test;
 
+import java.util.Map;
+
 /**
  * API for checking of condition for alerting.
  *
@@ -39,4 +41,11 @@ public interface ConditionChecker {
     * @return true if condition still hold | false if condition is broken
     */
    public boolean checkCondition(String condition, double currentResult, Metric metric);
+
+   /**
+    * Retrieves a map of variables used in the condition (as a key) with the values assigned to them (as a value).
+    *
+    * @return
+    */
+   public Map<String, Object> getEvaluatedVariables();
 }

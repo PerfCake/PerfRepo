@@ -35,7 +35,7 @@ public class Mailer {
       Address toAddress = new InternetAddress(recipient);
       message.addRecipient(Message.RecipientType.TO, toAddress);
       message.setSubject(subject);
-      message.setContent(body, "text/plain");
+      message.setContent(body, "text/html");
       Transport.send(message);
    }
 }

@@ -15,6 +15,14 @@ import java.util.List;
 public interface AlertingService {
 
    /**
+    * Returns alert by id.
+    *
+    * @param id
+    * @return
+    */
+   public Alert getAlert(Long id);
+
+   /**
     * Creates new alert.
     *
     * @param alert

@@ -60,6 +60,7 @@ public class TestController extends BaseController {
 	private boolean editMode;
 	private boolean createMode;
 	private Long testId;
+   private Long alertId;
 
 	@Inject
 	private TestService testService;
@@ -74,6 +75,7 @@ public class TestController extends BaseController {
    private AlertingService alertingService;
 
 	private Test test = null;
+   private Alert alert = null;
 	private MetricDetails metricDetails = new MetricDetails();
    private AlertDetails alertDetails = new AlertDetails();
 
@@ -155,6 +157,29 @@ public class TestController extends BaseController {
 		return metricList;
 	}
 
+   public void getAlertDetail() {
+      if(alertId == null) {
+         log.error("Alert ID not provided.");
+         redirectWithMessage("/", ERROR, "page.alert.errorNoAlertId");
+         return;
+      }
+
+      alert = alertingService.getAlert(alertId);
+      if(alert == null) {
+         log.error("Alert not found. ID: " + alertId);
+         redirectWithMessage("/", ERROR, "page.alert.errorAlertNotFound", alertId);
+         return;
+      }
+   }
+
+   public String[] getAlertLinks() {
+      if(alert == null) {
+         return new String[]{};
+      }
+
+      return alert.getLinks().split(" ");
+   }
+
    public List<Alert> getAlertsList() {
       Test fullTest = testService.getFullTest(test.getId());
 
@@ -176,6 +201,7 @@ public class TestController extends BaseController {
       alert.setName(alertDetails.getName());
       alert.setCondition(alertDetails.getCondition());
       alert.setDescription(alertDetails.getDescription());
+      alert.setLinks(alertDetails.getLinks());
 
       alert.setMetric(metric);
 
@@ -272,6 +298,22 @@ public class TestController extends BaseController {
    public List<String> getUserGroups() {
 		return userService.getLoggedUserGroupNames();
 	}
+
+   public Long getAlertId() {
+      return alertId;
+   }
+
+   public void setAlertId(Long alertId) {
+      this.alertId = alertId;
+   }
+
+   public Alert getAlert() {
+      return alert;
+   }
+
+   public void setAlert(Alert alert) {
+      this.alert = alert;
+   }
 
    /** ----------------------------------- Helper inner classes --------------------------- **/
 
@@ -396,6 +438,7 @@ public class TestController extends BaseController {
       private String name;
       private String description;
       private String condition;
+      private String links;
       private Long metricId;
       private String tags;
 
@@ -451,10 +494,19 @@ public class TestController extends BaseController {
          this.tags = tags;
       }
 
+      public String getLinks() {
+         return links;
+      }
+
+      public void setLinks(String links) {
+         this.links = links;
+      }
+
       public void unset() {
          this.id = null;
          this.name = null;
          this.condition = null;
+         this.links = null;
          this.description = null;
          this.metricId = null;
          this.tags = null;
@@ -464,6 +516,7 @@ public class TestController extends BaseController {
          this.id = alert.getId();
          this.name = alert.getName();
          this.condition = alert.getCondition();
+         this.links = alert.getLinks();
          this.description = alert.getDescription();
          this.metricId = alert.getMetric().getId();
 
