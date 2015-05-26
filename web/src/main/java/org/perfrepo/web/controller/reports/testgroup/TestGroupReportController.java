@@ -378,6 +378,11 @@ public class TestGroupReportController extends BaseController {
 			}
 			i++;
 		}
+		//remove all other tags
+		while (properties.remove("tag." + i) != null) {
+			properties.remove("tag." + i + ".alias");
+			i++;
+		}
 
 		//comparison
 		i = 1;
@@ -387,6 +392,11 @@ public class TestGroupReportController extends BaseController {
 			ReportUtils.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".2",
 					comparison.get(key).get(1), report);
 			ReportUtils.createOrUpdateReportPropertyInMap(properties, "compare." + i + ".alias", key, report);
+			i++;
+		}
+		//remove all other comparisons
+		while (properties.remove("compare." + i) != null) {
+			properties.remove("compare." + i + ".alias");
 			i++;
 		}
 

@@ -80,7 +80,7 @@ public class Report implements Entity<Report>, Comparable<Report> {
 	@NotNull
 	private User user;
 
-	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval=true)
 	@MapKey(name = "name")
 	private Map<String, ReportProperty> properties;
 
