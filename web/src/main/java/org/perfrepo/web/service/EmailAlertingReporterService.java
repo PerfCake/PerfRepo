@@ -5,17 +5,12 @@ import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.user.User;
 import org.perfrepo.web.dao.UserDAO;
 
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -28,6 +23,9 @@ import java.util.regex.Pattern;
  * @author Jiri Holusa (jholusa@redhat.com)
  */
 public class EmailAlertingReporterService implements AlertingReporterService {
+
+   @Inject
+   private ApplicationConfiguration applicationConfiguration;
 
    @Inject
    private Mailer mailer;
@@ -66,15 +64,7 @@ public class EmailAlertingReporterService implements AlertingReporterService {
    }
 
    private String composeMessage(List<Alert> alerts, TestExecution testExecution) {
-      HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-
-      String urlPath = null;
-      try {
-         urlPath = new URL(request.getScheme(), request.getServerName(), request.getServerPort(), "").toString();
-      } catch (MalformedURLException e) {
-         //this should never ever happen
-         throw new IllegalStateException("Error when forming URL.", e);
-      }
+      String urlPath = applicationConfiguration.getUrl();
 
       StringBuilder message = new StringBuilder();
 

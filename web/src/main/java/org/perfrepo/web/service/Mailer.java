@@ -1,8 +1,6 @@
 package org.perfrepo.web.service;
 
 import javax.annotation.Resource;
-import javax.ejb.Stateless;
-import javax.inject.Named;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
