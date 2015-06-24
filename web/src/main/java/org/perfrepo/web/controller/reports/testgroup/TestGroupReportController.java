@@ -395,7 +395,8 @@ public class TestGroupReportController extends BaseController {
 			i++;
 		}
 		//remove all other comparisons
-		while (properties.remove("compare." + i) != null) {
+		while (properties.remove("compare." + i + ".1") != null) {
+			properties.remove("compare." + i + ".2");
 			properties.remove("compare." + i + ".alias");
 			i++;
 		}
