@@ -26,6 +26,10 @@ List of suggested components to be able to run PerfRepo easily. Possibly other a
 * JBoss EAP 6.2+ (http://jbossas.jboss.org/downloads)
 * PostgreSQL 9+ (http://www.postgresql.org/)
 
+## Configure Maven
+
+Configure Maven to use JBoss Nexus repository. Follow the steps at https://developer.jboss.org/wiki/MavenGettingStarted-Users in section "Configuring Maven to use the JBoss Repository".
+
 ## Set up the database
 
 1. Create a database (e.g. named `perfrepo`)
