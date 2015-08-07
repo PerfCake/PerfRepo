@@ -59,9 +59,11 @@
                                 <a href="#{request.contextPath}/reports/#{reportItem.type.toLowerCase()}/#{reportItem.id}">#{reportItem.name}</a>
                             </td>
                             <td><h:outputText value="#{reportItem.type}"/></td>
-                            <td style="text-align: center"><r:commandLink action="#{reportList.remove(reportItem)}"
-                                                                          alt="Remove" title="Remove"
-                                                                          render=":formSavedReports :messagesPanel">
+                            <td style="text-align: center">
+                                <r:commandLink action="#{reportList.remove(reportItem)}"
+                                               alt="Remove" title="Remove"
+                                               render=":formSavedReports :messagesPanel"
+                                               onclick="return confirm('Are you sure you want to delete the report (#{item.name})?');">
                                 <i class="icon-remove"/>
                             </r:commandLink>
                             </td>
