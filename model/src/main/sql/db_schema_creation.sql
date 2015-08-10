@@ -1,5 +1,5 @@
 --
--- PostgreSQL database dump
+-- PerfRepo postgresql database schema
 --
 
 SET statement_timeout = 0;
@@ -92,8 +92,7 @@ CREATE TABLE test_execution (
     id bigint NOT NULL,
     name character varying(255) NOT NULL,
     test_id bigint NOT NULL,
-    started timestamp without time zone NOT NULL,
-    locked boolean DEFAULT false NOT NULL
+    started timestamp without time zone NOT NULL
 );
 
 
@@ -245,6 +244,7 @@ ALTER TABLE public.test_sequence OWNER TO perfrepo;
 CREATE TABLE "user" (
     id bigint NOT NULL,
     username character varying(2047) NOT NULL,
+    password character varying(300) NOT NULL,
     first_name character varying(2047) NOT NULL,
     last_name character varying(2047) NOT NULL,
     email character varying(2047) NOT NULL
@@ -601,12 +601,6 @@ CREATE INDEX test_metric_metric ON test_metric(metric_id);
 CREATE INDEX test_execution_tag_test_execution ON test_execution_tag(test_execution_id);
 CREATE INDEX test_execution_parameter_test_execution ON test_execution_parameter(test_execution_id);
 
------------------------------------------------------------------------------------------------
---                                                                                           --
--- Upgrade of db schema from version 0.0.16 to 0.0.19                                        --
---                                                                                           --
------------------------------------------------------------------------------------------------
-
 --
 -- Name: report; Type: TABLE; Schema: public; Owner: perfrepo; Tablespace:
 --
@@ -774,8 +768,6 @@ ALTER TABLE ONLY public.permission
 ADD CONSTRAINT permission_group_fkey FOREIGN KEY (group_id) REFERENCES "group"(id);
 ALTER TABLE ONLY public.permission
 ADD CONSTRAINT permission_user_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
-ALTER TABLE ONLY public.permission
-ADD CONSTRAINT CheckGroupOrUserIsFilled CHECK ((CASE WHEN group_id IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN user_id IS NOT NULL THEN 1 ELSE 0 END) = 1);
 
 --
 -- Name: permission_sequence; Type: SEQUENCE; Schema: public; Owner: perfrepo
@@ -791,12 +783,82 @@ CACHE 1;
 
 ALTER TABLE public.permission_sequence OWNER TO perfrepo;
 
+CREATE TABLE test_subscriber (
+    test_id bigint NOT NULL,
+    user_id bigint NOT NULL
+);
+
+ALTER TABLE public.test_subscriber OWNER TO perfrepo;
+
+ALTER TABLE ONLY public.test_subscriber
+    ADD CONSTRAINT test_subscriber_pkey PRIMARY KEY (test_id, user_id);
+
+ALTER TABLE ONLY public.test_subscriber
+    ADD CONSTRAINT test_subscriber_test_fkey FOREIGN KEY (test_id) REFERENCES test(id);
+
+ALTER TABLE ONLY public.test_subscriber
+    ADD CONSTRAINT test_subscriber_user_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+CREATE INDEX test_subscriber_test ON test_subscriber(test_id);
+CREATE INDEX test_subscriber_user ON test_subscriber(user_id);
+
+
 --
--- Name: user, add password column
+-- Name: alert; Type: TABLE; Schema: public; Owner: perfrepo; Tablespace:
+--
+CREATE TABLE alert (
+  id bigint NOT NULL,
+  name character varying(2097) NOT NULL,
+  links character varying(2097),
+  description character varying(2097) NOT NULL,
+  condition character varying(2097) NOT NULL,
+  metric_id bigint NOT NULL,
+  test_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.alert OWNER TO perfrepo;
+ALTER TABLE ONLY public.alert
+ADD CONSTRAINT alert_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.alert
+ADD CONSTRAINT alert_metric_fkey FOREIGN KEY (metric_id) REFERENCES metric(id);
+ALTER TABLE ONLY public.alert
+ADD CONSTRAINT alert_test_fkey FOREIGN KEY (test_id) REFERENCES test(id);
+CREATE INDEX alert_metric_id ON alert(metric_id);
+CREATE INDEX alert_test_id ON alert(test_id);
+
+--
+-- Name: alert_sequence; Type: SEQUENCE; Schema: public; Owner: perfrepo
+--
+CREATE SEQUENCE alert_sequence
+START WITH 1
+INCREMENT BY 1
+NO MAXVALUE
+NO MINVALUE
+CACHE 1;
+
+--
+-- Name: alert_tag; Type: TABLE; Schema: public; Owner: perfrepo; Tablespace:
 --
 
-ALTER TABLE public.user
-ADD COLUMN password character varying(300);
+CREATE TABLE alert_tag (
+    alert_id bigint NOT NULL,
+    tag_id bigint NOT NULL
+);
+
+ALTER TABLE public.alert_tag OWNER TO perfrepo;
+
+ALTER TABLE ONLY public.alert_tag
+    ADD CONSTRAINT alert_tag_pkey PRIMARY KEY (alert_id, tag_id);
+
+ALTER TABLE ONLY public.alert_tag
+    ADD CONSTRAINT alert_tag_alert_fkey FOREIGN KEY (alert_id) REFERENCES alert(id);
+
+ALTER TABLE ONLY public.alert_tag
+    ADD CONSTRAINT alert_tag_tag_fkey FOREIGN KEY (tag_id) REFERENCES tag(id);
+
+CREATE INDEX alert_tag_alert ON alert_tag(alert_id);
+CREATE INDEX alert_tag_tag ON alert_tag(tag_id);
 
 
 --
@@ -808,84 +870,3 @@ insert into public.user (id, username, first_name, last_name, email, password) v
 insert into public.group (id, name) values (nextVal('group_sequence'), 'perfrepouser');
 
 insert into user_group (user_id, group_id) values ((select id from public.user where username='perfrepouser'), (select id from public.group where name='perfrepouser'));
-
---
--- Migrate script - reports from user_properties to report entities
---
-
-create or replace function migrate_reports ()
-  RETURNS setof report AS
-  '
-  DECLARE
-      key TEXT;
-      reportrow report;
-      keyname TEXT;
-      link TEXT;
-      type TEXT;
-      userId INTEGER;
-      reportId INTEGER;
-      reportIdResult INTEGER;
-      upValue TEXT;
-      upCode TEXT;
-      upId INTEGER;
-      upIdResult INTEGER;
-      prop1 TEXT;
-      prop2 TEXT;
-  BEGIN
-
-  FOR key IN SELECT DISTINCT substring(name, 8, position(''.'' IN substring(name, 8)) -1) AS code FROM user_property WHERE name LIKE ''report.%'' LOOP
-      EXECUTE ''select value from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.name'''''' into KEYName;
-      execuTE ''SELect value from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.type'''''' into type;
-      execute ''sELECT User_id from user_property where name like ''''report.'''' || '' || quote_literal(key) || '' || ''''.name'''''' into userId;
-      execute ''SELECT NEXTVAl(''''REPORT_SEQUENCE'''')'' into reportId;
-      RAISE NOTICE ''repORT Id %'', ReportId;
-      execute ''insert iNTO REPort (id, name, type, user_id) values ('' || reportId || '', '' || quote_literal(keyname) || '' , '' || quote_literal(type) || '' , '' || userId || '') returning id'' into reportIdResuLT;    reportrow := (reportIdResult,keyname,type,userId);
-      return next reportTROW;      rop1 := ''report.''|| key || ''.%'';
-      prop2 := ''report.'' || key || ''.(name|type).*'';
-    for upCode, upValueUE  select substringNGaNAME, + length(key)), value from user_property Y WHe name like proROP1 d nameME !prop2 a ANuser_id=userId D  op
-       executeTE ''LECT nexEXTVAL(''REPORT_PROPERTY_SEQUENCE'''')'' into upId;
-       exeXECU ''insert into O REPORproperty (id, report_id,  name, value) values (''||upid||'',''||reportIdResult||'',''||quote_literal(upCode)||'',''||quote_literal(upValue)||'') returning id'' into upIdResult;
-        AISE NOTICE ''report T PROrERTY I%'', upIdResult;
-    end loop;
-  end loop;P; r  REn;
- ; D
-  '
-LANGUAGE plpgsql VOLATILE;
-
---
--- Migrate script - favorite parameters from user_properties to favorite parameters entities
---
-
-create or replace function migrate_favorite_parameters ()
-  RETURNS setof favorite_parameter AS
-  '
-  DECLARE
-      key text;
-      favparamrow favorite_parameter;
-      favparamIdResult integer;
-      value text;
-      label text;
-      parameterName text;
-      favparamId integer;
-      userId integer;
-      testId integer;
-  BEGIN
-
-  for key in select id from user_property where name like ''fav.param.%'' loop
-      execute ''select trim(both ''''|'''' from substring(value from ''''^[^\|]*\|'''')) from user_property where id = '' || key into testId;
-      execute ''select trim(both ''''|'''' from substring(value from ''''\|[^\|]*\|'''')) from user_property where id = '' || key into parameterName;
-      execute ''select trim(both ''''|'''' from substring(value from ''''\|[^\|]*$'''')) from user_property where id = '' || key into label;
-      execute ''select user_id from user_property where id = '' || key into userId;
-
-      execute ''SELECT nextval(''''FAVORITE_PARAMETER_SEQUENCE'''')'' into favparamId;
-
-      RAISE NOTICE ''User property with ID % migrated'', key;
-      execute ''insert into favorite_parameter (id, label, parameter_name, user_id, test_id) values ('' || favparamId || '', '' || quote_literal(label) || '' , '' || quote_literal(parameterName) || '' , '' || userId || '', '' || testId || '') returning id'' into favparamIdResult;
-      favparamrow := (favparamIdResult,userId,testId,label,parameterName);
-      return next favparamrow;
-  end loop;
-
-  return;
-  END
-  '
-LANGUAGE plpgsql VOLATILE;
