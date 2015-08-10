@@ -184,15 +184,19 @@
                     <td>
                         <r:commandLink action="#{testExecutionSearchController.addTagsToFoundTestExecutions()}"
                                        render="@form :searchResult :messagesPanel"
-                                       styleClass="btn btn-primary btn-small" alt="Add tags to result"
+                                       styleClass="btn btn-primary btn-small"
+                                       alt="Add tags to result"
+                                       style="width: 172px;"
                                        title="Add tags to result">
-                            Add tags to result
+                           <i class="icon-plus"></i> Add tags to result
                         </r:commandLink>
                     </td>
                     <td class="secondColumn">
                         <r:commandLink action="#{testExecutionSearchController.addAllCurrentResultsToComparison()}"
                                        render="compareMenuItem :messagesPanel"
-                                       styleClass="btn btn-primary btn-small" alt="Add all current results"
+                                       styleClass="btn btn-primary btn-small"
+                                       alt="Add all current results"
+                                       style="width: 288px;"
                                        title="Add all current results">
                             <i class="icon-copy"></i> Add all current results to comparison
                         </r:commandLink>
@@ -216,19 +220,23 @@
                     <td>
                         <r:commandLink action="#{testExecutionSearchController.deleteTagsFromFoundTestExecutions()}"
                                        render="@form :searchResult :messagesPanel"
-                                       styleClass="btn btn-primary btn-small" alt="Delete tags from result"
+                                       styleClass="btn btn-primary btn-small"
+                                       alt="Delete tags from result"
+                                       style="width: 172px;"
                                        title="Delete tags from result"
                                        onclick="if(!window.confirm('Are you sure?')){return false}">
-                            Delete tags from result
+                           <i class="icon-trash"></i> Delete tags from result
                         </r:commandLink>
                     </td>
                     <td class="secondColumn">
                         <r:commandLink action="#{testExecutionSearchController.deleteFoundTestExecutions}"
                                        onclick="if(window.prompt('If you really want to delete all #{testExecutionSearchController.resultSize} test executions,\n please type the number into input box below.\n\n') != #{testExecutionSearchController.resultSize}){return false}"
                                        render="@form :searchResult :messagesPanel"
-                                       id="deleteFoundTestExecutionsButton" styleClass="btn btn-danger btn-small"
+                                       id="deleteFoundTestExecutionsButton"
+                                       styleClass="btn btn-danger btn-small"
+                                       style="width: 288px;"
                                        alt="Delete found test executions" title="Delete found test executions">
-                            Delete found test executions
+                           <i class="icon-trash"></i> Delete found test executions
                         </r:commandLink>
                     </td>
                 </tr>
