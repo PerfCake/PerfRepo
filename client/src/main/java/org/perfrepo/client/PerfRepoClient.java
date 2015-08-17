@@ -18,6 +18,7 @@
  */
 package org.perfrepo.client;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -70,8 +71,30 @@ public class PerfRepoClient {
 	 * @param url url of the PerfRepo instance on the server. If null or empty string provided,
 	 * 		it refers to root of the server. If some context path provided, slash is appended automatically.
 	 * 		I.e. new PerfRepoClient("localhost", "repository", "hash") is bounded to localhost/repository/
+	 * @param username login credential
+	 * @param password login credential
+	 */
+	public PerfRepoClient(String host, String url, String username, String password) {
+		this.host = host;
+		this.url = url;
+		if(this.url != null && !url.isEmpty()) {
+			this.url =  "/" + this.url;
+		}
+
+		this.basicAuthHash = Base64.encodeBase64String((username + ":" + password).getBytes()).trim();
+		httpClient = new DefaultHttpClient();
+	}
+
+	/**
+	 * Create the client. Deprecated usage!
+	 *
+	 * @param host Host (may contain port in form host:port)
+	 * @param url url of the PerfRepo instance on the server. If null or empty string provided,
+	 * 		it refers to root of the server. If some context path provided, slash is appended automatically.
+	 * 		I.e. new PerfRepoClient("localhost", "repository", "hash") is bounded to localhost/repository/
 	 * @param basicAuthHash Base64 encoded username:password for BASIC Authentication
 	 */
+	@Deprecated
 	public PerfRepoClient(String host, String url, String basicAuthHash) {
 		this.host = host;
 		this.url = url;

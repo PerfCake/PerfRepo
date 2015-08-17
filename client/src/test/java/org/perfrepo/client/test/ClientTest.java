@@ -22,8 +22,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static junit.framework.Assert.assertEquals;
 
-import junit.framework.Assert;
-import org.apache.commons.codec.binary.Base64;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -54,7 +52,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -95,8 +92,7 @@ public class ClientTest {
 	@BeforeClass
 	public static void createClient() {
 		String host = System.getProperty("perfrepo.client.host", "localhost:8080");
-		String auth = Base64.encodeBase64String((clientUsername + ":" + clientPassword).getBytes()).trim();
-		client = new PerfRepoClient(host, "testing-repo", auth);
+		client = new PerfRepoClient(host, "testing-repo", clientUsername, clientPassword);
 	}
 
 	@AfterClass
