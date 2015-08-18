@@ -171,10 +171,7 @@ public class MetricReportController extends BaseController {
 		report.setType("Metric");
 		report.setUser(user);
 
-		Map<String, ReportProperty> reportProperties = report.getProperties();
-		if (reportProperties == null) {
-			reportProperties = new HashMap<String, ReportProperty>();
-		}
+		Map<String, ReportProperty> reportProperties = new HashMap<>();
 
 		for (int i = 0; i < chartSpecs.size(); i++) {
 			ChartSpec chart = chartSpecs.get(i);
