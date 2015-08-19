@@ -22,8 +22,9 @@ Here we describe process how to set up your own PerfRepo instance.
 
 List of suggested components to be able to run PerfRepo easily. Possibly other application servers or databases can be used, but this combination is used and tested.
 
+* Java 8 
 * Maven 3+ (http://maven.apache.org/)
-* JBoss EAP 6.2+ (http://jbossas.jboss.org/downloads)
+* JBoss EAP 6.4+ (http://jbossas.jboss.org/downloads)
 * PostgreSQL 9+ (http://www.postgresql.org/)
 
 ## Configure Maven
