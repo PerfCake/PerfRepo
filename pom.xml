@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.perfrepo</groupId>
 	<artifactId>perfrepo-parent</artifactId>
-	<version>1.3</version>
+	<version>1.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Performance Results Repository - Parent</name>
 	<description>Performance Results Repository Application</description>
