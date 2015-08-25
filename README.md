@@ -38,7 +38,7 @@ Configure Maven to use JBoss Nexus repository. Follow the steps at https://devel
 
 ## Set up the application server
 
-Following text assumes PostgreSQL and JBoss EAP's `standalone.xml`. 
+Following text assumes PostgreSQL and JBoss EAP's `standalone.xml`. Before configuring the datasource, you have to install JDBC driver for PostgreSQL. You can follow the steps for example here: http://www.startain.com/2014/05/add-postgresql-jdbc-driver-to-jboss.html 
 
 * Add PostgreSQL datasource driver, e.g.
 ```xml    
