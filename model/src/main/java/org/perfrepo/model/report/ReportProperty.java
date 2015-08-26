@@ -57,7 +57,7 @@ public class ReportProperty implements Entity<ReportProperty>, Comparable<Report
 	@Size(max = 2047)
 	private String value;
 
-	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "report_id", referencedColumnName = "id")
 	private Report report;
 
