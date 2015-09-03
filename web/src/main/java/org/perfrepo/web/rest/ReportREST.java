@@ -92,6 +92,24 @@ public class ReportREST {
       return Response.created(uriInfo.getBaseUriBuilder().path(ReportREST.class).path(GET_REPORT_METHOD).build(id)).entity(id).build();
    }
 
+   @POST
+   @Path("/update/{reportId}")
+   @Logged
+   public Response update(Report report, @Context UriInfo uriInfo) throws Exception {
+      String username = report.getUsername();
+      User user = userService.getFullUser(username);
+      report.setUser(user);
+
+      if(report.getProperties() != null) {
+         for(ReportProperty property: report.getProperties().values()) {
+            property.setReport(report);
+         }
+      }
+
+      reportService.updateReport(report);
+      return Response.created(uriInfo.getBaseUriBuilder().path(ReportREST.class).path(GET_REPORT_METHOD).build(report.getId())).entity(report.getId()).build();
+   }
+
    @DELETE
    @Path("/id/{reportId}")
    @Logged

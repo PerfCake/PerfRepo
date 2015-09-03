@@ -510,6 +510,35 @@ public class PerfRepoClient {
       return id;
    }
 
+	/**
+	 * Updates existing report.
+	 *
+	 * @param report report.
+	 * @return ID of the report.
+	 * @throws Exception
+	 */
+	public Long updateReport(Report report) throws Exception {
+		if(report == null || report.getId() == null) {
+			throw new IllegalArgumentException("Neither report nor report ID can be null.");
+		}
+
+		HttpPost post = createBasicPost("report/update/%s", report.getId());
+		setPostEntity(post, report);
+		HttpResponse resp = httpClient.execute(post);
+		if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED) {
+			logHttpError("Error while updating report.", post, resp);
+			EntityUtils.consume(resp.getEntity());
+			return null;
+		}
+		Header[] locations = resp.getHeaders(HttpHeaders.LOCATION);
+		if (locations != null && locations.length > 0) {
+			log.debug("Updated report at: " + locations[0].getValue());
+		}
+		Long id = new Long(EntityUtils.toString(resp.getEntity()));
+		EntityUtils.consume(resp.getEntity());
+		return id;
+	}
+
    /**
     * Delete a report.
     *

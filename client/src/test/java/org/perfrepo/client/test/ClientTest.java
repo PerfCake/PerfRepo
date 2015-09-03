@@ -222,6 +222,48 @@ public class ClientTest {
       client.deleteReport(reportId);
    }
 
+	@org.junit.Test
+	public void testUpdateReport() throws Exception {
+		Report report = createReport();
+		Long reportId = client.createReport(report);
+
+		assertNotNull(reportId);
+		Report retrievedReport = client.getReport(reportId);
+
+		assertEquals(report.getName(), retrievedReport.getName());
+		assertEquals(report.getType(), retrievedReport.getType());
+		assertEquals(report.getProperties().size(), retrievedReport.getProperties().size());
+
+		assertEquals(report.getProperties().get("key").getName(), retrievedReport.getProperties().get("key").getName());
+		assertEquals(report.getProperties().get("key").getValue(), retrievedReport.getProperties().get("key").getValue());
+
+		Report updatedReport = createReport();
+		updatedReport.setId(reportId);
+		updatedReport.setName("updated report");
+		updatedReport.setType("ChangedReport");
+
+		ReportProperty newProperty = new ReportProperty();
+		newProperty.setName("newKey");
+		newProperty.setValue("newValue");
+		newProperty.setReport(updatedReport);
+		updatedReport.getProperties().put("newKey", newProperty);
+
+		client.updateReport(updatedReport);
+
+		Report retrievedUpdatedReport = client.getReport(reportId);
+
+		assertEquals("updated report", retrievedUpdatedReport.getName());
+		assertEquals("ChangedReport", retrievedUpdatedReport.getType());
+		assertEquals(2, retrievedUpdatedReport.getProperties().size());
+
+		assertEquals("key", retrievedUpdatedReport.getProperties().get("key").getName());
+		assertEquals("value", retrievedUpdatedReport.getProperties().get("key").getValue());
+		assertEquals("newKey", retrievedUpdatedReport.getProperties().get("newKey").getName());
+		assertEquals("newValue", retrievedUpdatedReport.getProperties().get("newKey").getValue());
+
+		client.deleteReport(reportId);
+	}
+
 	private Double getFirstValueHavingMetricAndParameter(TestExecution testExecution, String metric, String propName, String propValue) {
 		return getValuesHavingMetricAndParameter(testExecution, metric, propName, propValue).get(0).getResultValue();
 	}
