@@ -1,5 +1,6 @@
 package org.perfrepo.test;
 
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -89,6 +90,7 @@ public class TestExecutionDAOTest {
       war.addPackages(true, DAO.class.getPackage());
       war.addPackages(true, Entity.class.getPackage());
       war.addPackages(true, DefaultArtifactVersion.class.getPackage());
+      war.addPackages(true, ArtifactResolutionException.class.getPackage());
       war.addClass(TagUtils.class);
       war.addAsResource("test-persistence.xml", "META-INF/persistence.xml");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
