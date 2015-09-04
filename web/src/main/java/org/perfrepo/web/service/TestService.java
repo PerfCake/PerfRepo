@@ -393,4 +393,11 @@ public interface TestService {
 	 * @return boolean
 	 */
 	public boolean isUserSubscribed(User user, Test test);
+
+	/**
+	 * Return number of test executions returned by the last query.
+	 *
+	 * @return
+	 */
+	public Integer getLastTEQueryResultsCount();
 }

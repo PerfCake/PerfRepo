@@ -4439,8 +4439,30 @@ button.btn.btn-mini, input[type="submit"].btn.btn-mini {
     color: #999
 }
 
-.pagination {
-    margin: 20px 0
+.pagination-wrapper {
+    clear: both;
+}
+
+.pagination-wrapper-top {
+    margin-bottom: 8px;
+}
+
+.pagination-wrapper-bottom {
+    margin-top: 8px;
+}
+
+.pagination-wrapper .howManySelect {
+    float: left;
+}
+
+.pagination-wrapper .howManySelect span.selectText{
+    margin-top: 14px;
+}
+
+.pagination-wrapper .howManySelect select {
+    width: 100px;
+    margin-top: 14px;
+    margin-left: 8px;
 }
 
 .pagination ul {
@@ -4510,7 +4532,8 @@ button.btn.btn-mini, input[type="submit"].btn.btn-mini {
 }
 
 .pagination-right {
-    text-align: right
+    /*text-align: right*/
+    float: right;
 }
 
 .pagination-large ul>li>a, .pagination-large ul>li>span {

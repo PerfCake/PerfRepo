@@ -50,15 +50,8 @@ public class SearchCriteriaSession implements Serializable {
 		if (executionSearchCriteria == null) {
 			executionSearchCriteria = new TestExecutionSearchTO();
 
-			//do not leave empty criteria - it would cause load of all test executions
-			//limit the amount by date <-1 week, now>
-			Calendar executedAfter = Calendar.getInstance();
-			executedAfter.add(Calendar.DATE, -7);
-			executedAfter.set(Calendar.HOUR_OF_DAY, 0);
-			executedAfter.set(Calendar.MINUTE, 0);
-			executedAfter.set(Calendar.SECOND, 0);
-
-			executionSearchCriteria.setStartedFrom(executedAfter.getTime());
+			//by default, do not list all the test executions
+			executionSearchCriteria.setLimitHowMany(50);
 		}
 		return executionSearchCriteria;
 	}

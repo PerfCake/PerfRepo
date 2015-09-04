@@ -66,6 +66,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    @Inject
    private TestExecutionParameterDAO testExecutionParameterDAO;
 
+   private Integer lastQueryResultsCount = null;
+
 	public List<TestExecution> getByTest(Long testId) {
 		Test test = new Test();
 		test.setId(testId);
@@ -107,9 +109,10 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       List<String> includedTags = new ArrayList<>();
       divideTags(tags, includedTags, excludedTags);
 
-      Long count = null;
-      if(search.getLimitFrom() != null && search.getLimitHowMany() != null) {
+      Integer count = null;
+      if(search.getLimitFrom() != null || search.getLimitHowMany() != null) {
          count = processSearchCountQuery(search, includedTags, excludedTags, userGroups);
+         lastQueryResultsCount = count;
       }
 
       CriteriaQuery<TestExecution> criteria = (CriteriaQuery) createSearchSubquery(cb.createQuery(TestExecution.class), search, includedTags, excludedTags);
@@ -124,9 +127,11 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       fillParameterValues(query, search, includedTags, excludedTags, userGroups);
 
       if(count != null) {
-         int firstResult = count.intValue() - search.getLimitFrom();
+         int firstResult = search.getLimitFrom() == null ? count.intValue() - search.getLimitHowMany() : count.intValue() - search.getLimitFrom();
          query.setFirstResult(firstResult < 0 ? 0 : firstResult);
-         query.setMaxResults(search.getLimitHowMany());
+         if(search.getLimitHowMany() != null) {
+            query.setMaxResults(search.getLimitHowMany());
+         }
       }
 
       List<TestExecution> result = query.getResultList();
@@ -403,6 +408,20 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 	}
 
    /**
+    * Return number of entities returned by the last query.
+    *
+    * @throws IllegalStateException if no query was executed.
+    * @return
+    */
+   public int getLastQueryResultsCount() {
+      if(lastQueryResultsCount == null) {
+         throw new IllegalStateException("No query was executed before.");
+      }
+
+      return lastQueryResultsCount;
+   }
+
+   /**
     * Helper method. Creates a criteria query of Criteria API for searching of test executions. Because we also
     * sometimes need to limit the number of results and it's not possible to easily reuse the query for both
     * count query and actual retrieval, this construction of criteria is extracted into this method to avoid code
@@ -494,7 +513,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param userGroups
     * @return
     */
-   private Long processSearchCountQuery(TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags, List<String> userGroups) {
+   private Integer processSearchCountQuery(TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags, List<String> userGroups) {
       CriteriaBuilder cb = criteriaBuilder();
 
       CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
@@ -510,7 +529,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       fillParameterValues(typedCountQuery, search, includedTags, excludedTags, userGroups);
 
       Long count = typedCountQuery.getSingleResult();
-      return count;
+      return count.intValue();
    }
 
    /**

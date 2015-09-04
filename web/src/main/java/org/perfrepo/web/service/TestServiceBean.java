@@ -103,6 +103,8 @@ public class TestServiceBean implements TestService {
    @Inject
    private AlertingService alertingService;
 
+	private Long lastQueryResultsCount = null;
+
 	@Override
 	@Secured
 	public TestExecution createTestExecution(TestExecution testExecution) throws ServiceException {
@@ -821,6 +823,11 @@ public class TestServiceBean implements TestService {
 		}
 
 		return false;
+	}
+
+	@Override
+	public Integer getLastTEQueryResultsCount() {
+		return testExecutionDAO.getLastQueryResultsCount();
 	}
 
 	private TestMetric createTestMetric(Test test, Metric metric) {

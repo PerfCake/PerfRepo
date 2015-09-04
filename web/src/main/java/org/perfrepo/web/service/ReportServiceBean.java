@@ -291,7 +291,9 @@ public class ReportServiceBean implements ReportService {
 	}
 
 	/**
-	 * TODO: document this
+	 * Helper method. Updates properties in database to match exactly the newly passed one, i.e.
+	 * deletes the properties that doesn't exist anymore, changes the values of the properties
+	 * with key that was existing and add properties with new key.
 	 *
 	 * @param report
 	 * @param newProperties

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -77,6 +78,10 @@ public class TestExecutionSearchController extends BaseController {
 	private String massOperationDeleteTags;
 	private int massOperationDeleteExecutionsConfirm;
 
+	private int resultsPageNumber = 1;
+	private int totalNumberOfResults;
+	private int totalNumberOfResultsPages;
+
 	private ExecutionSort sort;
 
 	public String[] getExtraColumns() {
@@ -110,6 +115,10 @@ public class TestExecutionSearchController extends BaseController {
 		TestExecutionSearchTO criteria = criteriaSession.getExecutionSearchCriteria();
 		criteria.setGroupFilter(userSession.getGroupFilter());
 		result = testService.searchTestExecutions(criteria);
+
+		totalNumberOfResults = testService.getLastTEQueryResultsCount();
+		computeTotalNumberOfPages();
+
 		paramColumns = new ArrayList<String>(3);
 		for (ParamCriteria pc : criteria.getParameters()) {
 			if (pc.isDisplayed()) {
@@ -318,5 +327,41 @@ public class TestExecutionSearchController extends BaseController {
 		}
 
 		search();
+	}
+
+	public void changeHowMany(ValueChangeEvent e) {
+		criteriaSession.getExecutionSearchCriteria().setLimitHowMany(e.getNewValue().equals(-1) ? null : (Integer) e.getNewValue());
+		search();
+	}
+
+	private void computeTotalNumberOfPages() {
+		Integer howMany = criteriaSession.getExecutionSearchCriteria().getLimitHowMany();
+		if(howMany == null) {
+			totalNumberOfResultsPages = 1;
+			return;
+		}
+
+		totalNumberOfResultsPages = (totalNumberOfResults / howMany) + (totalNumberOfResults % howMany != 0 ? 1 : 0);
+	}
+
+	public long getTotalNumberOfResultsPages() {
+		return totalNumberOfResultsPages;
+	}
+
+	public long getResultsPageNumber() {
+		return resultsPageNumber;
+	}
+
+	public void changeResultsPageNumber(int page) {
+		this.resultsPageNumber = page;
+
+		TestExecutionSearchTO criteria = criteriaSession.getExecutionSearchCriteria();
+		criteria.setLimitFrom(resultsPageNumber * criteria.getLimitHowMany());
+
+		search();
+	}
+
+	public long getTotalNumberOfResults() {
+		return totalNumberOfResults;
 	}
 }
