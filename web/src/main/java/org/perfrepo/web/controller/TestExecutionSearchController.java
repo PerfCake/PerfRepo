@@ -21,6 +21,7 @@ package org.perfrepo.web.controller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
@@ -66,12 +67,11 @@ public class TestExecutionSearchController extends BaseController {
 	@Inject
 	private TEComparatorSession comparatorSession;
 
-	private String tag;
-
 	private List<TestExecution> result;
 	private List<String> paramColumns;
 
-	private String[] extraColumns = new String[0];
+	private String tag;
+	private ExecutionSort sort;
 
 	private boolean showMassOperations = false;
 	private String massOperationAddTags;
@@ -82,20 +82,9 @@ public class TestExecutionSearchController extends BaseController {
 	private int totalNumberOfResults;
 	private int totalNumberOfResultsPages;
 
-	private ExecutionSort sort;
-
-	public String[] getExtraColumns() {
-		return extraColumns;
-	}
-
-	public void setExtraColumns(String[] extraColumns) {
-		this.extraColumns = extraColumns;
-	}
-
-	public List<String> getParamColumns() {
-		return paramColumns;
-	}
-
+	/**
+	 * Initialization
+	 */
 	public void preRender() {
 		if (sort == null) {
 			sort = criteriaSession.getExecutionSearchSort();
@@ -103,14 +92,9 @@ public class TestExecutionSearchController extends BaseController {
 		}
 	}
 
-	public String getTag() {
-		return tag;
-	}
-
-	public void setTag(String tag) {
-		this.tag = tag;
-	}
-
+	/**
+	 * Main method performing search
+	 */
 	public void search() {
 		TestExecutionSearchTO criteria = criteriaSession.getExecutionSearchCriteria();
 		criteria.setGroupFilter(userSession.getGroupFilter());
@@ -119,13 +103,30 @@ public class TestExecutionSearchController extends BaseController {
 		totalNumberOfResults = testService.getLastTEQueryResultsCount();
 		computeTotalNumberOfPages();
 
-		paramColumns = new ArrayList<String>(3);
-		for (ParamCriteria pc : criteria.getParameters()) {
-			if (pc.isDisplayed()) {
-				paramColumns.add(pc.getName());
-			}
-		}
+		paramColumns = criteria.getParameters().stream().filter(ParamCriteria::isDisplayed).map(ParamCriteria::getName).collect(Collectors.toList());
+
 		Collections.sort(result, sort);
+	}
+
+	public String delete() {
+		Long idToDelete = Long.valueOf(getRequestParam("idToDelete"));
+		if (idToDelete == null) {
+			throw new IllegalStateException("Bad request, missing idToDelete");
+		}
+
+		TestExecution execToRemove = removeById(idToDelete);
+		if (execToRemove == null) {
+			throw new IllegalStateException("Bad request, missing idToDelete");
+		}
+
+		try {
+			testService.removeTestExecution(execToRemove);
+			addMessage(INFO, "page.execSearch.execSucessfullyDeleted", execToRemove.getName());
+		} catch (ServiceException e) {
+			addMessage(e);
+		}
+
+		return null;
 	}
 
 	public String itemParam(TestExecution exec, String paramName) {
@@ -140,24 +141,67 @@ public class TestExecutionSearchController extends BaseController {
 		criteriaSession.getExecutionSearchCriteria().getParameters().remove(criteriaToRemove);
 	}
 
-	public String delete() {
-		Long idToDelete = Long.valueOf(getRequestParam("idToDelete"));
-		if (idToDelete == null) {
-			throw new IllegalStateException("Bad request, missing idToDelete");
-		} else {
-			TestExecution execToRemove = removeById(idToDelete);
-			if (execToRemove == null) {
-				throw new IllegalStateException("Bad request, missing idToDelete");
-			} else {
-				try {
-					testService.removeTestExecution(execToRemove);
-					addMessage(INFO, "page.execSearch.execSucessfullyDeleted", execToRemove.getName());
-				} catch (ServiceException e) {
-					addMessage(e);
+	public void sortBy(String what, boolean num) {
+		ExecutionSort.Type type = getSortType(what, num);
+		boolean invertAscending = false;
+		if (type.equals(sort.type())) {
+			if (type.isParametrized()) {
+				ParamExecutionSort<?> psort = (ParamExecutionSort<?>) sort;
+				if (what.equals(psort.getParam())) {
+					invertAscending = true;
 				}
+			} else {
+				invertAscending = true;
 			}
 		}
-		return null;
+		sort = ExecutionSort.create(type, what, invertAscending ? !sort.isAscending() : sort.isAscending());
+		criteriaSession.setExecutionSearchSort(sort);
+		Collections.sort(result, sort);
+	}
+
+	public List<String> autocompleteTest(String test) {
+		return testService.getTestsByPrefix(test);
+	}
+
+	public List<String> autocompleteParameter(String parameter) {
+		return testService.getParametersByPrefix(parameter);
+	}
+
+	public List<String> autocompleteTags(String tag) {
+		String returnPrefix = "";
+		if (tag.startsWith("-")) {
+			tag = tag.substring(1);
+			returnPrefix = "-";
+		}
+
+		List<String> tmp = testService.getTagsByPrefix(tag);
+		List<String> result = new ArrayList<String>(tmp.size());
+		if (!returnPrefix.isEmpty()) {
+			for (String item : tmp) {
+				result.add(returnPrefix + item);
+			}
+		} else {
+			result.addAll(tmp);
+		}
+
+		return result;
+	}
+
+	private ExecutionSort.Type getSortType(String what, boolean num) {
+		// all sorts are ascending in this phase
+		if ("id".equals(what)) {
+			return ExecutionSort.Type.ID;
+		} else if ("name".equals(what)) {
+			return ExecutionSort.Type.NAME;
+		} else if ("started".equals(what)) {
+			return ExecutionSort.Type.TIME;
+		} else if ("test".equals(what)) {
+			return ExecutionSort.Type.TEST_NAME;
+		} else if (paramColumns.contains(what)) {
+			return num ? ExecutionSort.Type.PARAM_DOUBLE : ExecutionSort.Type.PARAM_STRING;
+		} else {
+			throw new IllegalArgumentException("unknown sort type");
+		}
 	}
 
 	private TestExecution removeById(Long id) {
@@ -168,6 +212,92 @@ public class TestExecutionSearchController extends BaseController {
 			}
 		}
 		return null;
+	}
+
+	/** ----- Methods for mass operations ---- **/
+
+	public void addAllCurrentResultsToComparison() {
+		List<Long> ids = EntityUtils.extractIds(result);
+		ids.stream().forEach(id -> comparatorSession.add(id));
+	}
+
+	public void addTagsToFoundTestExecutions() {
+		List<String> tags = TagUtils.parseTags(massOperationAddTags != null ? massOperationAddTags.toLowerCase() : "");
+
+		testService.addTagsToTestExecutions(tags, result);
+		search();
+	}
+
+	public void deleteTagsFromFoundTestExecutions() {
+		List<String> tags = TagUtils.parseTags(massOperationDeleteTags != null ? massOperationDeleteTags.toLowerCase() : "");
+
+		testService.removeTagsFromTestExecutions(tags, result);
+		search();
+	}
+
+	public void deleteFoundTestExecutions() {
+		for (TestExecution testExecution : result) {
+			try {
+				testService.removeTestExecution(testExecution);
+			} catch (ServiceException ex) {
+				//TODO: how to handle this properly?
+				throw new RuntimeException(ex);
+			}
+		}
+
+		search();
+	}
+
+	/** ----- Functions for pagination ----- **/
+
+	public void changeHowMany(ValueChangeEvent e) {
+		criteriaSession.getExecutionSearchCriteria().setLimitHowMany(e.getNewValue().equals(-1) ? null : (Integer) e.getNewValue());
+		search();
+	}
+
+	private void computeTotalNumberOfPages() {
+		Integer howMany = criteriaSession.getExecutionSearchCriteria().getLimitHowMany();
+		if(howMany == null) {
+			totalNumberOfResultsPages = 1;
+			return;
+		}
+
+		totalNumberOfResultsPages = (totalNumberOfResults / howMany) + (totalNumberOfResults % howMany != 0 ? 1 : 0);
+	}
+
+	public long getTotalNumberOfResultsPages() {
+		return totalNumberOfResultsPages;
+	}
+
+	public long getResultsPageNumber() {
+		return resultsPageNumber;
+	}
+
+	public void changeResultsPageNumber(int page) {
+		this.resultsPageNumber = page;
+
+		TestExecutionSearchTO criteria = criteriaSession.getExecutionSearchCriteria();
+		criteria.setLimitFrom(resultsPageNumber * criteria.getLimitHowMany());
+
+		search();
+	}
+
+	/** ----- Getters/Setters ----- **/
+
+	public long getTotalNumberOfResults() {
+		return totalNumberOfResults;
+	}
+
+	public List<String> getParamColumns() {
+		return paramColumns;
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
 	}
 
 	public List<TestExecution> getResult() {
@@ -216,152 +346,5 @@ public class TestExecutionSearchController extends BaseController {
 
 	public int getResultSize() {
 		return result != null ? result.size() : 0;
-	}
-
-	private ExecutionSort.Type getSortType(String what, boolean num) {
-		// all sorts are ascending in this phase
-		if ("id".equals(what)) {
-			return ExecutionSort.Type.ID;
-		} else if ("name".equals(what)) {
-			return ExecutionSort.Type.NAME;
-		} else if ("started".equals(what)) {
-			return ExecutionSort.Type.TIME;
-		} else if ("test".equals(what)) {
-			return ExecutionSort.Type.TEST_NAME;
-		} else if (paramColumns.contains(what)) {
-			return num ? ExecutionSort.Type.PARAM_DOUBLE : ExecutionSort.Type.PARAM_STRING;
-		} else {
-			throw new IllegalArgumentException("unknown sort type");
-		}
-	}
-
-	public void sortBy(String what, boolean num) {
-		ExecutionSort.Type type = getSortType(what, num);
-		boolean invertAscending = false;
-		if (type.equals(sort.type())) {
-			if (type.isParametrized()) {
-				ParamExecutionSort<?> psort = (ParamExecutionSort<?>) sort;
-				if (what.equals(psort.getParam())) {
-					invertAscending = true;
-				}
-			} else {
-				invertAscending = true;
-			}
-		}
-		sort = ExecutionSort.create(type, what, invertAscending ? !sort.isAscending() : sort.isAscending());
-		criteriaSession.setExecutionSearchSort(sort);
-		Collections.sort(result, sort);
-	}
-
-	public void addAllCurrentResultsToComparison() {
-		List<Long> ids = EntityUtils.extractIds(result);
-		if (ids != null) {
-			for (Long id : ids) {
-				comparatorSession.add(id);
-			}
-		}
-	}
-
-	public List<String> autocompleteTest(String test) {
-		return testService.getTestsByPrefix(test);
-	}
-
-	public List<String> autocompleteParameter(String parameter) {
-		return testService.getParametersByPrefix(parameter);
-	}
-
-	public List<String> autocompleteTags(String tag) {
-		String returnPrefix = "";
-		if (tag.startsWith("-")) {
-			tag = tag.substring(1);
-			returnPrefix = "-";
-		}
-
-		List<String> tmp = testService.getTagsByPrefix(tag);
-		List<String> result = new ArrayList<String>(tmp.size());
-		if (!returnPrefix.isEmpty()) {
-			for (String item : tmp) {
-				result.add(returnPrefix + item);
-			}
-		} else {
-			result.addAll(tmp);
-		}
-
-		return result;
-	}
-
-	public boolean isDisplayColumn(String name) {
-		if (extraColumns == null) {
-			return false;
-		}
-		for (String ec : extraColumns) {
-			if (name.equals(ec)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public void addTagsToFoundTestExecutions() {
-		List<String> tags = TagUtils.parseTags(massOperationAddTags != null ? massOperationAddTags.toLowerCase() : "");
-
-		testService.addTagsToTestExecutions(tags, result);
-		search();
-	}
-
-	public void deleteTagsFromFoundTestExecutions() {
-		List<String> tags = TagUtils.parseTags(massOperationDeleteTags != null ? massOperationDeleteTags.toLowerCase() : "");
-
-		testService.removeTagsFromTestExecutions(tags, result);
-		search();
-	}
-
-	public void deleteFoundTestExecutions() {
-		for (TestExecution testExecution : result) {
-			try {
-				testService.removeTestExecution(testExecution);
-			} catch (ServiceException ex) {
-				//TODO: how to handle this properly?
-				throw new RuntimeException(ex);
-			}
-		}
-
-		search();
-	}
-
-	public void changeHowMany(ValueChangeEvent e) {
-		criteriaSession.getExecutionSearchCriteria().setLimitHowMany(e.getNewValue().equals(-1) ? null : (Integer) e.getNewValue());
-		search();
-	}
-
-	private void computeTotalNumberOfPages() {
-		Integer howMany = criteriaSession.getExecutionSearchCriteria().getLimitHowMany();
-		if(howMany == null) {
-			totalNumberOfResultsPages = 1;
-			return;
-		}
-
-		totalNumberOfResultsPages = (totalNumberOfResults / howMany) + (totalNumberOfResults % howMany != 0 ? 1 : 0);
-	}
-
-	public long getTotalNumberOfResultsPages() {
-		return totalNumberOfResultsPages;
-	}
-
-	public long getResultsPageNumber() {
-		return resultsPageNumber;
-	}
-
-	public void changeResultsPageNumber(int page) {
-		this.resultsPageNumber = page;
-
-		TestExecutionSearchTO criteria = criteriaSession.getExecutionSearchCriteria();
-		criteria.setLimitFrom(resultsPageNumber * criteria.getLimitHowMany());
-
-		search();
-	}
-
-	public long getTotalNumberOfResults() {
-		return totalNumberOfResults;
 	}
 }

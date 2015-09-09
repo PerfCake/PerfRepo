@@ -82,16 +82,6 @@
                      </r:tooltip>
                   </div>
                </div>
-               <div class="control-group">
-                  <h:outputLabel class="control-label" for="tags">Additional columns</h:outputLabel>
-
-                  <div class="controls">
-                     <h:selectManyListbox value="#{testExecutionSearchController.extraColumns}" style="width: 284px;">
-                        <f:selectItem itemValue="execId" itemLabel="Execution Id"/>
-                        <f:selectItem itemValue="test" itemLabel="Test"/>
-                     </h:selectManyListbox>
-                  </div>
-               </div>
                <h:panelGroup rendered="#{searchCriteriaSession.executionSearchCriteria.parameters.isEmpty()}">
                   <div class="control-group">
                      <h:outputLabel class="control-label">Parameters</h:outputLabel>
