@@ -7,9 +7,6 @@
       xmlns:r="http://richfaces.org"
       xmlns:rich="http://richfaces.org/rich">
 <h:body>
-   <f:metadata>
-      <f:event type="preRenderView" listener="#{testExecutionSearchController.preRender}"/>
-   </f:metadata>
    <ui:composition template="/layout/template.xhtml">
       <ui:define name="head">
          <link href="#{request.contextPath}/rfRes/datatable.ecss.jsf?ln=org.richfaces" rel="stylesheet"
@@ -25,8 +22,10 @@
 
                   <div class="controls">
                      <h:inputText type="text" class="input-xlarge" id="testName"
-                                  value="#{searchCriteriaSession.executionSearchCriteria.testName}"/>
+                                  value="#{searchCriteriaSession.executionSearchCriteria.testName}"
+                                  valueChangeListener="#{testExecutionSearchController.criteriaChanged}" />
                      <a href="#"><i id="testName-info" class="icon-info"/></a>
+
                      <r:tooltip target="testName-info" followMouse="false" direction="topRight">
                         <div style="width:200px;">#{strings['page.search.asteriskTooltip']}</div>
                      </r:tooltip>
@@ -39,8 +38,10 @@
                      <rich:autocomplete id="testUID" styleClass="input-xlarge" mode="cachedAjax" minChars="2"
                                         autofill="false"
                                         autocompleteMethod="#{testExecutionSearchController.autocompleteTest}"
-                                        value="#{searchCriteriaSession.executionSearchCriteria.testUID}"/>
+                                        value="#{searchCriteriaSession.executionSearchCriteria.testUID}"
+                                        valueChangeListener="#{testExecutionSearchController.criteriaChanged}" />
                      <a href="#"><i id="testUID-info" class="icon-info"/></a>
+
                      <r:tooltip target="testUID-info" followMouse="false" direction="topRight">
                         <div style="width:200px;">#{strings['page.search.asteriskTooltip']}</div>
                      </r:tooltip>
@@ -53,7 +54,8 @@
                   <div class="controls">
                      <r:calendar value="#{searchCriteriaSession.executionSearchCriteria.startedFrom}"
                                  styleClass="input-xlarge"
-                                 datePattern="yyyy-MM-dd HH:mm" id="testStartedFrom"/>
+                                 datePattern="yyyy-MM-dd HH:mm" id="testStartedFrom"
+                                 valueChangeListener="#{testExecutionSearchController.criteriaChanged}" />
                   </div>
                </div>
 
@@ -63,7 +65,8 @@
                   <div class="controls">
                      <r:calendar value="#{searchCriteriaSession.executionSearchCriteria.startedTo}"
                                  styleClass="input-xlarge"
-                                 datePattern="yyyy-MM-dd HH:mm" id="testStartedTo"/>
+                                 datePattern="yyyy-MM-dd HH:mm" id="testStartedTo"
+                                 valueChangeListener="#{testExecutionSearchController.criteriaChanged}" />
                   </div>
                </div>
 
@@ -75,8 +78,10 @@
                                         autofill="false"
                                         tokens=" "
                                         autocompleteMethod="#{testExecutionSearchController.autocompleteTags}"
-                                        value="#{searchCriteriaSession.executionSearchCriteria.tags}"/>
+                                        value="#{searchCriteriaSession.executionSearchCriteria.tags}"
+                                        valueChangeListener="#{testExecutionSearchController.criteriaChanged}" />
                      <a href="#"><i id="tags-info" class="icon-info"/></a>
+
                      <r:tooltip target="tags-info" followMouse="false" direction="topRight">
                         <div style="width:200px;">#{strings['page.search.tags']}</div>
                      </r:tooltip>
@@ -106,13 +111,15 @@
                               <f:facet name="header">
                                  <h:outputLabel class="control-label">Name</h:outputLabel>
                               </f:facet>
-                              <h:inputText class="input-xlarge" value="#{item.name}"/>
+                              <h:inputText class="input-xlarge" value="#{item.name}"
+                                           valueChangeListener="#{testExecutionSearchController.criteriaChanged}" />
                            </h:column>
                            <h:column>
                               <f:facet name="header">
                                  <h:outputLabel class="control-label">Value</h:outputLabel>
                               </f:facet>
-                              <h:inputText class="input-xlarge" value="#{item.value}"/>
+                              <h:inputText class="input-xlarge" value="#{item.value}"
+                                           valueChangeListener="#{testExecutionSearchController.criteriaChanged}" />
                            </h:column>
                            <h:column>
                               <f:facet name="header">
@@ -132,22 +139,26 @@
                      </div>
                   </div>
                </h:panelGroup>
+
                <div class="control-group">
                   <h:outputLabel class="control-label"></h:outputLabel>
+
                   <div class="controls">
                      <div class="btn-group">
                         <r:commandLink styleClass="btn #{userSession.getGroupFilter() == 'MY_GROUPS' ? 'active' : '' }"
-                                       render="@form" alt="Search My Groups Only" title="Search My Groups Only"
-                                       action="#{userSession.setMyGroupFilter()}">
+                                       render="@form :searchResult" alt="Search My Groups Only" title="Search My Groups Only"
+                                       action="#{testExecutionSearchController.setGroupFilter('MY_GROUPS')}">
                            <i class="icon-group"/> Search My Groups Only
                         </r:commandLink>
+
                         <r:commandLink styleClass="btn #{userSession.getGroupFilter() == 'ALL_GROUPS' ? 'active' : '' }"
-                                       render="@form" alt="Search All Groups" title="Search All Groups"
-                                       action="#{userSession.setAllGroupFilter()}">
+                                       render="@form :searchResult" alt="Search All Groups" title="Search All Groups"
+                                       action="#{testExecutionSearchController.setGroupFilter('ALL_GROUPS')}">
                            <i class="icon-asterisk"/> Search All Groups
                         </r:commandLink>
                      </div>
                   </div>
+
                </div>
             </fieldset>
 
@@ -162,6 +173,7 @@
 
                <r:commandButton action="#{searchCriteriaSession.clearExecutionSearchCriteria}" value="Reset"
                                 styleClass="btn btn-secondary" alt="Reset" title="Reset" render="@form"/>
+
                <r:commandButton action="#{testExecutionSearchController.search}" value="Search"
                                 styleClass="btn btn-primary"
                                 alt="Search Test Execution" title="Search Test Execution"
@@ -254,6 +266,10 @@
 
          <h:form id="searchResult">
             <div class="pagination-wrapper pagination-wrapper-top">
+               <div class="totalNumberOfResults">
+                  Found: #{testExecutionSearchController.totalNumberOfResults} results
+               </div>
+
                <ui:include src="pagination_fragment.xhtml" />
             </div>
 
@@ -265,23 +281,25 @@
                   <tr class="rf-dt-shdr">
                      <th class="rf-dt-shdr-c">
                         <r:commandLink value="Name" render="@form :searchResult :messagesPanel"
-                                       action="#{testExecutionSearchController.sortBy('name', false)}"/>
+                                       action="#{testExecutionSearchController.orderBy('name')}"/>
+
+                        <i class="icon-arrow-up" style="display: #{searchCriteriaSession.executionSearchCriteria.orderBy == 'NAME_ASC' ? 'inline' : 'none'}"/>
+                        <i class="icon-arrow-down" style="display: #{searchCriteriaSession.executionSearchCriteria.orderBy == 'NAME_DESC' ? 'inline' : 'none'}"/>
                      </th>
 
                      <th class="rf-dt-shdr-c">
                         <r:commandLink value="Time" render="@form :searchResult :messagesPanel"
-                                       action="#{testExecutionSearchController.sortBy('started', false)}"/>
+                                       action="#{testExecutionSearchController.orderBy('started')}"/>
+
+                        <i class="icon-arrow-up" style="display: #{searchCriteriaSession.executionSearchCriteria.orderBy == 'DATE_ASC' ? 'inline' : 'none'}"/>
+                        <i class="icon-arrow-down" style="display: #{searchCriteriaSession.executionSearchCriteria.orderBy == 'DATE_DESC' ? 'inline' : 'none'}"/>
                      </th>
 
                      <th class="rf-dt-shdr-c">Tags</th>
 
                      <ui:repeat value="#{testExecutionSearchController.paramColumns}" var="item">
                         <th class="rf-dt-shdr-c">
-                           <r:commandLink value="#{item}" render="@form :searchResult :messagesPanel"
-                                          action="#{testExecutionSearchController.sortBy(item, false)}"/>
-                           -
-                           <r:commandLink value="#" render="@form :searchResult :messagesPanel"
-                                          action="#{testExecutionSearchController.sortBy(item, true)}"/>
+                           #{item}
                         </th>
                      </ui:repeat>
 
@@ -316,7 +334,8 @@
 
                         <td class="rf-dt-c" align="center">
                            <div class="btn-group">
-                              <r:commandLink styleClass="btn btn-primary btn-small"
+                              <r:commandLink styleClass="btn btn-small #{authorizationServiceBean.isUserAuthorizedFor('WRITE', item) ? 'btn-primary' : 'btn-secondary'}"
+                                             disabled="#{not authorizationServiceBean.isUserAuthorizedFor('WRITE', item)}"
                                              action="#{testExecutionSearchController.delete}" alt="#{strings.delete}"
                                              title="#{strings.delete}"
                                              render="@form :criteriaForm :messagesPanel"

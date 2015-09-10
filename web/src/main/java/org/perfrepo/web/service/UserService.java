@@ -156,7 +156,7 @@ public interface UserService {
 	 * @param paramName
 	 * @param value
 	 */
-	public void addUserProperty(String paramName, String value) throws ServiceException;
+	public void addUserProperty(String paramName, String value);
 
 	/**
 	 * Removes favorite parameter of the test from user

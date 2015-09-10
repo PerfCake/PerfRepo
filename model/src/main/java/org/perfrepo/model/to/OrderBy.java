@@ -17,6 +17,10 @@ public enum OrderBy {
 
    VERSION_ASC,
 
-   VERSION_DESC;
+   VERSION_DESC,
+
+   NAME_ASC,
+
+   NAME_DESC;
 
 }

@@ -23,16 +23,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.perfrepo.model.TestExecution;
+import org.perfrepo.model.to.OrderBy;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
+import org.perfrepo.model.userproperty.GroupFilter;
 import org.perfrepo.model.util.EntityUtils;
-import org.perfrepo.model.util.ExecutionSort;
-import org.perfrepo.model.util.ExecutionSort.ParamExecutionSort;
 import org.perfrepo.web.service.TestService;
 import org.perfrepo.web.service.exceptions.ServiceException;
 import org.perfrepo.web.session.SearchCriteriaSession;
@@ -71,7 +72,6 @@ public class TestExecutionSearchController extends BaseController {
 	private List<String> paramColumns;
 
 	private String tag;
-	private ExecutionSort sort;
 
 	private boolean showMassOperations = false;
 	private String massOperationAddTags;
@@ -82,14 +82,10 @@ public class TestExecutionSearchController extends BaseController {
 	private int totalNumberOfResults;
 	private int totalNumberOfResultsPages;
 
-	/**
-	 * Initialization
-	 */
-	public void preRender() {
-		if (sort == null) {
-			sort = criteriaSession.getExecutionSearchSort();
-			search();
-		}
+	@PostConstruct
+	public void init() {
+		resultsPageNumber = 1;
+		search();
 	}
 
 	/**
@@ -98,14 +94,14 @@ public class TestExecutionSearchController extends BaseController {
 	public void search() {
 		TestExecutionSearchTO criteria = criteriaSession.getExecutionSearchCriteria();
 		criteria.setGroupFilter(userSession.getGroupFilter());
+		criteria.setLimitHowMany(criteria.getLimitHowMany() <= 0 ? null : criteria.getLimitHowMany());
+		criteria.setLimitFrom(criteria.getLimitHowMany() == null ? null : (resultsPageNumber - 1) * criteria.getLimitHowMany());
 		result = testService.searchTestExecutions(criteria);
 
 		totalNumberOfResults = testService.getLastTEQueryResultsCount();
-		computeTotalNumberOfPages();
+		constructPagination();
 
 		paramColumns = criteria.getParameters().stream().filter(ParamCriteria::isDisplayed).map(ParamCriteria::getName).collect(Collectors.toList());
-
-		Collections.sort(result, sort);
 	}
 
 	public String delete() {
@@ -141,22 +137,26 @@ public class TestExecutionSearchController extends BaseController {
 		criteriaSession.getExecutionSearchCriteria().getParameters().remove(criteriaToRemove);
 	}
 
-	public void sortBy(String what, boolean num) {
-		ExecutionSort.Type type = getSortType(what, num);
-		boolean invertAscending = false;
-		if (type.equals(sort.type())) {
-			if (type.isParametrized()) {
-				ParamExecutionSort<?> psort = (ParamExecutionSort<?>) sort;
-				if (what.equals(psort.getParam())) {
-					invertAscending = true;
-				}
+	public void orderBy(String how) {
+		OrderBy currentOrderBy = criteriaSession.getExecutionSearchCriteria().getOrderBy();
+		OrderBy newOrderBy = null;
+		if(how.equals("name")) {
+			if(currentOrderBy == OrderBy.NAME_ASC) {
+				newOrderBy = OrderBy.NAME_DESC;
 			} else {
-				invertAscending = true;
+				newOrderBy = OrderBy.NAME_ASC;
 			}
 		}
-		sort = ExecutionSort.create(type, what, invertAscending ? !sort.isAscending() : sort.isAscending());
-		criteriaSession.setExecutionSearchSort(sort);
-		Collections.sort(result, sort);
+		else if(how.equals("started")) {
+			if(currentOrderBy == OrderBy.DATE_ASC) {
+				newOrderBy = OrderBy.DATE_DESC;
+			} else {
+				newOrderBy = OrderBy.DATE_ASC;
+			}
+		}
+
+		criteriaSession.getExecutionSearchCriteria().setOrderBy(newOrderBy);
+		search();
 	}
 
 	public List<String> autocompleteTest(String test) {
@@ -187,21 +187,14 @@ public class TestExecutionSearchController extends BaseController {
 		return result;
 	}
 
-	private ExecutionSort.Type getSortType(String what, boolean num) {
-		// all sorts are ascending in this phase
-		if ("id".equals(what)) {
-			return ExecutionSort.Type.ID;
-		} else if ("name".equals(what)) {
-			return ExecutionSort.Type.NAME;
-		} else if ("started".equals(what)) {
-			return ExecutionSort.Type.TIME;
-		} else if ("test".equals(what)) {
-			return ExecutionSort.Type.TEST_NAME;
-		} else if (paramColumns.contains(what)) {
-			return num ? ExecutionSort.Type.PARAM_DOUBLE : ExecutionSort.Type.PARAM_STRING;
-		} else {
-			throw new IllegalArgumentException("unknown sort type");
-		}
+	public void setGroupFilter(GroupFilter groupFilter) {
+		userSession.setGroupFilter(groupFilter);
+		criteriaChanged();
+		search();
+	}
+
+	public void criteriaChanged() {
+		resultsPageNumber = 1;
 	}
 
 	private TestExecution removeById(Long id) {
@@ -251,35 +244,34 @@ public class TestExecutionSearchController extends BaseController {
 	/** ----- Functions for pagination ----- **/
 
 	public void changeHowMany(ValueChangeEvent e) {
-		criteriaSession.getExecutionSearchCriteria().setLimitHowMany(e.getNewValue().equals(-1) ? null : (Integer) e.getNewValue());
+		TestExecutionSearchTO criteria = criteriaSession.getExecutionSearchCriteria();
+		criteria.setLimitHowMany((Integer) e.getNewValue());
+
 		search();
+	}
+
+	public void changeResultsPageNumber(int page) {
+		this.resultsPageNumber = page;
+
+		search();
+	}
+
+	private void constructPagination() {
+		TestExecutionSearchTO criteria = criteriaSession.getExecutionSearchCriteria();
+
+		this.resultsPageNumber = (criteria.getLimitFrom() == null) ? 1 : (criteria.getLimitFrom() / criteria.getLimitHowMany()) + 1;
+		computeTotalNumberOfPages();
 	}
 
 	private void computeTotalNumberOfPages() {
 		Integer howMany = criteriaSession.getExecutionSearchCriteria().getLimitHowMany();
+
 		if(howMany == null) {
 			totalNumberOfResultsPages = 1;
 			return;
 		}
 
 		totalNumberOfResultsPages = (totalNumberOfResults / howMany) + (totalNumberOfResults % howMany != 0 ? 1 : 0);
-	}
-
-	public long getTotalNumberOfResultsPages() {
-		return totalNumberOfResultsPages;
-	}
-
-	public long getResultsPageNumber() {
-		return resultsPageNumber;
-	}
-
-	public void changeResultsPageNumber(int page) {
-		this.resultsPageNumber = page;
-
-		TestExecutionSearchTO criteria = criteriaSession.getExecutionSearchCriteria();
-		criteria.setLimitFrom(resultsPageNumber * criteria.getLimitHowMany());
-
-		search();
 	}
 
 	/** ----- Getters/Setters ----- **/
@@ -346,5 +338,14 @@ public class TestExecutionSearchController extends BaseController {
 
 	public int getResultSize() {
 		return result != null ? result.size() : 0;
+	}
+
+
+	public long getTotalNumberOfResultsPages() {
+		return totalNumberOfResultsPages;
+	}
+
+	public long getResultsPageNumber() {
+		return resultsPageNumber;
 	}
 }

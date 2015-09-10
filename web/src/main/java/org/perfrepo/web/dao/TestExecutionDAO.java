@@ -29,6 +29,7 @@ import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -109,29 +110,21 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       List<String> includedTags = new ArrayList<>();
       divideTags(tags, includedTags, excludedTags);
 
-      Integer count = null;
-      if(search.getLimitFrom() != null || search.getLimitHowMany() != null) {
-         count = processSearchCountQuery(search, includedTags, excludedTags, userGroups);
-         lastQueryResultsCount = count;
-      }
+      lastQueryResultsCount = processSearchCountQuery(search, includedTags, excludedTags, userGroups);
 
       CriteriaQuery<TestExecution> criteria = (CriteriaQuery) createSearchSubquery(cb.createQuery(TestExecution.class), search, includedTags, excludedTags);
       Root<TestExecution> root = (Root<TestExecution>) criteria.getRoots().toArray()[0];
       criteria.select(root);
-      //ignoring other OrderBy options (like PARAMETER), because it's not possible to order
-      //by values for specific parameter name in SQL. Therefore if the the option is PARAMETER(ASC|DESC)
-      //it's ordered afterwards, just like filterResultByParameters, see orderResultsByParameters below
-      criteria.orderBy(search.getOrderBy() == OrderBy.DATE_DESC ? cb.desc(root.get("started")) : cb.asc(root.get("started")));
+      setOrderBy(criteria, search.getOrderBy(), root);
 
       TypedQuery<TestExecution> query = query(criteria);
       fillParameterValues(query, search, includedTags, excludedTags, userGroups);
 
-      if(count != null) {
-         int firstResult = search.getLimitFrom() == null ? count.intValue() - search.getLimitHowMany() : count.intValue() - search.getLimitFrom();
-         query.setFirstResult(firstResult < 0 ? 0 : firstResult);
-         if(search.getLimitHowMany() != null) {
-            query.setMaxResults(search.getLimitHowMany());
-         }
+      //handle pagination
+      int firstResult = search.getLimitFrom() == null ? 0 : search.getLimitFrom();
+      query.setFirstResult(firstResult);
+      if (search.getLimitHowMany() != null) {
+         query.setMaxResults(search.getLimitHowMany());
       }
 
       List<TestExecution> result = query.getResultList();
@@ -158,12 +151,14 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * ALL the tags. The 'lastFrom' and 'howMany' parameters works as a LIMIT in SQL, e.g. lastFrom = 5, howMany = 3
     * will return 3 last test executions shifted by 2 (last 2 test executions will not be in the result)
     *
+    * @deprecated Use searchTestExecutions instead
     * @param tags ALL tags that test execution must have
     * @param testUIDs ID's of the tests
     * @param lastFrom see comment above. null = all test executions will be retrieved (both lastFrom and howMany must be set to take effect)
     * @param howMany see comment above. null = all test executions will be retrieved (both lastFrom and howMany must be set to take effect)
     * @return
     */
+   @Deprecated
    public List<TestExecution> getTestExecutions(List<String> tags, List<String> testUIDs, Integer lastFrom, Integer howMany) {
       CriteriaBuilder cb = criteriaBuilder();
 
@@ -192,6 +187,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
       TypedQuery<TestExecution> query = createTypedQueryByTags(criteriaQuery, testUIDs, tags);
       //we're using 'last' parameters, set the paging
+      //TODO: this might be broken, use search test execution instead
       if(count != null) {
          int firstResult = count.intValue() - lastFrom;
          query.setFirstResult(firstResult < 0 ? 0 : firstResult);
@@ -320,7 +316,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
 	/**
 	 * Finds all values used for computing MetricHistory report
-	 *
+    *
 	 * @param testId
 	 * @param metricName
 	 * @param tagList
@@ -419,6 +415,40 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       }
 
       return lastQueryResultsCount;
+   }
+
+   /**
+    * Helper method. Adds ordering to the query depending on the criteria option.
+    *
+    * @param criteria
+    * @param orderBy
+    * @param root
+    */
+   private void setOrderBy(CriteriaQuery criteria, OrderBy orderBy, Root root) {
+      CriteriaBuilder cb = criteriaBuilder();
+
+      //ignoring other OrderBy options (like PARAMETER), because it's not possible to order
+      //by values for specific parameter name in SQL. Therefore if the the option is PARAMETER(ASC|DESC)
+      //it's ordered afterwards, just like filterResultByParameters, see orderResultsByParameters
+      Order order;
+      switch(orderBy) {
+         case DATE_ASC:
+            order = cb.asc(root.get("started"));
+            break;
+         case DATE_DESC:
+            order = cb.desc(root.get("started"));
+            break;
+         case NAME_ASC:
+            order = cb.asc(root.get("name"));
+            break;
+         case NAME_DESC:
+            order = cb.desc(root.get("name"));
+            break;
+         default:
+            order = cb.desc(root.get("started"));
+      }
+
+      criteria.orderBy(order);
    }
 
    /**

@@ -103,7 +103,7 @@ public class UserSession implements Serializable {
 	 * @param filter
 	 * @throws ServiceException
 	 */
-	public void setGroupFilter(GroupFilter filter) throws ServiceException {
+	public void setGroupFilter(GroupFilter filter) {
 		userService.addUserProperty(USER_PARAM_GROUP_FILTER, filter.name());
 		refresh();
 	}

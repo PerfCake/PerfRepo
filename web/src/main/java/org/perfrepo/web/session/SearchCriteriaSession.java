@@ -19,15 +19,13 @@
 package org.perfrepo.web.session;
 
 import java.io.Serializable;
-import java.util.Calendar;
 
 import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.perfrepo.model.to.OrderBy;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.model.to.TestSearchTO;
-import org.perfrepo.model.util.ExecutionSort;
 
 /**
  * Session storage for search criteria.
@@ -42,8 +40,6 @@ public class SearchCriteriaSession implements Serializable {
 
 	private TestExecutionSearchTO executionSearchCriteria;
 
-	private ExecutionSort executionSearchSort;
-
 	private TestSearchTO testSearchCriteria;
 
 	public TestExecutionSearchTO getExecutionSearchCriteria() {
@@ -52,12 +48,14 @@ public class SearchCriteriaSession implements Serializable {
 
 			//by default, do not list all the test executions
 			executionSearchCriteria.setLimitHowMany(50);
+			executionSearchCriteria.setOrderBy(OrderBy.DATE_DESC);
 		}
 		return executionSearchCriteria;
 	}
 
 	public void clearExecutionSearchCriteria() {
-		executionSearchCriteria = new TestExecutionSearchTO();
+		executionSearchCriteria = null;
+		getExecutionSearchCriteria();
 	}
 
 	public TestSearchTO getTestSearchCriteria() {
@@ -65,16 +63,5 @@ public class SearchCriteriaSession implements Serializable {
 			testSearchCriteria = new TestSearchTO();
 		}
 		return testSearchCriteria;
-	}
-
-	public ExecutionSort getExecutionSearchSort() {
-		if (executionSearchSort == null) {
-			executionSearchSort = ExecutionSort.TIME_DESC;
-		}
-		return executionSearchSort;
-	}
-
-	public void setExecutionSearchSort(ExecutionSort executionSearchSort) {
-		this.executionSearchSort = executionSearchSort;
 	}
 }

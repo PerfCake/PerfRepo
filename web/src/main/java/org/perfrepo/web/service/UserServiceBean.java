@@ -151,7 +151,7 @@ public class UserServiceBean implements UserService {
 	}
 
 	@Override
-	public void addUserProperty(String name, String value) throws ServiceException {
+	public void addUserProperty(String name, String value) {
 		User user = userDAO.get(getLoggedUser().getId());
 		UserProperty up = userPropertyDAO.findByUserIdAndName(user.getId(), name);
 		if (up == null) {

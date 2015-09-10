@@ -309,13 +309,13 @@ public class TestExecutionDAOTest {
    public void testSearchByTagsWithLimit() {
       TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
       searchCriteria.setTags("tag1");
-      searchCriteria.setLimitFrom(3);
+      searchCriteria.setLimitFrom(1);
       searchCriteria.setLimitHowMany(2);
 
       List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
       assertEquals(2, result.size());
 
-      List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId());
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[1].getId(), testExecutions[2].getId());
 
       assertTrue(expectedResultIds.stream().
           allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));

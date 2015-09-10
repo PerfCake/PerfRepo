@@ -4465,6 +4465,11 @@ button.btn.btn-mini, input[type="submit"].btn.btn-mini {
     margin-left: 8px;
 }
 
+.pagination-wrapper .totalNumberOfResults {
+    float: left;
+    line-height: 61px;
+}
+
 .pagination ul {
     display: inline-block;
     *display: inline;
