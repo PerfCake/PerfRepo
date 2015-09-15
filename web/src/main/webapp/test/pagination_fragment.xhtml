@@ -1,0 +1,60 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:r="http://richfaces.org"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+   <div class="pagination pagination-right">
+      <ul>
+         <ui:fragment rendered="#{testSearchController.resultsPageNumber gt 1}">
+            <li>
+               <r:commandLink render=":searchResult" action="#{testSearchController.changeResultsPageNumber(1)}" title="First page">
+                  1
+               </r:commandLink>
+            </li>
+         </ui:fragment>
+
+         <ui:fragment rendered="#{testSearchController.resultsPageNumber gt 3}">
+            <li>
+               <r:commandLink render=":searchResult" action="#{testSearchController.changeResultsPageNumber(testSearchController.resultsPageNumber - 2)}" title="Two pages back">
+                  ...
+               </r:commandLink>
+            </li>
+         </ui:fragment>
+
+         <ui:fragment rendered="#{testSearchController.resultsPageNumber gt 2}">
+            <li>
+               <r:commandLink render=":searchResult" action="#{testSearchController.changeResultsPageNumber(testSearchController.resultsPageNumber - 1)}" title="Previous page">
+                  #{testSearchController.resultsPageNumber-1}
+               </r:commandLink>
+            </li>
+         </ui:fragment>
+
+         <li>
+            <span>#{testSearchController.resultsPageNumber}</span>
+         </li>
+
+         <ui:fragment rendered="#{testSearchController.resultsPageNumber lt testSearchController.totalNumberOfResultsPages - 1}">
+            <li>
+               <r:commandLink render=":searchResult" action="#{testSearchController.changeResultsPageNumber(testSearchController.resultsPageNumber + 1)}" title="Next page">
+                  #{testSearchController.resultsPageNumber+1}
+               </r:commandLink>
+            </li>
+         </ui:fragment>
+
+         <ui:fragment rendered="#{testSearchController.resultsPageNumber lt testSearchController.totalNumberOfResultsPages - 2}">
+            <li>
+               <r:commandLink render=":searchResult" action="#{testSearchController.changeResultsPageNumber(testSearchController.resultsPageNumber + 2)}" title="Two pages forward">
+                  ...
+               </r:commandLink>
+            </li>
+         </ui:fragment>
+
+         <ui:fragment rendered="#{testSearchController.resultsPageNumber lt testSearchController.totalNumberOfResultsPages}">
+            <li>
+               <r:commandLink render=":searchResult" action="#{testSearchController.changeResultsPageNumber(testSearchController.totalNumberOfResultsPages)}" title="Last page">
+                  #{testSearchController.totalNumberOfResultsPages}
+               </r:commandLink>
+            </li>
+         </ui:fragment>
+      </ul>
+   </div>
+</ui:composition>

@@ -31,6 +31,7 @@ import org.perfrepo.model.to.TestSearchTO;
  * Session storage for search criteria.
  *
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  */
 @Named(value = "searchCriteriaSession")
 @SessionScoped
@@ -61,7 +62,10 @@ public class SearchCriteriaSession implements Serializable {
 	public TestSearchTO getTestSearchCriteria() {
 		if (testSearchCriteria == null) {
 			testSearchCriteria = new TestSearchTO();
+			testSearchCriteria.setOrderBy(OrderBy.NAME_ASC);
+			testSearchCriteria.setLimitHowMany(25);
 		}
+
 		return testSearchCriteria;
 	}
 }

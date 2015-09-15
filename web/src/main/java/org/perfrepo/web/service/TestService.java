@@ -400,4 +400,12 @@ public interface TestService {
 	 * @return
 	 */
 	public Integer getLastTEQueryResultsCount();
+
+	/**
+	 * Return total number of found tests by last query.
+	 *
+	 * @return
+	 */
+	public int getLastTestQueryResultsCount();
+
 }

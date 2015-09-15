@@ -40,6 +40,12 @@ public class TestSearchTO implements Serializable {
 
 	private GroupFilter groupFilter;
 
+	private OrderBy orderBy = OrderBy.NAME_ASC;
+
+	private Integer limitFrom;
+
+	private Integer limitHowMany;
+
 	public String getName() {
 		return name;
 	}
@@ -70,5 +76,29 @@ public class TestSearchTO implements Serializable {
 
 	public void setGroupFilter(GroupFilter groupFilter) {
 		this.groupFilter = groupFilter;
+	}
+
+	public OrderBy getOrderBy() {
+		return orderBy;
+	}
+
+	public void setOrderBy(OrderBy orderBy) {
+		this.orderBy = orderBy;
+	}
+
+	public Integer getLimitFrom() {
+		return limitFrom;
+	}
+
+	public void setLimitFrom(Integer limitFrom) {
+		this.limitFrom = limitFrom;
+	}
+
+	public Integer getLimitHowMany() {
+		return limitHowMany;
+	}
+
+	public void setLimitHowMany(Integer limitHowMany) {
+		this.limitHowMany = limitHowMany;
 	}
 }

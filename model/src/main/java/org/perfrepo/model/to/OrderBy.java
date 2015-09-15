@@ -21,6 +21,14 @@ public enum OrderBy {
 
    NAME_ASC,
 
-   NAME_DESC;
+   NAME_DESC,
+
+   UID_ASC,
+
+   UID_DESC,
+
+   GROUP_ID_ASC,
+
+   GROUP_ID_DESC;
 
 }

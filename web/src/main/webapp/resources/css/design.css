@@ -4537,7 +4537,6 @@ button.btn.btn-mini, input[type="submit"].btn.btn-mini {
 }
 
 .pagination-right {
-    /*text-align: right*/
     float: right;
 }
 

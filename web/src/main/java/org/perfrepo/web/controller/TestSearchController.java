@@ -20,11 +20,15 @@ package org.perfrepo.web.controller;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.perfrepo.model.Test;
+import org.perfrepo.model.to.OrderBy;
 import org.perfrepo.model.to.TestSearchTO;
+import org.perfrepo.model.userproperty.GroupFilter;
 import org.perfrepo.web.service.TestService;
 import org.perfrepo.web.service.exceptions.ServiceException;
 import org.perfrepo.web.session.SearchCriteriaSession;
@@ -35,6 +39,7 @@ import org.perfrepo.web.viewscope.ViewScoped;
  * Search tests.
  *
  * @author Pavel Drozd (pdrozd@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
  */
 @Named
@@ -52,60 +57,93 @@ public class TestSearchController extends BaseController {
 	@Inject
 	private UserSession userSession;
 
-	private TestSearchTO criteria = null;
-
 	private List<Test> result;
 
-	public void preRender() {
-		if (criteria == null) {
-			criteria = criteriaSession.getTestSearchCriteria();
-			search();
-		}
+	private int resultsPageNumber = 1;
+	private int totalNumberOfResults;
+	private int totalNumberOfResultsPages;
+
+	@PostConstruct
+	public void init() {
+		resultsPageNumber = 1;
+		search();
 	}
 
 	public void search() {
+		TestSearchTO criteria = criteriaSession.getTestSearchCriteria();
 		criteria.setGroupFilter(userSession.getGroupFilter());
+		criteria.setLimitHowMany(criteria.getLimitHowMany() <= 0 ? null : criteria.getLimitHowMany());
+		criteria.setLimitFrom(criteria.getLimitHowMany() == null ? null : (resultsPageNumber - 1) * criteria.getLimitHowMany());
+
 		result = testService.searchTest(criteria);
-	}
 
-	public List<Test> getResult() {
-		return result;
-	}
-
-	public void setResult(List<Test> result) {
-		this.result = result;
-	}
-
-	public TestSearchTO getCriteria() {
-		return criteria;
-	}
-
-	public void setCriteria(TestSearchTO search) {
-		this.criteria = search;
+		totalNumberOfResults = testService.getLastTestQueryResultsCount();
+		constructPagination();
 	}
 
 	public String delete() {
 		Long idToDelete = Long.valueOf(getRequestParam("idToDelete"));
 		if (idToDelete == null) {
 			throw new IllegalStateException("Bad request, missing idToDelete");
-		} else {
-			Test testToRemove = removeById(idToDelete);
-			if (testToRemove == null) {
-				throw new IllegalStateException("Bad request, missing idToDelete");
-			} else {
-				try {
-					testService.removeTest(testToRemove);
-					addMessage(INFO, "page.testSearch.testDeleted", testToRemove.getName());
-				} catch (ServiceException e) {
-					addMessage(e);
-				}
-			}
 		}
+
+		Test testToRemove = removeById(idToDelete);
+		if (testToRemove == null) {
+			throw new IllegalStateException("Bad request, missing idToDelete");
+		}
+
+		try {
+			testService.removeTest(testToRemove);
+			addMessage(INFO, "page.testSearch.testDeleted", testToRemove.getName());
+		} catch (ServiceException e) {
+			addMessage(e);
+		}
+
 		return null;
+	}
+
+	public void orderBy(String how) {
+		OrderBy newOrderBy = null;
+		OrderBy oldOrderBy = criteriaSession.getTestSearchCriteria().getOrderBy();
+
+		if(how.equals("name")) {
+			if(oldOrderBy == OrderBy.NAME_ASC) {
+				newOrderBy = OrderBy.NAME_DESC;
+			} else {
+				newOrderBy = OrderBy.NAME_ASC;
+			}
+		} else if(how.equals("uid")) {
+			if(oldOrderBy == OrderBy.UID_ASC) {
+				newOrderBy = OrderBy.UID_DESC;
+			} else {
+				newOrderBy = OrderBy.UID_ASC;
+			}
+		} else if(how.equals("groupId")) {
+			if(oldOrderBy == OrderBy.GROUP_ID_ASC) {
+				newOrderBy = OrderBy.GROUP_ID_DESC;
+			} else {
+				newOrderBy = OrderBy.GROUP_ID_ASC;
+			}
+		} else {
+			newOrderBy = OrderBy.NAME_ASC;
+		}
+
+		criteriaSession.getTestSearchCriteria().setOrderBy(newOrderBy);
+		search();
 	}
 
 	public List<String> autocompleteTest(String test) {
 		return testService.getTestsByPrefix(test);
+	}
+
+	public void setGroupFilter(GroupFilter groupFilter) {
+		userSession.setGroupFilter(groupFilter);
+		criteriaChanged();
+		search();
+	}
+
+	public void criteriaChanged() {
+		resultsPageNumber = 1;
 	}
 
 	private Test removeById(Long id) {
@@ -116,5 +154,60 @@ public class TestSearchController extends BaseController {
 			}
 		}
 		return null;
+	}
+
+	/** ----- Functions for pagination ----- **/
+
+	public void changeHowMany(ValueChangeEvent e) {
+		TestSearchTO criteria = criteriaSession.getTestSearchCriteria();
+		criteria.setLimitHowMany((Integer) e.getNewValue());
+
+		search();
+	}
+
+	public void changeResultsPageNumber(int page) {
+		this.resultsPageNumber = page;
+
+		search();
+	}
+
+	private void constructPagination() {
+		TestSearchTO criteria = criteriaSession.getTestSearchCriteria();
+
+		this.resultsPageNumber = (criteria.getLimitFrom() == null) ? 1 : (criteria.getLimitFrom() / criteria.getLimitHowMany()) + 1;
+		computeTotalNumberOfPages();
+	}
+
+	private void computeTotalNumberOfPages() {
+		Integer howMany = criteriaSession.getTestSearchCriteria().getLimitHowMany();
+
+		if(howMany == null) {
+			totalNumberOfResultsPages = 1;
+			return;
+		}
+
+		totalNumberOfResultsPages = (totalNumberOfResults / howMany) + (totalNumberOfResults % howMany != 0 ? 1 : 0);
+	}
+
+	/*** ---- Getters/Setters ----- ***/
+
+	public List<Test> getResult() {
+		return result;
+	}
+
+	public void setResult(List<Test> result) {
+		this.result = result;
+	}
+
+	public int getResultsPageNumber() {
+		return resultsPageNumber;
+	}
+
+	public int getTotalNumberOfResults() {
+		return totalNumberOfResults;
+	}
+
+	public int getTotalNumberOfResultsPages() {
+		return totalNumberOfResultsPages;
 	}
 }

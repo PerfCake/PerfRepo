@@ -830,6 +830,11 @@ public class TestServiceBean implements TestService {
 		return testExecutionDAO.getLastQueryResultsCount();
 	}
 
+	@Override
+	public int getLastTestQueryResultsCount() {
+		return testDAO.getLastQueryResultsCount();
+	}
+
 	private TestMetric createTestMetric(Test test, Metric metric) {
 		Metric existingMetric = metricDAO.get(metric.getId());
 		TestMetric tm = new TestMetric();
