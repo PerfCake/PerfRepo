@@ -54,7 +54,7 @@ public class ReportProperty implements Entity<ReportProperty>, Comparable<Report
 
 	@Column(name = "value")
 	@NotNull
-	@Size(max = 2047)
+	@Size(max = 8192)
 	private String value;
 
 	@ManyToOne(optional = false)

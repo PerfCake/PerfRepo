@@ -640,7 +640,7 @@ CREATE TABLE report_property (
   id bigint NOT NULL,
   report_id bigint NOT NULL,
   name character varying(2047) NOT NULL,
-  value character varying(2047) NOT NULL
+  value character varying(8192) NOT NULL
 );
 
 
