@@ -149,7 +149,7 @@
                   <ui:repeat value="#{testSearchController.result}" var="item">
                      <tr class="rf-dt-r rf-dt-fst-r">
                         <td class="rf-dt-c">
-                           #{item.name}
+                           <a href="#{request.contextPath}/test/#{item.id}">#{item.name}</a>
                         </td>
 
                         <td class="rf-dt-c">
