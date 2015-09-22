@@ -3,11 +3,11 @@ package org.perfrepo.model.to;
 import java.util.Date;
 
 /**
- * When retrieving values for chart computation, we usually need more info than just a simple double value,
- * e.g. date of the test execution, even ID of the test execution, so we could retrieve more info about it.
- * This object encapsulates all the info needed. It's extracted to extra class, so if needed, the information
- * retrieved could be easily extended.
- *
+ * When retrieving values for chart computation, we usually need more info than just a simple double value, e.g. date of
+ * the test execution, even ID of the test execution, so we could retrieve more info about it. This object encapsulates
+ * all the info needed. It's extracted to extra class, so if needed, the information retrieved could be easily
+ * extended.
+ * <p>
  * Immutable class.
  *
  * @author Jiri Holusa (jholusa@redhat.com)

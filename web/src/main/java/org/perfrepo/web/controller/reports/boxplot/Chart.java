@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Transfer object for communication between boxplot report controller and boxplot report service.
- * Contains all information about charts, so whole report can be displayed from list of
- * these chart objects. Encapsulates also series and baselines info.
+ * Transfer object for communication between boxplot report controller and boxplot report service. Contains all
+ * information about charts, so whole report can be displayed from list of these chart objects. Encapsulates also series
+ * and baselines info.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
@@ -89,7 +89,7 @@ public class Chart {
    }
 
    public void addSeries(Series series) {
-      if(seriesList == null) {
+      if (seriesList == null) {
          seriesList = new ArrayList<>();
       }
 
@@ -101,7 +101,7 @@ public class Chart {
    }
 
    public void addBaseline(Baseline baseline) {
-      if(baselines == null) {
+      if (baselines == null) {
          baselines = new ArrayList<>();
       }
 
@@ -155,10 +155,9 @@ public class Chart {
       }
 
       /**
-       * Data point represents a single boxplot item in a chart. Front-end JavaScript library
-       * computes the boxplot from the values and we usually need more info than just values, like
-       * label on x-axis or test execution ID. This class encapsulates all the needed info
-       * so it can be easily extended in the future.
+       * Data point represents a single boxplot item in a chart. Front-end JavaScript library computes the boxplot from
+       * the values and we usually need more info than just values, like label on x-axis or test execution ID. This
+       * class encapsulates all the needed info so it can be easily extended in the future.
        */
       public static class DataPoint {
 

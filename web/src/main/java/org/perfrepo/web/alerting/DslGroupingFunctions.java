@@ -27,7 +27,7 @@ public enum DslGroupingFunctions {
     * @return
     */
    public boolean equalsString(String string) {
-      if(string == null) {
+      if (string == null) {
          return false;
       }
 
@@ -42,9 +42,12 @@ public enum DslGroupingFunctions {
     */
    public double compute(List<Double> values) {
       switch (this) {
-         case AVG: return DoubleMath.mean(values);
-         case MIN: return Doubles.min(Doubles.toArray(values));
-         case MAX: return Doubles.max(Doubles.toArray(values));
+         case AVG:
+            return DoubleMath.mean(values);
+         case MIN:
+            return Doubles.min(Doubles.toArray(values));
+         case MAX:
+            return Doubles.max(Doubles.toArray(values));
       }
 
       throw new IllegalStateException("There should be associated a group function with the enum.");
@@ -57,8 +60,8 @@ public enum DslGroupingFunctions {
     * @return
     */
    public static boolean contains(String stringRepresentation) {
-      for(DslGroupingFunctions e: values()) {
-         if(e.equalsString(stringRepresentation)) {
+      for (DslGroupingFunctions e : values()) {
+         if (e.equalsString(stringRepresentation)) {
             return true;
          }
       }

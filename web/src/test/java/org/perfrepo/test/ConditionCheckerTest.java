@@ -28,7 +28,6 @@ import static org.mockito.Mockito.when;
  * Tests for {@link org.perfrepo.web.alerting.ConditionChecker}
  *
  * @author Jiri Holusa (jholusa@redhat.com)
- *
  */
 public class ConditionCheckerTest {
 
@@ -70,7 +69,7 @@ public class ConditionCheckerTest {
       TestExecutionSearchTO searchTesWithTagsAndLast1 = createSearchCriteria(null, "firstTag secondTag", 2, 1, null, null);
       TestExecutionSearchTO searchTesWithTagsAnd2FromLast3 = createSearchCriteria(null, "firstTag secondTag", 4, 2, null, null);
 
-      when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTags,  Arrays.asList("testuser"))).thenReturn(tesWithTags);
+      when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTags, Arrays.asList("testuser"))).thenReturn(tesWithTags);
       when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTagsAndLast1, Arrays.asList("testuser"))).thenReturn(te1);
       when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTagsAnd2FromLast3, Arrays.asList("testuser"))).thenReturn(tesWithTags);
 
@@ -106,22 +105,19 @@ public class ConditionCheckerTest {
       try {
          conditionChecker.checkCondition(condition, 0, createMetric());
          fail("Query without DEFINE should fail.");
-      }
-      catch (IllegalArgumentException ex) {} //expected
+      } catch (IllegalArgumentException ex) {} //expected
 
       condition = "x < 1 DEFINE x = SELECT WHERE id = 1";
       try {
          conditionChecker.checkCondition(condition, 0, createMetric());
          fail("Query without CONDITION should fail.");
-      }
-      catch (IllegalArgumentException ex) {} //expected
+      } catch (IllegalArgumentException ex) {} //expected
 
       condition = "CONDITION x < 1 DEFINE x = (SELECT WHERE id = 1) y = (SELECT WHERE id = 1)";
       try {
          conditionChecker.checkCondition(condition, 0, createMetric());
          fail("Query, where definitions are not separated by comma, should fail.");
-      }
-      catch (IllegalArgumentException ex) {} //expected
+      } catch (IllegalArgumentException ex) {} //expected
    }
 
    @Test(expected = IllegalArgumentException.class)
@@ -345,10 +341,10 @@ public class ConditionCheckerTest {
    }
 
    /**
-    * Helper class. When mocking objects with Mockito, Mockito by default uses Object.equals method
-    * to distinguish which method to call. There is a problem with Date objects. Even is two Date objects
-    * are created with the same Date (like year, month, day, hour and minute), calling equals returns false.
-    * This is the reason why this ArgumentMatcher class is used, to do the matching manually.
+    * Helper class. When mocking objects with Mockito, Mockito by default uses Object.equals method to distinguish which
+    * method to call. There is a problem with Date objects. Even is two Date objects are created with the same Date
+    * (like year, month, day, hour and minute), calling equals returns false. This is the reason why this
+    * ArgumentMatcher class is used, to do the matching manually.
     */
    private class SearchCriteriaMatcher extends ArgumentMatcher<TestExecutionSearchTO> {
 
@@ -360,51 +356,38 @@ public class ConditionCheckerTest {
 
       @Override
       public boolean matches(Object o) {
-         if(!(o instanceof TestExecutionSearchTO)) {
+         if (!(o instanceof TestExecutionSearchTO)) {
             return false;
          }
 
          TestExecutionSearchTO object = (TestExecutionSearchTO) o;
 
-         if(!((searchCriteria.getTags() == null && object.getTags() == null) ||
-                  (searchCriteria.getTags() != null && object.getTags() != null))) {
+         if (!((searchCriteria.getTags() == null && object.getTags() == null) ||
+                   (searchCriteria.getTags() != null && object.getTags() != null))) {
             return false;
          }
 
          Date otherDateFrom = object.getStartedFrom();
          Date otherDateTo = object.getStartedTo();
-         
-         if(!((searchCriteria.getStartedFrom() == null && otherDateFrom == null) ||
-             (searchCriteria.getStartedFrom() != null && otherDateFrom != null))) {
+
+         if (!((searchCriteria.getStartedFrom() == null && otherDateFrom == null) ||
+                   (searchCriteria.getStartedFrom() != null && otherDateFrom != null))) {
             return false;
          }
 
-         if(!((searchCriteria.getStartedTo() == null && otherDateTo == null) ||
-                  (searchCriteria.getStartedTo() != null && otherDateTo != null))) {
+         if (!((searchCriteria.getStartedTo() == null && otherDateTo == null) ||
+                   (searchCriteria.getStartedTo() != null && otherDateTo != null))) {
             return false;
          }
-         
+
          Calendar thisCalendar = Calendar.getInstance();
          Calendar otherCalendar = Calendar.getInstance();
 
-         if(searchCriteria.getStartedFrom() != null) {
+         if (searchCriteria.getStartedFrom() != null) {
             thisCalendar.setTime(searchCriteria.getStartedFrom());
             otherCalendar.setTime(otherDateFrom);
 
-            if((thisCalendar.get(Calendar.YEAR) != otherCalendar.get(Calendar.YEAR)) ||
-               (thisCalendar.get(Calendar.MONTH) != otherCalendar.get(Calendar.MONTH)) ||
-               (thisCalendar.get(Calendar.DAY_OF_MONTH) != otherCalendar.get(Calendar.DAY_OF_MONTH)) ||
-               (thisCalendar.get(Calendar.HOUR) != otherCalendar.get(Calendar.HOUR)) ||
-               (thisCalendar.get(Calendar.MINUTE) != otherCalendar.get(Calendar.MINUTE))) {
-               return false;
-            }
-         }
-
-         if(searchCriteria.getStartedTo() != null) {
-            thisCalendar.setTime(searchCriteria.getStartedTo());
-            otherCalendar.setTime(otherDateTo);
-
-            if((thisCalendar.get(Calendar.YEAR) != otherCalendar.get(Calendar.YEAR)) ||
+            if ((thisCalendar.get(Calendar.YEAR) != otherCalendar.get(Calendar.YEAR)) ||
                 (thisCalendar.get(Calendar.MONTH) != otherCalendar.get(Calendar.MONTH)) ||
                 (thisCalendar.get(Calendar.DAY_OF_MONTH) != otherCalendar.get(Calendar.DAY_OF_MONTH)) ||
                 (thisCalendar.get(Calendar.HOUR) != otherCalendar.get(Calendar.HOUR)) ||
@@ -413,7 +396,20 @@ public class ConditionCheckerTest {
             }
          }
 
-         if(searchCriteria.getTags() != null && !searchCriteria.getTags().equals(object.getTags())) {
+         if (searchCriteria.getStartedTo() != null) {
+            thisCalendar.setTime(searchCriteria.getStartedTo());
+            otherCalendar.setTime(otherDateTo);
+
+            if ((thisCalendar.get(Calendar.YEAR) != otherCalendar.get(Calendar.YEAR)) ||
+                (thisCalendar.get(Calendar.MONTH) != otherCalendar.get(Calendar.MONTH)) ||
+                (thisCalendar.get(Calendar.DAY_OF_MONTH) != otherCalendar.get(Calendar.DAY_OF_MONTH)) ||
+                (thisCalendar.get(Calendar.HOUR) != otherCalendar.get(Calendar.HOUR)) ||
+                (thisCalendar.get(Calendar.MINUTE) != otherCalendar.get(Calendar.MINUTE))) {
+               return false;
+            }
+         }
+
+         if (searchCriteria.getTags() != null && !searchCriteria.getTags().equals(object.getTags())) {
             return false;
          }
 

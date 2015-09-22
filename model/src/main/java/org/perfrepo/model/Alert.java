@@ -4,7 +4,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Represents alert condition defined on test
@@ -20,33 +19,33 @@ public class Alert implements Entity<Alert> {
 
    public static final String GET_BY_TEST_AND_METRIC = "Alert.getByTestAndMetric";
 
-	@Id
-	@SequenceGenerator(name = "ALERT_ID_GENERATOR", sequenceName = "ALERT_SEQUENCE", allocationSize = 1)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ALERT_ID_GENERATOR")
-	private Long id;
+   @Id
+   @SequenceGenerator(name = "ALERT_ID_GENERATOR", sequenceName = "ALERT_SEQUENCE", allocationSize = 1)
+   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ALERT_ID_GENERATOR")
+   private Long id;
 
-	@Column(name = "name")
-	@NotNull
-	@Size(max = 500)
-	private String name;
+   @Column(name = "name")
+   @NotNull
+   @Size(max = 500)
+   private String name;
 
-	@Column(name = "description")
-	@NotNull
-	@Size(max = 2097)
-	private String description;
+   @Column(name = "description")
+   @NotNull
+   @Size(max = 2097)
+   private String description;
 
-	@Column(name = "condition")
-	@NotNull
-	@Size(max = 2097)
-	private String condition;
+   @Column(name = "condition")
+   @NotNull
+   @Size(max = 2097)
+   private String condition;
 
    @Column(name = "links")
    private String links;
 
-	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "metric_id", referencedColumnName = "id")
-	@NotNull
-	private Metric metric;
+   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+   @JoinColumn(name = "metric_id", referencedColumnName = "id")
+   @NotNull
+   private Metric metric;
 
    @ManyToMany(fetch = FetchType.LAZY)
    @JoinTable(
@@ -56,42 +55,42 @@ public class Alert implements Entity<Alert> {
    )
    private Collection<Tag> tags;
 
-	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "test_id", referencedColumnName = "id")
-	@NotNull
-	private Test test;
+   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+   @JoinColumn(name = "test_id", referencedColumnName = "id")
+   @NotNull
+   private Test test;
 
-	public Long getId() {
-		return id;
-	}
+   public Long getId() {
+      return id;
+   }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+   public void setId(Long id) {
+      this.id = id;
+   }
 
-	public String getName() {
-		return name;
-	}
+   public String getName() {
+      return name;
+   }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+   public void setName(String name) {
+      this.name = name;
+   }
 
-	public String getDescription() {
-		return description;
-	}
+   public String getDescription() {
+      return description;
+   }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+   public void setDescription(String description) {
+      this.description = description;
+   }
 
-	public String getCondition() {
-		return condition;
-	}
+   public String getCondition() {
+      return condition;
+   }
 
-	public void setCondition(String condition) {
-		this.condition = condition;
-	}
+   public void setCondition(String condition) {
+      this.condition = condition;
+   }
 
    public String getLinks() {
       return links;
@@ -102,20 +101,20 @@ public class Alert implements Entity<Alert> {
    }
 
    public Test getTest() {
-		return test;
-	}
+      return test;
+   }
 
-	public void setTest(Test test) {
-		this.test = test;
-	}
+   public void setTest(Test test) {
+      this.test = test;
+   }
 
-	public Metric getMetric() {
-		return metric;
-	}
+   public Metric getMetric() {
+      return metric;
+   }
 
-	public void setMetric(Metric metric) {
-		this.metric = metric;
-	}
+   public void setMetric(Metric metric) {
+      this.metric = metric;
+   }
 
    public Collection<Tag> getTags() {
       return tags;
@@ -126,20 +125,20 @@ public class Alert implements Entity<Alert> {
    }
 
    @Override
-	public Alert clone() {
-		try {
-			return (Alert) super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
-	}
+   public Alert clone() {
+      try {
+         return (Alert) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException(e);
+      }
+   }
 
-	@Override
-	public String toString() {
-		return "Alert{" +
-				"id=" + id +
-				", condition='" + condition + '\'' +
-				", metric=" + metric +
-				'}';
-	}
+   @Override
+   public String toString() {
+      return "Alert{"
+          + "id=" + id
+          + ", condition='" + condition + '\''
+          + ", metric=" + metric
+          + '}';
+   }
 }

@@ -66,7 +66,7 @@ public class AlertingServiceBean implements AlertingService {
       Collection<Tag> tags = alert.getTags();
 
       List<Tag> clonedTags = new ArrayList<>();
-      for(Tag tag: tags) {
+      for (Tag tag : tags) {
          clonedTags.add(tag.clone());
       }
       alert.setTags(clonedTags);
@@ -95,7 +95,7 @@ public class AlertingServiceBean implements AlertingService {
    @Override
    public List<Alert> getAlertsList(Test test) {
       List<Alert> alertsList = new ArrayList<>();
-      if(test != null) {
+      if (test != null) {
          alertsList.addAll(test.getAlerts());
       }
 
@@ -107,25 +107,25 @@ public class AlertingServiceBean implements AlertingService {
       Test test = testExecution.getTest();
       Collection<Value> values = testExecution.getValues();
 
-      if(values == null || values.isEmpty()) {
+      if (values == null || values.isEmpty()) {
          return;
       }
 
       Map<Metric, Double> results = new HashMap<>();
-      for(Value value: values) {
+      for (Value value : values) {
          results.put(value.getMetric(), value.getResultValue());
       }
 
       List<Alert> failedAlerts = new ArrayList<>();
       Map<Alert, Map<String, Object>> failedAlertsVariables = new HashMap<>();
-      for(Metric metric: results.keySet()) {
+      for (Metric metric : results.keySet()) {
          List<Alert> alerts = alertDAO.getByTestAndMetric(test, metric);
-         for(Alert alert: alerts) {
-            if(!hasAlertAllTags(testExecution, alert)) {
+         for (Alert alert : alerts) {
+            if (!hasAlertAllTags(testExecution, alert)) {
                continue;
             }
 
-            if(!conditionChecker.checkCondition(alert.getCondition(), results.get(metric), metric)) {
+            if (!conditionChecker.checkCondition(alert.getCondition(), results.get(metric), metric)) {
                failedAlerts.add(alert);
                failedAlertsVariables.put(alert, conditionChecker.getEvaluatedVariables());
             }
@@ -142,8 +142,7 @@ public class AlertingServiceBean implements AlertingService {
    }
 
    /**
-    * Helper method. Retrieves all the associated entities, because we need them
-    * in managed state.
+    * Helper method. Retrieves all the associated entities, because we need them in managed state.
     *
     * @param alert
     */
@@ -155,7 +154,7 @@ public class AlertingServiceBean implements AlertingService {
       alert.setMetric(metric);
 
       List<Tag> tags = new ArrayList<>();
-      for(Tag tag: alert.getTags()) {
+      for (Tag tag : alert.getTags()) {
          Tag managedTag = tagDAO.findByName(tag.getName());
          tags.add(managedTag);
       }
@@ -163,20 +162,21 @@ public class AlertingServiceBean implements AlertingService {
    }
 
    /**
-    * Helper method. We can specify tags that filter alerts that should be present on the test execution.
-    * This method return true/false if all tags required by alert, are present on test execution.
+    * Helper method. We can specify tags that filter alerts that should be present on the test execution. This method
+    * return true/false if all tags required by alert, are present on test execution.
+    *
     * @param testExecution
     * @param alert
     * @return
     */
    private boolean hasAlertAllTags(TestExecution testExecution, Alert alert) {
       Set<String> presentTags = new HashSet<>();
-      for(TestExecutionTag teg: testExecution.getTestExecutionTags()) {
+      for (TestExecutionTag teg : testExecution.getTestExecutionTags()) {
          presentTags.add(teg.getTagName());
       }
 
-      for(Tag tag: alert.getTags()) {
-         if(!presentTags.contains(tag.getName())) {
+      for (Tag tag : alert.getTags()) {
+         if (!presentTags.contains(tag.getName())) {
             return false;
          }
       }

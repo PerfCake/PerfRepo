@@ -17,8 +17,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Implementation of {@link AlertingReporterService} that react to the failed alert
- * by sending an email to every subscribed user.
+ * Implementation of {@link AlertingReporterService} that react to the failed alert by sending an email to every
+ * subscribed user.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
@@ -37,7 +37,7 @@ public class EmailAlertingReporterService implements AlertingReporterService {
 
    @Override
    public void reportAlert(List<Alert> alerts, TestExecution testExecution) {
-      if(alerts == null || alerts.isEmpty()) {
+      if (alerts == null || alerts.isEmpty()) {
          return;
       }
 
@@ -45,7 +45,7 @@ public class EmailAlertingReporterService implements AlertingReporterService {
 
       String message = composeMessage(alerts, testExecution);
       String subject = composeSubject(testExecution);
-      for(User subscriber: subscribers) {
+      for (User subscriber : subscribers) {
          try {
             mailer.sendEmail(subscriber.getEmail(), subject, message);
          } catch (MessagingException e) {
@@ -70,7 +70,7 @@ public class EmailAlertingReporterService implements AlertingReporterService {
 
       message.append("Hello,<br /><br />");
       message.append("after uploading results of test execution of test ");
-      message.append("<a href=\"" + urlPath + "/test/" + testExecution.getTest().getId() +"\">" + testExecution.getTest().getName() + "</a>");
+      message.append("<a href=\"" + urlPath + "/test/" + testExecution.getTest().getId() + "\">" + testExecution.getTest().getName() + "</a>");
       message.append(" some of the alerts conditions failed.<br /><br />");
       message.append("Info about test execution: <br />");
 
@@ -81,12 +81,12 @@ public class EmailAlertingReporterService implements AlertingReporterService {
 
       message.append("Alerts that failed: <br />");
       message.append("-----<br />");
-      for(Alert alert: alerts) {
+      for (Alert alert : alerts) {
          message.append("Alert name: <a href=\"" + urlPath + "/alert/" + alert.getId() + "\">" + alert.getName() + "</a><br />");
          message.append("Description: " + getEvaluatedDescription(alert) + "<br />");
-         if(alert.getLinks() != null && !alert.getLinks().isEmpty()) {
+         if (alert.getLinks() != null && !alert.getLinks().isEmpty()) {
             message.append("Links: ");
-            for(String link: alert.getLinks().split(" ")) {
+            for (String link : alert.getLinks().split(" ")) {
                message.append("<a href=\"" + link + "\">" + link + "</a> ");
             }
             message.append("<br />");
@@ -103,8 +103,8 @@ public class EmailAlertingReporterService implements AlertingReporterService {
    }
 
    /**
-    * Helper method. It's possible to use various expressions in the alert's description such as ${expression}
-    * using variables from the condition. This method parses the description and evaluates such expressions.
+    * Helper method. It's possible to use various expressions in the alert's description such as ${expression} using
+    * variables from the condition. This method parses the description and evaluates such expressions.
     *
     * @param alert
     * @return evaluated description

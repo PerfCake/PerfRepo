@@ -1,20 +1,16 @@
 /**
- *
  * PerfRepo
- *
+ * <p>
  * Copyright (C) 2015 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package org.perfrepo.web.controller;
 
@@ -36,84 +32,84 @@ import javax.inject.Named;
 @ViewScoped
 public class UserProfileController extends BaseController {
 
-	@Inject
-	private UserService userService;
+   @Inject
+   private UserService userService;
 
-	@Inject
-	private UserSession userSession;
+   @Inject
+   private UserSession userSession;
 
-	private User user;
+   private User user;
 
-	private String oldPassword;
-	private String newPassword;
-	private String newPasswordConfirmation;
+   private String oldPassword;
+   private String newPassword;
+   private String newPasswordConfirmation;
 
-	/**
-	 * called on preRenderView
-	 */
-	public void preRender() throws Exception {
-		reloadSessionMessages();
-		user = userService.getFullUser(userSession.getUser().getId());
-	}
+   /**
+    * called on preRenderView
+    */
+   public void preRender() throws Exception {
+      reloadSessionMessages();
+      user = userService.getFullUser(userSession.getUser().getId());
+   }
 
-	public User getUser() {
-		return user;
-	}
+   public User getUser() {
+      return user;
+   }
 
-	public void update() {
-		if (user == null) {
-			throw new IllegalArgumentException("User cannot be null.");
-		}
+   public void update() {
+      if (user == null) {
+         throw new IllegalArgumentException("User cannot be null.");
+      }
 
-		try {
-			User updatedUser = userService.updateUser(user);
-			redirectWithMessage("/profile", INFO, "page.user.updatedSuccesfully");
-		} catch (ServiceException ex) {
-			addMessage(ERROR, "page.user.errorUsernameAlreadyExists", ex.getMessage());
-		} catch (SecurityException ex) {
-			addMessage(ERROR, "page.test.errorSecurityException");
-		}
-	}
+      try {
+         User updatedUser = userService.updateUser(user);
+         redirectWithMessage("/profile", INFO, "page.user.updatedSuccesfully");
+      } catch (ServiceException ex) {
+         addMessage(ERROR, "page.user.errorUsernameAlreadyExists", ex.getMessage());
+      } catch (SecurityException ex) {
+         addMessage(ERROR, "page.test.errorSecurityException");
+      }
+   }
 
-	public void changePassword() {
-		if (user == null) {
-			throw new IllegalArgumentException("User cannot be null.");
-		}
+   public void changePassword() {
+      if (user == null) {
+         throw new IllegalArgumentException("User cannot be null.");
+      }
 
-		if (newPassword == null || !newPassword.equals(newPasswordConfirmation)) {
-			addMessage(ERROR, "page.user.newPasswordsNotEqual");
-			return;
-		}
+      if (newPassword == null || !newPassword.equals(newPasswordConfirmation)) {
+         addMessage(ERROR, "page.user.newPasswordsNotEqual");
+         return;
+      }
 
-		try {
-			userService.changePassword(oldPassword, newPassword);
-			redirectWithMessage("/profile", INFO, "page.user.updatedSuccesfully");
-		} catch (ServiceException ex) {
-			addMessage(ERROR, "page.user.oldPasswordDoesntMatch");
-		}
-	}
+      try {
+         userService.changePassword(oldPassword, newPassword);
+         redirectWithMessage("/profile", INFO, "page.user.updatedSuccesfully");
+      } catch (ServiceException ex) {
+         addMessage(ERROR, "page.user.oldPasswordDoesntMatch");
+      }
+   }
 
-	public void setOldPassword(String oldPassword) {
-		this.oldPassword = oldPassword;
-	}
+   public void setOldPassword(String oldPassword) {
+      this.oldPassword = oldPassword;
+   }
 
-	public void setNewPassword(String newPassword) {
-		this.newPassword = newPassword;
-	}
+   public void setNewPassword(String newPassword) {
+      this.newPassword = newPassword;
+   }
 
-	public void setNewPasswordConfirmation(String newPasswordConfirmation) {
-		this.newPasswordConfirmation = newPasswordConfirmation;
-	}
+   public void setNewPasswordConfirmation(String newPasswordConfirmation) {
+      this.newPasswordConfirmation = newPasswordConfirmation;
+   }
 
-	public String getOldPassword() {
-		return oldPassword;
-	}
+   public String getOldPassword() {
+      return oldPassword;
+   }
 
-	public String getNewPassword() {
-		return newPassword;
-	}
+   public String getNewPassword() {
+      return newPassword;
+   }
 
-	public String getNewPasswordConfirmation() {
-		return newPasswordConfirmation;
-	}
+   public String getNewPasswordConfirmation() {
+      return newPasswordConfirmation;
+   }
 }

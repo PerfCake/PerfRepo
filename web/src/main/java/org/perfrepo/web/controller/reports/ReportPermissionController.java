@@ -1,20 +1,16 @@
 /**
- *
  * PerfRepo
- *
+ * <p>
  * Copyright (C) 2015 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package org.perfrepo.web.controller.reports;
 
@@ -33,7 +29,6 @@ import org.perfrepo.web.viewscope.ViewScoped;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,26 +37,26 @@ import java.util.List;
 @ViewScoped
 public class ReportPermissionController extends BaseController {
 
-	@Inject
-	ReportService reportService;
+   @Inject
+   ReportService reportService;
 
-	@Inject
-	UserService userService;
+   @Inject
+   UserService userService;
 
    @Deprecated
-	private Collection<Permission> permissionsOld = new ArrayList<Permission>();
+   private Collection<Permission> permissionsOld = new ArrayList<Permission>();
    @Deprecated
-	private Collection<Permission> workingCopy = new ArrayList<Permission>();
+   private Collection<Permission> workingCopy = new ArrayList<Permission>();
    @Deprecated
-	private String userId;
+   private String userId;
    @Deprecated
-	private String groupId;
+   private String groupId;
    @Deprecated
-	private Permission permission = new Permission();
+   private Permission permission = new Permission();
 
-	private Long reportId;
-	private boolean isPanelShown = false;
-	private boolean userAuthorized = false;
+   private Long reportId;
+   private boolean isPanelShown = false;
+   private boolean userAuthorized = false;
 
    //part after refactoring
    private List<Permission> permissions;
@@ -69,41 +64,41 @@ public class ReportPermissionController extends BaseController {
    private List<User> usersForSelection;
    private List<Group> groupsForSelection;
 
-	@Inject
-	private AuthorizationService authorizationService;
+   @Inject
+   private AuthorizationService authorizationService;
 
-	@PostConstruct
-	public void initialize() {
-		String reportIdParam = getRequestParam("reportId");
-		reportId = reportIdParam != null ? Long.parseLong(reportIdParam) : null;
+   @PostConstruct
+   public void initialize() {
+      String reportIdParam = getRequestParam("reportId");
+      reportId = reportIdParam != null ? Long.parseLong(reportIdParam) : null;
       //this will be removed, currently present for backwards compatibility
-		permissionsOld = reportService.getReportPermissions(new Report(reportId));
-		permissions = new ArrayList<>(reportService.getReportPermissions(new Report(reportId)));
-		if (reportId != null) {
-			userAuthorized = authorizationService.isUserAuthorizedFor(AccessType.WRITE, new Report(reportId));
-		} else {
-			userAuthorized = true;
-		}
-	}
+      permissionsOld = reportService.getReportPermissions(new Report(reportId));
+      permissions = new ArrayList<>(reportService.getReportPermissions(new Report(reportId)));
+      if (reportId != null) {
+         userAuthorized = authorizationService.isUserAuthorizedFor(AccessType.WRITE, new Report(reportId));
+      } else {
+         userAuthorized = true;
+      }
+   }
 
-	public List<User> getUsersForSelection() {
-      if(usersForSelection == null) {
+   public List<User> getUsersForSelection() {
+      if (usersForSelection == null) {
          usersForSelection = userService.getUsers();
       }
 
-		return usersForSelection;
-	}
+      return usersForSelection;
+   }
 
-	public List<Group> getGroupsForSelection() {
-      if(groupsForSelection == null) {
+   public List<Group> getGroupsForSelection() {
+      if (groupsForSelection == null) {
          groupsForSelection = userService.getGroups();
       }
 
-		return groupsForSelection;
-	}
+      return groupsForSelection;
+   }
 
    public void addPermission() {
-      if(permissions == null) {
+      if (permissions == null) {
          permissions = new ArrayList<>();
       }
 
@@ -119,7 +114,7 @@ public class ReportPermissionController extends BaseController {
    }
 
    public void initDefaultPermissions() {
-      if(permissions == null) {
+      if (permissions == null) {
          permissions = new ArrayList<>();
 
          Permission permission = new Permission();
@@ -150,32 +145,32 @@ public class ReportPermissionController extends BaseController {
    }
 
    public Long getReportId() {
-		return reportId;
-	}
+      return reportId;
+   }
 
-	public void setReportId(Long reportId) {
-		this.reportId = reportId;
-	}
+   public void setReportId(Long reportId) {
+      this.reportId = reportId;
+   }
 
-	public void togglePanel() {
-		isPanelShown = !isPanelShown;
-	}
+   public void togglePanel() {
+      isPanelShown = !isPanelShown;
+   }
 
-	public boolean isPanelShown() {
-		return isPanelShown;
-	}
+   public boolean isPanelShown() {
+      return isPanelShown;
+   }
 
-	public void setPanelShown(boolean isPanelShown) {
-		this.isPanelShown = isPanelShown;
-	}
+   public void setPanelShown(boolean isPanelShown) {
+      this.isPanelShown = isPanelShown;
+   }
 
-	public boolean isUserAuthorized() {
-		return userAuthorized;
-	}
+   public boolean isUserAuthorized() {
+      return userAuthorized;
+   }
 
-	public void setUserAuthorized(boolean userAuthorized) {
-		this.userAuthorized = userAuthorized;
-	}
+   public void setUserAuthorized(boolean userAuthorized) {
+      this.userAuthorized = userAuthorized;
+   }
 
    @Deprecated
    public String getPermissionGroup(Permission p) {

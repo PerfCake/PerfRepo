@@ -14,8 +14,8 @@ import java.util.Map;
 public interface AlertingReporterService {
 
    /**
-    * Suppose that the alert has failed. Calling this method will trigger appropriate procedure
-    * of reporting the failed alert, e.g. send an email, log it into file etc. Depends on the implementation.
+    * Suppose that the alert has failed. Calling this method will trigger appropriate procedure of reporting the failed
+    * alert, e.g. send an email, log it into file etc. Depends on the implementation.
     *
     * @param alerts
     * @param testExecution
@@ -23,8 +23,8 @@ public interface AlertingReporterService {
    public void reportAlert(List<Alert> alerts, TestExecution testExecution);
 
    /**
-    * Allows to pass the values of variables used in the condition that failed (for every alert). This can be used for creating more
-    * user-friendly alert messages.
+    * Allows to pass the values of variables used in the condition that failed (for every alert). This can be used for
+    * creating more user-friendly alert messages.
     *
     * @param variables
     */

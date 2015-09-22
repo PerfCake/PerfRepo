@@ -1,36 +1,22 @@
 /**
- *
  * PerfRepo
- *
+ * <p>
  * Copyright (C) 2015 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package org.perfrepo.model;
 
 import org.perfrepo.model.user.User;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -42,95 +28,95 @@ import javax.validation.constraints.Size;
 @javax.persistence.Entity
 @Table(name = "favorite_parameter")
 @NamedQueries({
-		@NamedQuery(name = FavoriteParameter.FIND_BY_TEST_AND_PARAM_NAME, query = "SELECT fp FROM FavoriteParameter fp JOIN fp.test test JOIN fp.user user WHERE test.id = :testId AND user.id = :userId AND fp.parameterName = :paramName")
+    @NamedQuery(name = FavoriteParameter.FIND_BY_TEST_AND_PARAM_NAME, query = "SELECT fp FROM FavoriteParameter fp JOIN fp.test test JOIN fp.user user WHERE test.id = :testId AND user.id = :userId AND fp.parameterName = :paramName")
 })
 public class FavoriteParameter implements Entity<FavoriteParameter> {
 
-	private static final long serialVersionUID = 2290056642668445219L;
+   private static final long serialVersionUID = 2290056642668445219L;
 
-	public static final String FIND_BY_TEST_AND_PARAM_NAME = "findByTestAndParamName";
+   public static final String FIND_BY_TEST_AND_PARAM_NAME = "findByTestAndParamName";
 
-	@Id
-	@SequenceGenerator(name = "FAVORITE_PARAMETER_ID_GENERATOR", sequenceName = "FAVORITE_PARAMETER_SEQUENCE", allocationSize = 1)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FAVORITE_PARAMETER_ID_GENERATOR")
-	private Long id;
+   @Id
+   @SequenceGenerator(name = "FAVORITE_PARAMETER_ID_GENERATOR", sequenceName = "FAVORITE_PARAMETER_SEQUENCE", allocationSize = 1)
+   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FAVORITE_PARAMETER_ID_GENERATOR")
+   private Long id;
 
-	@Column(name = "label")
-	@NotNull
-	@Size(max = 2047)
-	private String label;
+   @Column(name = "label")
+   @NotNull
+   @Size(max = 2047)
+   private String label;
 
-	@Column(name = "parameter_name")
-	@NotNull
-	@Size(max = 2047)
-	private String parameterName;
+   @Column(name = "parameter_name")
+   @NotNull
+   @Size(max = 2047)
+   private String parameterName;
 
-	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "user_id", referencedColumnName = "id")
-	@NotNull
-	private User user;
+   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+   @JoinColumn(name = "user_id", referencedColumnName = "id")
+   @NotNull
+   private User user;
 
-	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "test_id", referencedColumnName = "id")
-	@NotNull
-	private Test test;
+   @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+   @JoinColumn(name = "test_id", referencedColumnName = "id")
+   @NotNull
+   private Test test;
 
-	public String getLabel() {
-		return label;
-	}
+   public String getLabel() {
+      return label;
+   }
 
-	public void setLabel(String label) {
-		this.label = label;
-	}
+   public void setLabel(String label) {
+      this.label = label;
+   }
 
-	public String getParameterName() {
-		return parameterName;
-	}
+   public String getParameterName() {
+      return parameterName;
+   }
 
-	public void setParameterName(String parameterName) {
-		this.parameterName = parameterName;
-	}
+   public void setParameterName(String parameterName) {
+      this.parameterName = parameterName;
+   }
 
-	public Long getId() {
-		return id;
-	}
+   public Long getId() {
+      return id;
+   }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+   public void setId(Long id) {
+      this.id = id;
+   }
 
-	public User getUser() {
-		return user;
-	}
+   public User getUser() {
+      return user;
+   }
 
-	public void setUser(User user) {
-		this.user = user;
-	}
+   public void setUser(User user) {
+      this.user = user;
+   }
 
-	public Test getTest() {
-		return test;
-	}
+   public Test getTest() {
+      return test;
+   }
 
-	public void setTest(Test test) {
-		this.test = test;
-	}
+   public void setTest(Test test) {
+      this.test = test;
+   }
 
-	@Override
-	public FavoriteParameter clone() {
-		try {
-			return (FavoriteParameter) super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
-	}
+   @Override
+   public FavoriteParameter clone() {
+      try {
+         return (FavoriteParameter) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException(e);
+      }
+   }
 
-	@Override
-	public String toString() {
-		return "FavoriteParameter{" +
-				"id=" + id +
-				", label='" + label + '\'' +
-				", parameterName='" + parameterName + '\'' +
-				", user=" + user +
-				'}';
-	}
+   @Override
+   public String toString() {
+      return "FavoriteParameter{"
+          + "id=" + id
+          + ", label='" + label + '\''
+          + ", parameterName='" + parameterName + '\''
+          + ", user=" + user
+          + '}';
+   }
 }

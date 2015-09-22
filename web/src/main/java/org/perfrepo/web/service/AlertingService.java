@@ -54,8 +54,8 @@ public interface AlertingService {
    public List<Alert> getAlertsList(Test test);
 
    /**
-    * Goes through all alerts that are valid for this test execution and checks if they passed.
-    * Basically fulfills the alerting feature.
+    * Goes through all alerts that are valid for this test execution and checks if they passed. Basically fulfills the
+    * alerting feature.
     *
     * @param testExecution
     */

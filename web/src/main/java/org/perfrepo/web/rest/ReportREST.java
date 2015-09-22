@@ -1,20 +1,16 @@
 /**
- *
  * PerfRepo
- *
+ * <p>
  * Copyright (C) 2015 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package org.perfrepo.web.rest;
 
@@ -51,7 +47,7 @@ public class ReportREST {
 
    private static Method GET_REPORT_METHOD;
 
-	@Inject
+   @Inject
    private ReportService reportService;
 
    @Inject
@@ -65,13 +61,13 @@ public class ReportREST {
       }
    }
 
-	@GET
-	@Produces(MediaType.TEXT_XML)
-	@Path("/id/{reportId}")
-	@Logged
-	public Response get(@PathParam("reportId") Long reportId) {
-		return Response.ok(reportService.getFullReport(new Report(reportId))).build();
-	}
+   @GET
+   @Produces(MediaType.TEXT_XML)
+   @Path("/id/{reportId}")
+   @Logged
+   public Response get(@PathParam("reportId") Long reportId) {
+      return Response.ok(reportService.getFullReport(new Report(reportId))).build();
+   }
 
    @POST
    @Path("/create")
@@ -82,8 +78,8 @@ public class ReportREST {
       User user = userService.getFullUser(username);
       report.setUser(user);
 
-      if(report.getProperties() != null) {
-         for(ReportProperty property: report.getProperties().values()) {
+      if (report.getProperties() != null) {
+         for (ReportProperty property : report.getProperties().values()) {
             property.setReport(report);
          }
       }
@@ -100,8 +96,8 @@ public class ReportREST {
       User user = userService.getFullUser(username);
       report.setUser(user);
 
-      if(report.getProperties() != null) {
-         for(ReportProperty property: report.getProperties().values()) {
+      if (report.getProperties() != null) {
+         for (ReportProperty property : report.getProperties().values()) {
             property.setReport(report);
          }
       }

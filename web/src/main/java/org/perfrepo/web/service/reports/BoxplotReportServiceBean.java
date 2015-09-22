@@ -15,7 +15,6 @@ import org.perfrepo.web.dao.TestDAO;
 import org.perfrepo.web.dao.TestExecutionDAO;
 import org.perfrepo.web.service.ReportService;
 import org.perfrepo.web.service.UserService;
-import org.perfrepo.web.service.exceptions.ServiceException;
 import org.perfrepo.web.util.ReportUtils;
 
 import javax.ejb.Stateless;
@@ -31,8 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Service bean for boxplot report. Contains all necessary method to be able to work
- * with boxplot reports.
+ * Service bean for boxplot report. Contains all necessary method to be able to work with boxplot reports.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
@@ -61,7 +59,7 @@ public class BoxplotReportServiceBean {
    /**
     * Creates new boxplot report
     *
-    * @param name name of the report
+    * @param name   name of the report
     * @param charts transfer object with all information about the report
     * @return ID of newly created report
     */
@@ -111,7 +109,7 @@ public class BoxplotReportServiceBean {
     */
    public Map<String, List<Chart>> load(Long reportId) {
       Report report = reportService.getFullReport(new Report(reportId));
-      if(report == null) {
+      if (report == null) {
          throw new IllegalArgumentException("Report with ID=" + reportId + " doesn't exist");
       }
 
@@ -122,32 +120,37 @@ public class BoxplotReportServiceBean {
    }
 
    /**
-    * Given Chart transfer objects, this method fills them with actual computes values, so after calling this
-    * method, all charts contain all necessary information for being displayed.
+    * Given Chart transfer objects, this method fills them with actual computes values, so after calling this method,
+    * all charts contain all necessary information for being displayed.
     *
     * @param charts
     */
    public void computeCharts(List<Chart> charts) {
-      if(charts == null) {
+      if (charts == null) {
          return;
       }
 
-      for(Chart chart: charts) {
+      for (Chart chart : charts) {
          Test test = testDAO.get(chart.getTestId());
 
-         if(chart.getSeriesList() == null) {
+         if (chart.getSeriesList() == null) {
             continue;
          }
 
-         for(Chart.Series series: chart.getSeriesList()) {
+         for (Chart.Series series : chart.getSeriesList()) {
             TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
             searchCriteria.setTestUID(test.getUid());
             searchCriteria.setTags(series.getTags());
 
-            switch(chart.getxAxisSort()) {
-               case DATE: searchCriteria.setOrderBy(OrderBy.DATE_ASC); break;
-               case PARAMETER: searchCriteria.setOrderBy(OrderBy.PARAMETER_ASC); break;
-               case VERSION: searchCriteria.setOrderBy(OrderBy.VERSION_ASC);
+            switch (chart.getxAxisSort()) {
+               case DATE:
+                  searchCriteria.setOrderBy(OrderBy.DATE_ASC);
+                  break;
+               case PARAMETER:
+                  searchCriteria.setOrderBy(OrderBy.PARAMETER_ASC);
+                  break;
+               case VERSION:
+                  searchCriteria.setOrderBy(OrderBy.VERSION_ASC);
             }
 
             searchCriteria.setOrderByParameter(chart.getxAxisSortParameter());
@@ -160,11 +163,11 @@ public class BoxplotReportServiceBean {
             series.setDataPoints(dataPoints);
          }
 
-         if(chart.getBaselines() == null) {
+         if (chart.getBaselines() == null) {
             continue;
          }
 
-         for(Chart.Baseline baseline: chart.getBaselines()) {
+         for (Chart.Baseline baseline : chart.getBaselines()) {
             Metric metric = metricDAO.get(baseline.getMetricId());
             Double value = testExecutionDAO.getValueForMetric(baseline.getExecutionId(), metric.getName());
 
@@ -182,7 +185,7 @@ public class BoxplotReportServiceBean {
     */
    private Map<String, ReportProperty> storeTOIntoReportProperties(List<Chart> charts, Report report) {
       Map<String, ReportProperty> properties = new HashMap<>();
-      for(int i = 0; i < charts.size(); i++) {
+      for (int i = 0; i < charts.size(); i++) {
          Chart chart = charts.get(i);
          String chartPrefix = "chart" + i + ".";
 
@@ -219,11 +222,11 @@ public class BoxplotReportServiceBean {
     * @param chartPrefix
     */
    private void storeSeries(Map<String, ReportProperty> properties, Chart chart, String chartPrefix, Report report) {
-      if(chart.getSeriesList() == null) {
+      if (chart.getSeriesList() == null) {
          return;
       }
 
-      for(int i = 0; i < chart.getSeriesList().size(); i++) {
+      for (int i = 0; i < chart.getSeriesList().size(); i++) {
          Chart.Series series = chart.getSeriesList().get(i);
          String seriesPrefix = chartPrefix + "series" + i + ".";
 
@@ -242,11 +245,11 @@ public class BoxplotReportServiceBean {
     * @param report
     */
    private void storeBaselines(Map<String, ReportProperty> properties, Chart chart, String chartPrefix, Report report) {
-      if(chart.getBaselines() == null) {
+      if (chart.getBaselines() == null) {
          return;
       }
 
-      for(int i = 0; i < chart.getBaselines().size(); i++) {
+      for (int i = 0; i < chart.getBaselines().size(); i++) {
          Chart.Baseline baseline = chart.getBaselines().get(i);
          String baselinePrefix = chartPrefix + "baseline" + i + ".";
 
@@ -266,7 +269,7 @@ public class BoxplotReportServiceBean {
       List<Chart> charts = new ArrayList<>();
 
       int chartIndex = 0;
-      while(properties.containsKey("chart" + chartIndex + ".name")) {
+      while (properties.containsKey("chart" + chartIndex + ".name")) {
          Chart chart = new Chart();
 
          loadChartProperties(chartIndex, chart, properties);
@@ -284,7 +287,7 @@ public class BoxplotReportServiceBean {
     * Parses and adds top-level properties of single chart from report properties
     *
     * @param chartIndex index of the chart being processed
-    * @param chart chart transfer object to be modified
+    * @param chart      chart transfer object to be modified
     * @param properties report properties
     */
    private void loadChartProperties(int chartIndex, Chart chart, Map<String, ReportProperty> properties) {
@@ -293,11 +296,11 @@ public class BoxplotReportServiceBean {
       chart.setxAxisSort(Chart.AxisOption.valueOf(properties.get("chart" + chartIndex + ".xAxisSortType").getValue()));
       chart.setxAxisLabel(Chart.AxisOption.valueOf(properties.get("chart" + chartIndex + ".xAxisLabelType").getValue()));
 
-      if(properties.containsKey("chart" + chartIndex + ".xAxisSortParameter")) {
+      if (properties.containsKey("chart" + chartIndex + ".xAxisSortParameter")) {
          chart.setxAxisSortParameter(properties.get("chart" + chartIndex + ".xAxisSortParameter").getValue());
       }
 
-      if(properties.containsKey("chart" + chartIndex + ".xAxisLabelParameter")) {
+      if (properties.containsKey("chart" + chartIndex + ".xAxisLabelParameter")) {
          chart.setxAxisLabelParameter(properties.get("chart" + chartIndex + ".xAxisLabelParameter").getValue());
       }
    }
@@ -306,20 +309,20 @@ public class BoxplotReportServiceBean {
     * Creates Series transfer objects from report properties for specified chart.
     *
     * @param chartIndex index of the chart being processed
-    * @param chart chart transfer object to be modified
+    * @param chart      chart transfer object to be modified
     * @param properties report properties
     */
    private void loadSeries(int chartIndex, Chart chart, Map<String, ReportProperty> properties) {
       String seriesPrefix = "chart" + chartIndex + ".series";
       int seriesIndex = 0;
 
-      while(properties.containsKey(seriesPrefix + seriesIndex + ".name")) {
+      while (properties.containsKey(seriesPrefix + seriesIndex + ".name")) {
          Chart.Series series = new Chart.Series();
          series.setName(properties.get(seriesPrefix + seriesIndex + ".name").getValue());
          series.setTags(properties.get(seriesPrefix + seriesIndex + ".tags").getValue());
          series.setMetricId(Long.parseLong(properties.get(seriesPrefix + seriesIndex + ".metricId").getValue()));
 
-         if(chart.getSeriesList() == null) {
+         if (chart.getSeriesList() == null) {
             chart.setSeriesList(new ArrayList<>());
          }
 
@@ -332,20 +335,20 @@ public class BoxplotReportServiceBean {
     * Creates Baseline transfer objects from report properties for specified chart.
     *
     * @param chartIndex index of the chart being processed
-    * @param chart chart transfer object to be modified
+    * @param chart      chart transfer object to be modified
     * @param properties report properties
     */
    private void loadBaselines(int chartIndex, Chart chart, Map<String, ReportProperty> properties) {
       String baselinePrefix = "chart" + chartIndex + ".baseline";
       int baselineIndex = 0;
 
-      while(properties.containsKey(baselinePrefix + baselineIndex + ".name")) {
+      while (properties.containsKey(baselinePrefix + baselineIndex + ".name")) {
          Chart.Baseline baseline = new Chart.Baseline();
          baseline.setName(properties.get(baselinePrefix + baselineIndex + ".name").getValue());
          baseline.setExecutionId(Long.parseLong(properties.get(baselinePrefix + baselineIndex + ".execId").getValue()));
          baseline.setMetricId(Long.parseLong(properties.get(baselinePrefix + baselineIndex + ".metricId").getValue()));
 
-         if(chart.getBaselines() == null) {
+         if (chart.getBaselines() == null) {
             chart.setBaselines(new ArrayList<>());
          }
 
@@ -355,8 +358,8 @@ public class BoxplotReportServiceBean {
    }
 
    /**
-    * Constructs simple DataPoint objects which represents a single boxplot in the chart. Therefore it
-    * gathers all values of one test executions and group them together in a single object.
+    * Constructs simple DataPoint objects which represents a single boxplot in the chart. Therefore it gathers all
+    * values of one test executions and group them together in a single object.
     *
     * @param resultWrappers results from database
     * @return list of datapoints ready to be printed in the chart
@@ -364,8 +367,8 @@ public class BoxplotReportServiceBean {
    private List<Chart.Series.DataPoint> assembleResults(List<MultiValueResultWrapper> resultWrappers) {
       List<Chart.Series.DataPoint> seriesResults = new ArrayList<>();
 
-      for(MultiValueResultWrapper resultWrapper: resultWrappers) {
-         if(resultWrapper.getValues() == null || resultWrapper.getValues().isEmpty()) {
+      for (MultiValueResultWrapper resultWrapper : resultWrappers) {
+         if (resultWrapper.getValues() == null || resultWrapper.getValues().isEmpty()) {
             continue;
          }
 

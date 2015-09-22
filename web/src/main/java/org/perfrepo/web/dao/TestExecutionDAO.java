@@ -1,39 +1,18 @@
 /**
- *
  * PerfRepo
- *
+ * <p>
  * Copyright (C) 2015 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package org.perfrepo.web.dao;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.perfrepo.model.Metric;
@@ -54,6 +33,30 @@ import org.perfrepo.model.userproperty.GroupFilter;
 import org.perfrepo.model.util.EntityUtils;
 import org.perfrepo.web.util.TagUtils;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.AbstractQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * DAO for {@link TestExecution}
  *
@@ -69,11 +72,11 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
    private Integer lastQueryResultsCount = null;
 
-	public List<TestExecution> getByTest(Long testId) {
-		Test test = new Test();
-		test.setId(testId);
-		return getAllByProperty("test", test);
-	}
+   public List<TestExecution> getByTest(Long testId) {
+      Test test = new Test();
+      test.setId(testId);
+      return getAllByProperty("test", test);
+   }
 
    /**
     * Returns test executions with property value between selected boundaries. This can be applied only on
@@ -165,13 +168,13 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Long count = null;
       //we want to use 'last' boundaries, we must compute the number of test executions that
       //match the requirements - have selected tags and belong to selected tests
-      if(lastFrom != null && howMany != null) {
+      if (lastFrom != null && howMany != null) {
          CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
          Root<TestExecution> root = countQuery.from(TestExecution.class);
          countQuery.select(cb.countDistinct(root));
 
          Subquery<Long> subquery = (Subquery) createSubqueryByTags(countQuery.subquery(Long.class));
-         Root<TestExecution> subqueryRoot = (Root<TestExecution>)subquery.getRoots().toArray()[0];
+         Root<TestExecution> subqueryRoot = (Root<TestExecution>) subquery.getRoots().toArray()[0];
          subquery.select(subqueryRoot.<Long>get("id"));
 
          countQuery.where(cb.in(root.get("id")).value(subquery));
@@ -181,14 +184,14 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
       //now we can retrieve the actual result
       CriteriaQuery<TestExecution> criteriaQuery = (CriteriaQuery) createSubqueryByTags(cb.createQuery(TestExecution.class));
-      Root<TestExecution> root = (Root<TestExecution>)criteriaQuery.getRoots().toArray()[0];
+      Root<TestExecution> root = (Root<TestExecution>) criteriaQuery.getRoots().toArray()[0];
       criteriaQuery.select(root);
       criteriaQuery.orderBy(cb.asc(root.get("started")));
 
       TypedQuery<TestExecution> query = createTypedQueryByTags(criteriaQuery, testUIDs, tags);
       //we're using 'last' parameters, set the paging
       //TODO: this might be broken, use search test execution instead
-      if(count != null) {
+      if (count != null) {
          int firstResult = count.intValue() - lastFrom;
          query.setFirstResult(firstResult < 0 ? 0 : firstResult);
          query.setMaxResults(howMany);
@@ -270,7 +273,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
       Path<?> labelPath = testExecution.get("started");
 
-      if(search.getLabelParameter() != null) {
+      if (search.getLabelParameter() != null) {
          executionParameterJoin = testExecution.join("parameters");
          labelParameter = cb.equal(executionParameterJoin.get("name"), search.getLabelParameter());
          labelPath = executionParameterJoin.get("value");
@@ -281,7 +284,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
                                 valueParameterJoin.get("paramValue").alias("valueParameterValue"),
                                 testExecution.get("id").alias("execId"),
                                 labelPath.alias("label")
-                               );
+      );
 
       criteriaQuery.where(cb.and(selectedMetric, selectedTestExecutions, labelParameter));
       criteriaQuery.orderBy(cb.asc(testExecution.get("started")));
@@ -295,7 +298,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       //this way of computing might seem strange, but is necessary. We need to keep ordering by
       //test executions. However, retrieved tuples are one for every value. Therefore, we perform
       //something like "group by test execution ID" on the results and construct result wrappers.
-      for(Tuple tuple: queryResult) {
+      for (Tuple tuple : queryResult) {
          Long execId = tuple.get("execId", Long.class);
 
          unsortedResult.putIfAbsent(execId, new MultiValueResultWrapper(execId, tuple.get("label")));
@@ -314,94 +317,94 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       return finalSortedResult;
    }
 
-	/**
-	 * Finds all values used for computing MetricHistory report
+   /**
+    * Finds all values used for computing MetricHistory report
     *
-	 * @param testId
-	 * @param metricName
-	 * @param tagList
-	 * @param limitSize
-	 * @return List of ResultWrapper objects
-	 */
-	public List<MetricReportTO.DataPoint> searchValues(Long testId, String metricName, List<String> tagList, int limitSize) {
-		boolean useTags = tagList != null && !tagList.isEmpty();
-		CriteriaBuilder cb = criteriaBuilder();
-		CriteriaQuery<MetricReportTO.DataPoint> criteria = cb.createQuery(MetricReportTO.DataPoint.class);
-		// test executions
-		Root<TestExecution> rExec = criteria.from(TestExecution.class);
-		// test joined via test exec.
-		Join<TestExecution, Test> rTest_Exec = rExec.join("test");
-		// values
-		Join<TestExecution, Value> rValue = rExec.join("values");
-		// metrics
-		Join<Value, Metric> rMetric = rValue.join("metric");
-		// test joined via metric
-		Join<Metric, Test> rTest_Metric = rMetric.join("testMetrics").join("test");
-		// tag
-		Join<TestExecution, Tag> rTag = null;
-		Predicate pTagNameInFixedList = cb.and(); // default for this predicate is true
-		Predicate pHavingAllTagsPresent = cb.and();
-		if (useTags) {
-			rTag = rExec.join("testExecutionTags").join("tag");
-			pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
-			pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
-		}
+    * @param testId
+    * @param metricName
+    * @param tagList
+    * @param limitSize
+    * @return List of ResultWrapper objects
+    */
+   public List<MetricReportTO.DataPoint> searchValues(Long testId, String metricName, List<String> tagList, int limitSize) {
+      boolean useTags = tagList != null && !tagList.isEmpty();
+      CriteriaBuilder cb = criteriaBuilder();
+      CriteriaQuery<MetricReportTO.DataPoint> criteria = cb.createQuery(MetricReportTO.DataPoint.class);
+      // test executions
+      Root<TestExecution> rExec = criteria.from(TestExecution.class);
+      // test joined via test exec.
+      Join<TestExecution, Test> rTestExec = rExec.join("test");
+      // values
+      Join<TestExecution, Value> rValue = rExec.join("values");
+      // metrics
+      Join<Value, Metric> rMetric = rValue.join("metric");
+      // test joined via metric
+      Join<Metric, Test> rTestMetric = rMetric.join("testMetrics").join("test");
+      // tag
+      Join<TestExecution, Tag> rTag = null;
+      Predicate pTagNameInFixedList = cb.and(); // default for this predicate is true
+      Predicate pHavingAllTagsPresent = cb.and();
+      if (useTags) {
+         rTag = rExec.join("testExecutionTags").join("tag");
+         pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
+         pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
+      }
 
-		Predicate pMetricNameFixed = cb.equal(rMetric.get("name"), cb.parameter(String.class, "metricName"));
-		Predicate pTestFixed = cb.equal(rTest_Exec.get("id"), cb.parameter(Long.class, "testId"));
-		Predicate pMetricFromSameTest = cb.equal(rTest_Metric.get("id"), rTest_Exec.get("id"));
+      Predicate pMetricNameFixed = cb.equal(rMetric.get("name"), cb.parameter(String.class, "metricName"));
+      Predicate pTestFixed = cb.equal(rTestExec.get("id"), cb.parameter(Long.class, "testId"));
+      Predicate pMetricFromSameTest = cb.equal(rTestMetric.get("id"), rTestExec.get("id"));
 
-		//sort by date
-		criteria.select(cb.construct(MetricReportTO.DataPoint.class, rExec.get("started"), rValue.get("resultValue"), rExec.get("id")));
-		criteria.where(cb.and(pMetricNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
-		criteria.groupBy(rValue.get("resultValue"), rExec.get("id"), rExec.get("started"));
-		criteria.orderBy(cb.desc(rExec.get("started")));
+      //sort by date
+      criteria.select(cb.construct(MetricReportTO.DataPoint.class, rExec.get("started"), rValue.get("resultValue"), rExec.get("id")));
+      criteria.where(cb.and(pMetricNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
+      criteria.groupBy(rValue.get("resultValue"), rExec.get("id"), rExec.get("started"));
+      criteria.orderBy(cb.desc(rExec.get("started")));
 
-		criteria.having(pHavingAllTagsPresent);
+      criteria.having(pHavingAllTagsPresent);
 
-		TypedQuery<MetricReportTO.DataPoint> query = query(criteria);
-		query.setParameter("testId", testId);
-		query.setParameter("metricName", metricName);
+      TypedQuery<MetricReportTO.DataPoint> query = query(criteria);
+      query.setParameter("testId", testId);
+      query.setParameter("metricName", metricName);
 
-		if (useTags) {
-			query.setParameter("tagList", tagList);
-			query.setParameter("tagListSize", new Long(tagList.size()));
-		}
-		query.setMaxResults(limitSize);
-		return query.getResultList();
-	}
+      if (useTags) {
+         query.setParameter("tagList", tagList);
+         query.setParameter("tagListSize", new Long(tagList.size()));
+      }
+      query.setMaxResults(limitSize);
+      return query.getResultList();
+   }
 
-	public Double getValueForMetric(Long execId, String metricName) {
-		CriteriaBuilder cb = criteriaBuilder();
-		CriteriaQuery<Double> criteria = cb.createQuery(Double.class);
-		// test executions
-		Root<TestExecution> rExec = criteria.from(TestExecution.class);
-		// test joined via test exec.
-		Join<TestExecution, Test> rTest_Exec = rExec.join("test");
-		// values
-		Join<TestExecution, Value> rValue = rExec.join("values");
-		// metrics
-		Join<Value, Metric> rMetric = rValue.join("metric");
-		// test joined via metric
-		Join<Metric, Test> rTest_Metric = rMetric.join("testMetrics").join("test");
+   public Double getValueForMetric(Long execId, String metricName) {
+      CriteriaBuilder cb = criteriaBuilder();
+      CriteriaQuery<Double> criteria = cb.createQuery(Double.class);
+      // test executions
+      Root<TestExecution> rExec = criteria.from(TestExecution.class);
+      // test joined via test exec.
+      Join<TestExecution, Test> rTestExec = rExec.join("test");
+      // values
+      Join<TestExecution, Value> rValue = rExec.join("values");
+      // metrics
+      Join<Value, Metric> rMetric = rValue.join("metric");
+      // test joined via metric
+      Join<Metric, Test> rTestMetric = rMetric.join("testMetrics").join("test");
 
-		Predicate pMetricNameFixed = cb.equal(rMetric.get("name"), cb.parameter(String.class, "metricName"));
-		Predicate pExecFixed = cb.equal(rExec.get("id"), cb.parameter(Long.class, "execId"));
-		Predicate pMetricFromSameTest = cb.equal(rTest_Metric.get("id"), rTest_Exec.get("id"));
-		criteria.multiselect(rValue.get("resultValue"));
-		criteria.where(cb.and(pMetricNameFixed, pExecFixed, pMetricFromSameTest));
+      Predicate pMetricNameFixed = cb.equal(rMetric.get("name"), cb.parameter(String.class, "metricName"));
+      Predicate pExecFixed = cb.equal(rExec.get("id"), cb.parameter(Long.class, "execId"));
+      Predicate pMetricFromSameTest = cb.equal(rTestMetric.get("id"), rTestExec.get("id"));
+      criteria.multiselect(rValue.get("resultValue"));
+      criteria.where(cb.and(pMetricNameFixed, pExecFixed, pMetricFromSameTest));
 
-		TypedQuery<Double> query = query(criteria);
-		query.setParameter("execId", execId);
-		query.setParameter("metricName", metricName);
+      TypedQuery<Double> query = query(criteria);
+      query.setParameter("execId", execId);
+      query.setParameter("metricName", metricName);
 
-		List<Double> r = query.getResultList();
-		if (r.isEmpty()) {
-			return null;
-		} else {
-			return r.get(0);
-		}
-	}
+      List<Double> r = query.getResultList();
+      if (r.isEmpty()) {
+         return null;
+      } else {
+         return r.get(0);
+      }
+   }
 
    /**
     * Return number of entities returned by the last query.
@@ -410,7 +413,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @return
     */
    public int getLastQueryResultsCount() {
-      if(lastQueryResultsCount == null) {
+      if (lastQueryResultsCount == null) {
          throw new IllegalStateException("No query was executed before.");
       }
 
@@ -431,7 +434,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       //by values for specific parameter name in SQL. Therefore if the the option is PARAMETER(ASC|DESC)
       //it's ordered afterwards, just like filterResultByParameters, see orderResultsByParameters
       Order order;
-      switch(orderBy) {
+      switch (orderBy) {
          case DATE_ASC:
             order = cb.asc(root.get("started"));
             break;
@@ -551,7 +554,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       countQuery.select(cb.countDistinct(root));
 
       Subquery<Long> subquery = (Subquery) createSearchSubquery(countQuery.subquery(Long.class), search, includedTags, excludedTags);
-      Root<TestExecution> subqueryRoot = (Root<TestExecution>)subquery.getRoots().toArray()[0];
+      Root<TestExecution> subqueryRoot = (Root<TestExecution>) subquery.getRoots().toArray()[0];
       subquery.select(subqueryRoot.<Long>get("id"));
 
       countQuery.where(cb.in(root.get("id")).value(subquery));
@@ -592,7 +595,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          List<TestExecutionParameter> allParams = testExecutionParameterDAO.find(execIds, displayedParams);
          Map<Long, List<TestExecutionParameter>> paramsByExecId = new HashMap<Long, List<TestExecutionParameter>>();
 
-         for (TestExecutionParameter param: allParams) {
+         for (TestExecutionParameter param : allParams) {
             List<TestExecutionParameter> paramListForExec = paramsByExecId.get(param.getTestExecution().getId());
             if (paramListForExec == null) {
                paramListForExec = new ArrayList<TestExecutionParameter>(displayedParams.size());
@@ -602,7 +605,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
             paramListForExec.add(param);
          }
 
-         for (TestExecution exec: result) {
+         for (TestExecution exec : result) {
             List<TestExecutionParameter> paramListForExec = paramsByExecId.get(exec.getId());
             exec.setParameters(paramListForExec == null ? Collections.<TestExecutionParameter>emptyList() : paramListForExec);
             exec.setTestExecutionTags(EntityUtils.clone(exec.getTestExecutionTags()));
@@ -611,8 +614,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
             }
          }
       } else {
-         for (TestExecution exec: result) {
-            if(exec.getTestExecutionTags() == null) {
+         for (TestExecution exec : result) {
+            if (exec.getTestExecutionTags() == null) {
                continue;
             }
 
@@ -632,10 +635,10 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param search
     */
    private void orderResultsByParameters(List<TestExecution> testExecutions, TestExecutionSearchTO search) {
-      if(!Arrays.asList(OrderBy.PARAMETER_ASC,
-                        OrderBy.PARAMETER_DESC,
-                        OrderBy.VERSION_ASC,
-                        OrderBy.VERSION_DESC).contains(search.getOrderBy())) {
+      if (!Arrays.asList(OrderBy.PARAMETER_ASC,
+                         OrderBy.PARAMETER_DESC,
+                         OrderBy.VERSION_ASC,
+                         OrderBy.VERSION_DESC).contains(search.getOrderBy())) {
          return;
       }
 
@@ -645,10 +648,10 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       testExecutions.stream().forEach(execution -> execution.setParameters(parametersByExecution.get(execution.getId())));
 
       Collections.sort(testExecutions,
-                       (o1, o2) ->  {
+                       (o1, o2) -> {
                           String o1paramValue = o1.getParametersAsMap().get(search.getOrderByParameter());
                           int orderCoefficient = search.getOrderBy() == OrderBy.PARAMETER_ASC || search.getOrderBy() == OrderBy.VERSION_ASC ? 1 : -1;
-                          if(o1paramValue == null) {
+                          if (o1paramValue == null) {
                              return orderCoefficient * 1;
                           }
 
@@ -665,7 +668,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @return
     */
    private int performCompare(String value1, String value2, TestExecutionSearchTO search) {
-      if(search.getOrderBy() == OrderBy.VERSION_ASC || search.getOrderBy() == OrderBy.VERSION_DESC) {
+      if (search.getOrderBy() == OrderBy.VERSION_ASC || search.getOrderBy() == OrderBy.VERSION_DESC) {
          DefaultArtifactVersion version1 = new DefaultArtifactVersion(value1);
          DefaultArtifactVersion version2 = new DefaultArtifactVersion(value2);
 
@@ -713,7 +716,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param excludedTags
     * @param userGroups
     */
-   private void fillParameterValues(TypedQuery query, TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags,  List<String> userGroups) {
+   private void fillParameterValues(TypedQuery query, TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags, List<String> userGroups) {
       if (search.getIds() != null) {
          query.setParameter("ids", search.getIds());
       }
@@ -732,7 +735,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       }
       if (search.getTestName() != null && !"".equals(search.getTestName())) {
          if (search.getTestName().endsWith("*")) {
-            String pattern = search.getTestName().substring(0, search.getTestName().length() -1).concat("%").toLowerCase();
+            String pattern = search.getTestName().substring(0, search.getTestName().length() - 1).concat("%").toLowerCase();
             query.setParameter("testName", pattern);
          } else {
             query.setParameter("testName", search.getTestName().toLowerCase());
@@ -740,7 +743,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       }
       if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
          if (search.getTestUID().endsWith("*")) {
-            String pattern = search.getTestUID().substring(0, search.getTestUID().length() -1).concat("%").toLowerCase();
+            String pattern = search.getTestUID().substring(0, search.getTestUID().length() - 1).concat("%").toLowerCase();
             query.setParameter("testUID", pattern);
          } else {
             query.setParameter("testUID", search.getTestUID().toLowerCase());
@@ -799,8 +802,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
          if (value.startsWith("-")) {
             outputExcluded.add(value.substring(1));
-         }
-         else {
+         } else {
             outputIncluded.add(value);
          }
       }

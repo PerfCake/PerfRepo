@@ -1,31 +1,18 @@
 /**
- *
  * PerfRepo
- *
+ * <p>
  * Copyright (C) 2015 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package org.perfrepo.web.controller;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.ejb.EJBException;
-import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -44,6 +31,14 @@ import org.perfrepo.web.session.SearchCriteriaSession;
 import org.perfrepo.web.util.MessageUtils;
 import org.perfrepo.web.viewscope.ViewScoped;
 
+import javax.ejb.EJBException;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Backing bean for editing and displaying details of {@link Test}.
  *
@@ -54,57 +49,57 @@ import org.perfrepo.web.viewscope.ViewScoped;
 @ViewScoped
 public class TestController extends BaseController {
 
-	private static final long serialVersionUID = 370202307562230671L;
-	private static final Logger log = Logger.getLogger(TestController.class);
+   private static final long serialVersionUID = 370202307562230671L;
+   private static final Logger log = Logger.getLogger(TestController.class);
 
-	private boolean editMode;
-	private boolean createMode;
-	private Long testId;
+   private boolean editMode;
+   private boolean createMode;
+   private Long testId;
    private Long alertId;
 
-	@Inject
-	private TestService testService;
+   @Inject
+   private TestService testService;
 
-	@Inject
-	private UserService userService;
+   @Inject
+   private UserService userService;
 
-	@Inject
-	private SearchCriteriaSession criteriaSession;
+   @Inject
+   private SearchCriteriaSession criteriaSession;
 
    @Inject
    private AlertingService alertingService;
 
-	private Test test = null;
+   private Test test = null;
    private Alert alert = null;
-	private MetricDetails metricDetails = new MetricDetails();
+   private MetricDetails metricDetails = new MetricDetails();
    private AlertDetails alertDetails = new AlertDetails();
 
-	/**
-	 * called on preRenderView
-	 */
-	public void preRender() throws Exception {
-		reloadSessionMessages();
-		if (testId == null) {
-			if (!createMode) {
-				log.error("No test ID supplied");
-				redirectWithMessage("/", ERROR, "page.test.errorNoTestId");
-			} else {
-				if (test == null) {
-					test = new Test();
-				}
-			}
-		} else {
-			if (test == null) {
-				test = testService.getFullTest(testId);
-				if (test == null) {
-					log.error("Can't find test with id " + testId);
-					redirectWithMessage("/", ERROR, "page.test.errorTestNotFound", testId);
-				} else {
-					metricDetails.selectionAssignedMetrics = testService.getAvailableMetrics(test);
-				}
-			}
-		}
-	}
+   /**
+    * called on preRenderView
+    */
+   public void preRender() throws Exception {
+      reloadSessionMessages();
+      if (testId == null) {
+         if (!createMode) {
+            log.error("No test ID supplied");
+            redirectWithMessage("/", ERROR, "page.test.errorNoTestId");
+         } else {
+            if (test == null) {
+               test = new Test();
+            }
+         }
+      } else {
+         if (test == null) {
+            test = testService.getFullTest(testId);
+            if (test == null) {
+               log.error("Can't find test with id " + testId);
+               redirectWithMessage("/", ERROR, "page.test.errorTestNotFound", testId);
+            } else {
+               metricDetails.selectionAssignedMetrics = testService.getAvailableMetrics(test);
+            }
+         }
+      }
+   }
 
    public String create() {
       if (test == null) {
@@ -136,36 +131,36 @@ public class TestController extends BaseController {
       return null;
    }
 
-	public void listTestExecutions() {
-		//clear criterias
-		TestExecutionSearchTO criteriaSession = this.criteriaSession.getExecutionSearchCriteria();
-		criteriaSession.setStartedFrom(null);
-		criteriaSession.setStartedTo(null);
-		criteriaSession.setTags(null);
-		criteriaSession.setTestName(null);
+   public void listTestExecutions() {
+      //clear criterias
+      TestExecutionSearchTO criteriaSession = this.criteriaSession.getExecutionSearchCriteria();
+      criteriaSession.setStartedFrom(null);
+      criteriaSession.setStartedTo(null);
+      criteriaSession.setTags(null);
+      criteriaSession.setTestName(null);
 
-		criteriaSession.setTestUID(test.getUid());
-		redirect("/exec/search");
-	}
+      criteriaSession.setTestUID(test.getUid());
+      redirect("/exec/search");
+   }
 
-	public List<Metric> getMetricsList() {
-		List<Metric> metricList = new ArrayList<Metric>();
-		if (test != null) {
-			metricList.addAll(test.getMetrics());
-		}
-		Collections.sort(metricList);
-		return metricList;
-	}
+   public List<Metric> getMetricsList() {
+      List<Metric> metricList = new ArrayList<Metric>();
+      if (test != null) {
+         metricList.addAll(test.getMetrics());
+      }
+      Collections.sort(metricList);
+      return metricList;
+   }
 
    public void getAlertDetail() {
-      if(alertId == null) {
+      if (alertId == null) {
          log.error("Alert ID not provided.");
          redirectWithMessage("/", ERROR, "page.alert.errorNoAlertId");
          return;
       }
 
       alert = alertingService.getAlert(alertId);
-      if(alert == null) {
+      if (alert == null) {
          log.error("Alert not found. ID: " + alertId);
          redirectWithMessage("/", ERROR, "page.alert.errorAlertNotFound", alertId);
          return;
@@ -173,7 +168,7 @@ public class TestController extends BaseController {
    }
 
    public String[] getAlertLinks() {
-      if(alert == null) {
+      if (alert == null) {
          return new String[]{};
       }
 
@@ -210,7 +205,7 @@ public class TestController extends BaseController {
 
       List<String> tagSplit = Arrays.asList(StringUtils.split(alertDetails.getTags()));
       List<Tag> tags = new ArrayList<>();
-      for(String tagString: tagSplit) {
+      for (String tagString : tagSplit) {
          Tag tag = new Tag();
          tag.setName(tagString);
          tags.add(tag);
@@ -218,11 +213,10 @@ public class TestController extends BaseController {
 
       alert.setTags(tags);
 
-      if(alertDetails.getId() == null) {
+      if (alertDetails.getId() == null) {
          alertingService.createAlert(alert);
          redirectWithMessage("/test/" + testId, INFO, "page.alert.createdSuccesfully");
-      }
-      else {
+      } else {
          alert.setId(alertDetails.getId());
          alertingService.updateAlert(alert);
          redirectWithMessage("/test/" + testId, INFO, "page.alert.updatedSuccesfully");
@@ -263,41 +257,41 @@ public class TestController extends BaseController {
       this.test = test;
    }
 
-	public Long getTestId() {
-		return testId;
-	}
+   public Long getTestId() {
+      return testId;
+   }
 
-	public void setTestId(Long testId) {
-		this.testId = testId;
-	}
+   public void setTestId(Long testId) {
+      this.testId = testId;
+   }
 
-	public boolean isEditMode() {
-		return editMode;
-	}
+   public boolean isEditMode() {
+      return editMode;
+   }
 
-	public void setEditMode(boolean editMode) {
-		this.editMode = editMode;
-	}
+   public void setEditMode(boolean editMode) {
+      this.editMode = editMode;
+   }
 
-	public boolean isCreateMode() {
-		return createMode;
-	}
+   public boolean isCreateMode() {
+      return createMode;
+   }
 
-	public void setCreateMode(boolean createMode) {
-		this.createMode = createMode;
-	}
+   public void setCreateMode(boolean createMode) {
+      this.createMode = createMode;
+   }
 
-	public MetricDetails getMetricDetails() {
-		return metricDetails;
-	}
+   public MetricDetails getMetricDetails() {
+      return metricDetails;
+   }
 
    public AlertDetails getAlertDetails() {
       return alertDetails;
    }
 
    public List<String> getUserGroups() {
-		return userService.getLoggedUserGroupNames();
-	}
+      return userService.getLoggedUserGroupNames();
+   }
 
    public Long getAlertId() {
       return alertId;
@@ -320,114 +314,114 @@ public class TestController extends BaseController {
    /**
     * Helper class for pop-up for creating and editing metrics
     */
-	public class MetricDetails {
-		private boolean createMode;
-		private Metric metric;
-		private Long selectedAssignedMetricId;
-		private List<Metric> selectionAssignedMetrics;
+   public class MetricDetails {
+      private boolean createMode;
+      private Metric metric;
+      private Long selectedAssignedMetricId;
+      private List<Metric> selectionAssignedMetrics;
 
-		public Metric getMetric() {
-			return metric;
-		}
+      public Metric getMetric() {
+         return metric;
+      }
 
-		public void setMetricForUpdate(Metric metric) {
-			this.metric = metric;
-		}
+      public void setMetricForUpdate(Metric metric) {
+         this.metric = metric;
+      }
 
-		public void setEmptyMetric() {
-			this.metric = new Metric();
-		}
+      public void setEmptyMetric() {
+         this.metric = new Metric();
+      }
 
-		public void unsetMetric() {
-			this.metric = null;
-		}
+      public void unsetMetric() {
+         this.metric = null;
+      }
 
-		public boolean isCreateMode() {
-			return createMode;
-		}
+      public boolean isCreateMode() {
+         return createMode;
+      }
 
-		public void setCreateMode(boolean createMode) {
-			this.createMode = createMode;
-		}
+      public void setCreateMode(boolean createMode) {
+         this.createMode = createMode;
+      }
 
-		public List<Metric> getSelectionAssignedMetrics() {
-			return selectionAssignedMetrics;
-		}
+      public List<Metric> getSelectionAssignedMetrics() {
+         return selectionAssignedMetrics;
+      }
 
-		public boolean isSelectionMetricVisible() {
-			return selectionAssignedMetrics != null && !selectionAssignedMetrics.isEmpty();
-		}
+      public boolean isSelectionMetricVisible() {
+         return selectionAssignedMetrics != null && !selectionAssignedMetrics.isEmpty();
+      }
 
-		public Long getSelectedAssignedMetricId() {
-			return selectedAssignedMetricId;
-		}
+      public Long getSelectedAssignedMetricId() {
+         return selectedAssignedMetricId;
+      }
 
-		public void setSelectedAssignedMetricId(Long selectedAssignedMetricId) {
-			this.selectedAssignedMetricId = selectedAssignedMetricId;
-		}
+      public void setSelectedAssignedMetricId(Long selectedAssignedMetricId) {
+         this.selectedAssignedMetricId = selectedAssignedMetricId;
+      }
 
-		public void addAssignedMetric() {
-			if (selectedAssignedMetricId == null || selectionAssignedMetrics == null) {
-				redirectWithMessage("/test/" + testId, ERROR, "page.test.errorNoAssignedMetric");
-			} else {
-				Metric selectedAssignedMetric = null;
-				for (Metric m : selectionAssignedMetrics) {
-					if (selectedAssignedMetricId.equals(m.getId())) {
-						selectedAssignedMetric = m;
-						break;
-					}
-				}
-				if (selectedAssignedMetric == null) {
-					redirectWithMessage("/test/" + testId, ERROR, "page.test.errorNoAssignedMetric");
-					return;
-				}
-				try {
-					testService.addMetric(test, selectedAssignedMetric);
-					redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyAssigned", selectedAssignedMetric.getName());
-				} catch (ServiceException e) {
-					addSessionMessage(e);
-					redirect("/test/" + testId);
-				}
-			}
-		}
+      public void addAssignedMetric() {
+         if (selectedAssignedMetricId == null || selectionAssignedMetrics == null) {
+            redirectWithMessage("/test/" + testId, ERROR, "page.test.errorNoAssignedMetric");
+         } else {
+            Metric selectedAssignedMetric = null;
+            for (Metric m : selectionAssignedMetrics) {
+               if (selectedAssignedMetricId.equals(m.getId())) {
+                  selectedAssignedMetric = m;
+                  break;
+               }
+            }
+            if (selectedAssignedMetric == null) {
+               redirectWithMessage("/test/" + testId, ERROR, "page.test.errorNoAssignedMetric");
+               return;
+            }
+            try {
+               testService.addMetric(test, selectedAssignedMetric);
+               redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyAssigned", selectedAssignedMetric.getName());
+            } catch (ServiceException e) {
+               addSessionMessage(e);
+               redirect("/test/" + testId);
+            }
+         }
+      }
 
-		public MetricComparator[] getMetricComparators() {
-			return MetricComparator.values();
-		}
+      public MetricComparator[] getMetricComparators() {
+         return MetricComparator.values();
+      }
 
-		public String getEnumLabel(MetricComparator mc) {
-			return MessageUtils.getEnum(mc);
-		}
+      public String getEnumLabel(MetricComparator mc) {
+         return MessageUtils.getEnum(mc);
+      }
 
-		public void createMetric() {
-			try {
-				testService.addMetric(test, metric);
-				redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyCreated", metric.getName());
-			} catch (ServiceException e) {
-				addSessionMessage(e);
-				redirect("/test/" + testId);
-			}
-		}
+      public void createMetric() {
+         try {
+            testService.addMetric(test, metric);
+            redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyCreated", metric.getName());
+         } catch (ServiceException e) {
+            addSessionMessage(e);
+            redirect("/test/" + testId);
+         }
+      }
 
-		public void updateMetric() {
-			try {
-				testService.updateMetric(test, metric);
-			} catch (ServiceException e) {
-				addSessionMessage(e);
-				redirect("/test/" + testId);
-			}
-		}
+      public void updateMetric() {
+         try {
+            testService.updateMetric(test, metric);
+         } catch (ServiceException e) {
+            addSessionMessage(e);
+            redirect("/test/" + testId);
+         }
+      }
 
-		public void deleteMetric(Metric metricToDelete) {
-			try {
-				testService.removeMetric(test, metricToDelete);
-				redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyDeleted", metricToDelete.getName());
-			} catch (ServiceException e) {
-				addSessionMessage(e);
-				redirect("/test/" + testId);
-			}
-		}
-	}
+      public void deleteMetric(Metric metricToDelete) {
+         try {
+            testService.removeMetric(test, metricToDelete);
+            redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyDeleted", metricToDelete.getName());
+         } catch (ServiceException e) {
+            addSessionMessage(e);
+            redirect("/test/" + testId);
+         }
+      }
+   }
 
    /**
     * Helper class for pop-up for creating and editing alerts.
@@ -521,7 +515,7 @@ public class TestController extends BaseController {
          this.metricId = alert.getMetric().getId();
 
          List<String> tagsString = new ArrayList<>();
-         for(Tag tag: alert.getTags()) {
+         for (Tag tag : alert.getTags()) {
             tagsString.add(tag.getName());
          }
          this.tags = StringUtils.join(tagsString, " ");

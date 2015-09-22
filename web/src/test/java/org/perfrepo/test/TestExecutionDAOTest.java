@@ -39,13 +39,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link org.perfrepo.web.dao.TestExecutionDAO}
  *
  * @author Jiri Holusa (jholusa@redhat.com)
- *
  */
 @RunWith(Arquillian.class)
 public class TestExecutionDAOTest {
@@ -100,33 +100,32 @@ public class TestExecutionDAOTest {
    @Before
    public void init() throws Exception {
       userTransaction.begin();
-      tests = new Test[] { testDAO.create(createTest("testuser1", "uid1")),
-                           testDAO.create(createTest("testuser1", "uid2"))};
+      tests = new Test[]{testDAO.create(createTest("testuser1", "uid1")),
+                         testDAO.create(createTest("testuser1", "uid2"))};
 
-      metrics = new Metric[] { metricDAO.create(createMetric("metric1")),
-                               metricDAO.create(createMetric("metric2"))};
+      metrics = new Metric[]{metricDAO.create(createMetric("metric1")),
+                             metricDAO.create(createMetric("metric2"))};
 
 
-      testExecutions = new TestExecution[] { testExecutionDAO.create(createTestExecution("test execution 1", createStartDate(-8), tests[0])),
-                                             testExecutionDAO.create(createTestExecution("test execution 2", createStartDate(-6), tests[0])),
-                                             testExecutionDAO.create(createTestExecution("test execution 3", createStartDate(-4), tests[0])),
-                                             testExecutionDAO.create(createTestExecution("test execution 4", createStartDate(-2), tests[0])),
-                                             testExecutionDAO.create(createTestExecution("test execution 5", createStartDate(-1), tests[1])),
-                                             testExecutionDAO.create(createTestExecution("test execution 6", createStartDate(11), tests[1])),};
+      testExecutions = new TestExecution[]{testExecutionDAO.create(createTestExecution("test execution 1", createStartDate(-8), tests[0])),
+                                           testExecutionDAO.create(createTestExecution("test execution 2", createStartDate(-6), tests[0])),
+                                           testExecutionDAO.create(createTestExecution("test execution 3", createStartDate(-4), tests[0])),
+                                           testExecutionDAO.create(createTestExecution("test execution 4", createStartDate(-2), tests[0])),
+                                           testExecutionDAO.create(createTestExecution("test execution 5", createStartDate(-1), tests[1])),
+                                           testExecutionDAO.create(createTestExecution("test execution 6", createStartDate(11), tests[1])),};
 
-      values = new Value[] { createValue(10d, testExecutions[0], metrics[0]),
-                             createValue(20d, testExecutions[1], metrics[0]),
-                             createValue(30d, testExecutions[2], metrics[0]),
-                             createValue(40d, testExecutions[3], metrics[0]),
-                             createValue(1000d, testExecutions[4], metrics[0]),
-                             createMultiValue(2000d, testExecutions[5], metrics[1], "Iteration", "1", "Client load", "10"),
-                             createMultiValue(3000d, testExecutions[5], metrics[1], "Iteration", "2", "Client load", "20")};
+      values = new Value[]{createValue(10d, testExecutions[0], metrics[0]),
+                           createValue(20d, testExecutions[1], metrics[0]),
+                           createValue(30d, testExecutions[2], metrics[0]),
+                           createValue(40d, testExecutions[3], metrics[0]),
+                           createValue(1000d, testExecutions[4], metrics[0]),
+                           createMultiValue(2000d, testExecutions[5], metrics[1], "Iteration", "1", "Client load", "10"),
+                           createMultiValue(3000d, testExecutions[5], metrics[1], "Iteration", "2", "Client load", "20")};
 
       createTestExecutionParameter("param", "3", testExecutions[0]);
       createTestExecutionParameter("param", "1", testExecutions[1]);
       createTestExecutionParameter("param", "4", testExecutions[2]);
       createTestExecutionParameter("param", "2", testExecutions[3]);
-
 
 
       createTestExecutionTag("tag1", testExecutions[0]);
@@ -144,10 +143,9 @@ public class TestExecutionDAOTest {
 
    @After
    public void cleanUp() throws Exception {
-      if(userTransaction.getStatus() == Status.STATUS_ACTIVE) {
+      if (userTransaction.getStatus() == Status.STATUS_ACTIVE) {
          userTransaction.commit();
-      }
-      else {
+      } else {
          userTransaction.rollback();
       }
 
@@ -492,16 +490,18 @@ public class TestExecutionDAOTest {
               .stream().anyMatch(actual -> expected.equals(actual))));
    }
 
-   /** ------------ Helper methods for creation of test environment ------------ */
+   /**
+    * ------------ Helper methods for creation of test environment ------------
+    */
 
    private Test createTest(String groupId, String uid) {
       return Test.builder()
-            .name("test1")
-            .groupId(groupId)
-            .uid(uid)
-            .description("this is a test test")
-            .metric("metric1", MetricComparator.HB, "this is a test metric 1")
-            .build();
+          .name("test1")
+          .groupId(groupId)
+          .uid(uid)
+          .description("this is a test test")
+          .metric("metric1", MetricComparator.HB, "this is a test metric 1")
+          .build();
    }
 
    private TestExecution createTestExecution(String name, Date startedDate, Test test) {
@@ -536,7 +536,7 @@ public class TestExecutionDAOTest {
       TestExecutionTag storedTestExecutionTag = testExecutionTagDAO.create(testExecutionTag);
 
       Collection<TestExecutionTag> testExecutionTags = storedTestExecution.getTestExecutionTags();
-      if(testExecutionTags == null) {
+      if (testExecutionTags == null) {
          testExecutionTags = new ArrayList<>();
       }
       testExecutionTags.add(storedTestExecutionTag);
@@ -553,7 +553,7 @@ public class TestExecutionDAOTest {
 
       Value storedValue = valueDAO.create(value);
       Collection<Value> values = testExecution.getValues();
-      if(values == null) {
+      if (values == null) {
          values = new ArrayList<>();
       }
       values.add(storedValue);
@@ -571,7 +571,7 @@ public class TestExecutionDAOTest {
       TestExecutionParameter storedParameter = testExecutionParameterDAO.create(parameter);
 
       Collection<TestExecutionParameter> parameters = testExecution.getParameters();
-      if(parameters == null) {
+      if (parameters == null) {
          parameters = new ArrayList<>();
       }
       parameters.add(storedParameter);
@@ -590,13 +590,13 @@ public class TestExecutionDAOTest {
     * @return
     */
    private Value createMultiValue(Double value, TestExecution testExecution, Metric metric, String... valueParameters) {
-      if(valueParameters.length % 2 != 0) {
+      if (valueParameters.length % 2 != 0) {
          throw new IllegalArgumentException("Number of values arguments must be divisible by 2.");
       }
 
       Value storedValue = createValue(value, testExecution, metric);
 
-      for(int i = 0; i < valueParameters.length; i += 2) {
+      for (int i = 0; i < valueParameters.length; i += 2) {
          ValueParameter valueParameter = new ValueParameter();
          valueParameter.setName(valueParameters[i]);
          valueParameter.setParamValue(valueParameters[i + 1]);
@@ -605,7 +605,7 @@ public class TestExecutionDAOTest {
          ValueParameter storedValueParameter = valueParameterDAO.create(valueParameter);
 
          Collection<ValueParameter> valueParameterCollection = storedValue.getParameters();
-         if(valueParameterCollection == null) {
+         if (valueParameterCollection == null) {
             valueParameterCollection = new ArrayList<>();
          }
          valueParameterCollection.add(storedValueParameter);

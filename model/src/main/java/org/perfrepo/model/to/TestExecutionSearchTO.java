@@ -1,29 +1,25 @@
 /**
- *
  * PerfRepo
- *
+ * <p>
  * Copyright (C) 2015 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package org.perfrepo.model.to;
+
+import org.perfrepo.model.userproperty.GroupFilter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.perfrepo.model.userproperty.GroupFilter;
 
 /**
  * Test execution search criteria.
@@ -34,20 +30,20 @@ import org.perfrepo.model.userproperty.GroupFilter;
  */
 public class TestExecutionSearchTO implements Serializable {
 
-	private static final long serialVersionUID = -2274979571623499791L;
+   private static final long serialVersionUID = -2274979571623499791L;
 
    private List<Long> ids;
-	//means "Test executed after"
-	private Date startedFrom;
-	//means "Test executed before"
+   //means "Test executed after"
+   private Date startedFrom;
+   //means "Test executed before"
    private Date startedTo;
-	private String tags;
-	private String testUID;
-	private String testName;
-	private List<ParamCriteria> parameters = new ArrayList<ParamCriteria>();
-	private Integer limitFrom;
+   private String tags;
+   private String testUID;
+   private String testName;
+   private List<ParamCriteria> parameters = new ArrayList<ParamCriteria>();
+   private Integer limitFrom;
    private Integer limitHowMany;
-	private GroupFilter groupFilter;
+   private GroupFilter groupFilter;
 
    private OrderBy orderBy = OrderBy.DATE_ASC;
    private String orderByParameter;
@@ -63,58 +59,58 @@ public class TestExecutionSearchTO implements Serializable {
    }
 
    //means "Test executed after"
-	public Date getStartedFrom() {
-		return startedFrom;
-	}
+   public Date getStartedFrom() {
+      return startedFrom;
+   }
 
-	public void setStartedFrom(Date startedFrom) {
-		this.startedFrom = startedFrom;
-	}
+   public void setStartedFrom(Date startedFrom) {
+      this.startedFrom = startedFrom;
+   }
 
-	//means "Test executed before"
-	public Date getStartedTo() {
-		return startedTo;
-	}
+   //means "Test executed before"
+   public Date getStartedTo() {
+      return startedTo;
+   }
 
-	public void setStartedTo(Date startedTo) {
-		this.startedTo = startedTo;
-	}
+   public void setStartedTo(Date startedTo) {
+      this.startedTo = startedTo;
+   }
 
-	public String getTestUID() {
-		return testUID;
-	}
+   public String getTestUID() {
+      return testUID;
+   }
 
-	public void setTestUID(String testUID) {
-		this.testUID = testUID;
-	}
+   public void setTestUID(String testUID) {
+      this.testUID = testUID;
+   }
 
-	public String getTestName() {
-		return testName;
-	}
+   public String getTestName() {
+      return testName;
+   }
 
-	public void setTestName(String testName) {
-		this.testName = testName;
-	}
+   public void setTestName(String testName) {
+      this.testName = testName;
+   }
 
-	public String getTags() {
-		return tags;
-	}
+   public String getTags() {
+      return tags;
+   }
 
-	public void setTags(String tags) {
-		this.tags = tags;
-	}
+   public void setTags(String tags) {
+      this.tags = tags;
+   }
 
-	public List<ParamCriteria> getParameters() {
-		return parameters;
-	}
+   public List<ParamCriteria> getParameters() {
+      return parameters;
+   }
 
-	public Integer getLimitFrom() {
-		return limitFrom;
-	}
+   public Integer getLimitFrom() {
+      return limitFrom;
+   }
 
-	public void setLimitFrom(Integer limitFrom) {
-		this.limitFrom = limitFrom;
-	}
+   public void setLimitFrom(Integer limitFrom) {
+      this.limitFrom = limitFrom;
+   }
 
    public Integer getLimitHowMany() {
       return limitHowMany;
@@ -125,12 +121,12 @@ public class TestExecutionSearchTO implements Serializable {
    }
 
    public GroupFilter getGroupFilter() {
-		return groupFilter;
-	}
+      return groupFilter;
+   }
 
-	public void setGroupFilter(GroupFilter groupFilter) {
-		this.groupFilter = groupFilter;
-	}
+   public void setGroupFilter(GroupFilter groupFilter) {
+      this.groupFilter = groupFilter;
+   }
 
    public OrderBy getOrderBy() {
       return orderBy;

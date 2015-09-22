@@ -25,7 +25,7 @@ public class Mailer {
     *
     * @param recipient email address of the recipient
     * @param subject
-    * @param body text of the email
+    * @param body      text of the email
     * @throws javax.mail.MessagingException
     */
    public void sendEmail(String recipient, String subject, String body) throws MessagingException {

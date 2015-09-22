@@ -1,8 +1,8 @@
 <test name="SOAK Test" uid="soak_test">
-	<testMetrics>
-		<testMetric>
-			<metric comparator="0" name="THROUGHPUT"/>
-		</testMetric>
-	</testMetrics>
-	<description>SOA-P JMS SOAK TEST</description>
+   <testMetrics>
+      <testMetric>
+         <metric comparator="0" name="THROUGHPUT"/>
+      </testMetric>
+   </testMetrics>
+   <description>SOA-P JMS SOAK TEST</description>
 </test>

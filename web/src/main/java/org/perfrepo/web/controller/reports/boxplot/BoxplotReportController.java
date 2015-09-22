@@ -1,20 +1,16 @@
 /**
- *
  * PerfRepo
- *
+ * <p>
  * Copyright (C) 2015 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package org.perfrepo.web.controller.reports.boxplot;
 
@@ -68,22 +64,21 @@ public class BoxplotReportController extends BaseController {
 
    @PostConstruct
    public void preloadReportWhenEditing() {
-	  reloadSessionMessages();
-      if(getReportId() != null) {
+      reloadSessionMessages();
+      if (getReportId() != null) {
          load();
       }
    }
 
    public void save() {
       Long reportId = getReportId();
-      if(reportId == null) {
+      if (reportId == null) {
          reportId = reportService.create(name, charts, reportPermissionController.getPermissions());
-      }
-      else {
+      } else {
          reportId = reportService.update(reportId, name, charts, reportPermissionController.getPermissions());
       }
 
-      if(reportId != null) {
+      if (reportId != null) {
          redirectWithMessage("/reports/boxplot/" + reportId, INFO, "page.reports.boxplot.reportSaved");
       } else {
          redirectWithMessage("/reports", ERROR, "page.reports.boxplot.reportNotSaved");
@@ -92,7 +87,7 @@ public class BoxplotReportController extends BaseController {
 
    public void load() {
       Long reportId = getReportId();
-      if(reportId == null) {
+      if (reportId == null) {
          throw new IllegalArgumentException("No report ID provided.");
       }
 
@@ -102,13 +97,13 @@ public class BoxplotReportController extends BaseController {
          name = loadedReport.keySet().stream().findFirst().get();
          charts = loadedReport.get(name);
       } catch (IllegalArgumentException ex) {
-          redirectWithMessage("/reports", ERROR, "page.report.error");
+         redirectWithMessage("/reports", ERROR, "page.report.error");
       } catch (Exception e) {
-          if (e.getCause() instanceof SecurityException) {
-              redirectWithMessage("/reports", ERROR, "page.report.permissionDenied");
-          } else {
-              redirectWithMessage("/reports", ERROR, "page.report.erro");
-          }
+         if (e.getCause() instanceof SecurityException) {
+            redirectWithMessage("/reports", ERROR, "page.report.permissionDenied");
+         } else {
+            redirectWithMessage("/reports", ERROR, "page.report.erro");
+         }
       }
    }
 
@@ -126,7 +121,7 @@ public class BoxplotReportController extends BaseController {
    }
 
    public void addChart() {
-      if(charts == null) {
+      if (charts == null) {
          charts = new ArrayList<>();
       }
 

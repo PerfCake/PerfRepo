@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class provides a wrapper for retrieved results from DAO layer, because sometimes we need
- * more information than just result value (e.g. date, test execution ID, etc.). This class provides
- * a wrapper so it could be easily extended the amount of retrieved information.
+ * This class provides a wrapper for retrieved results from DAO layer, because sometimes we need more information than
+ * just result value (e.g. date, test execution ID, etc.). This class provides a wrapper so it could be easily extended
+ * the amount of retrieved information.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
