@@ -58,9 +58,9 @@ Following text assumes PostgreSQL and JBoss EAP's `standalone.xml`. Before confi
         <security>
             <user-name>perfrepo</user-name>
             <password>perfrepo</password>
-        </security>
-        <drivers>...(described above)...</drivers>
+        </security>        
     </datasource>
+    <drivers>...(described above)...</drivers>
 ```
 
 * Add security domain `perfrepo`, e.g.
@@ -81,7 +81,7 @@ Following text assumes PostgreSQL and JBoss EAP's `standalone.xml`. Before confi
 
 * Add SMTP server configuration for alerting
 ```xml
-    <subsystem xmlns="urn:jboss:domain:mail:1.1">
+    <subsystem xmlns="urn:jboss:domain:mail:1.2">
         <mail-session jndi-name="java:jboss/mail/perfreposmtp">
             <smtp-server outbound-socket-binding-ref="mail-smtp"/>
         </mail-session>
@@ -92,6 +92,17 @@ Following text assumes PostgreSQL and JBoss EAP's `standalone.xml`. Before confi
     <outbound-socket-binding name="mail-smtp">
         <remote-destination host="<your SMTP host>" port="25"/>
     </outbound-socket-binding>
+```
+
+* Alter the web domain subsystem by setting enable-welcome-root to "false".
+```xml
+    <subsystem xmlns="urn:jboss:domain:web:2.2" default-virtual-server="default-host" native="false">
+        <connector name="http" protocol="HTTP/1.1" scheme="http" socket-binding="http"/>
+        <virtual-server name="default-host" enable-welcome-root="false">
+            <alias name="localhost"/>
+            <alias name="example.com"/>
+        </virtual-server>
+    </subsystem>
 ```
 
 * Start server
