@@ -566,7 +566,7 @@ public class TestExecutionController extends BaseController {
       ChartDataModel chartDataModel = new NumberChartDataModel(ChartType.line);
 
       for (ParamInfo item : selectedMultiValueList) {
-         chartDataModel.put(Integer.parseInt(item.getParamValue()), Double.parseDouble(item.getFormattedValue()));
+         chartDataModel.put(Integer.parseInt(item.getParamValue()), item.getValue());
       }
 
       RfChartSeries newSeries = new RfChartSeries(chartDataModel);
