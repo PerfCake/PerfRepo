@@ -43,8 +43,9 @@
                                     </ui:insert>
                                     <li class="divider-vertical"></li>
                                     <li><a href="#{request.contextPath}/profile" title="User profile"><i class="icon-user"/></a></li>
-                                    <li><a href="#{request.contextPath}/profile" title="Logout"><i class="icon-long-arrow-right"/></a>
-                                    </li>
+                                    <li><a4j:commandLink value=" " id="logoutWithComparisons" alt="Logout" title="Logout"
+                                                         action="#{userSession.logout()}"><i
+                                            class="icon-long-arrow-right"/></a4j:commandLink></li>
                                 </ul>
                             </h:panelGroup>
                             <h:panelGroup id="compareMenuItemNoCompare"
@@ -53,7 +54,7 @@
                                     <ui:insert name="compareAddAll"></ui:insert>
                                     <li class="divider-vertical"></li>
                                     <li><a href="#{request.contextPath}/profile" title="User profile"><i class="icon-user"/></a></li>
-                                    <li><a4j:commandLink value=" " id="logout" alt="Logout" title="Logout"
+                                    <li><a4j:commandLink value=" " id="logoutWithoutComparisons" alt="Logout" title="Logout"
                                                          action="#{userSession.logout()}"><i
                                             class="icon-long-arrow-right"/></a4j:commandLink></li>
                                 </ul>
