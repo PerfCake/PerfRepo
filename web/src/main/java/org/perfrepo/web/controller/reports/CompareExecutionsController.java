@@ -360,7 +360,7 @@ public class CompareExecutionsController extends BaseController {
       }
    }
 
-   public String getMultiValueCompare(Long execId, String paramValue) {
+   public Double getMultiValueCompare(Long execId, String paramValue) {
       if (multiValueCompareMetric == null || multiValueCompareParam == null) {
          return null;
       }
@@ -374,7 +374,7 @@ public class CompareExecutionsController extends BaseController {
       }
       for (ParamInfo pi : cv) {
          if (paramValue.equals(pi.getParamValue())) {
-            return pi.getFormattedValue();
+            return pi.getValue();
          }
       }
       return null;
