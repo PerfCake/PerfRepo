@@ -37,15 +37,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -272,11 +264,15 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Predicate labelParameter = cb.and();
 
       Path<?> labelPath = testExecution.get("started");
+      // we have to add the "started" to group by, as it's workaround for PostgreSQL 8, because we order by it by default
+      // and PostgreSQL 8 requires to have all used columns in the GROUP BY
+      List<Expression<?>> groupBy = new ArrayList<>(Arrays.asList(testExecution.get("id"), valueJoin.get("resultValue"), valueParameterJoin.get("name"), valueParameterJoin.get("paramValue"), testExecution.get("started")));
 
       if (search.getLabelParameter() != null) {
          executionParameterJoin = testExecution.join("parameters");
          labelParameter = cb.equal(executionParameterJoin.get("name"), search.getLabelParameter());
          labelPath = executionParameterJoin.get("value");
+         groupBy.add(labelPath); // workaround for PostgreSQL 8, if label used, add it to GROUP BY, see the comment above
       }
 
       criteriaQuery.multiselect(valueJoin.get("resultValue").alias("resultValue"),
@@ -288,7 +284,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
       criteriaQuery.where(cb.and(selectedMetric, selectedTestExecutions, labelParameter));
       criteriaQuery.orderBy(cb.asc(testExecution.get("started")));
-      criteriaQuery.groupBy(testExecution.get("id"), valueJoin.get("resultValue"), valueParameterJoin.get("name"), valueParameterJoin.get("paramValue"), labelPath);
+      criteriaQuery.groupBy(groupBy);
 
       TypedQuery<Tuple> query = query(criteriaQuery);
       List<Tuple> queryResult = query.getResultList();
