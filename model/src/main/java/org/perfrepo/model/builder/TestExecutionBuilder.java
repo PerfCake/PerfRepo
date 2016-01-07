@@ -90,8 +90,25 @@ public class TestExecutionBuilder {
          parameters = new ArrayList<TestExecutionParameter>();
          testExecution.setParameters(parameters);
       }
-      parameters.add(param);
+      TestExecutionParameter existingParameter = findParameter(param.getName());
+      if (existingParameter != null) {
+         existingParameter.setValue(param.getValue());
+      } else {
+         parameters.add(param);
+      }
       return param;
+   }
+
+   private TestExecutionParameter findParameter(String name) {
+      if (testExecution == null || testExecution.getParameters() == null || name == null) {
+         return null;
+      }
+      for (TestExecutionParameter param : testExecution.getParameters()) {
+         if (name.equals(param.getName())) {
+            return param;
+         }
+      }
+      return null;
    }
 
    private TestExecutionParameter addParameter(String name, String value) {

@@ -111,7 +111,7 @@ public class PerfRepoClient {
    }
 
    private String restUrl(String urlTemplate, Object... params) {
-      return String.format(String.format(REST_BASE_URL_TEMPLATE, host, url) + urlTemplate, params);
+      return String.format(String.format(REST_BASE_URL_TEMPLATE, host, url == null ? "" : url) + urlTemplate, params);
    }
 
    private void logHttpError(String msg, HttpRequestBase req, HttpResponse resp) throws Exception {
