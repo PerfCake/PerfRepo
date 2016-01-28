@@ -49,12 +49,12 @@
                                    action="#{testController.metricDetails.unsetMetric}"
                                    render="@form :editMetricMessagesPanel"
                                    oncomplete="#{rich:component('dialogMetricEdit')}.hide()" value="#{strings.cancel}"
-                                   alt="#{strings.cancel}" title="#{strings.cancel}"/>
+                                   />
                 <a4j:commandButton styleClass="btn btn-primary btn-small"
                                    action="#{testController.metricDetails.updateMetric}"
                                    render="@form :metricList :editMetricMessagesPanel"
                                    oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('dialogMetricEdit')}.hide()"
-                                   value="#{strings.save}" alt="#{strings.save}" title="#{strings.save}"/>
+                                   value="#{strings.save}" />
             </div>
             <rich:hotKey key="Esc">
                 <rich:componentControl target="dialogMetricAdd" operation="hide"/>
