@@ -177,6 +177,39 @@ public class ClientTest {
    }
 
    @org.junit.Test
+   public void testUpdateTestExecution() throws Exception {
+      Test test = createTest();
+      Long testId = client.createTest(test);
+
+      assertNotNull(testId);
+
+      TestExecution testExecution = createTestExecution(testId);
+      Long testExecutionId = client.createTestExecution(testExecution);
+      assertNotNull(testExecutionId);
+
+      TestExecution retrievedTestExecution = client.getTestExecution(testExecutionId);
+
+      assertEquals(testExecution.getName(), retrievedTestExecution.getName());
+      assertEquals(testExecution.getStarted(), retrievedTestExecution.getStarted());
+      assertEquals(testExecution.getComment(), retrievedTestExecution.getComment());
+
+      TestExecution updatedTestExecution = createTestExecution(testId);
+      updatedTestExecution.setId(testExecutionId);
+      updatedTestExecution.setName("updated test execution");
+      updatedTestExecution.setComment("updated comment");
+
+      client.updateTestExecution(updatedTestExecution);
+
+      TestExecution retrievedUpdatedTestExecution = client.getTestExecution(testExecutionId);
+
+      assertEquals("updated test execution", retrievedUpdatedTestExecution.getName());
+      assertEquals("updated comment", retrievedUpdatedTestExecution.getComment());
+
+      client.deleteTestExecution(testExecutionId);
+      client.deleteTest(testId);
+   }
+
+   @org.junit.Test
    public void testCreateDeleteAttachment() throws Exception {
       Test test = createTest();
       Long testId = client.createTest(test);

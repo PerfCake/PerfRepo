@@ -289,6 +289,35 @@ public class PerfRepoClient {
    }
 
    /**
+    * Updates existing test execution.
+    *
+    * @param testExecution test execution.
+    * @return ID of the test execution.
+    * @throws Exception
+    */
+   public Long updateTestExecution(TestExecution testExecution) throws Exception {
+      if (testExecution == null || testExecution.getId() == null) {
+         throw new IllegalArgumentException("Neither test execution nor test execution ID can be null.");
+      }
+
+      HttpPost post = createBasicPost("testExecution/update/%s", testExecution.getId());
+      setPostEntity(post, testExecution);
+      HttpResponse resp = httpClient.execute(post);
+      if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED) {
+         logHttpError("Error while updating test execution.", post, resp);
+         EntityUtils.consume(resp.getEntity());
+         return null;
+      }
+      Header[] locations = resp.getHeaders(HttpHeaders.LOCATION);
+      if (locations != null && locations.length > 0) {
+         log.debug("Updated test execution at: " + locations[0].getValue());
+      }
+      Long id = new Long(EntityUtils.toString(resp.getEntity()));
+      EntityUtils.consume(resp.getEntity());
+      return id;
+   }
+
+   /**
     * Get test execution by id.
     *
     * @param id

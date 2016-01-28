@@ -89,6 +89,23 @@ public class TestExecutionREST {
       return Response.created(uriInfo.getBaseUriBuilder().path(TestExecutionREST.class).path(GET_TEST_EXECUTION_METHOD).build(id)).entity(id).build();
    }
 
+   @POST
+   @Path("/update/{testExecutionId}")
+   @Logged
+   public Response update(TestExecution testExecution, @Context UriInfo uriInfo) throws Exception {
+      Test test = null;
+      if (testExecution.getTest().getId() != null) {
+         test = testService.getFullTest(testExecution.getTest().getId());
+      } else {
+         test = testService.getTestByUID(testExecution.getTest().getUid());
+      }
+
+      testExecution.setTest(test);
+      testService.updateTestExecution(testExecution);
+
+      return Response.created(uriInfo.getBaseUriBuilder().path(TestExecutionREST.class).path(GET_TEST_EXECUTION_METHOD).build(testExecution.getId())).entity(testExecution.getId()).build();
+   }
+
    @POST()
    @Path("/addValue")
    @Consumes(MediaType.TEXT_XML)
