@@ -1,4 +1,4 @@
-<rich:popupPanel id="dialogMetricAdd" modal="true" autosized="true" resizeable="false"
+<rich:popupPanel id="dialogMetricAdd" modal="true" autosized="true" resizeable="false" domElementAttachment="form"
                  xmlns="http://www.w3.org/1999/xhtml"
                  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
                  xmlns:a4j="http://richfaces.org/a4j"
@@ -7,7 +7,7 @@
         <h:outputText value="Add metric"/>
     </f:facet>
     <c:set target="#{testController.metricDetails}" property="createMode" value="#{false}"/>
-    <rich:tabPanel switchType="client">
+    <rich:tabPanel switchType="client" onitemchange="#{rich:component('dialogMetricAdd')}.resizeListener()">
         <rich:tab header="Assign existing metric" rendered="#{testController.metricDetails.selectionMetricVisible}">
             <h:form id="dialogMetricAddAssignForm">
                 <fieldset>
@@ -69,7 +69,8 @@
                                        for="selectMetric">#{entityStrings.Metric_description}</h:outputLabel>
 
                         <div class="controls">
-                            <rich:editor value="#{testController.metricDetails.metric.description}" toolbar="basic"/>
+                            <rich:editor value="#{testController.metricDetails.metric.description}" toolbar="basic" 
+                                         oninit="#{rich:component('dialogMetricAdd')}.resizeListener()"/>
                         </div>
                     </div>
                     <div style="text-align:right">

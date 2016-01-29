@@ -64,11 +64,13 @@
 
                   <div class="controls">
                      <div class="btn-group">
-                        <a4j:commandLink styleClass="btn #{userSession.getGroupFilter() == 'MY_GROUPS' ? 'active' : '' }" render="@form :searchResult" >
+                        <a4j:commandLink styleClass="btn #{userSession.getGroupFilter() == 'MY_GROUPS' ? 'active' : '' }" 
+                                         render="@form :searchResult" action="#{testSearchController.setGroupFilter('MY_GROUPS')}">
                            <i class="icon-group" /> Search My Groups Only
                         </a4j:commandLink>
 
-			               <a4j:commandLink styleClass="btn #{userSession.getGroupFilter() == 'ALL_GROUPS' ? 'active' : '' }" render="@form :searchResult" >
+			               <a4j:commandLink styleClass="btn #{userSession.getGroupFilter() == 'ALL_GROUPS' ? 'active' : '' }" 
+                                            render="@form :searchResult" action="#{testSearchController.setGroupFilter('ALL_GROUPS')}">
                            <i class="icon-asterisk" /> Search All Groups
                         </a4j:commandLink>
                      </div>
