@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.perfrepo.model.*;
 import org.perfrepo.model.to.MultiValueResultWrapper;
 import org.perfrepo.model.to.OrderBy;
-import org.perfrepo.model.to.ResultWrapper;
+import org.perfrepo.model.to.SingleValueResultWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.web.dao.DAO;
 import org.perfrepo.web.dao.MetricDAO;
@@ -268,7 +268,7 @@ public class TestExecutionDAOTest {
       TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
       searchCriteria.setTestUID(tests[0].getUid());
 
-      assertEquals("Search by test UID retrieved unexpected results.", 4, testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).size());
+      assertEquals("Search by test UID retrieved unexpected results.", 4, testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).getResult().size());
    }
 
    @org.junit.Test
@@ -280,7 +280,7 @@ public class TestExecutionDAOTest {
       searchCriteria.setStartedFrom(from);
       searchCriteria.setStartedTo(to);
 
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).getResult();
       assertEquals(2, result.size());
 
       List<Long> expectedResultIds = Arrays.asList(testExecutions[1].getId(), testExecutions[2].getId());
@@ -294,7 +294,7 @@ public class TestExecutionDAOTest {
       TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
       searchCriteria.setTags("tag1 tag2");
 
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).getResult();
       assertEquals(2, result.size());
 
       List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId());
@@ -310,7 +310,7 @@ public class TestExecutionDAOTest {
       searchCriteria.setLimitFrom(1);
       searchCriteria.setLimitHowMany(2);
 
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).getResult();
       assertEquals(2, result.size());
 
       List<Long> expectedResultIds = Arrays.asList(testExecutions[1].getId(), testExecutions[2].getId());
@@ -325,7 +325,7 @@ public class TestExecutionDAOTest {
       List<Long> ids = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId());
       searchCriteria.setIds(ids);
 
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).getResult();
       assertEquals(2, result.size());
 
       List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId());
@@ -340,7 +340,7 @@ public class TestExecutionDAOTest {
       searchCriteria.setTestUID(tests[0].getUid());
       searchCriteria.setOrderBy(OrderBy.DATE_ASC);
 
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).getResult();
       assertEquals(4, result.size());
 
       List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(),
@@ -358,7 +358,7 @@ public class TestExecutionDAOTest {
       searchCriteria.setTestUID(tests[0].getUid());
       searchCriteria.setOrderBy(OrderBy.DATE_DESC);
 
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).getResult();
       assertEquals(4, result.size());
 
       List<Long> expectedResultIds = Arrays.asList(testExecutions[3].getId(),
@@ -377,7 +377,7 @@ public class TestExecutionDAOTest {
       searchCriteria.setOrderBy(OrderBy.PARAMETER_ASC);
       searchCriteria.setOrderByParameter("param");
 
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).getResult();
       assertEquals(4, result.size());
 
       List<Long> expectedResultIds = Arrays.asList(testExecutions[1].getId(),
@@ -396,7 +396,7 @@ public class TestExecutionDAOTest {
       searchCriteria.setOrderBy(OrderBy.PARAMETER_DESC);
       searchCriteria.setOrderByParameter("param");
 
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).getResult();
       assertEquals(4, result.size());
 
       List<Long> expectedResultIds = Arrays.asList(testExecutions[2].getId(),
@@ -414,7 +414,7 @@ public class TestExecutionDAOTest {
       searchCriteria.setOrderBy(OrderBy.PARAMETER_ASC);
       searchCriteria.setOrderByParameter("param");
 
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).getResult();
       assertEquals(4, result.size());
 
       List<Long> expectedResultIds = Arrays.asList(testExecutions[1].getId(),
@@ -433,7 +433,7 @@ public class TestExecutionDAOTest {
       searchCriteria.setOrderBy(OrderBy.PARAMETER_DESC);
       searchCriteria.setOrderByParameter("param");
 
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId()));
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria, Arrays.asList(tests[0].getGroupId())).getResult();
       assertEquals(4, result.size());
 
       List<Long> expectedResultIds = Arrays.asList(testExecutions[2].getId(),
@@ -449,7 +449,7 @@ public class TestExecutionDAOTest {
       TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
       Metric metric = metricDAO.get(metrics[0].getId());
 
-      List<ResultWrapper> result = testExecutionDAO.searchValues(searchCriteria, metric, Arrays.asList(tests[0].getGroupId()));
+      List<SingleValueResultWrapper> result = testExecutionDAO.searchValues(searchCriteria, metric, Arrays.asList(tests[0].getGroupId()));
       List<Double> expectedResult = Arrays.asList(values[0].getResultValue(),
                                                   values[1].getResultValue(),
                                                   values[2].getResultValue(),
@@ -469,7 +469,7 @@ public class TestExecutionDAOTest {
 
       Metric metric = metricDAO.get(metrics[0].getId());
 
-      List<ResultWrapper> result = testExecutionDAO.searchValues(searchCriteria, metric, Arrays.asList(tests[0].getGroupId()));
+      List<SingleValueResultWrapper> result = testExecutionDAO.searchValues(searchCriteria, metric, Arrays.asList(tests[0].getGroupId()));
       List<Double> expectedResult = Arrays.asList(values[1].getResultValue(),
                                                   values[2].getResultValue());
       IntStream.range(0, expectedResult.size())

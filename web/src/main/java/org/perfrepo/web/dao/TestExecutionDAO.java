@@ -15,38 +15,18 @@
 package org.perfrepo.web.dao;
 
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Tag;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionParameter;
-import org.perfrepo.model.TestExecutionTag;
-import org.perfrepo.model.Value;
-import org.perfrepo.model.ValueParameter;
-import org.perfrepo.model.to.MetricReportTO;
-import org.perfrepo.model.to.MultiValueResultWrapper;
-import org.perfrepo.model.to.OrderBy;
-import org.perfrepo.model.to.ResultWrapper;
-import org.perfrepo.model.to.TestExecutionSearchTO;
+import org.perfrepo.model.*;
+import org.perfrepo.model.to.*;
 import org.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.perfrepo.model.userproperty.GroupFilter;
 import org.perfrepo.model.util.EntityUtils;
 import org.perfrepo.web.util.TagUtils;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -56,13 +36,10 @@ import java.util.stream.Collectors;
  * @author Michal Linhard (mlinhard@redhat.com)
  * @author Jiri Holusa (jholusa@redhat.com)
  */
-@Named
 public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
    @Inject
    private TestExecutionParameterDAO testExecutionParameterDAO;
-
-   private Integer lastQueryResultsCount = null;
 
    public List<TestExecution> getByTest(Long testId) {
       Test test = new Test();
@@ -97,7 +74,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param userGroups
     * @return
     */
-   public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search, List<String> userGroups) {
+   public SearchResultWrapper<TestExecution> searchTestExecutions(TestExecutionSearchTO search, List<String> userGroups) {
       CriteriaBuilder cb = criteriaBuilder();
 
       List<String> tags = TagUtils.parseTags(search.getTags() != null ? search.getTags().toLowerCase() : "");
@@ -105,7 +82,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       List<String> includedTags = new ArrayList<>();
       divideTags(tags, includedTags, excludedTags);
 
-      lastQueryResultsCount = processSearchCountQuery(search, includedTags, excludedTags, userGroups);
+      int lastQueryResultsCount = processSearchCountQuery(search, includedTags, excludedTags, userGroups);
 
       CriteriaQuery<TestExecution> criteria = (CriteriaQuery) createSearchSubquery(cb.createQuery(TestExecution.class), search, includedTags, excludedTags);
       Root<TestExecution> root = (Root<TestExecution>) criteria.getRoots().toArray()[0];
@@ -127,7 +104,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       filterResultByParameters(clonedResult, search);
       orderResultsByParameters(clonedResult, search);
 
-      return clonedResult;
+      return new SearchResultWrapper<>(clonedResult, lastQueryResultsCount);
    }
 
    /**
@@ -211,11 +188,11 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param userGroups
     * @return
     */
-   public List<ResultWrapper> searchValues(TestExecutionSearchTO search, Metric metric, List<String> userGroups) {
+   public List<SingleValueResultWrapper> searchValues(TestExecutionSearchTO search, Metric metric, List<String> userGroups) {
       CriteriaBuilder cb = criteriaBuilder();
-      CriteriaQuery<ResultWrapper> criteriaQuery = cb.createQuery(ResultWrapper.class);
+      CriteriaQuery<SingleValueResultWrapper> criteriaQuery = cb.createQuery(SingleValueResultWrapper.class);
 
-      List<TestExecution> testExecutions = searchTestExecutions(search, userGroups);
+      List<TestExecution> testExecutions = searchTestExecutions(search, userGroups).getResult();
       List<Long> testExecutionIds = testExecutions.stream().map(TestExecution::getId).collect(Collectors.toList());
 
       Root<TestExecution> testExecution = criteriaQuery.from(TestExecution.class);
@@ -225,14 +202,14 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Predicate selectedMetric = cb.equal(metricJoin.get("id"), metric.getId());
       Predicate selectedTestExecutions = testExecution.get("id").in(testExecutionIds);
 
-      criteriaQuery.select(cb.construct(ResultWrapper.class, valueJoin.get("resultValue"), testExecution.get("id"), testExecution.get("started")));
+      criteriaQuery.select(cb.construct(SingleValueResultWrapper.class, valueJoin.get("resultValue"), testExecution.get("id"), testExecution.get("started")));
       criteriaQuery.where(cb.and(selectedMetric, selectedTestExecutions));
       //TODO: this won't work correctly with ordering by parameter value, fix it according to searchMultiValues
       //TODO: this will be fixed when re-doing Metric history report
       criteriaQuery.orderBy(cb.asc(testExecution.get("started")));
       criteriaQuery.groupBy(testExecution.get("id"), valueJoin.get("resultValue"), testExecution.get("started"));
 
-      TypedQuery<ResultWrapper> query = query(criteriaQuery);
+      TypedQuery<SingleValueResultWrapper> query = query(criteriaQuery);
 
       return query.getResultList();
    }
@@ -250,7 +227,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       CriteriaBuilder cb = criteriaBuilder();
       CriteriaQuery<Tuple> criteriaQuery = cb.createQuery(Tuple.class);
 
-      List<TestExecution> testExecutions = searchTestExecutions(search, userGroups);
+      List<TestExecution> testExecutions = searchTestExecutions(search, userGroups).getResult();
       List<Long> testExecutionIds = testExecutions.stream().map(TestExecution::getId).collect(Collectors.toList());
 
       Root<TestExecution> testExecution = criteriaQuery.from(TestExecution.class);
@@ -320,7 +297,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param metricName
     * @param tagList
     * @param limitSize
-    * @return List of ResultWrapper objects
+    * @return List of SingleValueResultWrapper objects
     */
    public List<MetricReportTO.DataPoint> searchValues(Long testId, String metricName, List<String> tagList, int limitSize) {
       boolean useTags = tagList != null && !tagList.isEmpty();
@@ -400,20 +377,6 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       } else {
          return r.get(0);
       }
-   }
-
-   /**
-    * Return number of entities returned by the last query.
-    *
-    * @throws IllegalStateException if no query was executed.
-    * @return
-    */
-   public int getLastQueryResultsCount() {
-      if (lastQueryResultsCount == null) {
-         throw new IllegalStateException("No query was executed before.");
-      }
-
-      return lastQueryResultsCount;
    }
 
    /**

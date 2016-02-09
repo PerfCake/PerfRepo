@@ -259,9 +259,9 @@
          </plugin>
 
          <plugin>
-            <groupId>org.jboss.as.plugins</groupId>
-            <artifactId>jboss-as-maven-plugin</artifactId>
-            <version>${maven.jboss.as.plugin.version}</version>
+            <groupId>org.wildfly.plugins</groupId>
+            <artifactId>wildfly-maven-plugin</artifactId>
+            <version>${maven.wildfly.plugin.version}</version>
          </plugin>
 
          <!-- plugins for ANTLR -->

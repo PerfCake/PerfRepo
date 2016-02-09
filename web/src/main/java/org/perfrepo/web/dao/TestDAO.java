@@ -17,17 +17,13 @@ package org.perfrepo.web.dao;
 import org.perfrepo.model.Entity;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.to.OrderBy;
+import org.perfrepo.model.to.SearchResultWrapper;
 import org.perfrepo.model.to.TestSearchTO;
 import org.perfrepo.model.userproperty.GroupFilter;
 
-import javax.inject.Named;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,10 +36,7 @@ import java.util.Map;
  * @author Jiri Holusa (jholusa@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
  */
-@Named
 public class TestDAO extends DAO<Test, Long> {
-
-   private Integer lastQueryResultsCount;
 
    /**
     * Retrieves test by UID
@@ -69,10 +62,10 @@ public class TestDAO extends DAO<Test, Long> {
     * @param userGroupNames
     * @return
     */
-   public List<Test> searchTests(TestSearchTO search, List<String> userGroupNames) {
+   public SearchResultWrapper<Test> searchTests(TestSearchTO search, List<String> userGroupNames) {
       CriteriaQuery<Test> criteria = createCriteria();
 
-      lastQueryResultsCount = processSearchCountQuery(search, userGroupNames);
+      int lastQueryResultsCount = processSearchCountQuery(search, userGroupNames);
 
       Root<Test> root = criteria.from(Test.class);
       criteria.select(root);
@@ -91,7 +84,7 @@ public class TestDAO extends DAO<Test, Long> {
          query.setMaxResults(search.getLimitHowMany());
       }
 
-      return query.getResultList();
+      return new SearchResultWrapper<>(query.getResultList(), lastQueryResultsCount);
    }
 
    /**
@@ -123,20 +116,6 @@ public class TestDAO extends DAO<Test, Long> {
    }
 
    /**
-    * Retrieves total number of found tests by last query.
-    *
-    * @return
-    * @throws IllegalStateException when no query was executed before
-    */
-   public int getLastQueryResultsCount() {
-      if (lastQueryResultsCount == null) {
-         throw new IllegalStateException("No query was executed before.");
-      }
-
-      return lastQueryResultsCount;
-   }
-
-   /**
     * Helper method. Retrieves total number of found tests according to specified
     * search criteria.
     *
@@ -144,7 +123,7 @@ public class TestDAO extends DAO<Test, Long> {
     * @param userGroupNames
     * @return
     */
-   private Integer processSearchCountQuery(TestSearchTO search, List<String> userGroupNames) {
+   private int processSearchCountQuery(TestSearchTO search, List<String> userGroupNames) {
       CriteriaBuilder cb = criteriaBuilder();
       CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
 

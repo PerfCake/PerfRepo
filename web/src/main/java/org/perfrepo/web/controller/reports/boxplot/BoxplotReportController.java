@@ -113,7 +113,7 @@ public class BoxplotReportController extends BaseController {
 
    public List<Test> getTestsForSelection() {
       if (testsForSelection == null) {
-         testsForSelection = testService.getAvailableTests();
+         testsForSelection = testService.getAvailableTests().getResult();
          Collections.sort(testsForSelection, (o1, o2) -> o1.getName().compareTo(o2.getName()));
       }
 

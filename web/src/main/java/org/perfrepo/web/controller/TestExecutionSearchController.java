@@ -16,6 +16,7 @@ package org.perfrepo.web.controller;
 
 import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.to.OrderBy;
+import org.perfrepo.model.to.SearchResultWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.perfrepo.model.userproperty.GroupFilter;
@@ -90,9 +91,11 @@ public class TestExecutionSearchController extends BaseController {
       criteria.setGroupFilter(userSession.getGroupFilter());
       criteria.setLimitHowMany(criteria.getLimitHowMany() <= 0 ? null : criteria.getLimitHowMany());
       criteria.setLimitFrom(criteria.getLimitHowMany() == null ? null : (resultsPageNumber - 1) * criteria.getLimitHowMany());
-      result = testService.searchTestExecutions(criteria);
 
-      totalNumberOfResults = testService.getLastTEQueryResultsCount();
+      SearchResultWrapper<TestExecution> searchResult = testService.searchTestExecutions(criteria);
+      result = searchResult.getResult();
+      totalNumberOfResults = searchResult.getTotalSearchResultsCount();
+
       constructPagination();
 
       paramColumns = criteria.getParameters().stream().filter(ParamCriteria::isDisplayed).map(ParamCriteria::getName).collect(Collectors.toList());

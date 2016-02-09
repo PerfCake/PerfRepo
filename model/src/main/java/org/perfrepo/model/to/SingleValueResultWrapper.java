@@ -12,13 +12,13 @@ import java.util.Date;
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
-public class ResultWrapper {
+public class SingleValueResultWrapper {
 
    private final Double value;
    private final Long execId;
    private final Date startedDate;
 
-   public ResultWrapper(Double value, Long execId, Date startedDate) {
+   public SingleValueResultWrapper(Double value, Long execId, Date startedDate) {
       this.value = value;
       this.execId = execId;
       this.startedDate = new Date(startedDate.getTime());

@@ -16,6 +16,7 @@ package org.perfrepo.web.controller;
 
 import org.perfrepo.model.Test;
 import org.perfrepo.model.to.OrderBy;
+import org.perfrepo.model.to.SearchResultWrapper;
 import org.perfrepo.model.to.TestSearchTO;
 import org.perfrepo.model.userproperty.GroupFilter;
 import org.perfrepo.web.service.TestService;
@@ -70,9 +71,10 @@ public class TestSearchController extends BaseController {
       criteria.setLimitHowMany(criteria.getLimitHowMany() <= 0 ? null : criteria.getLimitHowMany());
       criteria.setLimitFrom(criteria.getLimitHowMany() == null ? null : (resultsPageNumber - 1) * criteria.getLimitHowMany());
 
-      result = testService.searchTest(criteria);
+      SearchResultWrapper<Test> searchResult = testService.searchTest(criteria);
+      result = searchResult.getResult();
+      totalNumberOfResults = searchResult.getTotalSearchResultsCount();
 
-      totalNumberOfResults = testService.getLastTestQueryResultsCount();
       constructPagination();
    }
 

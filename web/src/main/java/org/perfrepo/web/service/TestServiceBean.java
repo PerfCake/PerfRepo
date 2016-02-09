@@ -16,6 +16,7 @@ package org.perfrepo.web.service;
 
 import org.apache.log4j.Logger;
 import org.perfrepo.model.*;
+import org.perfrepo.model.to.SearchResultWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
 import org.perfrepo.model.to.TestSearchTO;
@@ -28,28 +29,17 @@ import org.perfrepo.web.security.Secured;
 import org.perfrepo.web.service.exceptions.ServiceException;
 import org.perfrepo.web.util.MessageUtils;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
+import javax.ejb.*;
 import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Implements {@link TestService}.
  *
  * @author Pavel Drozd (pdrozd@redhat.com)
  * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  */
-@Named
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -95,8 +85,6 @@ public class TestServiceBean implements TestService {
 
    @Inject
    private AlertingService alertingService;
-
-   private Long lastQueryResultsCount = null;
 
    @Override
    @Secured
@@ -167,12 +155,12 @@ public class TestServiceBean implements TestService {
    }
 
    @Override
-   public List<Test> searchTest(TestSearchTO search) {
+   public SearchResultWrapper<Test> searchTest(TestSearchTO search) {
       return testDAO.searchTests(search, userService.getLoggedUserGroupNames());
    }
 
    @Override
-   public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search) {
+   public SearchResultWrapper<TestExecution> searchTestExecutions(TestExecutionSearchTO search) {
       // remove param criteria with empty param name
       if (search.getParameters() != null) {
          for (Iterator<ParamCriteria> allParams = search.getParameters().iterator(); allParams.hasNext();) {
@@ -183,8 +171,7 @@ public class TestServiceBean implements TestService {
          }
       }
 
-      List<TestExecution> result = testExecutionDAO.searchTestExecutions(search, userService.getLoggedUserGroupNames());
-      return result;
+      return testExecutionDAO.searchTestExecutions(search, userService.getLoggedUserGroupNames());
    }
 
    @Override
@@ -673,7 +660,7 @@ public class TestServiceBean implements TestService {
    }
 
    @Override
-   public List<Test> getAvailableTests() {
+   public SearchResultWrapper<Test> getAvailableTests() {
       TestSearchTO search = new TestSearchTO();
       search.setGroupFilter(GroupFilter.MY_GROUPS);
       List<String> groups = userService.getLoggedUserGroupNames();
@@ -816,16 +803,6 @@ public class TestServiceBean implements TestService {
       }
 
       return false;
-   }
-
-   @Override
-   public Integer getLastTEQueryResultsCount() {
-      return testExecutionDAO.getLastQueryResultsCount();
-   }
-
-   @Override
-   public int getLastTestQueryResultsCount() {
-      return testDAO.getLastQueryResultsCount();
    }
 
    private TestMetric createTestMetric(Test test, Metric metric) {

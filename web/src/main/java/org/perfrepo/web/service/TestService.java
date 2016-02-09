@@ -21,6 +21,7 @@ import org.perfrepo.model.TestExecutionAttachment;
 import org.perfrepo.model.TestExecutionParameter;
 import org.perfrepo.model.TestMetric;
 import org.perfrepo.model.Value;
+import org.perfrepo.model.to.SearchResultWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.model.to.TestSearchTO;
 import org.perfrepo.model.user.User;
@@ -52,17 +53,17 @@ public interface TestService {
     * Returns list of TestExecutionss according to criteria defined by TestExecutionSearchTO
     *
     * @param search
-    * @return List of {@link TestExecution}
+    * @return result
     */
-   public List<TestExecution> searchTestExecutions(TestExecutionSearchTO search);
+   public SearchResultWrapper<TestExecution> searchTestExecutions(TestExecutionSearchTO search);
 
    /**
     * Returns list of Tests according to criteria defined by TestSearchTO
     *
     * @param search
-    * @return List of {@link Test}
+    * @return result
     */
-   public List<Test> searchTest(TestSearchTO search);
+   public SearchResultWrapper<Test> searchTest(TestSearchTO search);
 
    /**
     * Get list of full test executions.
@@ -299,7 +300,7 @@ public interface TestService {
    /**
     * @return list of all test belonging to one of the groups current logged user is in.
     */
-   public List<Test> getAvailableTests();
+   public SearchResultWrapper<Test> getAvailableTests();
 
    /**
     * @param testId
@@ -388,19 +389,5 @@ public interface TestService {
     * @return boolean
     */
    public boolean isUserSubscribed(User user, Test test);
-
-   /**
-    * Return number of test executions returned by the last query.
-    *
-    * @return
-    */
-   public Integer getLastTEQueryResultsCount();
-
-   /**
-    * Return total number of found tests by last query.
-    *
-    * @return
-    */
-   public int getLastTestQueryResultsCount();
 
 }
