@@ -15,14 +15,8 @@
 package org.perfrepo.web.rest.security;
 
 import org.jboss.resteasy.util.Base64;
-import org.perfrepo.web.util.MessageUtils;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -62,10 +56,10 @@ public class RestAuthenticationFilter implements Filter {
             req.login(username, password);
             chain.doFilter(request, response);
          } catch (Exception ex) {
-            throw new SecurityException(MessageUtils.getMessage("securityException.100"), ex);
+            throw new org.perfrepo.web.security.SecurityException("securityException.wrongCredentials", ex);
          }
       } else {
-         throw new SecurityException(MessageUtils.getMessage("securityException.100"));
+         throw new org.perfrepo.web.security.SecurityException("securityException.wrongCredentials");
       }
    }
 

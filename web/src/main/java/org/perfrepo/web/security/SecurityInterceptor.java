@@ -17,7 +17,6 @@ package org.perfrepo.web.security;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.perfrepo.model.Entity;
 import org.perfrepo.model.auth.SecuredEntity;
-import org.perfrepo.web.util.MessageUtils;
 
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
@@ -46,7 +45,7 @@ public class SecurityInterceptor {
                entity = (Entity<?>) PropertyUtils.getProperty(entity, se.parent());
             }
             if (!authorizationService.isUserAuthorizedFor(secureAnnotation.accessType(), entity)) {
-               throw new SecurityException(MessageUtils.getMessage("securityException.101", ctx.getMethod().getName(), param.getClass().getSimpleName(), ((Entity<?>) param).getId()));
+               throw new org.perfrepo.web.security.SecurityException("securityException.permissionDenied", ctx.getMethod().getName(), param.getClass().getSimpleName(), ((Entity<?>) param).getId().toString());
             }
          }
       }

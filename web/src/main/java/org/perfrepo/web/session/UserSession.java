@@ -123,7 +123,7 @@ public class UserSession implements Serializable {
     * @param filter
     * @throws ServiceException
     */
-   public void setReportFilter(ReportFilter filter) throws ServiceException {
+   public void setReportFilter(ReportFilter filter) {
       userService.addUserProperty(USER_PARAM_REPORT_FILTER, filter.name());
       refresh();
    }

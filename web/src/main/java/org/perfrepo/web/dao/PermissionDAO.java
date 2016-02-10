@@ -42,7 +42,7 @@ public class PermissionDAO extends DAO<Permission, Long> {
    /**
     * Removes report permissions
     *
-    * @param report
+    * @param reportId
     */
    public void removeReportPermissions(Long reportId) {
       List<Permission> permissions = getByReport(reportId);

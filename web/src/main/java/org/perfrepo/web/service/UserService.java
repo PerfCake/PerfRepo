@@ -144,7 +144,7 @@ public interface UserService {
     * @param paramName
     * @param label
     */
-   public void addFavoriteParameter(Test test, String paramName, String label) throws ServiceException;
+   public void addFavoriteParameter(Test test, String paramName, String label);
 
    /**
     * Adds user parameter
@@ -160,7 +160,7 @@ public interface UserService {
     * @param test
     * @param paramName
     */
-   public void removeFavoriteParameter(Test test, String paramName) throws ServiceException;
+   public void removeFavoriteParameter(Test test, String paramName);
 
    /**
     * Returns list of favorite parameters that has current user selected to specific test

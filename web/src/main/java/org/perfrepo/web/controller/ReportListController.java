@@ -18,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.perfrepo.model.report.Report;
 import org.perfrepo.model.userproperty.ReportFilter;
 import org.perfrepo.web.service.ReportService;
-import org.perfrepo.web.service.exceptions.ServiceException;
 import org.perfrepo.web.session.UserSession;
 import org.perfrepo.web.viewscope.ViewScoped;
 
@@ -64,30 +63,18 @@ public class ReportListController extends BaseController {
    }
 
    public void setAllReports() {
-      try {
-         userSession.setReportFilter(ReportFilter.ALL);
-         updateSavedReports();
-      } catch (ServiceException se) {
-         addMessage(se);
-      }
+      userSession.setReportFilter(ReportFilter.ALL);
+      updateSavedReports();
    }
 
    public void setMyReports() {
-      try {
-         userSession.setReportFilter(ReportFilter.MY);
-         updateSavedReports();
-      } catch (ServiceException se) {
-         addMessage(se);
-      }
+      userSession.setReportFilter(ReportFilter.MY);
+      updateSavedReports();
    }
 
    public void setTeamReports() {
-      try {
-         userSession.setReportFilter(ReportFilter.TEAM);
-         updateSavedReports();
-      } catch (ServiceException se) {
-         addMessage(se);
-      }
+      userSession.setReportFilter(ReportFilter.TEAM);
+      updateSavedReports();
    }
 
    private void updateSavedReports() {
@@ -112,12 +99,9 @@ public class ReportListController extends BaseController {
       if (itemToRemove == null) {
          throw new IllegalStateException("Item to remove is null");
       }
-      try {
-         reportService.removeReport(itemToRemove);
-      } catch (ServiceException e) {
-         log.error("Error while removing report " + itemToRemove.getId(), e);
-         addMessage(e);
-      }
+
+      reportService.removeReport(itemToRemove);
+
       updateSavedReports();
    }
 }

@@ -143,12 +143,7 @@ public class TestExecutionController extends BaseController {
    }
 
    public void saveEditedFavoriteParameter() {
-      try {
-         userService.addFavoriteParameter(editedFavoriteParameter.getTest(), editedFavoriteParameter.getParameterName(), editedFavoriteParameter.getLabel());
-      } catch (ServiceException e) {
-         log.error("Error while saving property", e);
-         addMessage(e);
-      }
+      userService.addFavoriteParameter(editedFavoriteParameter.getTest(), editedFavoriteParameter.getParameterName(), editedFavoriteParameter.getLabel());
       userSession.refresh();
       favoriteParameters = userService.getFavoriteParametersForTest(test);
    }
@@ -158,12 +153,7 @@ public class TestExecutionController extends BaseController {
          log.error("incorrect request for removeFromFavorites");
          return;
       }
-      try {
-         userService.removeFavoriteParameter(test, paramName);
-      } catch (ServiceException e) {
-         log.error("Error while removing favorite parameter.", e);
-         addMessage(e);
-      }
+      userService.removeFavoriteParameter(test, paramName);
       userSession.refresh();
       favoriteParameters = userService.getFavoriteParametersForTest(test);
    }
@@ -325,8 +315,7 @@ public class TestExecutionController extends BaseController {
          try {
             testService.updateTestExecution(testExecution);
          } catch (ServiceException e) {
-            //TODO: how to handle web-layer exceptions ?
-            throw new RuntimeException(e);
+            addMessage(e);
          }
       }
       return "/testExecution/detail.xhtml?testExecutionId=";
@@ -356,9 +345,8 @@ public class TestExecutionController extends BaseController {
       }
       try {
          testService.removeTestExecution(objectToDelete);
-      } catch (Exception e) {
-         // TODO: how to handle web-layer exceptions ?
-         throw new RuntimeException(e);
+      } catch (org.perfrepo.web.service.exceptions.ServiceException e) {
+         addMessage(e);
       }
       return "Search";
    }
@@ -508,7 +496,7 @@ public class TestExecutionController extends BaseController {
 
    /**
     * Produce download link for an attachment. It will be an URL for the
-    * {@link TestExecutionREST#getAttachment(Long)} method.
+    * {@link org.perfrepo.web.rest.TestExecutionREST#getAttachment(Long)} method.
     *
     * @param attachment
     * @return The download link.

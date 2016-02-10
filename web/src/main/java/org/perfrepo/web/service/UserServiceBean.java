@@ -91,12 +91,12 @@ public class UserServiceBean implements UserService {
       }
       User loggedUser = getLoggedUser();
       if (!user.getId().equals(loggedUser.getId())) {
-         throw new SecurityException("Only logged-in user can change his own properties");
+         throw new org.perfrepo.web.security.SecurityException("securityException.userCannotChangeDifferentProperties");
       }
 
       User duplicateUsernameUser = userDAO.findByUsername(user.getUsername());
       if (duplicateUsernameUser != null && duplicateUsernameUser.getId() != user.getId()) {
-         throw new ServiceException(ServiceException.Codes.USERNAME_ALREADY_EXISTS, user.getUsername());
+         throw new ServiceException("serviceException.usernameAlreadyExists", user.getUsername());
       }
 
       User updatedUser = userDAO.update(user);
@@ -106,7 +106,7 @@ public class UserServiceBean implements UserService {
    @Override
    public void changePassword(String oldPassword, String newPassword) throws ServiceException {
       if (oldPassword == null || newPassword == null) {
-         throw new ServiceException(ServiceException.Codes.PASSWORD_IS_EMPTY);
+         throw new ServiceException("serviceException.changePassword");
       }
 
       String newPasswordEncrypted = computeMd5(newPassword);
@@ -115,7 +115,7 @@ public class UserServiceBean implements UserService {
       User user = userDAO.get(getLoggedUser().getId());
 
       if (!user.getPassword().equals(oldPasswordEncrypted)) {
-         throw new ServiceException(ServiceException.Codes.PASSWORD_DOESNT_MATCH);
+         throw new ServiceException("serviceException.passwordDoesntMatch");
       }
 
       user.setPassword(newPasswordEncrypted);
@@ -129,7 +129,7 @@ public class UserServiceBean implements UserService {
    }
 
    @Override
-   public void addFavoriteParameter(Test test, String paramName, String label) throws ServiceException {
+   public void addFavoriteParameter(Test test, String paramName, String label) {
       User user = userDAO.get(getLoggedUser().getId());
       Test testEntity = testDAO.get(test.getId());
 
@@ -160,7 +160,7 @@ public class UserServiceBean implements UserService {
    }
 
    @Override
-   public void removeFavoriteParameter(Test test, String paramName) throws ServiceException {
+   public void removeFavoriteParameter(Test test, String paramName) {
       FavoriteParameter fp = favoriteParameterDAO.findByTestAndParamName(paramName, test.getId(), getLoggedUser().getId());
 
       if (fp != null) {

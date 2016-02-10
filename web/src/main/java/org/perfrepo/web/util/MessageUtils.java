@@ -58,6 +58,16 @@ public class MessageUtils {
     * @return String
     */
    public static String getMessage(ServiceException e) {
-      return MessageFormat.format(bundle.getString("serviceException." + e.getCode()), e.getParams());
+      return MessageFormat.format(bundle.getString(e.getKeyToResourceBundle()), e.getParams());
+   }
+
+   /**
+    * Returns localized message for {@link org.perfrepo.web.security.SecurityException}
+    *
+    * @param e
+    * @return String
+    */
+   public static String getMessage(org.perfrepo.web.security.SecurityException e) {
+      return MessageFormat.format(bundle.getString(e.getKeyToResourceBundle()), e.getParams());
    }
 }

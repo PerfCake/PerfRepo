@@ -185,6 +185,12 @@ public class BaseController implements Serializable {
       fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
    }
 
+   protected void addMessage(org.perfrepo.web.security.SecurityException e) {
+      FacesContext fc = FacesContext.getCurrentInstance();
+      String message = MessageUtils.getMessage(e);
+      fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
+   }
+
    protected void addSessionMessage(ServiceException e) {
       String message = MessageUtils.getMessage(e);
       addSessionMessage(new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));

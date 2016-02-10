@@ -104,14 +104,14 @@ public class TestController extends BaseController {
       }
       try {
          Test createdTest = testService.createTest(test);
-         redirectWithMessage("/test/" + createdTest.getId(), INFO, "page.test.createdSuccesfully", createdTest.getId());
+         redirectWithMessage("/test/" + createdTest.getId(), INFO, "page.test.createdSuccessfully", createdTest.getId());
       } catch (ServiceException e) {
          addMessage(e);
-      } catch (SecurityException e) {
-         addMessage(ERROR, "page.test.errorSecurityException", e.getMessage());
+      } catch (org.perfrepo.web.security.SecurityException e) {
+         addMessage(e);
       } catch (EJBException e) {
-         if (e.getCause() != null && e.getCause().getClass() == SecurityException.class) {
-            addMessage(ERROR, "page.test.errorSecurityException", e.getCause().getMessage());
+         if (e.getCause() != null && e.getCause().getClass() == org.perfrepo.web.security.SecurityException.class) {
+            addMessage((org.perfrepo.web.security.SecurityException) e.getCause());
          } else {
             throw e;
          }

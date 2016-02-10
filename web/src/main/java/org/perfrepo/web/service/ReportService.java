@@ -17,7 +17,6 @@ package org.perfrepo.web.service;
 import org.perfrepo.model.auth.Permission;
 import org.perfrepo.model.report.Report;
 import org.perfrepo.model.to.MetricReportTO;
-import org.perfrepo.web.service.exceptions.ServiceException;
 
 import java.util.Collection;
 import java.util.List;
@@ -54,7 +53,7 @@ public interface ReportService {
     * @param report
     * @throws org.perfrepo.web.service.exceptions.ServiceException
     */
-   public void removeReport(Report report) throws ServiceException;
+   public void removeReport(Report report);
 
    /**
     * Create new report
@@ -94,7 +93,6 @@ public interface ReportService {
     *
     * @param report
     * @return
-    * @throws ServiceException
     */
    public Collection<Permission> getReportPermissions(Report report);
 }

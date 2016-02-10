@@ -96,6 +96,7 @@ public class TestSearchController extends BaseController {
          addMessage(e);
       }
 
+      search();
       return null;
    }
 

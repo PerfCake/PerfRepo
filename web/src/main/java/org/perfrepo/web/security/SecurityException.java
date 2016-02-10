@@ -12,19 +12,16 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.perfrepo.web.service.exceptions;
-
-import javax.ejb.ApplicationException;
+package org.perfrepo.web.security;
 
 /**
- * Exception in service layer.
+ * Exception for security related stuff
  *
- * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  */
-@ApplicationException(rollback = true)
-public class ServiceException extends Exception {
+public class SecurityException extends java.lang.SecurityException {
 
-   private static final long serialVersionUID = 4888320719223847688L;
+   private static final long serialVersionUID = 48883207192287688L;
 
    private String keyToResourceBundle;
    private Object[] params;
@@ -33,7 +30,7 @@ public class ServiceException extends Exception {
     * @param keyToResourceBundle used for GUI
     * @param params
     */
-   public ServiceException(String keyToResourceBundle, String... params) {
+   public SecurityException(String keyToResourceBundle, String... params) {
       this(keyToResourceBundle, null, params);
    }
 
@@ -41,7 +38,7 @@ public class ServiceException extends Exception {
     * @param keyToResourceBundle used for GUI
     * @param params
     */
-   public ServiceException(String keyToResourceBundle, Throwable cause, String... params) {
+   public SecurityException(String keyToResourceBundle, Throwable cause, String... params) {
       super(cause);
       this.keyToResourceBundle = keyToResourceBundle;
       this.params = params;
@@ -54,4 +51,5 @@ public class ServiceException extends Exception {
    public String getKeyToResourceBundle() {
       return keyToResourceBundle;
    }
+
 }

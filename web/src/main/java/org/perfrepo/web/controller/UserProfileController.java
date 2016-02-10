@@ -65,9 +65,9 @@ public class UserProfileController extends BaseController {
          User updatedUser = userService.updateUser(user);
          redirectWithMessage("/profile", INFO, "page.user.updatedSuccesfully");
       } catch (ServiceException ex) {
-         addMessage(ERROR, "page.user.errorUsernameAlreadyExists", ex.getMessage());
-      } catch (SecurityException ex) {
-         addMessage(ERROR, "page.test.errorSecurityException");
+         addMessage(ex);
+      } catch (org.perfrepo.web.security.SecurityException ex) {
+         addMessage(ex);
       }
    }
 

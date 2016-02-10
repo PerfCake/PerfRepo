@@ -114,7 +114,7 @@ public class TestExecutionSearchController extends BaseController {
 
       try {
          testService.removeTestExecution(execToRemove);
-         addMessage(INFO, "page.execSearch.execSucessfullyDeleted", execToRemove.getName());
+         addMessage(INFO, "page.execSearch.execSuccessfullyDeleted", execToRemove.getName());
       } catch (ServiceException e) {
          addMessage(e);
       }
@@ -229,8 +229,7 @@ public class TestExecutionSearchController extends BaseController {
          try {
             testService.removeTestExecution(testExecution);
          } catch (ServiceException ex) {
-            //TODO: how to handle this properly?
-            throw new RuntimeException(ex);
+            addMessage(ex);
          }
       }
 
