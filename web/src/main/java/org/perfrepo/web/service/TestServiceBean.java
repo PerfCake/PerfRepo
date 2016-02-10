@@ -398,6 +398,12 @@ public class TestServiceBean implements TestService {
          for (Metric existingMetric : existingMetricsForGroup) {
             if (existingMetric.getName().equals(metric.getName())) {
                Metric freshMetric = metricDAO.get(existingMetric.getId());
+
+               if (freshMetric.getTestMetrics().stream()
+                       .anyMatch(testMetric -> testMetric.getTest().getId().equals(freshTest.getId()))) {
+                  throw new ServiceException("serviceException.metricAlreadyExists", freshTest.getUid(), freshMetric.getName());
+               }
+
                return createTestMetric(freshTest, freshMetric);
             }
          }
