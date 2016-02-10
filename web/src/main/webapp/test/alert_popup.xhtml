@@ -6,33 +6,33 @@
         id="dialogAlertForm">
    <rich:popupPanel id="dialogAlert" modal="true" autosized="true" resizeable="false" width="685" domElementAttachment="form">
        <f:facet name="header">
-           <h:outputText value="#{testController.alertDetails.id == null ? 'Add alert' : 'Edit alert'}"/>
+           <h:outputText value="#{testController.alertUpdateDetails.alert.id == null ? 'Add alert' : 'Edit alert'}"/>
        </f:facet>
        <a4j:outputPanel id="dialogAlertMessagesPanel">
             <h:messages errorClass="alert alert-error" infoClass="alert alert-success" fatalClass="alert alert-error" warnClass="alert alert-info"/>
        </a4j:outputPanel>
        <fieldset>
            <div class="control-group">
-               <h:outputLabel class="control-label">Alert name</h:outputLabel>
+               <h:outputLabel class="control-label">Alert name <span class="required">*</span></h:outputLabel>
 
                <div class="controls">
-                   <h:inputText styleClass="input-text" style="width: 650px;" value="#{testController.alertDetails.name}"/>
+                   <h:inputText styleClass="input-text" style="width: 650px;" value="#{testController.alertUpdateDetails.alert.name}"/>
                </div>
            </div>
 
            <div class="control-group">
-               <h:outputLabel class="control-label">Condition</h:outputLabel>
+               <h:outputLabel class="control-label">Condition <span class="required">*</span></h:outputLabel>
 
                <div class="controls">
-                  <h:inputTextarea styleClass="input-text" style="width: 650px; height: 120px;" value="#{testController.alertDetails.condition}"/>
+                  <h:inputTextarea styleClass="input-text" style="width: 650px; height: 120px;" value="#{testController.alertUpdateDetails.alert.condition}"/>
                </div>
            </div>
 
            <div class="control-group">
-               <h:outputLabel class="control-label">Metric</h:outputLabel>
+               <h:outputLabel class="control-label">Metric <span class="required">*</span></h:outputLabel>
 
                <div class="controls">
-                  <rich:select value="#{testController.alertDetails.metricId}" listWidth="350">
+                  <rich:select value="#{testController.alertUpdateDetails.metricId}" listWidth="350" required="true" requiredMessage="Select assigned metric">
                      <f:selectItems value="#{testController.metricsList}" var="item" itemLabel="#{item.name}" itemValue="#{item.id}"/>
                   </rich:select>
                </div>
@@ -45,7 +45,7 @@
                   <rich:autocomplete id="tags" styleClass="input-xlarge" mode="cachedAjax" minChars="2" autofill="false"
                                    tokens=" "
                                    autocompleteMethod="#{testExecutionSearchController.autocompleteTags}"
-                                   value="#{testController.alertDetails.tags}"/>
+                                   value="#{testController.alertUpdateDetails.tags}"/>
              </div>
            </div>
 
@@ -53,7 +53,7 @@
                <h:outputLabel class="control-label">Links</h:outputLabel>
 
                <div class="controls">
-                  <h:inputText styleClass="input-text" style="width: 650px;" value="#{testController.alertDetails.links}"/>
+                  <h:inputText styleClass="input-text" style="width: 650px;" value="#{testController.alertUpdateDetails.alert.links}"/>
                </div>
            </div>
 
@@ -61,22 +61,21 @@
                <h:outputLabel class="control-label">Description</h:outputLabel>
 
                <div class="controls">
-                  <h:inputTextarea value="#{testController.alertDetails.description}" style="width: 650px; height: 120px;" />
+                  <h:inputTextarea value="#{testController.alertUpdateDetails.alert.description}" style="width: 650px; height: 120px;" />
                </div>
            </div>
 
            <div style="text-align:right">
                <a4j:commandButton styleClass="btn btn-secondary btn-small"
-                                  action="#{testController.alertDetails.unset}"
+                                  action="#{testController.alertUpdateDetails.unset}"
                                   oncomplete="#{rich:component('dialogAlert')}.hide()"
                                   value="#{strings.cancel}"
                                   />
                <a4j:commandButton styleClass="btn btn-primary btn-small"
-                                action="#{testController.processAlert}"
+                                action="#{testController.alertUpdateDetails.processAlert}"
                                 render=":dialogAlertMessagesPanel :alertList"
                                 oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('dialogAlert')}.hide()"
                                 value="Submit"
-                                
                                 title="Submit"/>
            </div>
        </fieldset>

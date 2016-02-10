@@ -87,6 +87,9 @@
 
                <h:outputText value="&#160;&#160;&#160;"/>
 
+               <a4j:commandButton action="#{searchCriteriaSession.clearTestSearchCriteria}" value="Reset"
+                                  styleClass="btn btn-secondary" render="@form"/>
+
                <a4j:commandButton action="#{testSearchController.search}"
                                   value="#{strings['page.testSearch.buSearch']}" styleClass="btn btn-primary"
                                   
@@ -99,7 +102,7 @@
             <i class="icon-plus"/> #{strings['page.testSearch.buCreateNewTest']}
          </a>
 
-         <br/><br/>
+         <br/>
 
          <h:form id="searchResult">
             <div class="pagination-wrapper pagination-wrapper-top">

@@ -19,21 +19,21 @@
             <h:form>
                 <fieldset>
                     <div class="control-group">
-                        <h:outputLabel class="control-label">#{entityStrings.Test_name}</h:outputLabel>
+                        <h:outputLabel class="control-label">#{entityStrings.Test_name} <span class="required">*</span></h:outputLabel>
 
                         <div class="controls">
                             <h:inputText styleClass="input-text" value="#{testController.test.name}"/>
                         </div>
                     </div>
                     <div class="control-group">
-                        <h:outputLabel class="control-label">#{entityStrings.Test_uid}</h:outputLabel>
+                        <h:outputLabel class="control-label">#{entityStrings.Test_uid} <span class="required">*</span></h:outputLabel>
 
                         <div class="controls">
                             <h:inputText styleClass="input-text" value="#{testController.test.uid}"/>
                         </div>
                     </div>
                     <div class="control-group">
-                        <h:outputLabel class="control-label">#{entityStrings.Test_groupid}</h:outputLabel>
+                        <h:outputLabel class="control-label">#{entityStrings.Test_groupid} <span class="required">*</span></h:outputLabel>
 
                         <div class="controls">
                             <h:selectOneMenu id="selectGroup" value="#{testController.test.groupId}">
@@ -50,8 +50,7 @@
                     </div>
                 </fieldset>
                 <div style="text-align:right">
-                    <a class="btn btn-primary"
-                       href="#{testController.test.id != null ? '#{request.contextPath}/test/'.concat(testController.test.id) : '/test/search'}">#{strings.cancel}</a>
+                    <a class="btn btn-secondary" href="#{request.contextPath}/test/#{testController.test.id != null ? testController.test.id : 'search'}">#{strings.cancel}</a>
                     <h:commandButton styleClass="btn btn-primary" action="#{testController.update}"
                                      value="#{strings.save}" 
                                      rendered="#{!testController.createMode}"/>

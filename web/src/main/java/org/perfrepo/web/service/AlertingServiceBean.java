@@ -20,13 +20,7 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Implementation of {@link org.perfrepo.web.service.AlertingService}
@@ -98,6 +92,7 @@ public class AlertingServiceBean implements AlertingService {
       if (test != null) {
          alertsList.addAll(test.getAlerts());
       }
+      Collections.sort(alertsList, ((o1, o2) -> o1.getName().compareTo(o2.getName())));
 
       return alertsList;
    }
@@ -154,11 +149,14 @@ public class AlertingServiceBean implements AlertingService {
       alert.setMetric(metric);
 
       List<Tag> tags = new ArrayList<>();
-      for (Tag tag : alert.getTags()) {
-         Tag managedTag = tagDAO.findByName(tag.getName());
-         tags.add(managedTag);
+      if (alert.getTags() != null) {
+         for (Tag tag : alert.getTags()) {
+            Tag managedTag = tagDAO.findByName(tag.getName());
+            tags.add(managedTag);
+         }
+
+         alert.setTags(tags);
       }
-      alert.setTags(tags);
    }
 
    /**

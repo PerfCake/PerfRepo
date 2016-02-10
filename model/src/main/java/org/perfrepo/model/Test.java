@@ -62,7 +62,7 @@ public class Test implements Entity<Test> {
    private Long id;
 
    @Column(name = "name")
-   @NotNull
+   @NotNull(message = "{page.test.nameRequired}")
    @Size(max = 2047)
    private String name;
 
@@ -84,17 +84,16 @@ public class Test implements Entity<Test> {
    private Collection<Alert> alerts;
 
    @Column(name = "uid")
-   @NotNull
+   @NotNull(message = "{page.test.uidRequired}")
    @Size(max = 2047)
    private String uid;
 
    @Column(name = "groupId")
-   @NotNull
+   @NotNull(message = "{page.test.groupRequired}")
    @Size(max = 255)
    private String groupId;
 
    @Column(name = "description")
-   @NotNull
    @Size(max = 10239)
    private String description;
 

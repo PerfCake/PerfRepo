@@ -64,7 +64,12 @@ public class ConditionCheckerImpl implements ConditionChecker {
       variables.put("result", currentResult);
       this.metric = metric;
 
-      CommonTree ast = parseTree(condition);
+      CommonTree ast = null;
+      try {
+         ast = parseTree(condition);
+      } catch (NullPointerException ex) {
+         throw new IllegalArgumentException("Condition cannot be empty.");
+      }
       walkTree(ast);
 
       if (expression == null) {
@@ -154,6 +159,9 @@ public class ConditionCheckerImpl implements ConditionChecker {
          testExecutions = handleSelect(groupFunctionOrSelect);
          if (testExecutions == null || testExecutions.size() > 1) {
             throw new IllegalArgumentException("Error occurred or there is more than one test execution found, but no grouping function applied.");
+         }
+         if (testExecutions.isEmpty()) {
+            throw new IllegalArgumentException("No test executions satisfying variable '" + variableName + "' was found.");
          }
          variableValue = getValueFromMetric(testExecutions.get(0));
       }

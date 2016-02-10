@@ -81,7 +81,7 @@
 							<tr>
 								<td>#{metric.name}</td>
 								<td><h:outputText value="#{metric.description}" escape="false" /></td>
-								<td>
+								<td style="text-align: center; vertical-align: middle">
 									<div class="btn-group">
 										<a4j:commandLink styleClass="btn btn-primary btn-small" title="#{strings.delete}"
 									        onclick="if (!confirm('Are you sure you want to delete metric (#{metric.name})?') ) { return false;}; return true;"
@@ -122,14 +122,14 @@
                   <tr>
                      <td>#{alert.name}</td>
                      <td><h:outputText value="#{alert.description}" escape="false" /></td>
-                     <td>
+                     <td style="text-align: center; vertical-align: middle">
                         <div class="btn-group">
                            <a4j:commandLink styleClass="btn btn-primary btn-small" title="#{strings.delete}"
                                             onclick="if (!confirm('Are you sure you want to delete alert (#{alert.name})?') ) { return false;}; return true;"
                                             action="#{testController.deleteAlert(alert)}" render="alertList :messagesPanel">
                               <i class="icon-trash"></i>
                            </a4j:commandLink>
-                           <a4j:commandLink styleClass="btn btn-primary btn-small" render=":dialogAlert" action="#{testController.alertDetails.setAlertForUpdate(alert)}"
+                           <a4j:commandLink styleClass="btn btn-primary btn-small" render=":dialogAlert" action="#{testController.alertUpdateDetails.setAlert(alert)}"
                                             oncomplete="#{rich:component('dialogAlert')}.show();" value=" " title="#{strings.edit}">
                               <i class="icon-edit"></i>
                            </a4j:commandLink>

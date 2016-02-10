@@ -25,17 +25,16 @@ public class Alert implements Entity<Alert> {
    private Long id;
 
    @Column(name = "name")
-   @NotNull
+   @NotNull(message = "{page.alert.nameRequired}")
    @Size(max = 500)
    private String name;
 
    @Column(name = "description")
-   @NotNull
    @Size(max = 2097)
    private String description;
 
    @Column(name = "condition")
-   @NotNull
+   @NotNull(message = "{page.alert.conditionRequired}")
    @Size(max = 2097)
    private String condition;
 
@@ -44,7 +43,7 @@ public class Alert implements Entity<Alert> {
 
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
    @JoinColumn(name = "metric_id", referencedColumnName = "id")
-   @NotNull
+   @NotNull(message = "{page.alert.metricRequired}")
    private Metric metric;
 
    @ManyToMany(fetch = FetchType.LAZY)

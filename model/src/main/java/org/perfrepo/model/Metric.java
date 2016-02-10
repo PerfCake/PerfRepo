@@ -62,11 +62,12 @@ public class Metric implements Entity<Metric>, Comparable<Metric> {
    private Long id;
 
    @Column(name = "comparator")
+   @NotNull(message = "{page.metric.comparatorRequired}")
    @Enumerated(EnumType.STRING)
    private MetricComparator comparator;
 
    @Column(name = "name")
-   @NotNull
+   @NotNull(message = "{page.metric.nameRequired}")
    @Size(max = 2047)
    private String name;
 
@@ -80,7 +81,6 @@ public class Metric implements Entity<Metric>, Comparable<Metric> {
    private Collection<Alert> alerts;
 
    @Column(name = "description")
-   @NotNull
    @Size(max = 10239)
    private String description;
 

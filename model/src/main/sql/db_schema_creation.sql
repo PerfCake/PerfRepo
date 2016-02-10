@@ -23,7 +23,7 @@ CREATE TABLE metric (
     id bigint NOT NULL,
     comparator character varying(255),
     name character varying(2047) NOT NULL,
-    description character varying(10239) NOT NULL
+    description character varying(10239)
 );
 
 
@@ -78,7 +78,7 @@ CREATE TABLE test (
     groupid character varying(255) NOT NULL,
     name character varying(2047) NOT NULL,
     uid character varying(2047) NOT NULL,
-    description character varying(10239) NOT NULL
+    description character varying(10239)
 );
 
 
@@ -810,7 +810,7 @@ CREATE TABLE alert (
   id bigint NOT NULL,
   name character varying(2097) NOT NULL,
   links character varying(2097),
-  description character varying(2097) NOT NULL,
+  description character varying(2097),
   condition character varying(2097) NOT NULL,
   metric_id bigint NOT NULL,
   test_id bigint NOT NULL

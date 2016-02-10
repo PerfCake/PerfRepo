@@ -4,7 +4,7 @@
 <h:body>
     <f:metadata>
         <f:viewParam name="alertId" value="#{testController.alertId}"/>
-        <f:event type="preRenderView" listener="#{testController.getAlertDetail}"/>
+        <f:event type="preRenderView" listener="#{testController.getAlert}"/>
     </f:metadata>
    <ui:composition template="/layout/template.xhtml">
       <ui:define name="title">#{strings['page.index.title']}</ui:define>
@@ -16,17 +16,17 @@
          </div>
          <hr/>
          <fieldset>
-            <h1>#{testController.alert.name}</h1>
+            <h1>#{testController.alertDetail.name}</h1>
 
             <h:outputLabel class="detail-label">Condition</h:outputLabel>
-            <div class="detail-value">#{testController.alert.condition}</div>
+            <div class="detail-value">#{testController.alertDetail.condition}</div>
 
             <h:outputLabel class="detail-label">Metric</h:outputLabel>
-            <div class="detail-value">#{testController.alert.metric.name}</div>
+            <div class="detail-value">#{testController.alertDetail.metric.name}</div>
 
             <h:outputLabel class="detail-label">Tags</h:outputLabel>
             <div class="detail-value">
-               <ui:repeat value="#{testController.alert.tags}" varStatus="status" var="item">
+               <ui:repeat value="#{testController.alertDetail.tags}" varStatus="status" var="item">
                   <span class="badge badge-success">#{item.name}</span>
                </ui:repeat>
             </div>
@@ -42,7 +42,7 @@
 
             <h:outputLabel class="detail-label">Description</h:outputLabel>
             <div class="detail-value">
-               <h:outputText value="#{testController.alert.description}" escape="false" />
+               <h:outputText value="#{testController.alertDetail.description}" escape="false" />
             </div>
          </fieldset>
       </ui:define>

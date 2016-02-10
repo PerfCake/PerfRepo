@@ -23,7 +23,7 @@
                         </div>
                     </div>
                     <div style="text-align:right">
-                        <a4j:commandButton styleClass="btn btn-primary btn-small"
+                        <a4j:commandButton styleClass="btn btn-secondary btn-small"
                                            action="#{testController.metricDetails.unsetMetric}"
                                            oncomplete="#{rich:component('dialogMetricAdd')}.hide()"
                                            value="#{strings.cancel}"
@@ -42,10 +42,14 @@
         </rich:tab>
         <rich:tab header="Create metric">
             <h:form id="dialogMetricAddCreateForm">
+                <a4j:outputPanel id="addMetricMessagesPanel">
+                    <h:messages errorClass="alert alert-error" infoClass="alert alert-success" fatalClass="alert alert-error"
+                                warnClass="alert alert-info"/>
+                </a4j:outputPanel>
                 <fieldset>
                     <div class="control-group">
                         <h:outputLabel class="control-label"
-                                       for="selectMetric">#{entityStrings.Metric_name}</h:outputLabel>
+                                       for="selectMetric">#{entityStrings.Metric_name} <span class="required">*</span></h:outputLabel>
 
                         <div class="controls">
                             <h:inputText styleClass="input-text" value="#{testController.metricDetails.metric.name}"/>
@@ -53,7 +57,7 @@
                     </div>
                     <div class="control-group">
                         <h:outputLabel class="control-label"
-                                       for="selectMetric">#{entityStrings.Metric_comparator}</h:outputLabel>
+                                       for="selectMetric">#{entityStrings.Metric_comparator} <span class="required">*</span></h:outputLabel>
                         <div class="controls">
 							<rich:select id="selectMetric" value="#{testController.metricDetails.metric.comparator}">
 								<f:selectItems value="#{testController.metricDetails.metricComparators}" var="mc" itemLabel="#{testController.metricDetails.getEnumLabel(mc)}"/>
@@ -74,7 +78,7 @@
                         </div>
                     </div>
                     <div style="text-align:right">
-                        <a4j:commandButton styleClass="btn btn-primary btn-small"
+                        <a4j:commandButton styleClass="btn btn-secondary btn-small"
                                            action="#{testController.metricDetails.unsetMetric}"
                                            oncomplete="#{rich:component('dialogMetricAdd')}.hide()"
                                            value="#{strings.cancel}"
@@ -82,7 +86,8 @@
                         <h:commandButton styleClass="btn btn-primary btn-small"
                                          action="#{testController.metricDetails.createMetric}"
                                          value="#{strings['page.test.buCreateMetric']}"
-                                         
+                                         render=":metricList :addMetricMessagesPanel"
+                                         oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('dialogMetricAdd')}.hide()"
                                          title="#{strings['page.test.buCreateMetric']}"/>
                     </div>
                 </fieldset>

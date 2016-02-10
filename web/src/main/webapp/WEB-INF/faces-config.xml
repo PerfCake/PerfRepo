@@ -20,7 +20,6 @@
 		</resource-bundle>
 		<locale-config>
 			<default-locale>en</default-locale>
-			<supported-locale>cs</supported-locale>
 		</locale-config>
 		<view-handler>org.perfrepo.web.controller.PerfrepoViewHandler</view-handler>
 	</application>

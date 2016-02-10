@@ -16,11 +16,7 @@ package org.perfrepo.web.controller;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.perfrepo.model.Alert;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.MetricComparator;
-import org.perfrepo.model.Tag;
-import org.perfrepo.model.Test;
+import org.perfrepo.model.*;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.model.user.User;
 import org.perfrepo.web.service.AlertingService;
@@ -38,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Backing bean for editing and displaying details of {@link Test}.
@@ -70,9 +67,9 @@ public class TestController extends BaseController {
    private AlertingService alertingService;
 
    private Test test = null;
-   private Alert alert = null;
+   private Alert alertDetail = null; //field for showing detail of alert on special page
    private MetricDetails metricDetails = new MetricDetails();
-   private AlertDetails alertDetails = new AlertDetails();
+   private AlertDetails alertUpdateDetails = new AlertDetails(); //field for creation/update of alert
 
    /**
     * called on preRenderView
@@ -148,19 +145,19 @@ public class TestController extends BaseController {
       if (test != null) {
          metricList.addAll(test.getMetrics());
       }
-      Collections.sort(metricList);
+      Collections.sort(metricList, ((o1, o2) -> o1.getName().compareTo(o2.getName())));
       return metricList;
    }
 
-   public void getAlertDetail() {
+   public void getAlert() {
       if (alertId == null) {
          log.error("Alert ID not provided.");
          redirectWithMessage("/", ERROR, "page.alert.errorNoAlertId");
          return;
       }
 
-      alert = alertingService.getAlert(alertId);
-      if (alert == null) {
+      alertDetail = alertingService.getAlert(alertId);
+      if (alertDetail == null) {
          log.error("Alert not found. ID: " + alertId);
          redirectWithMessage("/", ERROR, "page.alert.errorAlertNotFound", alertId);
          return;
@@ -168,11 +165,11 @@ public class TestController extends BaseController {
    }
 
    public String[] getAlertLinks() {
-      if (alert == null) {
+      if (alertDetail == null) {
          return new String[]{};
       }
 
-      return alert.getLinks().split(" ");
+      return alertDetail.getLinks().split(" ");
    }
 
    public List<Alert> getAlertsList() {
@@ -181,51 +178,9 @@ public class TestController extends BaseController {
       return alertingService.getAlertsList(fullTest);
    }
 
-   public void processAlert() {
-      Metric metric = testService.getFullMetric(alertDetails.getMetricId());
-
-      try {
-         alertingService.checkConditionSyntax(alertDetails.getCondition(), metric);
-      } catch (RuntimeException ex) {
-         addSessionMessage(ERROR, "alerting.conditionSyntax.error", ex.getMessage());
-         reloadSessionMessages();
-         return;
-      }
-
-      Alert alert = new Alert();
-      alert.setName(alertDetails.getName());
-      alert.setCondition(alertDetails.getCondition());
-      alert.setDescription(alertDetails.getDescription());
-      alert.setLinks(alertDetails.getLinks());
-
-      alert.setMetric(metric);
-
-      Test test = testService.getFullTest(this.test.getId());
-      alert.setTest(test);
-
-      List<String> tagSplit = Arrays.asList(StringUtils.split(alertDetails.getTags()));
-      List<Tag> tags = new ArrayList<>();
-      for (String tagString : tagSplit) {
-         Tag tag = new Tag();
-         tag.setName(tagString);
-         tags.add(tag);
-      }
-
-      alert.setTags(tags);
-
-      if (alertDetails.getId() == null) {
-         alertingService.createAlert(alert);
-         redirectWithMessage("/test/" + testId, INFO, "page.alert.createdSuccesfully");
-      } else {
-         alert.setId(alertDetails.getId());
-         alertingService.updateAlert(alert);
-         redirectWithMessage("/test/" + testId, INFO, "page.alert.updatedSuccesfully");
-      }
-   }
-
    public void deleteAlert(Alert alert) {
       alertingService.removeAlert(alert);
-      redirectWithMessage("/test/" + testId, INFO, "page.alert.removedSuccesfully");
+      redirectWithMessage("/test/" + testId, INFO, "page.alert.removedSuccessfully");
    }
 
    /** --------------- Subscription for alerting ----------------- **/
@@ -285,8 +240,8 @@ public class TestController extends BaseController {
       return metricDetails;
    }
 
-   public AlertDetails getAlertDetails() {
-      return alertDetails;
+   public AlertDetails getAlertUpdateDetails() {
+      return alertUpdateDetails;
    }
 
    public List<String> getUserGroups() {
@@ -301,12 +256,12 @@ public class TestController extends BaseController {
       this.alertId = alertId;
    }
 
-   public Alert getAlert() {
-      return alert;
+   public Alert getAlertDetail() {
+      return alertDetail;
    }
 
-   public void setAlert(Alert alert) {
-      this.alert = alert;
+   public void setAlertDetail(Alert alertDetail) {
+      this.alertDetail = alertDetail;
    }
 
    /** ----------------------------------- Helper inner classes --------------------------- **/
@@ -380,7 +335,6 @@ public class TestController extends BaseController {
                redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyAssigned", selectedAssignedMetric.getName());
             } catch (ServiceException e) {
                addSessionMessage(e);
-               redirect("/test/" + testId);
             }
          }
       }
@@ -399,7 +353,6 @@ public class TestController extends BaseController {
             redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyCreated", metric.getName());
          } catch (ServiceException e) {
             addSessionMessage(e);
-            redirect("/test/" + testId);
          }
       }
 
@@ -408,7 +361,6 @@ public class TestController extends BaseController {
             testService.updateMetric(test, metric);
          } catch (ServiceException e) {
             addSessionMessage(e);
-            redirect("/test/" + testId);
          }
       }
 
@@ -418,54 +370,71 @@ public class TestController extends BaseController {
             redirectWithMessage("/test/" + testId, INFO, "page.test.metricSuccessfullyDeleted", metricToDelete.getName());
          } catch (ServiceException e) {
             addSessionMessage(e);
-            redirect("/test/" + testId);
          }
       }
    }
 
    /**
-    * Helper class for pop-up for creating and editing alerts.
+    * Helper class for pop-up for creating and editing alerts
     */
    public class AlertDetails {
 
-      private Long id;
-      private String name;
-      private String description;
-      private String condition;
-      private String links;
+      private Alert alert = new Alert();
       private Long metricId;
       private String tags;
 
-      public Long getId() {
-         return id;
+      public void processAlert() {
+         Metric metric = testService.getFullMetric(metricId);
+
+         try {
+            alertingService.checkConditionSyntax(alert.getCondition(), metric);
+         } catch (RuntimeException ex) {
+            addSessionMessage(ERROR, "alerting.conditionSyntax.error", ex.getMessage());
+            reloadSessionMessages();
+            return;
+         }
+
+         alert.setMetric(metric);
+         alert.setTest(test);
+
+         if (tags != null) {
+            List<String> tagSplit = Arrays.asList(StringUtils.split(tags));
+            List<Tag> tags = new ArrayList<>();
+            for (String tagString : tagSplit) {
+               Tag tag = new Tag();
+               tag.setName(tagString);
+               tags.add(tag);
+            }
+
+            alert.setTags(tags);
+         }
+
+         if (alert.getId() == null) {
+            alertingService.createAlert(alert);
+            redirectWithMessage("/test/" + testId, INFO, "page.alert.createdSuccessfully");
+         } else {
+            alertingService.updateAlert(alert);
+            redirectWithMessage("/test/" + testId, INFO, "page.alert.updatedSuccessfully");
+         }
       }
 
-      public void setId(Long id) {
-         this.id = id;
+      public void setAlert(Alert alert) {
+         this.metricId = alert.getMetric().getId();
+
+         List<String> tagsList = alert.getTags().stream().map(Tag::getName).collect(Collectors.toList());
+         this.tags = StringUtils.join(tagsList, " ");
+
+         this.alert = alert;
       }
 
-      public String getName() {
-         return name;
+      public Alert getAlert() {
+         return alert;
       }
 
-      public void setName(String name) {
-         this.name = name;
-      }
-
-      public String getDescription() {
-         return description;
-      }
-
-      public void setDescription(String description) {
-         this.description = description;
-      }
-
-      public String getCondition() {
-         return condition;
-      }
-
-      public void setCondition(String condition) {
-         this.condition = condition;
+      public void unset() {
+         alert = new Alert();
+         metricId = null;
+         tags = null;
       }
 
       public Long getMetricId() {
@@ -476,49 +445,12 @@ public class TestController extends BaseController {
          this.metricId = metricId;
       }
 
-      public Long getTestId() {
-         return testId;
-      }
-
       public String getTags() {
          return tags;
       }
 
       public void setTags(String tags) {
          this.tags = tags;
-      }
-
-      public String getLinks() {
-         return links;
-      }
-
-      public void setLinks(String links) {
-         this.links = links;
-      }
-
-      public void unset() {
-         this.id = null;
-         this.name = null;
-         this.condition = null;
-         this.links = null;
-         this.description = null;
-         this.metricId = null;
-         this.tags = null;
-      }
-
-      public void setAlertForUpdate(Alert alert) {
-         this.id = alert.getId();
-         this.name = alert.getName();
-         this.condition = alert.getCondition();
-         this.links = alert.getLinks();
-         this.description = alert.getDescription();
-         this.metricId = alert.getMetric().getId();
-
-         List<String> tagsString = new ArrayList<>();
-         for (Tag tag : alert.getTags()) {
-            tagsString.add(tag.getName());
-         }
-         this.tags = StringUtils.join(tagsString, " ");
       }
    }
 }

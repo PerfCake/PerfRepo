@@ -6336,3 +6336,7 @@ table th.width7Percent {
 table th.width31Percent {
     width: 31%;
 }
+
+.required {
+    color: #FF0000;
+}
