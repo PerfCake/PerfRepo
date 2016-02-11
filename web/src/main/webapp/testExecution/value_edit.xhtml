@@ -28,15 +28,15 @@
                 <h:dataTable id="paramTable" styleClass="table table-bordered table-striped editableEntryTable"
                              value="#{testExecutionController.editedValue.parameters}"
                              var="item">
-                    <h:column>
+                    <h:column styleClass="vertical-middle">
                         <f:facet name="header">Name</f:facet>
                         <h:inputText value="#{item.name}"/>
                     </h:column>
-                    <h:column>
+                    <h:column styleClass="vertical-middle">
                         <f:facet name="header">Value</f:facet>
                         <h:inputText value="#{item.paramValue}"/>
                     </h:column>
-                    <h:column>
+                    <h:column headerClass="text-center vertical-middle" styleClass="text-center vertical-middle">
                         <f:facet name="header">
                             <a4j:commandLink styleClass="btn btn-primary btn-small" value=" "
                                              title="Add parameter"
@@ -57,6 +57,12 @@
             </h:panelGroup>
 
             <div style="text-align:right">
+
+                <a4j:commandButton styleClass="btn btn-secondary btn-small"
+                                   oncomplete="#{rich:component('dialogValueEdit')}.hide()" value="#{strings.cancel}"
+                                   title="#{strings.cancel}"
+                                   render="@form" action="#{testExecutionController.unsetEditedValue()}"/>
+
                 <h:panelGroup rendered="#{!testExecutionController.editedValue.hasParameters()}">
                     <a4j:commandButton styleClass="btn btn-primary btn-small"
                                        action="#{testExecutionController.addEditedValueParameter()}"
@@ -64,16 +70,17 @@
                                        render="@form :messagesPanel"
                                        oncomplete="#{rich:component('dialogValueEdit')}.show()"/>
                 </h:panelGroup>
-                <a4j:commandButton styleClass="btn btn-primary btn-small"
-                                   oncomplete="#{rich:component('dialogValueEdit')}.hide()" value="#{strings.cancel}"
-                                    title="#{strings.cancel}"
-                                   render="@form" action="#{testExecutionController.unsetEditedValue()}"/>
+
                 <a4j:commandButton styleClass="btn btn-primary btn-small"
                                    action="#{testExecutionController.updateEditedValue()}" value="#{strings.save}"
                                     title="#{strings.save}"
                                    oncomplete="#{rich:component('dialogValueEdit')}.hide()"
                                    render="@form :tabForm:tabValues :tabForm:valueForm :messagesPanel"/>
             </div>
+
+            <rich:hotKey key="Esc">
+                <rich:componentControl target="dialogValueEdit" operation="hide"/>
+            </rich:hotKey>
         </fieldset>
 
     </rich:popupPanel>

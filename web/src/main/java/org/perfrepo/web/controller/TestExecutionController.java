@@ -388,14 +388,15 @@ public class TestExecutionController extends BaseController {
 
    public void addEditedValueParameter() {
       if (editedValue == null) {
-         log.error("can't add parameter, editedValue not set");
+         log.error("Can't add parameter, editedValue not set");
          return;
       }
+
       ValueParameter vp = new ValueParameter();
       if (editedValue.getParameters() == null) {
-         editedValue.setParameters(new ArrayList<ValueParameter>(1));
+         editedValue.setParameters(new ArrayList<>());
       }
-      vp.setName("param" + (editedValue.getParameters().size() + 1));
+
       editedValue.getParameters().add(vp);
    }
 
@@ -408,6 +409,8 @@ public class TestExecutionController extends BaseController {
          return;
       }
       editedValue.getParameters().remove(vp);
+      updateEditedValue();
+      redirectWithMessage("/exec/" + testExecutionId, INFO, "page.exec.value.successfullyUpdated");
    }
 
    // this is also create method for value
@@ -473,6 +476,8 @@ public class TestExecutionController extends BaseController {
          } catch (ServiceException e) {
             addMessage(e);
          }
+
+         redirectWithMessage("/exec/" + testExecutionId, INFO, "page.exec.value.successfullyRemoved");
       }
    }
 

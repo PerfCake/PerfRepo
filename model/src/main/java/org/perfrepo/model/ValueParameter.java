@@ -62,12 +62,12 @@ public class ValueParameter implements Entity<ValueParameter>, Comparable<ValueP
    private Long id;
 
    @Column(name = "name")
-   @NotNull
+   @NotNull(message = "{page.testExecution.value.paramNameRequired}")
    @Size(max = 255)
    private String name;
 
    @Column(name = "value")
-   @NotNull
+   @NotNull(message = "{page.testExecution.value.paramValueRequired}")
    @Size(max = 255)
    private String paramValue;
 

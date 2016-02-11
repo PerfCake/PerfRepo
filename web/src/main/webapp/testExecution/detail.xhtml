@@ -26,54 +26,73 @@
                     class="icon-edit" title="#{strings.edit}"/> Edit</a></span>
         </div>
     </div>
+
     <hr/>
+
     <fieldset>
         <h1>#{testExecutionController.testExecution.name}</h1>
-        <h:outputLabel class="detail-label">ID</h:outputLabel>
 
-        <div class="detail-value">#{testExecutionController.testExecution.id == null ? '-' : testExecutionController.testExecution.id}</div>
-        <h:outputLabel class="detail-label">#{entityStrings.TestExecution_test}</h:outputLabel>
+        <table class="detailTable">
+            <tr>
+                <th>ID</th>
+                <td>
+                    #{testExecutionController.testExecution.id == null ? '-' : testExecutionController.testExecution.id}
+                </td>
+            </tr>
+            <tr>
+                <th>#{entityStrings.TestExecution_test}</th>
+                <td>
+                    <a href="#{request.contextPath}/test/#{testExecutionController.testExecution.test.id}">#{testExecutionController.testExecution.test.name}</a>
+                </td>
+            </tr>
+            <tr>
+                <th>Owner</th>
+                <td>
+                    #{testExecutionController.testExecution.test.groupId}
+                </td>
+            </tr>
+            <tr>
+                <th>Time</th>
+                <td>
+                    <h:outputText value="#{testExecutionController.testExecution.started}">
+                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeStyle="full"/>
+                    </h:outputText>
+                </td>
+            </tr>
+            <tr>
+                <th>Tags</th>
+                <td>
+                    <a4j:repeat value="#{testExecutionController.testExecution.sortedTags}" iterationStatusVar="status" var="tag">
+                        <span class="badge badge-success">#{tag.name}</span>
+                    </a4j:repeat>
+                </td>
+            </tr>
+            <tr>
+                <th>Comment</th>
+                <td>
+                    <h:outputText value="#{testExecutionController.displayedComment}" escape="false"/>
+                </td>
+            </tr>
 
-        <div class="detail-value">
-            <a href="#{request.contextPath}/test/#{testExecutionController.testExecution.test.id}">#{testExecutionController.testExecution.test.name}</a>
-        </div>
-        <h:outputLabel class="detail-label">Owner</h:outputLabel>
-
-        <div class="detail-value">#{testExecutionController.testExecution.test.groupId}</div>
-        <h:outputLabel class="detail-label">Time</h:outputLabel>
-
-        <div class="detail-value">
-            <h:outputText value="#{testExecutionController.testExecution.started}">
-                <f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeStyle="full"/>
-            </h:outputText>
-        </div>
-        <h:outputLabel class="detail-label">Tags</h:outputLabel>
-
-        <div class="detail-value">
-            <a4j:repeat value="#{testExecutionController.testExecution.sortedTags}" iterationStatusVar="status" var="tag">
-                <span class="badge badge-success">#{tag.name}</span>
+            <a4j:repeat value="#{testExecutionController.favoriteParameters}" iterationStatusVar="status" var="item">
+                <tr>
+                    <th>
+                        <a4j:commandLink render="dialogFavParamEdit"
+                                         action="#{testExecutionController.setEditedFavoriteParameter(item.parameterName)}"
+                                         oncomplete="#{rich:component('dialogFavParamEdit')}.show();" value="#{item.label}" />
+                    </th>
+                    <td>
+                        <h:outputText value="#{testExecutionController.displayValueFavParam(item.parameterName)}" escape="false"/>
+                    </td>
+                </tr>
             </a4j:repeat>
-        </div>
-        <h:outputLabel class="detail-label">Comment</h:outputLabel>
 
-        <div class="detail-value">
-            <h:outputText value="#{testExecutionController.displayedComment}" escape="false"/>
-        </div>
-        <a4j:repeat value="#{testExecutionController.favoriteParameters}" iterationStatusVar="status" var="item">
-            <h:outputLabel class="detail-label fav-param-label">
-                <a4j:commandLink render="dialogFavParamEdit"
-                               action="#{testExecutionController.setEditedFavoriteParameter(item.parameterName)}"
-                               oncomplete="#{rich:component('dialogFavParamEdit')}.show();" value="#{item.label}"
-                               />
-            </h:outputLabel>
-
-            <div class="detail-value">
-                <h:outputText value="#{testExecutionController.displayValueFavParam(item.parameterName)}"
-                              escape="false"/>
-            </div>
-        </a4j:repeat>
+        </table>
     </fieldset>
 </h:form>
+
+<br />
+
 <h:form id="tabForm">
     <rich:tabPanel switchType="client">
         <rich:tab header="Values" id="tabValues">
@@ -99,7 +118,7 @@
                                        action="#{testExecutionController.showMultiValue(item.metricName)}"
                                        rendered="#{item.isMultiValue()}"/>
                     </rich:column>
-                    <h:column headerClass="button-header">
+                    <h:column headerClass="button-header text-center" styleClass="text-center">
                         <f:facet name="header">
                             <a4j:commandLink render="dialogValueEdit"
                                            action="#{testExecutionController.createEditedValue}"
@@ -121,7 +140,7 @@
                                                onclick="if (!confirm('Are you sure you want to delete value for metric #{item.metricName} ?') ) { return false;}; return true;"
                                                action="#{testExecutionController.deleteValue(item.entity)}"
                                                render="@form :tabForm:tabValues :messagesPanel">
-                                    <i class="icon-remove"/>
+                                    <i class="icon-trash"/>
                                 </a4j:commandLink>
                             </div>
                         </h:panelGroup>
@@ -226,7 +245,7 @@
                         </f:facet>
                         <h:outputText value="#{testExecutionController.displayValueTable(item)}" escape="false"/>
                     </rich:column>
-                    <h:column headerClass="button-header">
+                    <h:column headerClass="button-header text-center" styleClass="text-center">
                         <f:facet name="header">
                             <a4j:commandLink render="dialogParamEdit"
                                            action="#{testExecutionController.createEditedParameter}"
@@ -262,7 +281,7 @@
                                            onclick="if (!confirm('Are you sure you want to delete test execution parameter (#{item.name})?') ) { return false;}; return true;"
                                            action="#{testExecutionController.deleteParameter(item)}"
                                            render="testExecutionParameterList :messagesPanel">
-                                <i class="icon-remove"/>
+                                <i class="icon-trash"/>
                             </a4j:commandLink>
                         </div>
                     </h:column>
@@ -300,7 +319,7 @@
                         <h:outputText value="#{item.mimetype}"/>
                     </rich:column>
 
-                    <h:column headerClass="button-header">
+                    <h:column headerClass="button-header text-center" styleClass="text-center">
                         <f:facet name="header">
                             <a4j:commandLink render="dialogUploadAttachment"
                                            oncomplete="#{rich:component('dialogUploadAttachment')}.show();"
@@ -315,7 +334,7 @@
                                            onclick="if (!confirm('Are you sure you want to delete the attachment (#{item.filename})?') ) { return false;}; return true;"
                                            action="#{testExecutionController.deleteAttachment(item)}"
                                            render="attachmentList :messagesPanel">
-                                <i class="icon-remove"/>
+                                <i class="icon-trash"/>
                             </a4j:commandLink>
                         </div>
                     </h:column>

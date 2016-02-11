@@ -19,7 +19,7 @@
                 <h:inputText styleClass="input-text" value="#{testExecutionController.editedParameter.value}"/>
             </div>
             <div style="text-align:right">
-                <a4j:commandButton styleClass="btn btn-primary btn-small"
+                <a4j:commandButton styleClass="btn btn-secondary btn-small"
                                    oncomplete="#{rich:component('dialogParamEdit')}.hide()" value="#{strings.cancel}"
                                    
                                    render="@form" action="#{testExecutionController.unsetEditedParameter()}"/>
@@ -30,6 +30,9 @@
                                    render="@form :tabForm:testExecutionParameterList :messagesPanel"/>
             </div>
         </fieldset>
+        <rich:hotKey key="Esc">
+            <rich:componentControl target="dialogParamEdit" operation="hide"/>
+        </rich:hotKey>
     </rich:popupPanel>
 </h:form>
 

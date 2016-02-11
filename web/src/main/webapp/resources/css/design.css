@@ -716,7 +716,7 @@ a.text-success:hover, a.text-success:focus {
 }
 
 .text-center {
-    text-align: center
+    text-align: center !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -6339,4 +6339,21 @@ table th.width31Percent {
 
 .required {
     color: #FF0000;
+}
+
+.detailTable table {
+    margin-bottom: 10px;
+}
+
+.detailTable th {
+    text-align: left;
+    width: 100px;
+}
+
+.detailTable td {
+    padding: 3px;
+}
+
+.vertical-middle {
+    vertical-align: center;
 }
