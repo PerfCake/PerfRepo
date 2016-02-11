@@ -47,6 +47,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<richfaces.version>4.5.13.Final</richfaces.version>
 		<urlrewritefilter.version>4.0.3</urlrewritefilter.version>
+		<version.jboss.spec.javaee.7.0>9.0.1.Final</version.jboss.spec.javaee.7.0>
+		<javax.mail.version>1.4.4</javax.mail.version>
 	</properties>
 	<modules>
 		<module>web</module>
@@ -76,13 +78,13 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.jboss.bom</groupId>
-				<artifactId>jboss-javaee-6.0-with-tools</artifactId>
-				<version>${jboss.bom.version}</version>
+				<groupId>org.wildfly.bom</groupId>
+				<artifactId>jboss-javaee-7.0-wildfly-with-tools</artifactId>
+				<version>${version.jboss.spec.javaee.7.0}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
+			<!--<dependency>
 				<groupId>org.jboss.bom</groupId>
 				<artifactId>jboss-javaee-6.0-with-hibernate</artifactId>
 				<version>${jboss.bom.version}</version>
@@ -107,7 +109,7 @@
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
-			</dependency>
+			</dependency>-->
 		</dependencies>
 	</dependencyManagement>
 	<build>

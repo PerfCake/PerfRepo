@@ -174,27 +174,12 @@ ALTER TABLE public.test_execution_sequence OWNER TO perfrepo;
 --
 
 CREATE TABLE test_execution_tag (
-    id bigint NOT NULL,
     tag_id bigint NOT NULL,
     test_execution_id bigint NOT NULL
 );
 
 
 ALTER TABLE public.test_execution_tag OWNER TO perfrepo;
-
---
--- Name: test_execution_tag_sequence; Type: SEQUENCE; Schema: public; Owner: perfrepo
---
-
-CREATE SEQUENCE test_execution_tag_sequence
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.test_execution_tag_sequence OWNER TO perfrepo;
 
 --
 -- Name: test_metric; Type: TABLE; Schema: public; Owner: perfrepo; Tablespace: 

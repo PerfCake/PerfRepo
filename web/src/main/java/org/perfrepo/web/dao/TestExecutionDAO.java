@@ -312,13 +312,13 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       // metrics
       Join<Value, Metric> rMetric = rValue.join("metric");
       // test joined via metric
-      Join<Metric, Test> rTestMetric = rMetric.join("testMetrics").join("test");
+      Join<Metric, Test> rTestMetric = rMetric.join("tests");
       // tag
       Join<TestExecution, Tag> rTag = null;
       Predicate pTagNameInFixedList = cb.and(); // default for this predicate is true
       Predicate pHavingAllTagsPresent = cb.and();
       if (useTags) {
-         rTag = rExec.join("testExecutionTags").join("tag");
+         rTag = rExec.join("tags");
          pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
          pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
       }
@@ -359,7 +359,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       // metrics
       Join<Value, Metric> rMetric = rValue.join("metric");
       // test joined via metric
-      Join<Metric, Test> rTestMetric = rMetric.join("testMetrics").join("test");
+      Join<Metric, Test> rTestMetric = rMetric.join("tests");
 
       Predicate pMetricNameFixed = cb.equal(rMetric.get("name"), cb.parameter(String.class, "metricName"));
       Predicate pExecFixed = cb.equal(rExec.get("id"), cb.parameter(Long.class, "execId"));
@@ -450,7 +450,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          pStartedTo = cb.lessThanOrEqualTo(rExec.<Date>get("started"), cb.parameter(Date.class, "startedTo"));
       }
       if (!includedTags.isEmpty() || !excludedTags.isEmpty()) {
-         Join<TestExecution, Tag> rTag = rExec.joinCollection("testExecutionTags").join("tag");
+         Join<TestExecution, Tag> rTag = rExec.join("tags");
          if (!includedTags.isEmpty()) {
             pTagNameInFixedList = cb.lower(rTag.<String>get("name")).in(cb.parameter(List.class, "tagList"));
             pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
@@ -459,7 +459,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          if (!excludedTags.isEmpty()) {
             Subquery<Long> sq = criteria.subquery(Long.class);
             Root<TestExecution> sqRoot = sq.from(TestExecution.class);
-            Join<TestExecution, Tag> sqTag = sqRoot.joinCollection("testExecutionTags").join("tag");
+            Join<TestExecution, Tag> sqTag = sqRoot.join("tags");
             sq.select(sqRoot.<Long>get("id"));
             sq.where(cb.lower(sqTag.<String>get("name")).in(cb.parameter(List.class, "excludedTagList")));
 
@@ -567,22 +567,16 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          for (TestExecution exec : result) {
             List<TestExecutionParameter> paramListForExec = paramsByExecId.get(exec.getId());
             exec.setParameters(paramListForExec == null ? Collections.<TestExecutionParameter>emptyList() : paramListForExec);
-            exec.setTestExecutionTags(EntityUtils.clone(exec.getTestExecutionTags()));
-            for (TestExecutionTag tet : exec.getTestExecutionTags()) {
-               tet.setTag(tet.getTag().clone());
-            }
+            exec.setTags(EntityUtils.clone(exec.getTags()));
          }
       } else {
          for (TestExecution exec : result) {
-            if (exec.getTestExecutionTags() == null) {
+            if (exec.getTags() == null) {
                continue;
             }
 
             exec.setParameters(Collections.<TestExecutionParameter>emptyList());
-            exec.setTestExecutionTags(EntityUtils.clone(exec.getTestExecutionTags()));
-            for (TestExecutionTag tet : exec.getTestExecutionTags()) {
-               tet.setTag(tet.getTag().clone());
-            }
+            exec.setTags(EntityUtils.clone(exec.getTags()));
          }
       }
    }
@@ -654,7 +648,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Root<TestExecution> rExec = query.from(TestExecution.class);
       Join<TestExecution, Test> rTest = rExec.join("test");
       Predicate pTestUID = rTest.<String>get("uid").in(cb.parameter(List.class, "testUID"));
-      Join<TestExecution, Tag> rTag = rExec.join("testExecutionTags").join("tag");
+      Join<TestExecution, Tag> rTag = rExec.join("tags");
       Predicate pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
       Predicate pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
 
@@ -776,7 +770,6 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    public static TestExecution fetchTest(TestExecution exec) {
       exec.setTest(exec.getTest().clone());
       exec.getTest().setTestExecutions(null);
-      exec.getTest().setTestMetrics(null);
       return exec;
    }
 
@@ -787,9 +780,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @return TestExecution with fetched tags
     */
    public static TestExecution fetchTags(TestExecution testExecution) {
-      Collection<TestExecutionTag> cloneTags = new ArrayList<>();
-      testExecution.getTestExecutionTags().stream().forEach(interObject -> cloneTags.add(interObject));
-      testExecution.setTestExecutionTags(cloneTags);
+      testExecution.setTags(EntityUtils.clone(testExecution.getTags()));
       return testExecution;
    }
 

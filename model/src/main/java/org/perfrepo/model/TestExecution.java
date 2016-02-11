@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Represents one execution of a test.
@@ -58,7 +59,7 @@ public class TestExecution implements Entity<TestExecution> {
    private Long id;
 
    @Column(name = "name")
-   @NotNull
+   @NotNull(message = "{page.testExecution.nameRequired}")
    @Size(max = 2047)
    private String name;
 
@@ -69,8 +70,13 @@ public class TestExecution implements Entity<TestExecution> {
    @OneToMany(mappedBy = "testExecution")
    private Collection<TestExecutionParameter> parameters;
 
-   @OneToMany(mappedBy = "testExecution")
-   private Collection<TestExecutionTag> testExecutionTags;
+   @ManyToMany(fetch = FetchType.LAZY)
+   @JoinTable(
+           name = "test_execution_tag",
+           joinColumns = {@JoinColumn(name = "test_execution_id", nullable = false, updatable = false)},
+           inverseJoinColumns = {@JoinColumn(name = "tag_id", nullable = false, updatable = false)}
+   )
+   private Collection<Tag> tags;
 
    @OneToMany(mappedBy = "testExecution")
    private Collection<Value> values;
@@ -78,7 +84,7 @@ public class TestExecution implements Entity<TestExecution> {
    @OneToMany(mappedBy = "testExecution")
    private Collection<TestExecutionAttachment> attachments;
 
-   @NotNull
+   @NotNull(message = "{page.testExecution.startedRequired}")
    @Column(name = "started")
    private Date started;
 
@@ -162,14 +168,14 @@ public class TestExecution implements Entity<TestExecution> {
       return this.parameters;
    }
 
-   public void setTestExecutionTags(Collection<TestExecutionTag> testExecutionTags) {
-      this.testExecutionTags = testExecutionTags;
+   public void setTags(Collection<Tag> tags) {
+      this.tags = tags;
    }
 
    @XmlElementWrapper(name = "tags")
    @XmlElement(name = "tag")
-   public Collection<TestExecutionTag> getTestExecutionTags() {
-      return this.testExecutionTags;
+   public Collection<Tag> getTags() {
+      return this.tags;
    }
 
    public void setValues(Collection<Value> values) {
@@ -202,23 +208,13 @@ public class TestExecution implements Entity<TestExecution> {
    }
 
    @XmlTransient
-   public List<String> getSortedTags() {
-      List<String> result = getTags();
-      Collections.sort(result);
-      return result;
-   }
-
-   @XmlTransient
-   public List<String> getTags() {
-      if (testExecutionTags == null || testExecutionTags.isEmpty()) {
-         return new ArrayList<String>(0);
-      } else {
-         List<String> result = new ArrayList<String>();
-         for (TestExecutionTag tet : testExecutionTags) {
-            result.add(tet.getTag().getName());
-         }
-         return result;
+   public List<Tag> getSortedTags() {
+      Collection<Tag> tags = getTags();
+      if (tags == null) {
+         return new ArrayList<>();
       }
+
+      return tags.stream().sorted(((o1, o2) -> o1.compareTo(o2))).collect(Collectors.toList());
    }
 
    @XmlTransient

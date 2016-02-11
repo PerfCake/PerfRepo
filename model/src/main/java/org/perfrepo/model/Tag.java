@@ -14,13 +14,7 @@
  */
 package org.perfrepo.model;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -44,8 +38,8 @@ public class Tag implements Entity<Tag>, Comparable<Tag> {
    @Column(name = "name")
    private String name;
 
-   @OneToMany(mappedBy = "tag")
-   private Collection<TestExecutionTag> testExecutionTags;
+   @ManyToMany(mappedBy = "tags")
+   private Collection<TestExecution> testExecutions;
 
    @XmlTransient
    public Long getId() {
@@ -75,17 +69,25 @@ public class Tag implements Entity<Tag>, Comparable<Tag> {
       return this.name;
    }
 
-   public void setTestExecutionTags(Collection<TestExecutionTag> testExecutionTags) {
-      this.testExecutionTags = testExecutionTags;
+   public void setTestExecutions(Collection<TestExecution> testExecutions) {
+      this.testExecutions = testExecutions;
    }
 
    @XmlTransient
-   public Collection<TestExecutionTag> getTestExecutionTags() {
-      return this.testExecutionTags;
+   public Collection<TestExecution> getTestExecutions() {
+      return testExecutions;
    }
 
    @Override
    public int compareTo(Tag o) {
+      if (o == null) {
+         return -1;
+      }
+
+      if (this.getName() == null) {
+         return 1;
+      }
+
       return this.getName().compareTo(o.getName());
    }
 

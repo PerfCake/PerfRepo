@@ -17,7 +17,6 @@ package org.perfrepo.model.builder;
 import org.perfrepo.model.Metric;
 import org.perfrepo.model.MetricComparator;
 import org.perfrepo.model.Test;
-import org.perfrepo.model.TestMetric;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -133,14 +132,18 @@ public class TestBuilder {
    }
 
    private Metric addMetric(Metric metric) {
-      Collection<TestMetric> intermediates = test.getTestMetrics();
-      if (intermediates == null) {
-         intermediates = new ArrayList<TestMetric>();
-         test.setTestMetrics(intermediates);
+      Collection<Metric> metrics = test.getMetrics();
+      if (metrics == null) {
+         test.setMetrics(new ArrayList<>());
       }
-      TestMetric intermediate = new TestMetric();
-      intermediate.setMetric(metric);
-      intermediates.add(intermediate);
+
+      Collection<Test> tests = metric.getTests();
+      if (tests == null) {
+         metric.setTests(new ArrayList<>());
+      }
+
+      metric.getTests().add(test);
+      test.getMetrics().add(metric);
 
       return metric;
    }

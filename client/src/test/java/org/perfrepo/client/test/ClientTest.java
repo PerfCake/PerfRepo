@@ -26,29 +26,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.perfrepo.client.PerfRepoClient;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.MetricComparator;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.Value;
-import org.perfrepo.model.ValueParameter;
+import org.perfrepo.model.*;
 import org.perfrepo.model.report.Report;
 import org.perfrepo.model.report.ReportProperty;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -154,9 +138,9 @@ public class ClientTest {
       Map<String, String> params = testExecution2.getParametersAsMap();
       assertEquals(params.get("param1"), "value1");
       assertEquals(params.get("param2"), "value2");
-      assertEquals(testExecution2.getTestExecutionTags().size(), 2);
+      assertEquals(testExecution2.getTags().size(), 2);
 
-      List<String> tags = testExecution2.getSortedTags();
+      List<String> tags = testExecution2.getSortedTags().stream().map(Tag::getName).collect(Collectors.toList());
       assertEquals(tags.size(), 2);
       assertEquals(tags.get(0), "tag1");
       assertEquals(tags.get(1), "tag2");
@@ -417,7 +401,6 @@ public class ClientTest {
       assertEquals(actual.getComparator(), expected.getComparator());
       assertEquals(actual.getDescription(), expected.getDescription());
       assertEquals(actual.getName(), expected.getName());
-      assertEquals(actual.getTestMetrics(), expected.getTestMetrics());
       assertEquals(actual.getValues(), expected.getValues());
    }
 

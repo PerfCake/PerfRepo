@@ -5,7 +5,6 @@ import org.perfrepo.model.Metric;
 import org.perfrepo.model.Tag;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionTag;
 import org.perfrepo.model.Value;
 import org.perfrepo.web.alerting.ConditionChecker;
 import org.perfrepo.web.dao.AlertDAO;
@@ -168,13 +167,8 @@ public class AlertingServiceBean implements AlertingService {
     * @return
     */
    private boolean hasAlertAllTags(TestExecution testExecution, Alert alert) {
-      Set<String> presentTags = new HashSet<>();
-      for (TestExecutionTag teg : testExecution.getTestExecutionTags()) {
-         presentTags.add(teg.getTagName());
-      }
-
       for (Tag tag : alert.getTags()) {
-         if (!presentTags.contains(tag.getName())) {
+         if (!testExecution.getTags().contains(tag.getName())) {
             return false;
          }
       }

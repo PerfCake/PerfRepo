@@ -60,13 +60,4 @@ public class MetricDAO extends DAO<Metric, Long> {
       return findByNamedQuery(Metric.FIND_BY_GROUPID, params, true);
    }
 
-   /**
-    * @param testId
-    * @return All metrics under given test id.
-    */
-   public List<Metric> getMetricByTest(Long testId) {
-      Map<String, Object> params = new HashMap();
-      params.put("testId", testId);
-      return findByNamedQuery(Metric.FIND_BY_TESTID, params, true);
-   }
 }

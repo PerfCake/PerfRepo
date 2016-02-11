@@ -17,26 +17,13 @@ import org.perfrepo.model.to.MultiValueResultWrapper;
 import org.perfrepo.model.to.OrderBy;
 import org.perfrepo.model.to.SingleValueResultWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
-import org.perfrepo.web.dao.DAO;
-import org.perfrepo.web.dao.MetricDAO;
-import org.perfrepo.web.dao.TagDAO;
-import org.perfrepo.web.dao.TestDAO;
-import org.perfrepo.web.dao.TestExecutionDAO;
-import org.perfrepo.web.dao.TestExecutionParameterDAO;
-import org.perfrepo.web.dao.TestExecutionTagDAO;
-import org.perfrepo.web.dao.ValueDAO;
-import org.perfrepo.web.dao.ValueParameterDAO;
+import org.perfrepo.web.dao.*;
 import org.perfrepo.web.util.TagUtils;
 
 import javax.inject.Inject;
 import javax.transaction.Status;
 import javax.transaction.UserTransaction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
@@ -55,9 +42,6 @@ public class TestExecutionDAOTest {
 
    @Inject
    private TestDAO testDAO;
-
-   @Inject
-   private TestExecutionTagDAO testExecutionTagDAO;
 
    @Inject
    private TagDAO tagDAO;
@@ -128,14 +112,14 @@ public class TestExecutionDAOTest {
       createTestExecutionParameter("param", "2", testExecutions[3]);
 
 
-      createTestExecutionTag("tag1", testExecutions[0]);
-      createTestExecutionTag("tag2", testExecutions[0]);
-      createTestExecutionTag("tag3", testExecutions[0]);
-      createTestExecutionTag("tag1", testExecutions[1]);
-      createTestExecutionTag("tag2", testExecutions[1]);
-      createTestExecutionTag("tag1", testExecutions[2]);
-      createTestExecutionTag("tag3", testExecutions[2]);
-      createTestExecutionTag("tag4", testExecutions[3]);
+      createTag("tag1", testExecutions[0]);
+      createTag("tag2", testExecutions[0]);
+      createTag("tag3", testExecutions[0]);
+      createTag("tag1", testExecutions[1]);
+      createTag("tag2", testExecutions[1]);
+      createTag("tag1", testExecutions[2]);
+      createTag("tag3", testExecutions[2]);
+      createTag("tag4", testExecutions[3]);
 
       userTransaction.commit();
       userTransaction.begin();
@@ -151,7 +135,6 @@ public class TestExecutionDAOTest {
 
       userTransaction.begin();
 
-      testExecutionTagDAO.getAll().forEach(testExecutionTagDAO::remove);
       tagDAO.getAll().forEach(tagDAO::remove);
       valueParameterDAO.getAll().forEach(valueParameterDAO::remove);
       valueDAO.getAll().forEach(valueDAO::remove);
@@ -522,7 +505,7 @@ public class TestExecutionDAOTest {
       return metric;
    }
 
-   private TestExecutionTag createTestExecutionTag(String tagName, TestExecution storedTestExecution) {
+   private Tag createTag(String tagName, TestExecution storedTestExecution) {
       Tag storedTag = tagDAO.findByName(tagName);
       if (storedTag == null) {
          Tag tag = new Tag();
@@ -530,19 +513,14 @@ public class TestExecutionDAOTest {
          storedTag = tagDAO.create(tag);
       }
 
-      TestExecutionTag testExecutionTag = new TestExecutionTag();
-      testExecutionTag.setTag(storedTag);
-      testExecutionTag.setTestExecution(storedTestExecution);
-      TestExecutionTag storedTestExecutionTag = testExecutionTagDAO.create(testExecutionTag);
-
-      Collection<TestExecutionTag> testExecutionTags = storedTestExecution.getTestExecutionTags();
-      if (testExecutionTags == null) {
-         testExecutionTags = new ArrayList<>();
+      Collection<Tag> tags = storedTestExecution.getTags();
+      if (tags == null) {
+         tags = new ArrayList<>();
       }
-      testExecutionTags.add(storedTestExecutionTag);
-      storedTestExecution.setTestExecutionTags(testExecutionTags);
+      tags.add(storedTag);
+      storedTestExecution.setTags(tags);
 
-      return storedTestExecutionTag;
+      return storedTag;
    }
 
    private Value createValue(Double resultValue, TestExecution testExecution, Metric metric) {

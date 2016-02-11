@@ -15,22 +15,10 @@
 package org.perfrepo.web.controller.reports.metric;
 
 import org.apache.log4j.Logger;
-import org.perfrepo.model.FavoriteParameter;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionParameter;
+import org.perfrepo.model.*;
 import org.perfrepo.model.report.Report;
 import org.perfrepo.model.report.ReportProperty;
-import org.perfrepo.model.to.MetricReportTO.BaselineRequest;
-import org.perfrepo.model.to.MetricReportTO.BaselineResponse;
-import org.perfrepo.model.to.MetricReportTO.ChartRequest;
-import org.perfrepo.model.to.MetricReportTO.ChartResponse;
-import org.perfrepo.model.to.MetricReportTO.DataPoint;
-import org.perfrepo.model.to.MetricReportTO.Request;
-import org.perfrepo.model.to.MetricReportTO.Response;
-import org.perfrepo.model.to.MetricReportTO.SeriesRequest;
-import org.perfrepo.model.to.MetricReportTO.SeriesResponse;
+import org.perfrepo.model.to.MetricReportTO.*;
 import org.perfrepo.model.user.User;
 import org.perfrepo.web.controller.BaseController;
 import org.perfrepo.web.controller.reports.ReportPermissionController;
@@ -44,23 +32,16 @@ import org.perfrepo.web.util.ReportUtils;
 import org.perfrepo.web.util.TagUtils;
 import org.perfrepo.web.util.ViewUtils;
 import org.perfrepo.web.viewscope.ViewScoped;
+import org.richfaces.model.ChartDataModel.ChartType;
+import org.richfaces.model.NumberChartDataModel;
+import org.richfaces.model.PlotClickEvent;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.richfaces.model.ChartDataModel.ChartType;
-import org.richfaces.model.NumberChartDataModel;
-import org.richfaces.model.PlotClickEvent;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Shows development of metric based on a specific test execution parameter.
@@ -984,7 +965,7 @@ public class MetricReportController extends BaseController {
       }
 
       public List<String> getTags() {
-         return exec == null ? null : exec.getSortedTags();
+         return exec == null ? null : exec.getSortedTags().stream().map(Tag::getName).collect(Collectors.toList());
       }
 
       public List<PointDetailsFavParam> getFavParams() {

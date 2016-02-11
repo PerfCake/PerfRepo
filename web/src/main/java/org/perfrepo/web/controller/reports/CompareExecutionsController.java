@@ -16,9 +16,9 @@ package org.perfrepo.web.controller.reports;
 
 import org.apache.log4j.Logger;
 import org.perfrepo.model.Metric;
+import org.perfrepo.model.Tag;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionTag;
 import org.perfrepo.model.util.EntityUtils;
 import org.perfrepo.web.controller.BaseController;
 import org.perfrepo.web.controller.reports.charts.RfChartSeries;
@@ -28,24 +28,15 @@ import org.perfrepo.web.util.MultiValue;
 import org.perfrepo.web.util.MultiValue.ParamInfo;
 import org.perfrepo.web.util.MultiValue.ValueInfo;
 import org.perfrepo.web.viewscope.ViewScoped;
+import org.richfaces.model.ChartDataModel;
+import org.richfaces.model.ChartDataModel.ChartType;
+import org.richfaces.model.NumberChartDataModel;
 
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
-import org.richfaces.model.ChartDataModel;
-import org.richfaces.model.ChartDataModel.ChartType;
-import org.richfaces.model.NumberChartDataModel;
+import java.util.*;
 
 /**
  * Simple comparison of test execution values.
@@ -399,8 +390,8 @@ public class CompareExecutionsController extends BaseController {
 
    public String getTags(TestExecution te) {
       StringBuilder tag = new StringBuilder();
-      for (TestExecutionTag teg : te.getTestExecutionTags()) {
-         tag.append(teg.getTag().getName()).append("\n");
+      for (Tag teg : te.getTags()) {
+         tag.append(teg.getName()).append("\n");
       }
       return tag.toString().substring(0, tag.length() - 1);
    }

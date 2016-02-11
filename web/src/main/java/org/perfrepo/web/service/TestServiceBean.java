@@ -31,6 +31,7 @@ import org.perfrepo.web.service.exceptions.ServiceException;
 import javax.ejb.*;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implements {@link TestService}.
@@ -62,9 +63,6 @@ public class TestServiceBean implements TestService {
    private TagDAO tagDAO;
 
    @Inject
-   private TestExecutionTagDAO testExecutionTagDAO;
-
-   @Inject
    private ValueDAO valueDAO;
 
    @Inject
@@ -72,9 +70,6 @@ public class TestServiceBean implements TestService {
 
    @Inject
    private MetricDAO metricDAO;
-
-   @Inject
-   private TestMetricDAO testMetricDAO;
 
    @Inject
    private UserService userService;
@@ -100,15 +95,19 @@ public class TestServiceBean implements TestService {
          }
       }
       // tags
-      if (testExecution.getTestExecutionTags() != null && testExecution.getTestExecutionTags().size() > 0) {
-         for (TestExecutionTag teg : testExecution.getTestExecutionTags()) {
-            Tag tag = tagDAO.findByName(teg.getTag().getName());
+      if (testExecution.getTags() != null && testExecution.getTags().size() > 0) {
+         for (Tag teg : testExecution.getTags()) {
+            Tag tag = tagDAO.findByName(teg.getName());
             if (tag == null) {
-               tag = tagDAO.create(teg.getTag());
+               tag = tagDAO.create(teg);
             }
-            teg.setTag(tag);
-            teg.setTestExecution(storedTestExecution);
-            testExecutionTagDAO.create(teg);
+
+            Collection<TestExecution> tagTestExecutions = tag.getTestExecutions();
+            if (tagTestExecutions == null) {
+               tag.setTestExecutions(new ArrayList<>());
+            }
+
+            tag.getTestExecutions().add(storedTestExecution);
          }
       }
       // values
@@ -118,11 +117,11 @@ public class TestServiceBean implements TestService {
             if (value.getMetricName() == null) {
                throw new IllegalArgumentException("Metric name is mandatory");
             }
-            TestMetric testMetric = testMetricDAO.find(test, value.getMetricName());
-            if (testMetric == null) {
+            Metric metric = test.getMetrics().stream().filter(m -> m.getName().equals(value.getMetricName())).findFirst().get();
+            if (metric == null) {
                throw new ServiceException("serviceException.metricNotInTest", test.getName(), test.getId().toString(), value.getMetricName());
             }
-            value.setMetric(testMetric.getMetric());
+            value.setMetric(metric);
             valueDAO.create(value);
             if (value.getParameters() != null && value.getParameters().size() > 0) {
                for (ValueParameter vp : value.getParameters()) {
@@ -227,9 +226,9 @@ public class TestServiceBean implements TestService {
       }
       Test createdTest = testDAO.create(test);
       //store metrics
-      if (test.getTestMetrics() != null && test.getTestMetrics().size() > 0) {
-         for (TestMetric tm : test.getTestMetrics()) {
-            addMetric(test, tm.getMetric());
+      if (test.getMetrics() != null) {
+         for (Metric metric: test.getMetrics()) {
+            addMetric(test, metric);
          }
       }
       return createdTest;
@@ -243,16 +242,13 @@ public class TestServiceBean implements TestService {
       }
       test = test.clone();
       // TODO: return by named query, with optimized fetching
-      Collection<TestMetric> tms = test.getTestMetrics();
-      if (tms != null) {
-         List<Metric> metrics = new ArrayList<Metric>();
-         for (TestMetric tm : tms) {
-            Metric metric = tm.getMetric().clone();
-            metric.setTestMetrics(null); // we don't need to infinitely recurse
-            metric.setAlerts(null);
-            metrics.add(metric);
+      Collection<Metric> metrics = test.getMetrics();
+      if (metrics != null) {
+         List<Metric> clonedMetrics = new ArrayList<Metric>();
+         for (Metric metric: metrics) {
+            clonedMetrics.add(metric);
          }
-         test.setMetrics(metrics);
+         test.setMetrics(clonedMetrics);
       }
 
       Collection<User> subscribers = test.getSubscribers();
@@ -302,7 +298,6 @@ public class TestServiceBean implements TestService {
    @Secured
    public void removeTest(Test test) throws ServiceException {
       Test freshTest = testDAO.get(test.getId());
-      User currentUser = userService.getLoggedUser();
       try {
          for (TestExecution testExecution : freshTest.getTestExecutions()) {
             removeTestExecution(testExecution);
@@ -311,24 +306,6 @@ public class TestServiceBean implements TestService {
          throw new ServiceException("serviceException.removeTest.cannotRemoveAllTestExecutions", ex);
       }
 
-      Iterator<TestMetric> allTestMetrics = freshTest.getTestMetrics().iterator();
-      while (allTestMetrics.hasNext()) {
-         TestMetric testMetric = allTestMetrics.next();
-         Metric metric = testMetric.getMetric();
-         List<Test> testsUsingMetric = testDAO.findByNamedQuery(Test.FIND_TESTS_USING_METRIC,
-                                                                Collections.<String, Object>singletonMap("metric", metric.getId()));
-         allTestMetrics.remove();
-         testMetricDAO.remove(testMetric);
-         if (testsUsingMetric.size() == 0) {
-            throw new IllegalStateException();
-         } else if (testsUsingMetric.size() == 1) {
-            if (testsUsingMetric.get(0).getId().equals(test.getId())) {
-               metricDAO.remove(metric);
-            } else {
-               throw new IllegalStateException();
-            }
-         }
-      }
       testDAO.remove(freshTest);
    }
 
@@ -348,11 +325,7 @@ public class TestServiceBean implements TestService {
          }
          valueDAO.remove(value);
       }
-      Iterator<TestExecutionTag> allTestExecutionTags = freshTestExecution.getTestExecutionTags().iterator();
-      while (allTestExecutionTags.hasNext()) {
-         testExecutionTagDAO.remove(allTestExecutionTags.next());
-         allTestExecutionTags.remove();
-      }
+
       Iterator<TestExecutionAttachment> allTestExecutionAttachments = freshTestExecution.getAttachments().iterator();
       while (allTestExecutionAttachments.hasNext()) {
          testExecutionAttachmentDAO.remove(allTestExecutionAttachments.next());
@@ -369,7 +342,7 @@ public class TestServiceBean implements TestService {
 
    @Override
    @Secured
-   public TestMetric addMetric(Test test, Metric metric) throws ServiceException {
+   public Metric addMetric(Test test, Metric metric) throws ServiceException {
       Test freshTest = testDAO.get(test.getId());
       if (metric.getId() != null) {
          // associating an existing metric with the test
@@ -385,7 +358,7 @@ public class TestServiceBean implements TestService {
                throw new ServiceException("serviceException.metricAlreadyExists", freshTest.getUid(), freshMetric.getName());
             }
          }
-         return createTestMetric(freshTest, freshMetric);
+         return freshMetric;
       } else {
          // creating a new metric object
          if (metric.getName() == null) {
@@ -399,27 +372,22 @@ public class TestServiceBean implements TestService {
             if (existingMetric.getName().equals(metric.getName())) {
                Metric freshMetric = metricDAO.get(existingMetric.getId());
 
-               if (freshMetric.getTestMetrics().stream()
-                       .anyMatch(testMetric -> testMetric.getTest().getId().equals(freshTest.getId()))) {
+               if (freshMetric.getTests().stream()
+                       .anyMatch(t -> t.getId().equals(freshTest.getId()))) {
                   throw new ServiceException("serviceException.metricAlreadyExists", freshTest.getUid(), freshMetric.getName());
                }
 
-               return createTestMetric(freshTest, freshMetric);
+               return freshMetric;
             }
          }
          Metric freshMetric = metricDAO.create(metric);
-         return createTestMetric(freshTest, freshMetric);
+         return freshMetric;
       }
    }
 
    @Override
    @Secured
-   public Metric updateMetric(Test test, Metric metric) throws ServiceException {
-      Test freshTest = testDAO.get(test.getId());
-      TestMetric freshTestMetric = testMetricDAO.find(freshTest, metric);
-      if (freshTestMetric == null) {
-         throw new ServiceException("serviceException.metricNotInTest", freshTest.getName(), freshTest.getUid(), metric.getName());
-      }
+   public Metric updateMetric(Metric metric) throws ServiceException {
       return metricDAO.update(metric);
    }
 
@@ -431,23 +399,15 @@ public class TestServiceBean implements TestService {
 
    @Override
    @Secured
-   public void removeMetric(Test test, Metric metric) throws ServiceException {
-      Test freshTest = testDAO.get(test.getId());
-      if (freshTest == null) {
-         throw new ServiceException("serviceException.testNotFound", test.getId().toString());
+   public void removeMetric(Metric metric) throws ServiceException {
+      Metric freshMetric = metricDAO.get(metric.getId());
+
+      for (Test test: freshMetric.getTests()) {
+         test.getMetrics().remove(freshMetric);
+         testDAO.update(test);
       }
-      TestMetric freshTestMetric = testMetricDAO.find(freshTest, metric.getName());
-      Metric freshMetric = freshTestMetric.getMetric();
-      if (freshMetric.getTestMetrics().size() == 1) {
-         if (!freshMetric.getValues().isEmpty()) {
-            throw new ServiceException("serviceException.metricHasValues", freshMetric.getName());
-         } else {
-            testMetricDAO.remove(freshTestMetric);
-            metricDAO.remove(freshMetric);
-         }
-      } else {
-         testMetricDAO.remove(freshTestMetric);
-      }
+
+      metricDAO.remove(freshMetric);
    }
 
    @Override
@@ -458,18 +418,11 @@ public class TestServiceBean implements TestService {
       }
       metric = metric.clone();
 
-      // TODO: read by named query with join fetches
-      Collection<TestMetric> testMetrics = metric.getTestMetrics();
-      List<Test> tests = new ArrayList<Test>();
-      if (testMetrics != null) {
-         for (TestMetric testMetric : testMetrics) {
-            Test test = testMetric.getTest().clone();
-            test.setTestMetrics(null);
-            tests.add(test);
-         }
+      if (metric.getTests() != null) {
+         List<Test> clonedTests = metric.getTests().stream().collect(Collectors.toList());
+         metric.setTests(clonedTests);
       }
 
-      metric.setTests(tests);
       return metric;
    }
 
@@ -495,31 +448,32 @@ public class TestServiceBean implements TestService {
 
    @Override
    @Secured
-   public TestExecution updateTestExecution(TestExecution anExec) throws ServiceException {
-      TestExecution execEntity = testExecutionDAO.get(anExec.getId());
+   public TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException {
+      TestExecution execEntity = testExecutionDAO.get(testExecution.getId());
       if (execEntity == null) {
-         throw new ServiceException("serviceException.testExecutionNotFound", anExec.getName());
+         throw new ServiceException("serviceException.testExecutionNotFound", testExecution.getName());
       }
-      for (TestExecutionTag interObj : execEntity.getTestExecutionTags()) {
-         testExecutionTagDAO.remove(interObj);
-      }
-      execEntity.getTestExecutionTags().clear();
       // this is what can be updated here
-      execEntity.setName(anExec.getName());
-      execEntity.setStarted(anExec.getStarted());
-      execEntity.setComment(anExec.getComment());
-      for (String tag : new HashSet<String>(anExec.getTags())) {
-         Tag tagEntity = tagDAO.findByName(tag);
+      execEntity.setName(testExecution.getName());
+      execEntity.setStarted(testExecution.getStarted());
+      execEntity.setComment(testExecution.getComment());
+      execEntity.setTags(new ArrayList<>());
+
+      for (Tag tag : testExecution.getTags()) {
+         Tag tagEntity = tagDAO.findByName(tag.getName());
          if (tagEntity == null) {
             Tag newTag = new Tag();
-            newTag.setName(tag);
+            newTag.setName(tag.getName());
             tagEntity = tagDAO.create(newTag);
          }
-         TestExecutionTag newTestExecutionTag = new TestExecutionTag();
-         newTestExecutionTag.setTag(tagEntity);
-         newTestExecutionTag.setTestExecution(execEntity);
-         testExecutionTagDAO.create(newTestExecutionTag);
-         execEntity.getTestExecutionTags().add(newTestExecutionTag);
+
+         Collection<TestExecution> tagTestExecutions = tagEntity.getTestExecutions();
+         if (tagTestExecutions == null) {
+            tagEntity.setTestExecutions(new ArrayList<>());
+         }
+
+         tagEntity.getTestExecutions().add(execEntity);
+         execEntity.getTags().add(tagEntity);
       }
       TestExecution execClone = cloneAndFetch(execEntity, true, true, true, true, true);
       return execClone;
@@ -625,7 +579,6 @@ public class TestServiceBean implements TestService {
       Value freshValue = valueDAO.update(value);
       Value freshValueClone = freshValue.clone();
       freshValueClone.setMetric(freshValue.getMetric().clone());
-      freshValueClone.getMetric().setTestMetrics(null);
       freshValueClone.getMetric().setValues(null);
       UpdateSet<ValueParameter> updateSet = EntityUtils.updateSet(oldValue.getParameters(), value.getParameters());
       if (!updateSet.removed.isEmpty()) {
@@ -678,7 +631,13 @@ public class TestServiceBean implements TestService {
 
    @Override
    public List<Metric> getAllMetrics(Long testId) {
-      return metricDAO.getMetricByTest(testId);
+      Test freshTest = testDAO.get(testId);
+      if (freshTest.getMetrics() == null) {
+         return new ArrayList<>();
+      }
+
+      List<Metric> metrics = freshTest.getMetrics().stream().collect(Collectors.toList());
+      return metrics;
    }
 
    @Override
@@ -720,8 +679,6 @@ public class TestServiceBean implements TestService {
             continue;
          }
 
-         List<TestExecutionTag> testExecutionTags = new ArrayList<TestExecutionTag>();
-         testExecutionTags.addAll(testExecution.getTestExecutionTags());
          for (String tagName : tags) {
             if (!testExecution.getTags().contains(tagName)) {
                Tag tag = tagDAO.findByName(tagName);
@@ -731,12 +688,13 @@ public class TestServiceBean implements TestService {
                   tag = tagDAO.create(newTag);
                }
 
-               TestExecutionTag newTestExecutionTag = new TestExecutionTag();
-               newTestExecutionTag.setTag(tag);
-               newTestExecutionTag.setTestExecution(testExecution);
+               Collection<TestExecution> tagTestExecutions = tag.getTestExecutions();
+               if (tagTestExecutions == null) {
+                  tag.setTestExecutions(new ArrayList<>());
+               }
 
-               TestExecutionTag testExecutionTag = testExecutionTagDAO.create(newTestExecutionTag);
-               testExecutionTags.add(testExecutionTag);
+               tag.getTestExecutions().add(testExecution);
+               testExecution.getTags().add(tag);
             }
          }
 
@@ -752,16 +710,12 @@ public class TestServiceBean implements TestService {
             continue;
          }
 
-         List<TestExecutionTag> testExecutionTags = new ArrayList<TestExecutionTag>();
-         for (TestExecutionTag testExecutionTag : testExecution.getTestExecutionTags()) {
-            if (tags.contains(testExecutionTag.getTagName())) {
-               testExecutionTagDAO.remove(testExecutionTag);
-            } else {
-               testExecutionTags.add(testExecutionTag);
+         for (Tag tag : testExecution.getTags()) {
+            if (tags.contains(tag.getName())) {
+               testExecution.getTags().remove(tag);
             }
          }
 
-         testExecution.setTestExecutionTags(testExecutionTags);
          testExecutionDAO.update(testExecution);
       }
    }
@@ -813,14 +767,6 @@ public class TestServiceBean implements TestService {
       return false;
    }
 
-   private TestMetric createTestMetric(Test test, Metric metric) {
-      Metric existingMetric = metricDAO.get(metric.getId());
-      TestMetric tm = new TestMetric();
-      tm.setMetric(existingMetric);
-      tm.setTest(test);
-      return testMetricDAO.create(tm);
-   }
-
    private TestExecution cloneAndFetch(TestExecution exec, boolean fetchTest, boolean fetchParameters,
                                        boolean fetchTags, boolean fetchValues,
                                        boolean fetchAttachments) {
@@ -841,7 +787,7 @@ public class TestServiceBean implements TestService {
       if (fetchTags) {
          TestExecutionDAO.fetchTags(clone);
       } else {
-         clone.setTestExecutionTags(null);
+         clone.setTags(null);
       }
       if (fetchValues) {
          TestExecutionDAO.fetchValues(clone);

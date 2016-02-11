@@ -15,11 +15,7 @@
 package org.perfrepo.web.controller.reports;
 
 import org.apache.log4j.Logger;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionParameter;
-import org.perfrepo.model.TestExecutionTag;
+import org.perfrepo.model.*;
 import org.perfrepo.model.util.EntityUtils;
 import org.perfrepo.web.controller.BaseController;
 import org.perfrepo.web.service.TestService;
@@ -30,11 +26,7 @@ import org.perfrepo.web.viewscope.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Simple comparison of test execution parameters.
@@ -188,8 +180,8 @@ public class CompareParametersController extends BaseController {
 
    public String getTags(TestExecution te) {
       StringBuilder tag = new StringBuilder();
-      for (TestExecutionTag teg : te.getTestExecutionTags()) {
-         tag.append(teg.getTag().getName()).append("\n");
+      for (Tag teg : te.getTags()) {
+         tag.append(teg.getName()).append("\n");
       }
       return tag.toString().substring(0, tag.length() - 1);
    }

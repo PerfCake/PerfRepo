@@ -22,18 +22,11 @@ import org.perfrepo.model.user.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import java.util.AbstractCollection;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents one test.
@@ -45,7 +38,6 @@ import java.util.List;
 @Table(name = "test")
 @SecuredEntity(type = EntityType.TEST)
 @NamedQueries({
-    @NamedQuery(name = Test.FIND_TESTS_USING_METRIC, query = "SELECT test from Test test, TestMetric tm, Metric m where test = tm.test and tm.metric = m and m.id = :metric"),
     @NamedQuery(name = Test.FIND_BY_UID, query = "SELECT test FROM Test test WHERE test.uid = :uid")
 })
 @XmlRootElement(name = "test")
@@ -53,7 +45,6 @@ public class Test implements Entity<Test> {
 
    private static final long serialVersionUID = 2936849220074718535L;
 
-   public static final String FIND_TESTS_USING_METRIC = "Test.findTestsUsingMetric";
    public static final String FIND_BY_UID = "Test.findByUid";
 
    @Id
@@ -69,8 +60,13 @@ public class Test implements Entity<Test> {
    @OneToMany(mappedBy = "test")
    private Collection<TestExecution> testExecutions;
 
-   @OneToMany(mappedBy = "test")
-   private Collection<TestMetric> testMetrics;
+   @ManyToMany(fetch = FetchType.LAZY)
+   @JoinTable(
+           name = "test_metric",
+           joinColumns = {@JoinColumn(name = "test_id", nullable = false, updatable = false)},
+           inverseJoinColumns = {@JoinColumn(name = "metric_id", nullable = false, updatable = false)}
+   )
+   private Collection<Metric> metrics;
 
    @ManyToMany(fetch = FetchType.LAZY)
    @JoinTable(
@@ -134,15 +130,6 @@ public class Test implements Entity<Test> {
       return this.testExecutions;
    }
 
-   public void setTestMetrics(Collection<TestMetric> testMetrics) {
-      this.testMetrics = testMetrics;
-   }
-
-   @XmlTransient
-   public Collection<TestMetric> getTestMetrics() {
-      return this.testMetrics;
-   }
-
    public Collection<User> getSubscribers() {
       return subscribers;
    }
@@ -162,57 +149,11 @@ public class Test implements Entity<Test> {
    @XmlElementWrapper(name = "metrics")
    @XmlElement(name = "metric")
    public Collection<Metric> getMetrics() {
-      return testMetrics == null ? null : new MetricCollection();
+      return metrics;
    }
 
    public void setMetrics(Collection<Metric> metrics) {
-      testMetrics = new ArrayList<TestMetric>();
-      getMetrics().addAll(metrics);
-   }
-
-   /**
-    * Hack to evade listing intermediate {@link TestMetric} objects in XML.
-    */
-   private class MetricCollection extends AbstractCollection<Metric> {
-
-      private class MetricIterator implements Iterator<Metric> {
-
-         private Iterator<TestMetric> iterator;
-
-         @Override
-         public boolean hasNext() {
-            return iterator.hasNext();
-         }
-
-         @Override
-         public Metric next() {
-            return iterator.next().getMetric();
-         }
-
-         @Override
-         public void remove() {
-            throw new UnsupportedOperationException();
-         }
-      }
-
-      @Override
-      public Iterator<Metric> iterator() {
-         MetricIterator i = new MetricIterator();
-         i.iterator = testMetrics.iterator();
-         return i;
-      }
-
-      @Override
-      public int size() {
-         return testMetrics.size();
-      }
-
-      @Override
-      public boolean add(Metric e) {
-         TestMetric tm = new TestMetric();
-         tm.setMetric(e);
-         return testMetrics.add(tm);
-      }
+      this.metrics = metrics;
    }
 
    public void setUid(String uid) {
@@ -244,16 +185,12 @@ public class Test implements Entity<Test> {
 
    @XmlTransient
    public List<Metric> getSortedMetrics() {
-      if (testMetrics == null || testMetrics.isEmpty()) {
-         return new ArrayList<Metric>(0);
-      } else {
-         List<Metric> result = new ArrayList<Metric>();
-         for (TestMetric tm : testMetrics) {
-            result.add(tm.getMetric());
-         }
-         Collections.sort(result);
-         return result;
+      Collection<Metric> tags = getMetrics();
+      if (tags == null) {
+         return new ArrayList<>();
       }
+
+      return tags.stream().sorted(((o1, o2) -> o1.compareTo(o2))).collect(Collectors.toList());
    }
 
    public static TestBuilder builder() {

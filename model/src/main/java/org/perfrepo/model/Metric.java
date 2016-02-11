@@ -21,16 +21,8 @@ import org.perfrepo.model.builder.MetricBuilder;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import java.util.AbstractCollection;
-import java.util.ArrayList;
+import javax.xml.bind.annotation.*;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Represents a test metric.
@@ -41,10 +33,10 @@ import java.util.Iterator;
 @javax.persistence.Entity
 @Table(name = "metric")
 @NamedQueries({
-    @NamedQuery(name = Metric.GET_TEST, query = "SELECT test from TestMetric tm inner join tm.test test inner join tm.metric m where m= :entity"),
-    @NamedQuery(name = Metric.FIND_BY_NAME_GROUPID, query = "SELECT m from TestMetric tm inner join tm.metric m inner join tm.test test where test.groupId= :groupId and m.name= :name"),
-    @NamedQuery(name = Metric.FIND_BY_GROUPID, query = "SELECT DISTINCT m from Metric m, TestMetric tm, Test t WHERE t.groupId= :groupId AND tm.test.id = t.id AND tm.metric.id = m.id ORDER BY m.name"),
-    @NamedQuery(name = Metric.FIND_BY_TESTID, query = "SELECT m from Metric m, TestMetric tm WHERE tm.test.id = :testId AND tm.metric.id = m.id")})
+    @NamedQuery(name = Metric.GET_TEST, query = "SELECT m.tests from Metric m where m= :entity"),
+    @NamedQuery(name = Metric.FIND_BY_NAME_GROUPID, query = "SELECT m from Metric m inner join m.tests test where test.groupId= :groupId and m.name= :name"),
+    @NamedQuery(name = Metric.FIND_BY_GROUPID, query = "SELECT DISTINCT m from Metric m inner join m.tests t WHERE t.groupId= :groupId ORDER BY m.name"),
+})
 @XmlRootElement(name = "metric")
 @SecuredEntity(type = EntityType.TEST)
 public class Metric implements Entity<Metric>, Comparable<Metric> {
@@ -54,7 +46,6 @@ public class Metric implements Entity<Metric>, Comparable<Metric> {
    public static final String GET_TEST = "Metric.getTest";
    public static final String FIND_BY_NAME_GROUPID = "Metric.findByNameGroupId";
    public static final String FIND_BY_GROUPID = "Metric.findByGroupId";
-   public static final String FIND_BY_TESTID = "Metric.findByTestId";
 
    @Id
    @SequenceGenerator(name = "METRIC_ID_GENERATOR", sequenceName = "METRIC_SEQUENCE", allocationSize = 1)
@@ -74,8 +65,8 @@ public class Metric implements Entity<Metric>, Comparable<Metric> {
    @OneToMany(mappedBy = "metric")
    private Collection<Value> values;
 
-   @OneToMany(mappedBy = "metric")
-   private Collection<TestMetric> testMetrics;
+   @ManyToMany(mappedBy = "metrics")
+   private Collection<Test> tests;
 
    @OneToMany(mappedBy = "metric")
    private Collection<Alert> alerts;
@@ -167,13 +158,8 @@ public class Metric implements Entity<Metric>, Comparable<Metric> {
       this.description = description;
    }
 
-   @XmlTransient
-   public Collection<TestMetric> getTestMetrics() {
-      return testMetrics;
-   }
-
-   public void setTestMetrics(Collection<TestMetric> testMetrics) {
-      this.testMetrics = testMetrics;
+   public void setTests(Collection<Test> tests) {
+      this.tests = tests;
    }
 
    @Override
@@ -181,60 +167,10 @@ public class Metric implements Entity<Metric>, Comparable<Metric> {
       return this.getName().compareTo(o.getName());
    }
 
-   /**
-    * Hack to evade listing intermediate {@link TestMetric} objects in XML.
-    */
-   private class TestCollection extends AbstractCollection<Test> {
-
-      private class TestIterator implements Iterator<Test> {
-
-         private Iterator<TestMetric> iterator;
-
-         @Override
-         public boolean hasNext() {
-            return iterator.hasNext();
-         }
-
-         @Override
-         public Test next() {
-            return iterator.next().getTest();
-         }
-
-         @Override
-         public void remove() {
-            throw new UnsupportedOperationException();
-         }
-      }
-
-      @Override
-      public Iterator<Test> iterator() {
-         TestIterator i = new TestIterator();
-         i.iterator = testMetrics.iterator();
-         return i;
-      }
-
-      @Override
-      public int size() {
-         return testMetrics.size();
-      }
-
-      @Override
-      public boolean add(Test e) {
-         TestMetric tm = new TestMetric();
-         tm.setTest(e);
-         return testMetrics.add(tm);
-      }
-   }
-
    @XmlElementWrapper(name = "tests")
    @XmlElement(name = "test")
    public Collection<Test> getTests() {
-      return testMetrics == null ? null : new TestCollection();
-   }
-
-   public void setTests(Collection<Test> tests) {
-      testMetrics = new ArrayList<TestMetric>();
-      getTests().addAll(tests);
+      return tests;
    }
 
    public static MetricBuilder builder() {

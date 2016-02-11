@@ -15,15 +15,7 @@
 package org.perfrepo.web.controller;
 
 import org.apache.log4j.Logger;
-import org.perfrepo.model.FavoriteParameter;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionAttachment;
-import org.perfrepo.model.TestExecutionParameter;
-import org.perfrepo.model.TestExecutionTag;
-import org.perfrepo.model.Value;
-import org.perfrepo.model.ValueParameter;
+import org.perfrepo.model.*;
 import org.perfrepo.model.builder.TestExecutionBuilder;
 import org.perfrepo.model.user.User;
 import org.perfrepo.model.util.EntityUtils;
@@ -40,6 +32,9 @@ import org.perfrepo.web.util.TagUtils;
 import org.perfrepo.web.util.ViewUtils;
 import org.perfrepo.web.viewscope.ViewScoped;
 import org.richfaces.event.FileUploadEvent;
+import org.richfaces.model.ChartDataModel;
+import org.richfaces.model.ChartDataModel.ChartType;
+import org.richfaces.model.NumberChartDataModel;
 import org.richfaces.model.UploadedFile;
 
 import javax.faces.context.FacesContext;
@@ -47,20 +42,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.richfaces.model.ChartDataModel;
-import org.richfaces.model.ChartDataModel.ChartType;
-import org.richfaces.model.NumberChartDataModel;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Details of {@link TestExecution}
@@ -167,7 +154,7 @@ public class TestExecutionController extends BaseController {
    }
 
    public String getRawTags() {
-      return TagUtils.rawTags(editedTestExecution == null ? null : editedTestExecution.getSortedTags());
+      return TagUtils.rawTags(editedTestExecution == null ? null : editedTestExecution.getSortedTags().stream().map(Tag::getName).collect(Collectors.toList()));
    }
 
    public void setRawTags(String rawTags) {
@@ -179,7 +166,7 @@ public class TestExecutionController extends BaseController {
       for (String tag : tags) {
          b.tag(tag);
       }
-      editedTestExecution.setTestExecutionTags(b.build().getTestExecutionTags());
+      editedTestExecution.setTags(b.build().getTags());
    }
 
    public boolean isDisplayComment() {
@@ -325,12 +312,8 @@ public class TestExecutionController extends BaseController {
       return testExecution.getSortedParameters();
    }
 
-   public List<TestExecutionTag> getTestExecutionTags() {
-      List<TestExecutionTag> tegs = new ArrayList<TestExecutionTag>();
-      if (testExecution != null && testExecution.getTestExecutionTags() != null) {
-         tegs.addAll(testExecution.getTestExecutionTags());
-      }
-      return tegs;
+   public List<Tag> getTags() {
+      return testExecution.getSortedTags();
    }
 
    public Collection<TestExecutionAttachment> getAttachments() {

@@ -19,7 +19,6 @@ import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.TestExecutionAttachment;
 import org.perfrepo.model.TestExecutionParameter;
-import org.perfrepo.model.TestMetric;
 import org.perfrepo.model.Value;
 import org.perfrepo.model.to.SearchResultWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
@@ -164,17 +163,16 @@ public interface TestService {
     * @return metric
     * @throws ServiceException
     */
-   public TestMetric addMetric(Test test, Metric metric) throws ServiceException;
+   public Metric addMetric(Test test, Metric metric) throws ServiceException;
 
    /**
     * Update metric.
     *
-    * @param test
     * @param metric
     * @return Updated metric
     * @throws ServiceException
     */
-   public Metric updateMetric(Test test, Metric metric) throws ServiceException;
+   public Metric updateMetric(Metric metric) throws ServiceException;
 
    /**
     * Get test with all metrics but without executions.
@@ -226,11 +224,10 @@ public interface TestService {
    /**
     * Delete metric from the test.
     *
-    * @param test
     * @param metric
     * @throws ServiceException
     */
-   public void removeMetric(Test test, Metric metric) throws ServiceException;
+   public void removeMetric(Metric metric) throws ServiceException;
 
    /**
     * Update only attributes name and started and collection of tags.

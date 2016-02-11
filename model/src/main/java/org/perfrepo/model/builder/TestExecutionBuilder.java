@@ -14,12 +14,7 @@
  */
 package org.perfrepo.model.builder;
 
-import org.perfrepo.model.Tag;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionParameter;
-import org.perfrepo.model.TestExecutionTag;
-import org.perfrepo.model.Value;
+import org.perfrepo.model.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -129,17 +124,15 @@ public class TestExecutionBuilder {
    }
 
    private Tag addTag(String tag) {
-      Collection<TestExecutionTag> testExecutionTags = testExecution.getTestExecutionTags();
-      if (testExecutionTags == null) {
-         testExecutionTags = new ArrayList<TestExecutionTag>();
-         testExecution.setTestExecutionTags(testExecutionTags);
+      Collection<Tag> tags = testExecution.getTags();
+      if (tags == null) {
+         tags = new ArrayList<>();
+         testExecution.setTags(tags);
       }
-      TestExecutionTag intermediate = new TestExecutionTag();
-      Tag tagObj = new Tag();
-      tagObj.setName(tag);
-      intermediate.setTag(tagObj);
-      testExecutionTags.add(intermediate);
-      return tagObj;
+      Tag newTag = new Tag();
+      tags.add(newTag);
+
+      return newTag;
    }
 
    /**

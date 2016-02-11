@@ -16,7 +16,6 @@ package org.perfrepo.web.service;
 
 import org.perfrepo.model.Metric;
 import org.perfrepo.model.Test;
-import org.perfrepo.model.TestMetric;
 import org.perfrepo.model.auth.AccessLevel;
 import org.perfrepo.model.auth.AccessType;
 import org.perfrepo.model.auth.Permission;
@@ -55,9 +54,6 @@ public class ReportServiceBean implements ReportService {
 
    @Inject
    private MetricDAO metricDAO;
-
-   @Inject
-   private TestMetricDAO testMetricDAO;
 
    @Inject
    private TestExecutionDAO testExecutionDAO;
@@ -185,15 +181,14 @@ public class ReportServiceBean implements ReportService {
                   if (seriesRequest.getMetricName() == null) {
                      continue;
                   }
-                  TestMetric testMetric = testMetricDAO.find(freshTest, seriesRequest.getMetricName());
-                  if (testMetric == null) {
-                     chartResponse.setSelectionMetrics(metricDAO.getMetricByTest(freshTest.getId()));
+                  Metric metric = freshTest.getMetrics().stream().filter(m -> m.getName().equals(seriesRequest.getMetricName())).findFirst().get();
+                  if (metric == null) {
+                     chartResponse.setSelectionMetrics(new ArrayList<>(freshTest.getMetrics()));
                      continue;
                   }
-                  Metric freshMetric = testMetric.getMetric().clone();
-                  freshMetric.setTestMetrics(null);
-                  freshMetric.setValues(null);
-                  seriesResponse.setSelectedMetric(freshMetric);
+                  metric = metric.clone();
+                  metric.setValues(null);
+                  seriesResponse.setSelectedMetric(metric);
                   List<MetricReportTO.DataPoint> datapoints = testExecutionDAO.searchValues(freshTest.getId(), seriesRequest.getMetricName(),
                                                                                             seriesRequest.getTags(), request.getLimitSize());
                   if (datapoints.isEmpty()) {
@@ -212,15 +207,14 @@ public class ReportServiceBean implements ReportService {
                   if (baselineRequest.getMetricName() == null) {
                      continue;
                   }
-                  TestMetric testMetric = testMetricDAO.find(freshTest, baselineRequest.getMetricName());
-                  if (testMetric == null) {
-                     chartResponse.setSelectionMetrics(metricDAO.getMetricByTest(freshTest.getId()));
+                  Metric metric = freshTest.getMetrics().stream().filter(m -> m.getName().equals(baselineRequest.getMetricName())).findFirst().get();
+                  if (metric == null) {
+                     chartResponse.setSelectionMetrics(new ArrayList<>(freshTest.getMetrics()));
                      continue;
                   }
-                  Metric freshMetric = testMetric.getMetric().clone();
-                  freshMetric.setTestMetrics(null);
-                  freshMetric.setValues(null);
-                  baselineResponse.setSelectedMetric(freshMetric);
+                  metric = metric.clone();
+                  metric.setValues(null);
+                  baselineResponse.setSelectedMetric(metric);
                   baselineResponse.setExecId(baselineRequest.getExecId());
                   baselineResponse.setValue(testExecutionDAO.getValueForMetric(baselineRequest.getExecId(), baselineRequest.getMetricName()));
                }

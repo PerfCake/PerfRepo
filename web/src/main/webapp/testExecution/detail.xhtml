@@ -50,8 +50,8 @@
         <h:outputLabel class="detail-label">Tags</h:outputLabel>
 
         <div class="detail-value">
-            <a4j:repeat value="#{testExecutionController.testExecution.sortedTags}" iterationStatusVar="status" var="item">
-                <span class="badge badge-success">#{item}</span>
+            <a4j:repeat value="#{testExecutionController.testExecution.sortedTags}" iterationStatusVar="status" var="tag">
+                <span class="badge badge-success">#{tag.name}</span>
             </a4j:repeat>
         </div>
         <h:outputLabel class="detail-label">Comment</h:outputLabel>
