@@ -17,6 +17,7 @@ public class ApplicationConfiguration {
 
    private String url;
    private String version;
+   private String helloString;
 
    @PostConstruct
    public void init() {
@@ -29,11 +30,16 @@ public class ApplicationConfiguration {
       }
 
       url = properties.getProperty("application.url");
+      helloString = properties.getProperty("login.string");
       version = properties.getProperty("project.version");
    }
 
    public String getUrl() {
       return url;
+   }
+
+   public String getHelloString() {
+      return helloString;
    }
 
    /**

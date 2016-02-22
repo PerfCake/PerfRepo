@@ -12,7 +12,7 @@
         <ui:define name="content">
             <div>
                 <form method="POST" action="j_security_check" name="loginForm">
-                    <h1>Login to Performance repository</h1>
+                    <h1>Login</h1>
                     <h:panelGroup
                             rendered="#{requestScope['javax.servlet.forward.servlet_path'].contains('j_security_check')}">
                         <ul>
@@ -34,9 +34,15 @@
                                                                                       type="password"
                                                                                       name="j_password"/>
                         </div>
+
                         <div style="text-align: right">
-                            <h:commandButton type="submit" value="Login"
-                                             styleClass="btn btn-primary"/>
+                            <h:commandButton type="submit" value="Login" styleClass="btn btn-primary"/>
+                        </div>
+
+                        <br />
+
+                        <div id="helloString">
+                            <em>#{homeController.helloString}</em>
                         </div>
                     </div>
                 </form>

@@ -49,4 +49,12 @@ public class HomeController extends BaseController {
    public String getPerfRepoVersion() throws IOException {
       return applicationConfiguration.getPerfRepoVersion();
    }
+
+   /**
+    * Retrieves string used for login page
+    * @return
+     */
+   public String getHelloString() {
+      return applicationConfiguration.getHelloString();
+   }
 }
