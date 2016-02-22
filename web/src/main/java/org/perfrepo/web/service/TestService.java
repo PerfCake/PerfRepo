@@ -225,9 +225,10 @@ public interface TestService {
     * Delete metric from the test.
     *
     * @param metric
+    * @param test
     * @throws ServiceException
     */
-   public void removeMetric(Metric metric) throws ServiceException;
+   public void removeMetric(Metric metric, Test test) throws ServiceException;
 
    /**
     * Update only attributes name and started and collection of tags.

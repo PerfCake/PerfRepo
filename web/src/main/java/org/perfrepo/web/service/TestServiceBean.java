@@ -344,12 +344,21 @@ public class TestServiceBean implements TestService {
    @Secured
    public Metric addMetric(Test test, Metric metric) throws ServiceException {
       Test freshTest = testDAO.get(test.getId());
+      if (freshTest.getMetrics() == null) {
+         freshTest.setMetrics(new ArrayList<>());
+      }
+
       if (metric.getId() != null) {
          // associating an existing metric with the test
          Metric freshMetric = metricDAO.get(metric.getId());
          if (freshMetric == null) {
             throw new ServiceException("serviceException.metricNotFound", metric.getName().toString());
          }
+
+         if (freshMetric.getTests() == null) {
+            freshMetric.setTests(new ArrayList<>());
+         }
+
          for (Test testForMetric : freshMetric.getTests()) {
             if (!testForMetric.getGroupId().equals(freshTest.getGroupId())) {
                throw new ServiceException("serviceException.metricSharingOnlyInGroup");
@@ -358,6 +367,13 @@ public class TestServiceBean implements TestService {
                throw new ServiceException("serviceException.metricAlreadyExists", freshTest.getUid(), freshMetric.getName());
             }
          }
+
+         freshMetric.getTests().add(freshTest);
+         freshTest.getMetrics().add(freshMetric);
+
+         freshMetric = metricDAO.update(freshMetric);
+         testDAO.update(freshTest);
+
          return freshMetric;
       } else {
          // creating a new metric object
@@ -376,11 +392,15 @@ public class TestServiceBean implements TestService {
                        .anyMatch(t -> t.getId().equals(freshTest.getId()))) {
                   throw new ServiceException("serviceException.metricAlreadyExists", freshTest.getUid(), freshMetric.getName());
                }
-
-               return freshMetric;
             }
          }
+
+         metric.setTests(Arrays.asList(freshTest));
          Metric freshMetric = metricDAO.create(metric);
+
+         freshTest.getMetrics().add(freshMetric);
+         testDAO.update(freshTest);
+
          return freshMetric;
       }
    }
@@ -398,16 +418,26 @@ public class TestServiceBean implements TestService {
    }
 
    @Override
-   @Secured
-   public void removeMetric(Metric metric) throws ServiceException {
+   //@Secured TODO: we need to handle this property, since getTestByRelation will not work as metric is associated with more tests
+   public void removeMetric(Metric metric, Test test) throws ServiceException {
       Metric freshMetric = metricDAO.get(metric.getId());
+      Test freshTest = testDAO.get(test.getId());
 
-      for (Test test: freshMetric.getTests()) {
-         test.getMetrics().remove(freshMetric);
-         testDAO.update(test);
+      //List<Test> newTests = freshMetric.getTests().stream().filter(o -> !o.equals(freshTest)).collect(Collectors.toList());
+      //freshMetric.setTests(newTests);
+
+      //List<Metric> newMetrics = freshTest.getMetrics().stream().filter(o -> !o.equals(freshMetric)).collect(Collectors.toList());
+      //freshTest.setMetrics(newMetrics);
+
+      freshMetric.getTests().remove(freshTest);
+      freshTest.getMetrics().remove(freshMetric);
+
+      metricDAO.update(freshMetric);
+      testDAO.update(freshTest);
+
+      if (freshMetric.getTests() == null || freshMetric.getTests().isEmpty()) {
+         metricDAO.remove(freshMetric);
       }
-
-      metricDAO.remove(freshMetric);
    }
 
    @Override

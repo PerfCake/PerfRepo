@@ -239,7 +239,6 @@ public class TestExecutionController extends BaseController {
                testExecution = new TestExecution();
                testExecution.setTest(test);
                testExecution.setStarted(new Date());
-               testExecution.setName("New execution");
                setEditedTestExecution();
             }
          }

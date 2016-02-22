@@ -85,7 +85,7 @@
 									<div class="btn-group">
 										<a4j:commandLink styleClass="btn btn-primary btn-small" title="#{strings.delete}"
 									        onclick="if (!confirm('Are you sure you want to delete metric (#{metric.name})?') ) { return false;}; return true;"
-									        action="#{testController.metricDetails.deleteMetric(metric)}" render="metricList :messagesPanel">
+									        action="#{testController.metricDetails.deleteMetric(metric, testController.test)}" render="metricList :messagesPanel">
 									        <i class="icon-trash"></i>
 										</a4j:commandLink>
 								        <a4j:commandLink styleClass="btn btn-primary btn-small" render=":dialogMetricEdit :dialogMetricEditForm" action="#{testController.metricDetails.setMetricForUpdate(metric)}"
