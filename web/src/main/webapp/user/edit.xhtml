@@ -33,36 +33,29 @@
             <h:form>
                 <fieldset>
                     <h1>Edit user profile</h1>
-                    <!--<div class="control-group">
-                       <h:outputLabel class="detail-label">Username</h:outputLabel>
-                       <div class="controls">
-                          <h:inputText styleClass="input-text" value="#{userProfileController.user.username}" />
-                       </div>
-                    </div>-->
 
-                    <div class="control-group">
-                        <h:outputLabel class="detail-label">First name</h:outputLabel>
+                    <table class="detailTable">
+                        <tr>
+                            <th>First name <span class="required">*</span></th>
+                            <td>
+                                <h:inputText styleClass="input-text" value="#{userProfileController.user.firstName}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Last name <span class="required">*</span></th>
+                            <td>
+                                <h:inputText styleClass="input-text" value="#{userProfileController.user.lastName}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>E-mail <span class="required">*</span></th>
+                            <td>
+                                <h:inputText styleClass="input-text" value="#{userProfileController.user.email}"/>
+                            </td>
+                        </tr>
+                    </table>
 
-                        <div class="controls">
-                            <h:inputText styleClass="input-text" value="#{userProfileController.user.firstName}"/>
-                        </div>
-                    </div>
-
-                    <div class="control-group">
-                        <h:outputLabel class="detail-label">Last name</h:outputLabel>
-
-                        <div class="controls">
-                            <h:inputText styleClass="input-text" value="#{userProfileController.user.lastName}"/>
-                        </div>
-                    </div>
-
-                    <div class="control-group">
-                        <h:outputLabel class="detail-label">E-mail</h:outputLabel>
-
-                        <div class="controls">
-                            <h:inputText styleClass="input-text" value="#{userProfileController.user.email}"/>
-                        </div>
-                    </div>
+                    <br />
 
                     <div style="text-align: center">
                         <h:commandButton action="#{userProfileController.update}" value="Save changes"

@@ -6346,12 +6346,13 @@ table th.width31Percent {
 }
 
 .detailTable th {
+    padding: 8px;
     text-align: left;
-    width: 100px;
+    width: 200px;
 }
 
 .detailTable td {
-    padding: 3px;
+    padding: 8px;
 }
 
 .vertical-middle {

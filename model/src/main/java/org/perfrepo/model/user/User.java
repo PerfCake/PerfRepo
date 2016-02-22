@@ -52,17 +52,17 @@ public class User implements Entity<User>, Comparable<User> {
    private String password;
 
    @Column(name = "first_name")
-   @NotNull
+   @NotNull(message = "{page.profile.firstNameRequired}")
    @Size(max = 2047)
    private String firstName;
 
    @Column(name = "last_name")
-   @NotNull
+   @NotNull(message = "{page.profile.lastNameRequired}")
    @Size(max = 2047)
    private String lastName;
 
    @Column(name = "email")
-   @NotNull
+   @NotNull(message = "{page.profile.emailRequired}")
    @Email
    @Size(max = 2047)
    private String email;

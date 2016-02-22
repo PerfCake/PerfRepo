@@ -32,25 +32,33 @@
             <hr/>
             <fieldset>
                 <h1>About user</h1>
-                <h:outputLabel class="detail-label">Username</h:outputLabel>
 
-                <div class="detail-value">#{userProfileController.user.username}</div>
-                <h:outputLabel class="detail-label">First name</h:outputLabel>
-
-                <div class="detail-value">#{userProfileController.user.firstName}</div>
-                <h:outputLabel class="detail-label">Last name</h:outputLabel>
-
-                <div class="detail-value">#{userProfileController.user.lastName}</div>
-                <h:outputLabel class="detail-label">E-mail</h:outputLabel>
-
-                <div class="detail-value">#{userProfileController.user.email}</div>
-                <h:outputLabel class="detail-label">Assigned groups</h:outputLabel>
-
-                <div class="detail-value">
-                    <ui:repeat value="#{userProfileController.user.groups}" var="group">
-                        <h:outputText value="#{group.name}"/><br/>
-                    </ui:repeat>
-                </div>
+                <table class="detailTable">
+                    <tr>
+                        <th>Username</th>
+                        <td>#{userProfileController.user.username}</td>
+                    </tr>
+                    <tr>
+                        <th>First name</th>
+                        <td>#{userProfileController.user.firstName}</td>
+                    </tr>
+                    <tr>
+                        <th>Last name</th>
+                        <td>#{userProfileController.user.lastName}</td>
+                    </tr>
+                    <tr>
+                        <th>E-mail</th>
+                        <td>#{userProfileController.user.email}</td>
+                    </tr>
+                    <tr>
+                        <th valign="top">Assigned groups</th>
+                        <td valign="top">
+                            <ui:repeat value="#{userProfileController.user.groups}" var="group">
+                                <h:outputText value="#{group.name}"/><br/>
+                            </ui:repeat>
+                        </td>
+                    </tr>
+                </table>
             </fieldset>
         </ui:define>
     </ui:composition>
