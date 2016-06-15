@@ -119,7 +119,7 @@ public class AlertingServiceBean implements AlertingService {
                continue;
             }
 
-            if (!conditionChecker.checkCondition(alert.getCondition(), results.get(metric), metric)) {
+            if (!conditionChecker.checkCondition(alert.getCondition(), testExecution, metric)) {
                failedAlerts.add(alert);
                failedAlertsVariables.put(alert, conditionChecker.getEvaluatedVariables());
             }
@@ -132,7 +132,7 @@ public class AlertingServiceBean implements AlertingService {
 
    @Override
    public void checkConditionSyntax(String condition, Metric metric) {
-      conditionChecker.checkCondition(condition, 0, metric);
+       conditionChecker.checkConditionSyntax(condition, metric);
    }
 
    /**
