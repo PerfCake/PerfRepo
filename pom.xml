@@ -15,7 +15,7 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>https://github.com/PerfRepo/PerfRepo.git</url>
+		<developerConnection>scm:git:git@github.com:PerfCake/PerfRepo.git</developerConnection>
 	</scm>
 	<properties>
 		<antlr.version>3.5.2</antlr.version>
@@ -37,7 +37,7 @@
 		<maven.javadoc.plugin.version>2.9</maven.javadoc.plugin.version>
 		<maven.helper.plugin.version>1.9.1</maven.helper.plugin.version>
 		<maven.source.plugin.version>2.2.1</maven.source.plugin.version>
-		<maven.release.plugin.version>2.1</maven.release.plugin.version>
+		<maven.release.plugin.version>2.5.2</maven.release.plugin.version>
 		<jboss.bom.version>1.0.5.Final</jboss.bom.version>
 		<jfreechart.version>1.0.13</jfreechart.version>
 		<junit.version>4.8.1</junit.version>
@@ -84,34 +84,9 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<!--<dependency>
-				<groupId>org.jboss.bom</groupId>
-				<artifactId>jboss-javaee-6.0-with-hibernate</artifactId>
-				<version>${jboss.bom.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.bom</groupId>
-				<artifactId>jboss-javaee-6.0-with-resteasy</artifactId>
-				<version>${jboss.bom.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.arquillian</groupId>
-				<artifactId>arquillian-bom</artifactId>
-				<version>${arquillian.version}</version>
-				<scope>import</scope>
-				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
-			</dependency>-->
 		</dependencies>
 	</dependencyManagement>
+
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
@@ -120,6 +95,7 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<version>${maven.release.plugin.version}</version>
 				<configuration>
+					<tagNameFormat>v@{project.version}</tagNameFormat>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<pushChanges>false</pushChanges>
 					<localCheckout>true</localCheckout>
