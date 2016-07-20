@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 	<name>Performance Results Repository - Parent</name>
 	<description>Performance Results Repository Application</description>
-	<url>https://github.com/PerfRepo/PerfRepo</url>
+	<url>https://github.com/PerfCake/PerfRepo</url>
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
@@ -15,8 +15,10 @@
 		</license>
 	</licenses>
 	<scm>
+		<url>https://github.com/PerfCake/PerfRepo</url>
 		<developerConnection>scm:git:git@github.com:PerfCake/PerfRepo.git</developerConnection>
 	</scm>
+
 	<properties>
 		<antlr.version>3.5.2</antlr.version>
 		<arquillian.version>1.1.5.Final</arquillian.version>
@@ -34,10 +36,11 @@
 		<maven.wildfly.plugin.version>1.0.2.Final</maven.wildfly.plugin.version>
 		<maven.surefire.plugin.version>2.4.3</maven.surefire.plugin.version>
 		<maven.war.plugin.version>2.1.1</maven.war.plugin.version>
-		<maven.javadoc.plugin.version>2.9</maven.javadoc.plugin.version>
 		<maven.helper.plugin.version>1.9.1</maven.helper.plugin.version>
 		<maven.source.plugin.version>2.2.1</maven.source.plugin.version>
 		<maven.release.plugin.version>2.5.2</maven.release.plugin.version>
+		<maven.nexus.staging.plugin.version>1.6.7</maven.nexus.staging.plugin.version>
+		<maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
 		<jboss.bom.version>1.0.5.Final</jboss.bom.version>
 		<jfreechart.version>1.0.13</jfreechart.version>
 		<junit.version>4.8.1</junit.version>
@@ -50,11 +53,13 @@
 		<version.jboss.spec.javaee.7.0>9.0.1.Final</version.jboss.spec.javaee.7.0>
 		<javax.mail.version>1.4.4</javax.mail.version>
 	</properties>
+
 	<modules>
 		<module>web</module>
 		<module>model</module>
 		<module>client</module>
 	</modules>
+
 	<developers>
 		<developer>
 			<name>Pavel Drozd</name>
@@ -75,6 +80,7 @@
 			<url>http://community.jboss.org/people/jholusa</url>
 		</developer>
 	</developers>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -86,6 +92,13 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -99,6 +112,8 @@
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<pushChanges>false</pushChanges>
 					<localCheckout>true</localCheckout>
+					<useReleaseProfile>false</useReleaseProfile>
+					<releaseProfiles>release</releaseProfiles>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -167,13 +182,7 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>javadoc</id>
-			<activation>
-				<property>
-					<name>performRelease</name>
-					<value>true</value>
-				</property>
-			</activation>
+			<id>release</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -186,29 +195,19 @@
 								<goals>
 									<goal>jar</goal>
 								</goals>
+								<configuration>
+									<additionalparam>-Xdoclint:none</additionalparam>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>sign-artifacts</id>
-			<activation>
-				<property>
-					<name>performRelease</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
 						<version>${maven.gpg.plugin.version}</version>
-						<configuration>
-							<useAgent>true</useAgent>
-						</configuration>
+						<!--<configuration>-->
+							<!--<useAgent>true</useAgent>-->
+						<!--</configuration>-->
 						<executions>
 							<execution>
 								<phase>verify</phase>
@@ -217,6 +216,17 @@
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>${maven.nexus.staging.plugin.version}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
