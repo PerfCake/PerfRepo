@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.perfrepo</groupId>
 	<artifactId>perfrepo-parent</artifactId>
-	<version>1.5</version>
+	<version>1.6-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Performance Results Repository - Parent</name>
 	<description>Performance Results Repository Application</description>
@@ -17,7 +17,7 @@
 	<scm>
 		<url>https://github.com/PerfCake/PerfRepo</url>
 		<developerConnection>scm:git:git@github.com:PerfCake/PerfRepo.git</developerConnection>
-	  <tag>v1.5</tag>
+	  <tag>HEAD</tag>
   </scm>
 
 	<properties>
