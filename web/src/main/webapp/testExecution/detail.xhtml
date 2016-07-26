@@ -21,6 +21,13 @@
         </div>
         <div id="control"
              style="text-align:right;float: right;line-height: 40px; margin: 10px 0;width:400px;height:40px;">
+
+            <span style="margin:5px;">
+                <a4j:commandLink styleClass="text-success" render=":compareMenuItem" title="Add to comparison" action="#{teComparatorSession.add(testExecutionController.testExecutionId)}">
+                    <i class="icon-plus"></i> Add to comparison
+                </a4j:commandLink>
+            </span>
+
             <span style="margin:5px;"><a class="text-success"
                                          href="#{request.contextPath}/exec/#{testExecutionController.testExecutionId}/edit"><i
                     class="icon-edit" title="#{strings.edit}"/> Edit</a></span>
