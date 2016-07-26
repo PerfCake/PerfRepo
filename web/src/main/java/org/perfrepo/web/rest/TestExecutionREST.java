@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,6 +82,11 @@ public class TestExecutionREST {
          test = testService.getTestByUID(testExecution.getTest().getUid());
       }
       testExecution.setTest(test);
+
+      if (testExecution.getStarted() == null) {
+         testExecution.setStarted(new Date());
+      }
+
       Long id = testService.createTestExecution(testExecution).getId();
       return Response.created(uriInfo.getBaseUriBuilder().path(TestExecutionREST.class).path(GET_TEST_EXECUTION_METHOD).build(id)).entity(id).build();
    }
@@ -112,8 +118,6 @@ public class TestExecutionREST {
    public Response search(TestExecutionSearchTO criteria) {
       SearchResultWrapper<TestExecution> searchResultWrapper = testService.searchTestExecutions(criteria);
       List<TestExecution> result = testService.getFullTestExecutions(searchResultWrapper.getResult().stream().map(TestExecution::getId).collect(Collectors.toList()));
-      //ListWrapper<TestExecution> wrappedResult = new ListWrapper<>();
-      //wrappedResult.setItems(result);
       GenericEntity<List<TestExecution>> entity = new GenericEntity<List<TestExecution>>(result) { };
       return Response.ok(entity).build();
    }
