@@ -49,7 +49,7 @@ public interface TestService {
    public TestExecution createTestExecution(TestExecution testExecution) throws ServiceException;
 
    /**
-    * Returns list of TestExecutionss according to criteria defined by TestExecutionSearchTO
+    * Returns list of TestExecutions according to criteria defined by TestExecutionSearchTO
     *
     * @param search
     * @return result

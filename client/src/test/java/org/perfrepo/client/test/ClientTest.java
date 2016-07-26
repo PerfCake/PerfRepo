@@ -22,13 +22,15 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.FileAsset;
 import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.perfrepo.client.PerfRepoClient;
 import org.perfrepo.model.*;
+import org.perfrepo.model.Test;
+import org.perfrepo.model.builder.TestExecutionBuilder;
 import org.perfrepo.model.report.Report;
 import org.perfrepo.model.report.ReportProperty;
+import org.perfrepo.model.to.TestExecutionSearchTO;
 
 import java.io.*;
 import java.util.*;
@@ -132,7 +134,6 @@ public class ClientTest {
       assertEquals(testExecution2.getId(), testExecutionId);
       assertEquals(testExecution2.getName(), testExecution.getName());
       assertEquals(testExecution2.getStarted(), testExecution.getStarted());
-      assertEquals(testExecution2.getAttachments().size(), 0);
       assertEquals(testExecution2.getParameters().size(), 2);
 
       Map<String, String> params = testExecution2.getParametersAsMap();
@@ -276,6 +277,55 @@ public class ClientTest {
       client.deleteReport(reportId);
    }
 
+   @org.junit.Test
+   public void testSearchTestExecutions() throws Exception {
+      Test test1 = createTest("test1");
+      Long test1Id = client.createTest(test1);
+      Test test2 = createTest("test2");
+      Long test2Id = client.createTest(test2);
+
+      Calendar calendar = Calendar.getInstance();
+
+      calendar.set(2016, 7, 7);
+      Long testExecution1Id = client.createTestExecution(createTestExecution(test1Id, "execution1", calendar.getTime(), Arrays.asList("param1", "param2"), Arrays.asList("value1", "value2"), Arrays.asList("tag1", "tag2")));
+      TestExecution testExecution1 = client.getTestExecution(testExecution1Id);
+      calendar.set(2016, 7, 10);
+      Long testExecution2Id = client.createTestExecution(createTestExecution(test1Id, "execution2", calendar.getTime(), Arrays.asList("param1", "param2"), Arrays.asList("value3", "value4"), Arrays.asList("tag2", "tag3")));
+      TestExecution testExecution2 = client.getTestExecution(testExecution2Id);
+      calendar.set(2016, 7, 13);
+      Long testExecution3Id = client.createTestExecution(createTestExecution(test2Id, "execution3", calendar.getTime(), Arrays.asList("param1", "param2"), Arrays.asList("value1", "value3"), Arrays.asList("tag3", "tag4")));
+      TestExecution testExecution3 = client.getTestExecution(testExecution3Id);
+
+      List<TestExecution> result1 = client.searchTestExecutions(createSearchCriteria(Arrays.asList(testExecution1Id, testExecution2Id), null, null, null, null));
+      List<TestExecution> expectedResult1 = Arrays.asList(testExecution1, testExecution2);
+      assertEquals(expectedResult1.size(), result1.size());
+      assertTrue(expectedResult1.stream().
+              allMatch(expected -> result1.stream().anyMatch(actual -> expected.getId().equals(actual.getId()))));
+
+      List<TestExecution> result2 = client.searchTestExecutions(createSearchCriteria(null, null, null, "tag2", null));
+      List<TestExecution> expectedResult2 = Arrays.asList(testExecution1, testExecution2);
+      assertEquals(expectedResult2.size(), result2.size());
+      assertTrue(expectedResult2.stream().
+              allMatch(expected -> result2.stream().anyMatch(actual -> expected.getId().equals(actual.getId()))));
+
+      client.deleteTestExecution(testExecution1Id);
+      client.deleteTestExecution(testExecution2Id);
+      client.deleteTestExecution(testExecution3Id);
+      client.deleteTest(test1Id);
+      client.deleteTest(test2Id);
+   }
+
+   private TestExecutionSearchTO createSearchCriteria(List<Long> ids, Date startedFrom, Date startedTo, String tags, String testUid) {
+      TestExecutionSearchTO criteria = new TestExecutionSearchTO();
+      criteria.setIds(ids);
+      criteria.setStartedFrom(startedFrom);
+      criteria.setStartedTo(startedTo);
+      criteria.setTags(tags);
+      criteria.setTestUID(testUid);
+
+      return criteria;
+   }
+
    private Double getFirstValueHavingMetricAndParameter(TestExecution testExecution, String metric, String propName, String propValue) {
       return getValuesHavingMetricAndParameter(testExecution, metric, propName, propValue).get(0).getResultValue();
    }
@@ -338,11 +388,15 @@ public class ClientTest {
    }
 
    private Test createTest() {
+      return createTest("test1");
+   }
+
+   private Test createTest(String name) {
       long salt = System.currentTimeMillis();
       return Test.builder()
-          .name("test1" + salt)
+          .name(name + salt)
           .groupId(clientGroup)
-          .uid("testtestuid" + salt)
+          .uid(name + "uid" + salt)
           .description("this is a test test")
           .metric("metric1", MetricComparator.LB, "this is a test metric 1")
           .metric("metric2", "this is a test metric 2")
@@ -365,17 +419,31 @@ public class ClientTest {
    }
 
    private TestExecution createTestExecution(Long testId) {
-      return TestExecution.builder()
+      return createTestExecution(testId,
+              "execution1",
+              new Date(),
+              Arrays.asList("param1", "param2"),
+              Arrays.asList("value1", "value2"),
+              Arrays.asList("tag1", "tag2"));
+   }
+
+   private TestExecution createTestExecution(Long testId, String name, Date started,
+                                             List<String> paramNames, List<String> paramValues,
+                                             List<String> tags) {
+      TestExecutionBuilder builder = TestExecution.builder()
           .testId(testId)
-          .name("execution1")
-          .started(new Date())
-          .parameter("param1", "value1")
-          .parameter("param2", "value2")
-          .tag("tag1")
-          .tag("tag2")
+          .name(name)
+          .started(started)
           .value("metric1", 12.0d)
-          .value("metric2", 8.0d)
-          .build();
+          .value("metric2", 8.0d);
+
+      for (int i = 0; i < paramNames.size(); i++) {
+         builder.parameter(paramNames.get(i), paramValues.get(i));
+      }
+
+      tags.stream().forEach(tag -> builder.tag(tag));
+
+      return builder.build();
    }
 
    private Report createReport() {

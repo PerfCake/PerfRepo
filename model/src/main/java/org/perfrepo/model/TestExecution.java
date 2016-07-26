@@ -197,8 +197,7 @@ public class TestExecution implements Entity<TestExecution> {
       this.started = started;
    }
 
-   @XmlElementWrapper(name = "attachments")
-   @XmlElement(name = "attachment")
+   @XmlTransient
    public Collection<TestExecutionAttachment> getAttachments() {
       return attachments;
    }

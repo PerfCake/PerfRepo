@@ -33,15 +33,17 @@ import org.apache.log4j.Logger;
 import org.perfrepo.model.Metric;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
+import org.perfrepo.model.Value;
 import org.perfrepo.model.report.Report;
+import org.perfrepo.model.to.ListWrapper;
+import org.perfrepo.model.to.TestExecutionSearchTO;
 
 import javax.xml.bind.JAXB;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
+import java.util.List;
 
 /**
  * Performance Repository REST API Client.
@@ -286,6 +288,34 @@ public class PerfRepoClient {
       Long id = new Long(EntityUtils.toString(resp.getEntity()));
       EntityUtils.consume(resp.getEntity());
       return id;
+   }
+
+    /**
+     * Searches through test execution according to criteria.
+     *
+     * @param criteria
+     * @return
+     */
+   public List<TestExecution> searchTestExecutions(TestExecutionSearchTO criteria) throws Exception {
+      List<TestExecution> result = null;
+
+      HttpPost post = createBasicPost("testExecution/search");
+      setPostEntity(post, criteria);
+      HttpResponse resp = httpClient.execute(post);
+
+      if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+         //String something = new BufferedReader(new InputStreamReader(resp.getEntity().getContent())).lines().collect(Collectors.joining("\n"));
+         JAXBContext jc = JAXBContext.newInstance(ListWrapper.class, TestExecution.class, Value.class);
+         Unmarshaller unmarshaller = jc.createUnmarshaller();
+
+         ListWrapper<TestExecution> obj = (ListWrapper<TestExecution>) unmarshaller.unmarshal(new StreamSource(resp.getEntity().getContent()), ListWrapper.class).getValue();
+         EntityUtils.consume(resp.getEntity());
+         return obj.getItems();
+      } else {
+         logHttpError("Error while searching for test executions", post, resp);
+         EntityUtils.consume(resp.getEntity());
+         return null;
+      }
    }
 
    /**

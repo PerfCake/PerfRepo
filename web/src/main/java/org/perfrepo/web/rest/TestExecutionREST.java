@@ -14,28 +14,26 @@
  */
 package org.perfrepo.web.rest;
 
+import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.TestExecutionAttachment;
 import org.perfrepo.model.Value;
+import org.perfrepo.model.to.SearchResultWrapper;
+import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.web.rest.logging.Logged;
 import org.perfrepo.web.service.TestService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * REST interface for test execution related operations.
@@ -84,7 +82,6 @@ public class TestExecutionREST {
       }
       testExecution.setTest(test);
       Long id = testService.createTestExecution(testExecution).getId();
-      //return Response.ok(new GenericEntity<Long>(2222L){}).build();
       return Response.created(uriInfo.getBaseUriBuilder().path(TestExecutionREST.class).path(GET_TEST_EXECUTION_METHOD).build(id)).entity(id).build();
    }
 
@@ -104,6 +101,21 @@ public class TestExecutionREST {
       testService.updateTestExecution(testExecution);
 
       return Response.created(uriInfo.getBaseUriBuilder().path(TestExecutionREST.class).path(GET_TEST_EXECUTION_METHOD).build(testExecution.getId())).entity(testExecution.getId()).build();
+   }
+
+   @POST
+   @Path("/search")
+   @Consumes(MediaType.TEXT_XML)
+   @Produces(MediaType.APPLICATION_XML)
+   @Wrapped(element = "testExecutions")
+   @Logged
+   public Response search(TestExecutionSearchTO criteria) {
+      SearchResultWrapper<TestExecution> searchResultWrapper = testService.searchTestExecutions(criteria);
+      List<TestExecution> result = testService.getFullTestExecutions(searchResultWrapper.getResult().stream().map(TestExecution::getId).collect(Collectors.toList()));
+      //ListWrapper<TestExecution> wrappedResult = new ListWrapper<>();
+      //wrappedResult.setItems(result);
+      GenericEntity<List<TestExecution>> entity = new GenericEntity<List<TestExecution>>(result) { };
+      return Response.ok(entity).build();
    }
 
    @POST()

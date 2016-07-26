@@ -16,6 +16,9 @@ package org.perfrepo.model.to;
 
 import org.perfrepo.model.userproperty.GroupFilter;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,6 +31,7 @@ import java.util.List;
  * @author Michal Linhard (mlinhard@redhat.com)
  * @author Jiri Holusa (jholusa@redhat.com)
  */
+@XmlRootElement(name = "test-execution-search")
 public class TestExecutionSearchTO implements Serializable {
 
    private static final long serialVersionUID = -2274979571623499791L;
@@ -50,6 +54,8 @@ public class TestExecutionSearchTO implements Serializable {
 
    private String labelParameter;
 
+   @XmlElementWrapper(name = "ids")
+   @XmlElement(name = "id")
    public List<Long> getIds() {
       return ids;
    }
@@ -59,6 +65,7 @@ public class TestExecutionSearchTO implements Serializable {
    }
 
    //means "Test executed after"
+   @XmlElement(name = "executed-after")
    public Date getStartedFrom() {
       return startedFrom;
    }
@@ -68,6 +75,7 @@ public class TestExecutionSearchTO implements Serializable {
    }
 
    //means "Test executed before"
+   @XmlElement(name = "executed-before")
    public Date getStartedTo() {
       return startedTo;
    }
@@ -76,6 +84,7 @@ public class TestExecutionSearchTO implements Serializable {
       this.startedTo = startedTo;
    }
 
+   @XmlElement(name = "test-uid")
    public String getTestUID() {
       return testUID;
    }
@@ -84,6 +93,7 @@ public class TestExecutionSearchTO implements Serializable {
       this.testUID = testUID;
    }
 
+   @XmlElement(name = "test-name")
    public String getTestName() {
       return testName;
    }
@@ -92,6 +102,7 @@ public class TestExecutionSearchTO implements Serializable {
       this.testName = testName;
    }
 
+   @XmlElement(name = "tags")
    public String getTags() {
       return tags;
    }
@@ -100,10 +111,13 @@ public class TestExecutionSearchTO implements Serializable {
       this.tags = tags;
    }
 
+   @XmlElementWrapper(name = "parameters")
+   @XmlElement(name = "parameter")
    public List<ParamCriteria> getParameters() {
       return parameters;
    }
 
+   @XmlElement(name = "limit-from")
    public Integer getLimitFrom() {
       return limitFrom;
    }
@@ -112,6 +126,7 @@ public class TestExecutionSearchTO implements Serializable {
       this.limitFrom = limitFrom;
    }
 
+   @XmlElement(name = "how-many")
    public Integer getLimitHowMany() {
       return limitHowMany;
    }
@@ -120,6 +135,7 @@ public class TestExecutionSearchTO implements Serializable {
       this.limitHowMany = limitHowMany;
    }
 
+   @XmlElement(name = "group-filter")
    public GroupFilter getGroupFilter() {
       return groupFilter;
    }
@@ -128,6 +144,7 @@ public class TestExecutionSearchTO implements Serializable {
       this.groupFilter = groupFilter;
    }
 
+   @XmlElement(name = "order-by")
    public OrderBy getOrderBy() {
       return orderBy;
    }
@@ -188,12 +205,14 @@ public class TestExecutionSearchTO implements Serializable {
       return result;
    }
 
+   @XmlRootElement(name = "parameter")
    public static class ParamCriteria implements Serializable {
 
       private static final long serialVersionUID = -2562642308678063396L;
       private String name;
       private String value;
 
+      @XmlElement(name = "name")
       public String getName() {
          return name;
       }
@@ -202,6 +221,7 @@ public class TestExecutionSearchTO implements Serializable {
          this.name = name;
       }
 
+      @XmlElement(name = "value")
       public String getValue() {
          return value;
       }
