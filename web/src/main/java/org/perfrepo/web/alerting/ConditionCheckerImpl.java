@@ -435,7 +435,7 @@ public class ConditionCheckerImpl implements ConditionChecker {
             }
         }
 
-        testExecutions = testExecutionDAO.searchTestExecutions(searchCriteria, userService.getLoggedUserGroupNames());
+        testExecutions = testExecutionDAO.searchTestExecutions(searchCriteria, userService.getLoggedUserGroupNames()).getResult();
 
         return testExecutions;
     }

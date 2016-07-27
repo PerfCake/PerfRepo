@@ -3,6 +3,7 @@ package org.perfrepo.test.alerting;
 import org.junit.Before;
 import org.junit.Test;
 import org.perfrepo.model.TestExecution;
+import org.perfrepo.model.to.SearchResultWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.web.alerting.ConditionCheckerImpl;
 import org.perfrepo.web.dao.TestExecutionDAO;
@@ -53,12 +54,12 @@ public class ConditionCheckerTest {
         TestExecutionSearchTO searchLast10 = createSearchCriteria(null, null, 11, 10, null, null);
         TestExecutionSearchTO search5FromLast10 = createSearchCriteria(null, null, 11, 5, null, null);
 
-        when(mockedTestExecutionDAO.searchTestExecutions(searchTe1, Arrays.asList("testuser"))).thenReturn(te1);
-        when(mockedTestExecutionDAO.searchTestExecutions(searchTe2, Arrays.asList("testuser"))).thenReturn(te2);
-        when(mockedTestExecutionDAO.searchTestExecutions(searchLast1, Arrays.asList("testuser"))).thenReturn(te2);
-        when(mockedTestExecutionDAO.searchTestExecutions(searchLast10, Arrays.asList("testuser"))).thenReturn(te1And2);
-        when(mockedTestExecutionDAO.searchTestExecutions(search5FromLast10, Arrays.asList("testuser"))).thenReturn(te1And2);
-        when(mockedTestExecutionDAO.searchTestExecutions(searchTe1And2, Arrays.asList("testuser"))).thenReturn(te1And2);
+        when(mockedTestExecutionDAO.searchTestExecutions(searchTe1, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(te1, te1.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(searchTe2, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(te2, te2.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(searchLast1, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(te2, te2.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(searchLast10, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(te1And2, te1And2.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(search5FromLast10, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(te1And2, te1And2.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(searchTe1And2, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(te1And2, te1And2.size()));
 
         List<TestExecution> tesWithTags = Arrays.asList(createTestExecution3(), createTestExecution4());
 
@@ -66,9 +67,9 @@ public class ConditionCheckerTest {
         TestExecutionSearchTO searchTesWithTagsAndLast1 = createSearchCriteria(null, "firstTag secondTag", 2, 1, null, null);
         TestExecutionSearchTO searchTesWithTagsAnd2FromLast3 = createSearchCriteria(null, "firstTag secondTag", 4, 2, null, null);
 
-        when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTags, Arrays.asList("testuser"))).thenReturn(tesWithTags);
-        when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTagsAndLast1, Arrays.asList("testuser"))).thenReturn(te1);
-        when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTagsAnd2FromLast3, Arrays.asList("testuser"))).thenReturn(tesWithTags);
+        when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTags, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(tesWithTags, tesWithTags.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTagsAndLast1, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(te1, te1.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(searchTesWithTagsAnd2FromLast3, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(tesWithTags, tesWithTags.size()));
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(2015, 0, 1, 0, 0, 0);
@@ -84,10 +85,10 @@ public class ConditionCheckerTest {
 
         List<TestExecution> tesWithTagsAndDates = Arrays.asList(createTestExecution1(), createTestExecution4());
 
-        when(mockedTestExecutionDAO.searchTestExecutions(argThat(new SearchCriteriaMatcher(searchTesWithOnlyDateFrom)), eq(Arrays.asList("testuser")))).thenReturn(tesWithTags);
-        when(mockedTestExecutionDAO.searchTestExecutions(argThat(new SearchCriteriaMatcher(searchTesWithOnlyDateTo)), eq(Arrays.asList("testuser")))).thenReturn(tesWithTags);
-        when(mockedTestExecutionDAO.searchTestExecutions(argThat(new SearchCriteriaMatcher(searchTesWithDates)), eq(Arrays.asList("testuser")))).thenReturn(tesWithTagsAndDates);
-        when(mockedTestExecutionDAO.searchTestExecutions(argThat(new SearchCriteriaMatcher(searchTesWithTagsAndDates)), eq(Arrays.asList("testuser")))).thenReturn(tesWithTagsAndDates);
+        when(mockedTestExecutionDAO.searchTestExecutions(argThat(new SearchCriteriaMatcher(searchTesWithOnlyDateFrom)), eq(Arrays.asList("testuser")))).thenReturn(new SearchResultWrapper<>(tesWithTags, tesWithTags.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(argThat(new SearchCriteriaMatcher(searchTesWithOnlyDateTo)), eq(Arrays.asList("testuser")))).thenReturn(new SearchResultWrapper<>(tesWithTags, tesWithTags.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(argThat(new SearchCriteriaMatcher(searchTesWithDates)), eq(Arrays.asList("testuser")))).thenReturn(new SearchResultWrapper<>(tesWithTagsAndDates, tesWithTagsAndDates.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(argThat(new SearchCriteriaMatcher(searchTesWithTagsAndDates)), eq(Arrays.asList("testuser")))).thenReturn(new SearchResultWrapper<>(tesWithTagsAndDates, tesWithTagsAndDates.size()));
 
         // Multi value test executions
         List<TestExecution> multivalueSimple = Arrays.asList(createMultivalueTestExecution());
@@ -101,11 +102,11 @@ public class ConditionCheckerTest {
         TestExecutionSearchTO groupingSimpleTO = createSearchCriteria(Arrays.asList(112L, 113L), null, null, null, null, null);
         TestExecutionSearchTO multiTasAndLastOneTO = createSearchCriteria(null, "epicTag legendaryTag", 2, 1, null, null);
 
-        when(mockedTestExecutionDAO.searchTestExecutions(multivalueSimpleTO, Arrays.asList("testuser"))).thenReturn(multivalueSimple);
-        when(mockedTestExecutionDAO.searchTestExecutions(multivalueMoreExecInVariableTO, Arrays.asList("testuser"))).thenReturn(multivalueMoreExecInVariable);
-        when(mockedTestExecutionDAO.searchTestExecutions(multivalueComplexTO, Arrays.asList("testuser"))).thenReturn(multivalueComplex);
-        when(mockedTestExecutionDAO.searchTestExecutions(groupingSimpleTO, Arrays.asList("testuser"))).thenReturn(groupingSimple);
-        when(mockedTestExecutionDAO.searchTestExecutions(multiTasAndLastOneTO, Arrays.asList("testuser"))).thenReturn(multivalueSimple);
+        when(mockedTestExecutionDAO.searchTestExecutions(multivalueSimpleTO, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(multivalueSimple, multivalueSimple.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(multivalueMoreExecInVariableTO, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(multivalueMoreExecInVariable, multivalueMoreExecInVariable.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(multivalueComplexTO, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(multivalueComplex, multivalueComplex.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(groupingSimpleTO, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(groupingSimple, groupingSimple.size()));
+        when(mockedTestExecutionDAO.searchTestExecutions(multiTasAndLastOneTO, Arrays.asList("testuser"))).thenReturn(new SearchResultWrapper<>(multivalueSimple, multivalueSimple.size()));
 
         UserService mockedUserService = mock(UserService.class);
         when(mockedUserService.getLoggedUserGroupNames()).thenReturn(Arrays.asList("testuser"));
