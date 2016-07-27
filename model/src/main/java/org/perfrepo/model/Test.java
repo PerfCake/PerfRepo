@@ -130,6 +130,7 @@ public class Test implements Entity<Test> {
       return this.testExecutions;
    }
 
+   @XmlTransient
    public Collection<User> getSubscribers() {
       return subscribers;
    }
@@ -175,11 +176,11 @@ public class Test implements Entity<Test> {
       this.groupId = groupId;
    }
 
+   @XmlElement(name = "description")
    public String getDescription() {
       return description;
    }
 
-   @XmlElement(name = "description")
    public void setDescription(String description) {
       this.description = description;
    }
