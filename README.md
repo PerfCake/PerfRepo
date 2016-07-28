@@ -24,7 +24,7 @@ List of suggested components to be able to run PerfRepo easily. Possibly other a
 
 * Java 8 
 * Maven 3+ (http://maven.apache.org/)
-* JBoss EAP 6.4+ (http://jbossas.jboss.org/downloads)
+* WildFly 9.0.1+ (http://wildfly.org/downloads/)
 * PostgreSQL 9+ (http://www.postgresql.org/)
 
 ## Configure Maven
