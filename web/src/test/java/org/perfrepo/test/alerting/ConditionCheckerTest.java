@@ -436,6 +436,8 @@ public class ConditionCheckerTest {
 
         condition = "MULTIVALUE CONDITION result == x DEFINE x = SELECT WHERE tags = \"epicTag legendaryTag\" LAST 1";
         conditionChecker.checkConditionSyntax(condition, createMetric());
-
+        
+        condition = "MULTIVALUE STRICT CONDITION result == x DEFINE x = SELECT WHERE tags = \"epicTag legendaryTag\" LAST 1";
+        conditionChecker.checkConditionSyntax(condition, createMetric());
     }
 }

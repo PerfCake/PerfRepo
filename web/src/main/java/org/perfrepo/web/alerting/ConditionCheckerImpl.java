@@ -137,7 +137,8 @@ public class ConditionCheckerImpl implements ConditionChecker {
             if (isStrict) {
                 for (String var : varToListOfValues.keySet()) {
                     for (MultiValue.ValueInfo valInfo : varToListOfValues.get(var)) {
-                        if (valInfo.getComplexValueByParamName(paramBoundToMetric).size() != resultValueList.size()) {
+                        // we need to check if the given param is present, when checking conditon SYNTAX only, the param might not be present
+                        if (!(valInfo.getComplexValueParams().contains(paramBoundToMetric)) || valInfo.getComplexValueByParamName(paramBoundToMetric).size() != resultValueList.size()) {
                             // STRICT condition was not met, return false;
                             return false;
                         }
