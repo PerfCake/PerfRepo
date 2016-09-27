@@ -14,8 +14,6 @@
  */
 package org.perfrepo.model;
 
-import org.perfrepo.model.auth.EntityType;
-import org.perfrepo.model.auth.SecuredEntity;
 import org.perfrepo.model.builder.MetricBuilder;
 
 import javax.persistence.*;
@@ -38,7 +36,7 @@ import java.util.Collection;
     @NamedQuery(name = Metric.FIND_BY_GROUPID, query = "SELECT DISTINCT m from Metric m inner join m.tests t WHERE t.groupId= :groupId ORDER BY m.name"),
 })
 @XmlRootElement(name = "metric")
-@SecuredEntity(type = EntityType.TEST)
+//@SecuredEntity(type = EntityType.TEST) TODO: 
 public class Metric implements Entity<Metric>, Comparable<Metric> {
 
    private static final long serialVersionUID = -5234628391341278215L;
