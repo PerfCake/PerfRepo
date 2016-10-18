@@ -19,9 +19,13 @@ import org.perfrepo.model.report.Report;
 import org.perfrepo.model.user.User;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @javax.persistence.Entity
 @Table(name = "permission")
+@XmlRootElement(name = "report-permission")
 public class Permission implements Entity<Permission>, Comparable<Permission> {
 
    private static final long serialVersionUID = 5637370080321126750L;
@@ -45,10 +49,14 @@ public class Permission implements Entity<Permission>, Comparable<Permission> {
    @Column(name = "user_id")
    private Long userId;
 
+   @Transient
+   private Long reportId; //used for REST API
+
    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
    @JoinColumn(name = "report_id", referencedColumnName = "id")
    private Report report;
 
+   @XmlElement(name = "access-type")
    public AccessType getAccessType() {
       return accessType;
    }
@@ -57,6 +65,7 @@ public class Permission implements Entity<Permission>, Comparable<Permission> {
       this.accessType = permission;
    }
 
+   @XmlElement(name = "access-level")
    public AccessLevel getLevel() {
       return level;
    }
@@ -74,6 +83,7 @@ public class Permission implements Entity<Permission>, Comparable<Permission> {
       return id;
    }
 
+   @XmlElement(name = "group-id")
    public Long getGroupId() {
       return groupId;
    }
@@ -82,6 +92,7 @@ public class Permission implements Entity<Permission>, Comparable<Permission> {
       this.groupId = groupId;
    }
 
+   @XmlElement(name = "user-id")
    public Long getUserId() {
       return userId;
    }
@@ -90,6 +101,7 @@ public class Permission implements Entity<Permission>, Comparable<Permission> {
       this.userId = userId;
    }
 
+   @XmlTransient
    public Report getReport() {
       return report;
    }
@@ -100,6 +112,15 @@ public class Permission implements Entity<Permission>, Comparable<Permission> {
 
    public void setUser(User user) {
       this.userId = user.getId();
+   }
+
+   @XmlElement(name = "report-id")
+   public Long getReportId() {
+      return reportId;
+   }
+
+   public void setReportId(Long reportId) {
+      this.reportId = reportId;
    }
 
    @Override

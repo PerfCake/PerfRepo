@@ -17,6 +17,7 @@ package org.perfrepo.web.service;
 import org.perfrepo.model.auth.Permission;
 import org.perfrepo.model.report.Report;
 import org.perfrepo.model.to.MetricReportTO;
+import org.perfrepo.web.service.exceptions.ServiceException;
 
 import java.util.Collection;
 import java.util.List;
@@ -95,4 +96,11 @@ public interface ReportService {
     * @return
     */
    public Collection<Permission> getReportPermissions(Report report);
+
+    /**
+     * Adds permission to provided report.
+     *
+     * @param permission
+     */
+   public void addPermission(Permission permission) throws ServiceException;
 }

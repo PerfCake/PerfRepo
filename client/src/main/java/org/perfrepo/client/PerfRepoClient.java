@@ -34,6 +34,7 @@ import org.perfrepo.model.Metric;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.Value;
+import org.perfrepo.model.auth.Permission;
 import org.perfrepo.model.report.Report;
 import org.perfrepo.model.to.ListWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
@@ -639,6 +640,27 @@ public class PerfRepoClient {
          EntityUtils.consume(resp.getEntity());
          return false;
       }
+   }
+
+   public boolean addReportPermission(Permission permission) throws Exception {
+      if (permission == null || permission.getReportId() == null) {
+         throw new IllegalArgumentException("Permission or its report ID cannot be null.");
+      }
+
+      HttpPost post = createBasicPost("report/id/" + permission.getReportId() + "/addPermission");
+      setPostEntity(post, permission);
+      HttpResponse resp = httpClient.execute(post);
+      if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+         logHttpError("Error while adding permission", post, resp);
+         EntityUtils.consume(resp.getEntity());
+         return false;
+      }
+      Header[] locations = resp.getHeaders(HttpHeaders.LOCATION);
+      if (locations != null && locations.length > 0) {
+         log.debug("Added new permission at: " + locations[0].getValue());
+      }
+      EntityUtils.consume(resp.getEntity());
+      return true;
    }
 
    public String getServerVersion() throws Exception {

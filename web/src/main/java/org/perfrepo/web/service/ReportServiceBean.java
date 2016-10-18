@@ -26,6 +26,7 @@ import org.perfrepo.model.user.Group;
 import org.perfrepo.model.user.User;
 import org.perfrepo.web.dao.*;
 import org.perfrepo.web.security.Secured;
+import org.perfrepo.web.service.exceptions.ServiceException;
 
 import javax.ejb.*;
 import javax.inject.Inject;
@@ -222,6 +223,18 @@ public class ReportServiceBean implements ReportService {
          }
       }
       return response;
+   }
+
+   @Override
+   public void addPermission(Permission permission) throws ServiceException {
+      if (permission.getReportId() == null) {
+         throw new ServiceException("serviceException.reportIdNotSet");
+      }
+
+      Report report = reportDAO.get(permission.getReportId());
+      List<Permission> oldPermissions = permissionDAO.getByReport(report.getId());
+      oldPermissions.add(permission);
+      saveReportPermissions(report, oldPermissions);
    }
 
    /**

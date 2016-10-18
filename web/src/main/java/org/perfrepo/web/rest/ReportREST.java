@@ -14,12 +14,14 @@
  */
 package org.perfrepo.web.rest;
 
+import org.perfrepo.model.auth.Permission;
 import org.perfrepo.model.report.Report;
 import org.perfrepo.model.report.ReportProperty;
 import org.perfrepo.model.user.User;
 import org.perfrepo.web.rest.logging.Logged;
 import org.perfrepo.web.service.ReportService;
 import org.perfrepo.web.service.UserService;
+import org.perfrepo.web.service.exceptions.ServiceException;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -115,5 +117,16 @@ public class ReportREST {
       Report report = new Report(reportId);
       reportService.removeReport(report);
       return Response.noContent().build();
+   }
+
+   @POST
+   @Path("/id/{reportId}/addPermission")
+   @Consumes(MediaType.TEXT_XML)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Logged
+   public Response addPermission(Permission permission, @Context UriInfo uriInfo) throws ServiceException {
+      reportService.addPermission(permission);
+
+      return Response.ok().build();
    }
 }
