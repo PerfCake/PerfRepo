@@ -21,13 +21,8 @@ import org.perfrepo.model.ValueParameter;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Structured representation of Multi-value, parsed from {@link Value} and {@link ValueParameter}
@@ -86,6 +81,33 @@ public class MultiValue {
       return null;
    }
 
+    /**
+     * Determines whether is provided test execution multivalue. Also checks the case that the multivalue is correctly
+     * formed.
+     *
+     * @param testExecution
+     * @throws IllegalStateException if there are multiple values for one metric, but the values are not parametrized.
+     * @return true if test execution is multivalue, false otherwise
+     */
+   public static boolean isMultivalue(TestExecution testExecution) throws IllegalStateException {
+      Map<String, List<Value>> valuesByMetric = getValuesByMetric(testExecution);
+
+      boolean isMultivalue = valuesByMetric.values().stream().anyMatch(list -> list.size() > 1);
+      if (isMultivalue) { //do validation of values parametrization
+         for (List<Value> values: valuesByMetric.values()) {
+            boolean areAllValuesParametrized = values.stream().allMatch(Value::hasParameters);
+            if (!areAllValuesParametrized) {
+               throw new IllegalStateException("Test execution contains multiple values for one metric, hence it should be multivalue."
+                       + "However, the values are not parametrized, so this test execution " + testExecution.getName() + "is not valid!");
+            }
+         }
+
+         return true;
+      }
+
+      return false;
+   }
+
    /**
     * Create list of multi-values for single test execution, one for each metric.
     *
@@ -94,15 +116,8 @@ public class MultiValue {
     */
    public static List<ValueInfo> createFrom(TestExecution testExecution) {
       // group by metric
-      Map<String, List<Value>> valuesByMetric = new HashMap<String, List<Value>>();
-      for (Value v : testExecution.getValues()) {
-         List<Value> values = valuesByMetric.get(v.getMetricName());
-         if (values == null) {
-            values = new ArrayList<Value>();
-            valuesByMetric.put(v.getMetricName(), values);
-         }
-         values.add(v);
-      }
+      Map<String, List<Value>> valuesByMetric = getValuesByMetric(testExecution);
+
       List<ValueInfo> r = new ArrayList<ValueInfo>();
       for (Map.Entry<String, List<Value>> entry : valuesByMetric.entrySet()) {
          ValueInfo vInfo = new ValueInfo();
@@ -140,6 +155,18 @@ public class MultiValue {
          r.add(vInfo);
       }
       return r;
+   }
+
+    /**
+     * Basically groups values by metric
+     *
+     * @param testExecution
+     * @return
+     */
+   private static Map<String, List<Value>> getValuesByMetric(TestExecution testExecution) {
+      Map<String, List<Value>> valuesByMetric = testExecution.getValues().stream().collect(Collectors.groupingBy(Value::getMetricName));
+
+      return valuesByMetric;
    }
 
    private static final DecimalFormat FMT = new DecimalFormat("0.000");

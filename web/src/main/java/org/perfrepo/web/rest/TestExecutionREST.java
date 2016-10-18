@@ -23,6 +23,7 @@ import org.perfrepo.model.to.SearchResultWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.web.rest.logging.Logged;
 import org.perfrepo.web.service.TestService;
+import org.perfrepo.web.service.exceptions.ServiceException;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -74,7 +75,7 @@ public class TestExecutionREST {
    @Consumes(MediaType.TEXT_XML)
    @Produces(MediaType.TEXT_PLAIN)
    @Logged
-   public Response create(TestExecution testExecution, @Context UriInfo uriInfo) throws Exception {
+   public Response create(TestExecution testExecution, @Context UriInfo uriInfo) throws ServiceException {
       Test test = null;
       if (testExecution.getTest().getId() != null) {
          test = testService.getFullTest(testExecution.getTest().getId());

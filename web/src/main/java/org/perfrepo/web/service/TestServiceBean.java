@@ -27,6 +27,7 @@ import org.perfrepo.model.util.EntityUtils.UpdateSet;
 import org.perfrepo.web.dao.*;
 import org.perfrepo.web.security.Secured;
 import org.perfrepo.web.service.exceptions.ServiceException;
+import org.perfrepo.web.util.MultiValue;
 
 import javax.ejb.*;
 import javax.inject.Inject;
@@ -83,6 +84,8 @@ public class TestServiceBean implements TestService {
    @Override
    @Secured
    public TestExecution createTestExecution(TestExecution testExecution) throws ServiceException {
+      validateTestExecution(testExecution);
+
       // The test referred by test execution has to be an existing test
       Test test = testDAO.get(testExecution.getTest().getId());
       testExecution.setTest(test);
@@ -838,5 +841,14 @@ public class TestServiceBean implements TestService {
          clone.setAttachments(null);
       }
       return clone;
+   }
+
+   private void validateTestExecution(TestExecution testExecution) throws ServiceException {
+      try {
+         boolean isMultivalue = MultiValue.isMultivalue(testExecution);
+      } catch (IllegalStateException ex) {
+         log.error(ex);
+         throw new ServiceException("page.exec.invalidMultiValue", testExecution.getName());
+      }
    }
 }

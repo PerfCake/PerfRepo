@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -158,6 +159,21 @@ public class ClientTest {
 
       client.deleteTestExecution(testExecutionId);
       client.deleteTestExecution(testExecutionId2);
+      client.deleteTest(testId);
+   }
+
+   @org.junit.Test
+   public void testCreateInvalidMultivalueTestExecution() throws Exception {
+      Test test = createTest();
+      Long testId = client.createTest(test);
+
+      assertNotNull(testId);
+
+      TestExecution testExecution = createInvalidMultivalueTestExecution(testId);
+      Long testExecutionId = client.createTestExecution(testExecution);
+
+      assertNull(testExecutionId); //this is expected, the test execution was invalid
+
       client.deleteTest(testId);
    }
 
@@ -416,6 +432,15 @@ public class ClientTest {
           .value("multimetric", 20.0d, "client", "10")
           .value("multimetric", 40.0d, "client", "20")
           .value("multimetric", 60.0d, "client", "30").build();
+   }
+
+   private TestExecution createInvalidMultivalueTestExecution(Long testId) {
+      return TestExecution.builder()
+              .testId(testId)
+              .name("execution1")
+              .started(new Date())
+              .value("multimetric", 20.0d)
+              .value("multimetric", 40.0d).build();
    }
 
    private TestExecution createTestExecution(Long testId) {

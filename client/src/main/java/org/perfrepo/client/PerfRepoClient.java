@@ -38,6 +38,7 @@ import org.perfrepo.model.report.Report;
 import org.perfrepo.model.to.ListWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
 
+import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -207,7 +208,13 @@ public class PerfRepoClient {
       HttpGet get = createBasicGet("test/id/%s", id);
       HttpResponse resp = httpClient.execute(get);
       if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-         Test obj = JAXB.unmarshal(resp.getEntity().getContent(), Test.class);
+         Test obj;
+         try {
+            obj = JAXB.unmarshal(resp.getEntity().getContent(), Test.class);
+         } catch (javax.xml.bind.DataBindingException ex) {
+            log.warn("Error occurred while unmarshalling response, probably empty response.");
+            return null;
+         }
          EntityUtils.consume(resp.getEntity());
          return obj;
       } else if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
@@ -231,7 +238,13 @@ public class PerfRepoClient {
       HttpGet get = createBasicGet("test/uid/%s", uid);
       HttpResponse resp = httpClient.execute(get);
       if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-         Test obj = JAXB.unmarshal(resp.getEntity().getContent(), Test.class);
+         Test obj;
+         try {
+            obj = JAXB.unmarshal(resp.getEntity().getContent(), Test.class);
+         } catch (DataBindingException ex) {
+            log.warn("Error occurred while unmarshalling response, probably empty response.");
+            return null;
+         }
          EntityUtils.consume(resp.getEntity());
          return obj;
       } else if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
@@ -358,7 +371,13 @@ public class PerfRepoClient {
       HttpGet get = createBasicGet("testExecution/%s", id);
       HttpResponse resp = httpClient.execute(get);
       if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-         TestExecution obj = JAXB.unmarshal(resp.getEntity().getContent(), TestExecution.class);
+         TestExecution obj;
+         try {
+            obj = JAXB.unmarshal(resp.getEntity().getContent(), TestExecution.class);
+         } catch (DataBindingException ex) {
+            log.warn("Error occurred while unmarshalling response, probably empty response.");
+            return null;
+         }
          EntityUtils.consume(resp.getEntity());
          return obj;
       } else if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
@@ -528,7 +547,13 @@ public class PerfRepoClient {
       HttpGet get = createBasicGet("report/id/%s", id);
       HttpResponse resp = httpClient.execute(get);
       if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-         Report obj = JAXB.unmarshal(resp.getEntity().getContent(), Report.class);
+         Report obj;
+         try {
+            obj = JAXB.unmarshal(resp.getEntity().getContent(), Report.class);
+         } catch (DataBindingException ex) {
+            log.warn("Error occurred while unmarshalling response, probably empty response.");
+            return null;
+         }
          EntityUtils.consume(resp.getEntity());
          return obj;
       } else if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
