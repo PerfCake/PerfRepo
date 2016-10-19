@@ -98,7 +98,7 @@ public class MultiValue {
             boolean areAllValuesParametrized = values.stream().allMatch(Value::hasParameters);
             if (!areAllValuesParametrized) {
                throw new IllegalStateException("Test execution contains multiple values for one metric, hence it should be multivalue."
-                       + "However, the values are not parametrized, so this test execution " + testExecution.getName() + "is not valid!");
+                       + "However, the values are not parametrized, so this test execution '" + testExecution.getName() + "' is not valid!");
             }
          }
 

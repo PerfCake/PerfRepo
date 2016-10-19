@@ -233,11 +233,11 @@ public interface TestService {
    /**
     * Update only attributes name and started and collection of tags.
     *
-    * @param testExecution
+    * @param updatedTestExecution
     * @return fresh full test execution
     * @throws ServiceException
     */
-   public TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException;
+   public TestExecution updateTestExecution(TestExecution updatedTestExecution) throws ServiceException;
 
    /**
     * Get parameter and test execution.

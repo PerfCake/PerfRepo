@@ -206,6 +206,39 @@ public class ClientTest {
       assertEquals("updated test execution", retrievedUpdatedTestExecution.getName());
       assertEquals("updated comment", retrievedUpdatedTestExecution.getComment());
 
+      // let's try removing values, params and tags
+      TestExecution reducedTestExecution = createReducedTestExecution(testId);
+      reducedTestExecution.setId(retrievedTestExecution.getId());
+
+      client.updateTestExecution(reducedTestExecution);
+
+      TestExecution updatedReducedTestExecution = client.getTestExecution(testExecutionId);
+
+      // values has been updated correctly
+      assertEquals(reducedTestExecution.getValues().size(), updatedReducedTestExecution.getValues().size());
+      assertTrue(reducedTestExecution.getValues().stream().
+              allMatch(expected -> updatedReducedTestExecution.getValues().stream()
+                      .anyMatch(actual -> expected.getMetricName().equals(actual.getMetricName())
+                              && expected.getResultValue().equals(actual.getResultValue())
+                      )
+              )
+      );
+
+      // tags has been updated correctly
+      assertEquals(reducedTestExecution.getTags().size(), updatedReducedTestExecution.getTags().size());
+      assertTrue(reducedTestExecution.getTags().stream().
+              allMatch(expected -> updatedReducedTestExecution.getTags().stream().anyMatch(actual -> expected.getName().equals(actual.getName()))));
+
+      // parameters has been updated correctly
+      assertEquals(reducedTestExecution.getParameters().size(), updatedReducedTestExecution.getParameters().size());
+      assertTrue(reducedTestExecution.getParameters().stream().
+              allMatch(expected -> updatedReducedTestExecution.getParameters().stream()
+                      .anyMatch(actual -> expected.getName().equals(actual.getName())
+                      && expected.getValue().equals(actual.getValue())
+                      )
+              )
+      );
+
       client.deleteTestExecution(testExecutionId);
       client.deleteTest(testId);
    }
@@ -469,6 +502,17 @@ public class ClientTest {
       tags.stream().forEach(tag -> builder.tag(tag));
 
       return builder.build();
+   }
+
+   private TestExecution createReducedTestExecution(Long testId) {
+      return TestExecution.builder()
+              .testId(testId)
+              .name("reduced execution")
+              .started(new Date())
+              .parameter("param1", "differentValue")
+              .tag("differentTag")
+              .value("metric1", 7d)
+              .value("multimetric", 77d, "client", "30").build();
    }
 
    private Report createReport() {

@@ -489,34 +489,27 @@ public class TestServiceBean implements TestService {
 
    @Override
    @Secured
-   public TestExecution updateTestExecution(TestExecution testExecution) throws ServiceException {
-      TestExecution execEntity = testExecutionDAO.get(testExecution.getId());
-      if (execEntity == null) {
-         throw new ServiceException("serviceException.testExecutionNotFound", testExecution.getName());
+   public TestExecution updateTestExecution(TestExecution updatedTestExecution) throws ServiceException {
+      validateTestExecution(updatedTestExecution);
+
+      TestExecution freshTestExecution = testExecutionDAO.get(updatedTestExecution.getId());
+      if (freshTestExecution == null) {
+         throw new ServiceException("serviceException.testExecutionNotFound", updatedTestExecution.getName());
       }
-      // this is what can be updated here
-      execEntity.setName(testExecution.getName());
-      execEntity.setStarted(testExecution.getStarted());
-      execEntity.setComment(testExecution.getComment());
-      execEntity.setTags(new ArrayList<>());
 
-      for (Tag tag : testExecution.getTags()) {
-         Tag tagEntity = tagDAO.findByName(tag.getName());
-         if (tagEntity == null) {
-            Tag newTag = new Tag();
-            newTag.setName(tag.getName());
-            tagEntity = tagDAO.create(newTag);
-         }
+      freshTestExecution.setName(updatedTestExecution.getName());
+      freshTestExecution.setStarted(updatedTestExecution.getStarted());
+      freshTestExecution.setComment(updatedTestExecution.getComment());
 
-         Collection<TestExecution> tagTestExecutions = tagEntity.getTestExecutions();
-         if (tagTestExecutions == null) {
-            tagEntity.setTestExecutions(new ArrayList<>());
-         }
+      testExecutionDAO.update(freshTestExecution);
 
-         tagEntity.getTestExecutions().add(execEntity);
-         execEntity.getTags().add(tagEntity);
-      }
-      TestExecution execClone = cloneAndFetch(execEntity, true, true, true, true, true);
+      updateTags(freshTestExecution, updatedTestExecution);
+      updateValues(freshTestExecution, updatedTestExecution);
+      updateParameters(freshTestExecution, updatedTestExecution);
+
+      testExecutionDAO.update(freshTestExecution);
+
+      TestExecution execClone = cloneAndFetch(freshTestExecution, true, true, true, true, true);
       return execClone;
    }
 
@@ -843,12 +836,80 @@ public class TestServiceBean implements TestService {
       return clone;
    }
 
+   /**
+    * Validates correct format of test execution.
+    *
+    * @param testExecution
+    * @throws ServiceException
+     */
    private void validateTestExecution(TestExecution testExecution) throws ServiceException {
       try {
          boolean isMultivalue = MultiValue.isMultivalue(testExecution);
       } catch (IllegalStateException ex) {
-         log.error(ex);
+         log.error(ex.getMessage());
          throw new ServiceException("page.exec.invalidMultiValue", testExecution.getName());
+      }
+   }
+
+   /**
+    * Helper method for updating values of existing test execution.
+    *
+    * @param freshTestExecution
+    * @param updatedTestExecution
+    * @throws ServiceException
+    */
+   private void updateValues(TestExecution freshTestExecution, TestExecution updatedTestExecution) throws ServiceException {
+      freshTestExecution.getValues().stream().forEach(valueDAO::remove);
+      freshTestExecution.setValues(new ArrayList<>());
+
+      for (Value value: updatedTestExecution.getValues()) {
+         value.setTestExecution(freshTestExecution);
+         addValue(value);
+      }
+   }
+
+   /**
+    * Helper method for updating parameters of existing test execution.
+    *
+    * @param freshTestExecution
+    * @param updatedTestExecution
+    * @throws ServiceException
+    */
+   private void updateParameters(TestExecution freshTestExecution, TestExecution updatedTestExecution) throws ServiceException {
+      freshTestExecution.getParameters().stream().forEach(testExecutionParameterDAO::remove);
+      freshTestExecution.setParameters(new ArrayList<>());
+
+      for (TestExecutionParameter parameter: updatedTestExecution.getParameters()) {
+         parameter.setTestExecution(freshTestExecution);
+         updateParameter(parameter);
+      }
+   }
+
+   /**
+    * Helper method for updating tags of existing test execution.
+    *
+    * @param freshTestExecution
+    * @param updatedTestExecution
+    * @throws ServiceException
+    */
+   private void updateTags(TestExecution freshTestExecution, TestExecution updatedTestExecution) {
+      freshTestExecution.setTags(new ArrayList<>());
+
+      for (Tag tag : updatedTestExecution.getTags()) {
+         Tag tagEntity = tagDAO.findByName(tag.getName());
+         if (tagEntity == null) {
+            Tag newTag = new Tag();
+            newTag.setName(tag.getName());
+            tagEntity = tagDAO.create(newTag);
+         }
+
+         Collection<TestExecution> tagTestExecutions = tagEntity.getTestExecutions();
+         if (tagTestExecutions == null) {
+            tagEntity.setTestExecutions(new ArrayList<>());
+         }
+
+         tagEntity.getTestExecutions().add(freshTestExecution);
+         freshTestExecution.getTags().add(tagEntity);
       }
    }
 }
