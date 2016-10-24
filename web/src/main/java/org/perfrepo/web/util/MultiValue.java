@@ -164,6 +164,10 @@ public class MultiValue {
      * @return
      */
    private static Map<String, List<Value>> getValuesByMetric(TestExecution testExecution) {
+      if (testExecution.getValues() == null || testExecution.getValues().isEmpty()) {
+         return new HashMap<>();
+      }
+
       Map<String, List<Value>> valuesByMetric = testExecution.getValues().stream().collect(Collectors.groupingBy(Value::getMetricName));
 
       return valuesByMetric;
