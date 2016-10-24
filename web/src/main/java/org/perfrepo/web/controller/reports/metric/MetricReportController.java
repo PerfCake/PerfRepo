@@ -130,6 +130,11 @@ public class MetricReportController extends BaseController {
    }
 
    public void save() {
+      if (reportName == null || reportName.isEmpty()) {
+         addMessage(ERROR, "page.metricreport.emptyName");
+         return;
+      }
+
       updateReport();
 
       User user = userService.getUser(userSession.getUser().getId());
@@ -153,6 +158,12 @@ public class MetricReportController extends BaseController {
 
          for (int j = 0; j < chart.chartSeries.size(); j++) {
             SeriesSpec series = chart.chartSeries.get(j);
+
+            if (series.getName() == null || series.getName().isEmpty()) {
+               addMessage(ERROR, "page.metricreport.seriesEmptyName");
+               return;
+            }
+
             String seriesPrefix = chartPrefix + ".series" + j;
             ReportUtils.createOrUpdateReportPropertyInMap(reportProperties, seriesPrefix + ".name", series.getName(), report);
             ReportUtils.createOrUpdateReportPropertyInMap(reportProperties, seriesPrefix + ".metric", Long.toString(series.getSelectedMetricId()), report);
@@ -161,6 +172,17 @@ public class MetricReportController extends BaseController {
 
          for (int j = 0; j < chart.chartBaselines.size(); j++) {
             BaselineSpec baseline = chart.chartBaselines.get(j);
+
+            if (baseline.getName() == null || baseline.getName().isEmpty()) {
+               addMessage(ERROR, "page.metricreport.baselineEmptyName");
+               return;
+            }
+
+            if (baseline.getExecId() == null) {
+               addMessage(ERROR, "page.metricreport.baselineEmptyExecId");
+               return;
+            }
+
             String baselinePrefix = chartPrefix + ".baseline" + j;
             ReportUtils.createOrUpdateReportPropertyInMap(reportProperties, baselinePrefix + ".name", baseline.getName(), report);
             ReportUtils.createOrUpdateReportPropertyInMap(reportProperties, baselinePrefix + ".metric", Long.toString(baseline.getSelectedMetricId()), report);
@@ -294,7 +316,7 @@ public class MetricReportController extends BaseController {
             while (reportProperties.containsKey(seriesPrefix + ".name")) {
                SeriesSpec series = new SeriesSpec(chart, new SeriesRequest(reportProperties.get(seriesPrefix + ".name").getValue()));
                series.setSelectedMetricId(Long.valueOf(reportProperties.get(seriesPrefix + ".metric").getValue()));
-               series.setSelectedTags(reportProperties.get(seriesPrefix + ".tags").getValue());
+               series.setSelectedTags(reportProperties.get(seriesPrefix + ".tags") != null ? reportProperties.get(seriesPrefix + ".tags").getValue() : null);
                chart.addSeries(series);
 
                j++;
