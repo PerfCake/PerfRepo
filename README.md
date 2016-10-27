@@ -38,7 +38,9 @@ Configure Maven to use JBoss Nexus repository. Follow the steps at https://devel
 
 ## Set up the application server
 
-Following text assumes PostgreSQL and JBoss EAP's `standalone.xml`. Before configuring the datasource, you have to install JDBC driver for PostgreSQL. You can follow the steps for example here: http://www.startain.com/2014/05/add-postgresql-jdbc-driver-to-jboss.html 
+Following text assumes PostgreSQL installed on localhost and WildFly's `standalone/configuration/standalone.xml`. 
+
+* Before configuring the datasource, you have to install JDBC driver for PostgreSQL. You can follow the steps for example here: http://www.startain.com/2014/05/add-postgresql-jdbc-driver-to-jboss.html 
 
 * Add PostgreSQL datasource driver, e.g.
 ```xml    
@@ -81,7 +83,7 @@ Following text assumes PostgreSQL and JBoss EAP's `standalone.xml`. Before confi
 
 * Add SMTP server configuration for alerting
 ```xml
-    <subsystem xmlns="urn:jboss:domain:mail:1.2">
+    <subsystem xmlns="urn:jboss:domain:mail:2.0">
         <mail-session jndi-name="java:jboss/mail/perfreposmtp">
             <smtp-server outbound-socket-binding-ref="mail-smtp"/>
         </mail-session>
@@ -94,21 +96,10 @@ Following text assumes PostgreSQL and JBoss EAP's `standalone.xml`. Before confi
     </outbound-socket-binding>
 ```
 
-* Alter the web domain subsystem by setting enable-welcome-root to "false".
-```xml
-    <subsystem xmlns="urn:jboss:domain:web:2.2" default-virtual-server="default-host" native="false">
-        <connector name="http" protocol="HTTP/1.1" scheme="http" socket-binding="http"/>
-        <virtual-server name="default-host" enable-welcome-root="false">
-            <alias name="localhost"/>
-            <alias name="example.com"/>
-        </virtual-server>
-    </subsystem>
-```
-
 * Start server
 * Install PerfRepo using Maven, e.g. run `mvn clean install -DskipTests` in the root directory of PerfRepo
-* Deploy the WAR, i.e. go to `web` directory and run `mvn clean package jboss-as:deploy -DskipTests`
-* PerfRepo should be running on the `/repo` URL. For testing purposes, `db_schema_creation.sql` creates a default user
+* Deploy the WAR, i.e. go to `web` directory and run `mvn clean package wildfly:deploy -DskipTests`
+* PerfRepo should be running on the `/` URL. For testing purposes, `db_schema_creation.sql` creates a default user
 	* login: `perfrepouser`
 	* password: `perfrepouser1.`
 
