@@ -40,7 +40,7 @@ Configure Maven to use JBoss Nexus repository. Follow the steps at https://devel
 
 Following text assumes PostgreSQL installed on localhost and WildFly's `standalone/configuration/standalone.xml`. 
 
-* Before configuring the datasource, you have to install JDBC driver for PostgreSQL. You can follow the steps for example here: http://www.startain.com/2014/05/add-postgresql-jdbc-driver-to-jboss.html 
+* Before configuring the datasource, you have to install JDBC driver for PostgreSQL. You can follow first three steps (create a directory in /modules, downloading driver, creating modules.xml) for example here: https://gesker.wordpress.com/2016/02/09/adding-postgresql-9-5-datasources-to-wildfly-10/ 
 
 * Add PostgreSQL datasource driver, e.g.
 ```xml    
