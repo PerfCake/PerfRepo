@@ -84,7 +84,7 @@ Following text assumes PostgreSQL installed on localhost and WildFly's `standalo
 * Add SMTP server configuration for alerting
 ```xml
     <subsystem xmlns="urn:jboss:domain:mail:2.0">
-        <mail-session jndi-name="java:jboss/mail/perfreposmtp">
+        <mail-session name="java:jboss/mail/perfreposmtp" jndi-name="java:jboss/mail/perfreposmtp" from="<set the FROM header here if wanted>">
             <smtp-server outbound-socket-binding-ref="mail-smtp"/>
         </mail-session>
     </subsystem>
