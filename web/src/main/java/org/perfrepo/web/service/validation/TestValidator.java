@@ -37,11 +37,11 @@ public class TestValidator implements ConstraintValidator<ValidTest, Test> {
             return false;
         }
 
-        if (type.contains(ValidationType.EXISTS) && testDAO.get(value.getId()) == null) {
+        if (type.contains(ValidationType.EXISTS) && (value.getId() == null || testDAO.get(value.getId()) == null)) {
             return false;
         }
 
-        if (type.contains(ValidationType.FULL_CHECK)) {
+        if (type.contains(ValidationType.SEMANTIC_CHECK)) {
             //TODO: implement full check
             System.out.println("Not implemented yet, just a placeholder because of checkstyle");
         }

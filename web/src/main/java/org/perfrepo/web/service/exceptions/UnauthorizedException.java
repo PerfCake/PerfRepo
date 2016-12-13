@@ -2,11 +2,14 @@ package org.perfrepo.web.service.exceptions;
 
 import org.perfrepo.web.util.MessageUtils;
 
+import javax.ejb.ApplicationException;
+
 /**
  * TODO: document this
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
+@ApplicationException(rollback = true)
 public class UnauthorizedException extends RuntimeException {
 
     private static final long serialVersionUID = 4888320719223847688L;

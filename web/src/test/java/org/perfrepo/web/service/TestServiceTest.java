@@ -20,7 +20,6 @@ import org.perfrepo.web.service.search.TestSearchCriteria;
 import org.perfrepo.web.service.util.TestUtils;
 import org.perfrepo.web.service.util.UserSessionMock;
 
-import javax.ejb.EJBException;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
 import java.util.Arrays;
@@ -170,12 +169,8 @@ public class TestServiceTest {
         try {
             testService.createTest(test);
             fail("TestService.createTest should fail when trying to create a test with group that user doesn't belong to.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         } finally {
             UserSessionMock.setLoggedUser(testUser);
         }
@@ -187,24 +182,16 @@ public class TestServiceTest {
         try {
             testService.updateTest(createdTest);
             fail("TestService.updateTest should fail when trying to update a test with group that user doesn't belong to.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         }
 
         // test unauthorized remove
         try {
             testService.removeTest(test);
             fail("TestService.removeTest should fail when trying to remove a test with group that user doesn't belong to.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         }
     }
 
@@ -468,11 +455,8 @@ public class TestServiceTest {
         try {
             testService.createTest(null);
             fail("TestService.createTest should fail when argument null.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof ConstraintViolationException) {
-                // expected
-                System.out.println("neco?");
-            }
+        } catch (ConstraintViolationException ex) {
+            // expected
         }
 
         Test test = new Test();
@@ -480,67 +464,53 @@ public class TestServiceTest {
         try {
             testService.createTest(test);
             fail("TestService.createTest should fail when test ID is set.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof ConstraintViolationException) {
-                // expected
-            }
+        } catch (ConstraintViolationException ex) {
+            // expected
         }
 
         try {
             testService.updateTest(null);
             fail("TestService.updateTest should fail when argument null.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof ConstraintViolationException) {
-                // expected
-            }
+        } catch (ConstraintViolationException ex) {
+            // expected
         }
 
         test.setId(null);
         try {
             testService.updateTest(test);
             fail("TestService.updateTest should fail when test ID is null.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof ConstraintViolationException) {
-                // expected
-            }
+        } catch (ConstraintViolationException ex) {
+            // expected
         }
 
         test.setId(-1L);
         try {
             testService.updateTest(test);
             fail("TestService.updateTest should fail when test doesn't exist.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof ConstraintViolationException) {
-                // expected
-            }
+        } catch (ConstraintViolationException ex) {
+            // expected
         }
 
         try {
             testService.removeTest(null);
             fail("TestService.removeTest should fail when argument is null.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof ConstraintViolationException) {
-                // expected
-            }
+        } catch (ConstraintViolationException ex) {
+            // expected
         }
 
         try {
             testService.removeTest(test);
             fail("TestService.removeTest should fail when test ID is null.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof ConstraintViolationException) {
-                // expected
-            }
+        } catch (ConstraintViolationException ex) {
+            // expected
         }
 
         test.setId(-1L);
         try {
             testService.removeTest(test);
             fail("TestService.removeTest should fail when test doesn't exist.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof ConstraintViolationException) {
-                // expected
-            }
+        } catch (ConstraintViolationException ex) {
+            // expected
         }
     }
 

@@ -76,7 +76,7 @@ public class TestServiceBean implements TestService {
 
    @Secured
    @Override
-   public Test createTest(@ValidTest(type = { ValidationType.ID_NULL, ValidationType.FULL_CHECK })
+   public Test createTest(@ValidTest(type = { ValidationType.ID_NULL, ValidationType.SEMANTIC_CHECK})
                           @AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") Test test)
            throws DuplicateEntityException {
 
@@ -97,7 +97,7 @@ public class TestServiceBean implements TestService {
 
    @Secured
    @Override
-   public Test updateTest(@ValidTest(type = { ValidationType.EXISTS, ValidationType.FULL_CHECK})
+   public Test updateTest(@ValidTest(type = { ValidationType.EXISTS, ValidationType.SEMANTIC_CHECK})
                           @AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") Test test)
            throws DuplicateEntityException {
 

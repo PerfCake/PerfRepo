@@ -227,12 +227,8 @@ public class GroupServiceTest {
         try {
             groupService.createGroup(group1);
             fail("Regular user shouldn't be able to create a group.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         } finally {
             UserSessionMock.setLoggedUser(adminUser);
         }
@@ -251,34 +247,22 @@ public class GroupServiceTest {
         try {
             groupService.updateGroup(group1);
             fail("Regular user shouldn't be able to update a group.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         }
 
         try {
             groupService.addUserToGroup(regularUser, group1);
             fail("Regular user shouldn't be able to add somebody to group.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         }
 
         try {
             groupService.removeUserFromGroup(regularUser, group1);
             fail("Regular user shouldn't be able to remove somebody from group.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         }
 
         // try adding user to group as a group admin
@@ -297,12 +281,8 @@ public class GroupServiceTest {
         try {
             groupService.addUserToGroup(regularUser, group2);
             fail("Group admin shouldn't be able to add users to group that he's not group admin of.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         }
 
         try {
@@ -318,12 +298,8 @@ public class GroupServiceTest {
         try {
             groupService.removeUserFromGroup(regularUser, group2);
             fail("Group admin shouldn't be able to remove users from group that he's not group admin of.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         } finally {
             UserSessionMock.setLoggedUser(regularUser);
         }
@@ -331,12 +307,8 @@ public class GroupServiceTest {
         try {
             groupService.removeGroup(group1);
             fail("Regular user shouldn't be able to remove a group.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         }
     }
 

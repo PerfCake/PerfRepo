@@ -44,7 +44,7 @@ public interface TestService {
     * @return
     * @throws DuplicateEntityException
      */
-   public Test createTest(@ValidTest(type = { ValidationType.ID_NULL, ValidationType.FULL_CHECK }) @AuthEntity Test test) throws DuplicateEntityException;
+   public Test createTest(@ValidTest(type = { ValidationType.ID_NULL, ValidationType.SEMANTIC_CHECK}) @AuthEntity Test test) throws DuplicateEntityException;
 
    /**
     * Updates the test.
@@ -53,7 +53,7 @@ public interface TestService {
     * @return
     * @throws DuplicateEntityException
      */
-   public Test updateTest(@ValidTest(type = { ValidationType.EXISTS, ValidationType.FULL_CHECK}) @AuthEntity Test test) throws DuplicateEntityException;
+   public Test updateTest(@ValidTest(type = { ValidationType.EXISTS, ValidationType.SEMANTIC_CHECK}) @AuthEntity Test test) throws DuplicateEntityException;
 
    /**
     * Delete a test with all it's sub-objects, but first it disassociates all the metrics from it.

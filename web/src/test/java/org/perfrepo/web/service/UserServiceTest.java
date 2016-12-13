@@ -17,7 +17,6 @@ import org.perfrepo.web.service.exceptions.UnauthorizedException;
 import org.perfrepo.web.service.util.TestUtils;
 import org.perfrepo.web.service.util.UserSessionMock;
 
-import javax.ejb.EJBException;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -299,12 +298,8 @@ public class UserServiceTest {
         try {
             userService.createUser(newUser);
             fail("Regular user shouldn't be able to create a user.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         } finally {
             UserSessionMock.setLoggedUser(adminUser);
         }
@@ -320,12 +315,8 @@ public class UserServiceTest {
         try {
             userService.updateUser(newUser);
             fail("Regular user shouldn't be able to update a user.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         }
 
         // try adding user as a group admin
@@ -353,23 +344,15 @@ public class UserServiceTest {
         try {
             userService.updateUser(nextToBeCreated);
             fail("Group admin shouldn't be able to update users.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         }
 
         try {
             userService.removeUser(nextToBeCreated);
             fail("Group admin shouldn't be able to remove users.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         } finally {
             UserSessionMock.setLoggedUser(regularUser);
         }
@@ -377,12 +360,8 @@ public class UserServiceTest {
         try {
             userService.removeUser(nextToBeCreated);
             fail("Regular user shouldn't be able to remove a user.");
-        } catch (EJBException ex) {
-            if (ex.getCause() instanceof UnauthorizedException) {
-                // expected
-            } else {
-                fail("Unexpected exception thrown.");
-            }
+        } catch (UnauthorizedException ex) {
+            // expected
         }
     }
 

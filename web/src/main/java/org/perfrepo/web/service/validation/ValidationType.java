@@ -7,7 +7,9 @@ package org.perfrepo.web.service.validation;
  */
 public enum ValidationType {
 
-    FULL_CHECK,
+    SEMANTIC_CHECK,
+
+    DUPLICATE_FORBIDDEN,
 
     ID_NULL,
 
