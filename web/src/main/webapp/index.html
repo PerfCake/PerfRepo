@@ -54,6 +54,9 @@
     <link rel="stylesheet" href="bower_components/trix/dist/trix.css"/>
     <script src="bower_components/trix/dist/trix.js"></script>
     <script src="bower_components/angular-trix/dist/angular-trix.min.js"></script>
+    <!-- Ng tags -->
+    <script src="bower_components/ng-tags-input/ng-tags-input.js"></script>
+    <link rel="stylesheet" type="text/css" href="bower_components/ng-tags-input/ng-tags-input.css">
 
     <!-- TODO gulp inject -->
 
@@ -77,7 +80,7 @@
     <script src="app/dashboard/dashboard.config.js"></script>
     <script src="app/dashboard/dashboard.controller.js"></script>
 
-    <!-- test -->
+    <!-- tests -->
     <script src="app/test/test.module.js"></script>
     <script src="app/test/test.config.js"></script>
     <script src="app/test/test.service.js"></script>
@@ -90,9 +93,6 @@
     <!-- test edit -->
     <script src="app/test/edit/edit-test.module.js"></script>
     <script src="app/test/edit/edit-test.controller.js"></script>
-    <!-- test metric -->
-    <script src="app/test/metric/metric.module.js"></script>
-    <script src="app/test/metric/metric.service.js"></script>
     <!-- test detail -->
     <script src="app/test/detail/detail-test.module.js"></script>
     <script src="app/test/detail/detail-test.controller.js"></script>
@@ -101,6 +101,38 @@
     <script src="app/test/search/search-test.controller.js"></script>
     <script src="app/test/search/components/form-search-test.js"></script>
     <script src="app/test/search/components/list-search-test.js"></script>
+
+    <!-- metrics -->
+    <script src="app/test/metric/metric.module.js"></script>
+    <script src="app/test/metric/metric.service.js"></script>
+    <!-- metric form -->
+    <script src="app/test/metric/form/form-metric.module.js"></script>
+    <script src="app/test/metric/form/components/form-metric.component.js"></script>
+    <!-- metric create -->
+    <script src="app/test/metric/create_modal/create-metric.module.js"></script>
+    <script src="app/test/metric/create_modal/create-metric.controller.js"></script>
+    <!-- metric edit -->
+    <script src="app/test/metric/edit_modal/edit-metric.module.js"></script>
+    <script src="app/test/metric/edit_modal/edit-metric.controller.js"></script>
+    <!-- metric remove -->
+    <script src="app/test/metric/remove_modal/remove-metric.module.js"></script>
+    <script src="app/test/metric/remove_modal/remove-metric.controller.js"></script>
+
+    <!-- alerts -->
+    <script src="app/alert/alert.module.js"></script>
+    <script src="app/alert/alert.service.js"></script>
+    <!-- alert form -->
+    <script src="app/alert/form/form-alert.module.js"></script>
+    <script src="app/alert/form/components/form-alert.component.js"></script>
+    <!-- alert create -->
+    <script src="app/alert/create_modal/create-alert.module.js"></script>
+    <script src="app/alert/create_modal/create-alert.controller.js"></script>
+    <!-- alert edit -->
+    <script src="app/alert/edit_modal/edit-alert.module.js"></script>
+    <script src="app/alert/edit_modal/edit-alert.controller.js"></script>
+    <!-- alert remove -->
+    <script src="app/alert/remove_modal/remove-alert.module.js"></script>
+    <script src="app/alert/remove_modal/remove-alert.controller.js"></script>
 
     <!-- common -->
     <script src="app/common/common.module.js"></script>

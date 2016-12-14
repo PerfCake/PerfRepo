@@ -19,18 +19,15 @@
     function FormTestController() {
         var vm = this;
         vm.save = save;
-        vm.addMetricModal = addMetricModal;
+        vm.submitButtonText = vm.test.id != undefined ? 'Update' : 'Create';
 
         function save(form) {
             if (form.$invalid) {
                 return;
             }
 
-            this.onSave({test: this.test});
+            this.onSave({test: vm.test});
         }
 
-        function addMetricModal() {
-            console.log("add metric");
-        }
     }
 })();

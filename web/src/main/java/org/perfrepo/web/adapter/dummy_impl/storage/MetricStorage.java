@@ -33,19 +33,22 @@ public class MetricStorage {
     }
 
     public MetricDto update(MetricDto dto) {
-        boolean removed = data.removeIf(metric -> metric.getId().equals(dto.getId()));
+        MetricDto metric = getById(dto.getId());
 
-        if (removed) {
-            data.add(dto);
+        if (metric != null) {
+            metric.setName(dto.getName());
+            metric.setComparator(dto.getComparator());
+            metric.setDescription(dto.getDescription());
+            return metric;
         } else {
             return null;
         }
-
-        return dto;
     }
 
     public boolean delete(Long id) {
-        return data.removeIf(metric -> metric.getId().equals(id));
+        boolean removed =  data.removeIf(metric -> metric.getId().equals(id));
+
+        return removed;
     }
 
     public List<MetricDto> getAll() {

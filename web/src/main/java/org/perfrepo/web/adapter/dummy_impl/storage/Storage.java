@@ -102,6 +102,7 @@ public class Storage {
         test1.setMetrics(new HashSet<>());
         test1.getMetrics().add(metricStorage.getById(1L));
         test1.getMetrics().add(metricStorage.getById(2L));
+        test1.setAlerts(new HashSet<>());
         testStorage.create(test1);
 
         TestDto test2 = new TestDto();
@@ -110,6 +111,7 @@ public class Storage {
         test2.setGroup(groupStorage.getById(2L));
         test2.setMetrics(new HashSet<>());
         test2.getMetrics().add(metricStorage.getById(2L));
+        test2.setAlerts(new HashSet<>());
         testStorage.create(test2);
 
         TestDto test3 = new TestDto();
@@ -118,6 +120,7 @@ public class Storage {
         test3.setGroup(groupStorage.getById(1L));
         test3.setMetrics(new HashSet<>());
         test3.getMetrics().add(metricStorage.getById(1L));
+        test3.setAlerts(new HashSet<>());
         testStorage.create(test3);
 
         TestDto test4 = new TestDto();
@@ -126,6 +129,7 @@ public class Storage {
         test4.setGroup(groupStorage.getById(1L));
         test4.setMetrics(new HashSet<>());
         test4.getMetrics().add(metricStorage.getById(1L));
+        test4.setAlerts(new HashSet<>());
         testStorage.create(test4);
 
         TestDto test5 = new TestDto();
@@ -134,6 +138,7 @@ public class Storage {
         test5.setGroup(groupStorage.getById(1L));
         test5.setMetrics(new HashSet<>());
         test5.getMetrics().add(metricStorage.getById(1L));
+        test5.setAlerts(new HashSet<>());
         testStorage.create(test5);
 
         TestDto test6 = new TestDto();
@@ -142,6 +147,7 @@ public class Storage {
         test6.setGroup(groupStorage.getById(1L));
         test6.setMetrics(new HashSet<>());
         test6.getMetrics().add(metricStorage.getById(1L));
+        test6.setAlerts(new HashSet<>());
         testStorage.create(test6);
 
         TestDto test7 = new TestDto();
@@ -150,6 +156,7 @@ public class Storage {
         test7.setGroup(groupStorage.getById(1L));
         test7.setMetrics(new HashSet<>());
         test7.getMetrics().add(metricStorage.getById(1L));
+        test7.setAlerts(new HashSet<>());
         testStorage.create(test7);
 
         TestDto test8 = new TestDto();
@@ -158,6 +165,7 @@ public class Storage {
         test8.setGroup(groupStorage.getById(1L));
         test8.setMetrics(new HashSet<>());
         test8.getMetrics().add(metricStorage.getById(1L));
+        test8.setAlerts(new HashSet<>());
         testStorage.create(test8);
         
         TestDto test9 = new TestDto();
@@ -166,6 +174,7 @@ public class Storage {
         test9.setGroup(groupStorage.getById(1L));
         test9.setMetrics(new HashSet<>());
         test9.getMetrics().add(metricStorage.getById(1L));
+        test9.setAlerts(new HashSet<>());
         testStorage.create(test9);
 
     }

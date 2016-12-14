@@ -5,8 +5,56 @@
 </div>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-8">
         <h3>{{vm.test.name}}</h3>
-        <div>{{vm.test}}</div>
+
+        <dl class="dl-horizontal">
+            <dt>Uid</dt>
+            <dd>{{vm.test.uid}}</dd>
+
+            <dt>Group</dt>
+            <dd>{{vm.test.group.name}}</dd>
+
+            <dt>Description</dt>
+            <dd>{{vm.test.description}}</dd>
+        </dl>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Metrics</h3>
+            </div>
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="metric in vm.test.metrics">
+                        <div>
+                            <strong>{{metric.name}}</strong>
+                        </div>
+                        <a ng-click="vm.editMetric(metric)" class="btn btn-default">Edit</a>
+                        <a ng-click="vm.removeMetric(metric)" class="btn btn-danger">Remove</a>
+                    </li>
+                </ul>
+                <a ng-click="vm.addMetric()" class="btn btn-primary">Add metric</a>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Alerts</h3>
+            </div>
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="alert in vm.test.alerts">
+                        <div>
+                            <strong>{{alert.name}}</strong>
+                        </div>
+                        <a ng-click="vm.editAlert(alert)" class="btn btn-default">Edit</a>
+                        <a ng-click="vm.removeAlert(alert)" class="btn btn-danger">Remove</a>
+                    </li>
+                </ul>
+                <a ng-click="vm.addAlert()" class="btn btn-primary">Add alert</a>
+            </div>
+        </div>
+
+
     </div>
 </div>

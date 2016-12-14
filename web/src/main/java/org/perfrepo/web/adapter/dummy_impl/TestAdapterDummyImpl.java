@@ -10,6 +10,7 @@ import org.perfrepo.web.adapter.TestAdapter;
 import org.perfrepo.web.adapter.dummy_impl.storage.Storage;
 
 import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -48,8 +49,8 @@ public class TestAdapterDummyImpl implements TestAdapter {
     public TestDto createTest(TestDto test) {
         // TODO validation
         // it is not possible to set it, metrics and alerts can be added in test detail
-        test.setMetrics(null);
-        test.setAlerts(null);
+        test.setMetrics(new HashSet<>());
+        test.setAlerts(new HashSet<>());
 
         return storage.test().create(test);
     }

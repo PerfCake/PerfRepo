@@ -50,9 +50,20 @@ public class AlertAdapterDummyImpl implements AlertAdapter {
     public AlertDto updateAlert(AlertDto alert) {
         // TODO validate alert
 
-        AlertDto persistedAlert = storage.alert().getById(alert.getId());
-        if (!persistedAlert.getTestId().equals(alert.getTestId())) {
+        AlertDto origin = storage.alert().getById(alert.getId());
+
+        if (!origin.getTestId().equals(alert.getTestId())) {
             throw new BadRequestException("Change ownership of the alert to another test is not possible.");
+        }
+
+        if (!origin.getName().equals(alert.getName())
+                || !origin.getCondition().equals(alert.getCondition()) ) {
+            storage.test().getAll().forEach(test -> {
+                if (test.getAlerts().remove(origin)) {
+                    test.getAlerts().add(alert);
+                }
+            });
+
         }
 
         return storage.alert().update(alert);

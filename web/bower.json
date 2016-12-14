@@ -22,6 +22,7 @@
     "angular-ui-router": "^0.3.2",
     "angular-resource": "^1.5.8",
     "angular-trix": "^1.0.2",
-    "trix": "^0.9.9"
+    "trix": "^0.9.9",
+    "ng-tags-input": "^3.1.1"
   }
 }

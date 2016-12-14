@@ -41,3 +41,47 @@ trix-toolbar .button_group button {
     letter-spacing: 10px;
     text-transform: uppercase;
 }
+
+/* tags input */
+tags-input .tags {
+    background-color: white;
+    border: 1px solid #bbb;
+    border-radius: 1px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+tags-input .tags .input {
+    height: 20px;
+}
+
+tags-input .tags .tag-item {
+    background: #00659c;
+    border: none;
+    border-radius: 0;
+    color: white;
+    padding: .2em .6em .3em;
+    height: 20px;
+    font: 12px "Open Sans",Helvetica,Arial,sans-serif;
+}
+
+tags-input .tags .tag-item .remove-button {
+    font-weight: normal;
+    color: white;
+}
+
+*::-webkit-input-placeholder {
+    font: 12px "Open Sans",Helvetica,Arial,sans-serif;
+}
+*:-moz-placeholder {
+    /* FF 4-18 */
+    font: 12px "Open Sans",Helvetica,Arial,sans-serif;
+}
+*::-moz-placeholder {
+    /* FF 19+ */
+    font: 12px "Open Sans",Helvetica,Arial,sans-serif;
+}
+*:-ms-input-placeholder {
+    /* IE 10+ */
+    font: 12px "Open Sans",Helvetica,Arial,sans-serif;
+}

@@ -10,6 +10,7 @@
             'org.perfrepo.test.detail',
             'org.perfrepo.test.create',
             'org.perfrepo.test.edit',
-            'org.perfrepo.test.metric'
+            'org.perfrepo.test.metric',
+            'org.perfrepo.alert'
         ]);
 })();

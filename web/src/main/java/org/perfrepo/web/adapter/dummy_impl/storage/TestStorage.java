@@ -70,15 +70,18 @@ public class TestStorage {
     }
 
     public TestDto update(TestDto dto) {
-        boolean removed = data.removeIf(test -> test.getId().equals(dto.getId()));
 
-        if (removed) {
-            data.add(dto);
+        TestDto test = getById(dto.getId());
+
+        if (test != null) {
+            test.setName(dto.getName());
+            test.setUid(dto.getUid());
+            test.setGroup(dto.getGroup());//TODO
+            test.setDescription(dto.getDescription());
+            return test;
         } else {
             return null;
         }
-
-        return dto;
     }
 
     public boolean delete(Long id) {

@@ -1,43 +1,46 @@
 (function() {
     'use strict';
 
-    var Metric = function($resource, API_URL) {
+    angular
+        .module('org.perfrepo.test.metric')
+        .service('metricService', MetricService);
 
-        return $resource(
+    function MetricService(API_URL, $http, $resource) {
+        var Metric = $resource(
             API_URL + '/metrics/:id',
-            {id: '@id'},
-            {
-                'update': {
-                    method: 'PUT'
-                }
-            });
-    };
+            {id: '@id'});
 
-    var MetricService = function(Metric, API_URL) {
+        return {
+            getById: getById,
+            getAll: getAll,
+            create: create,
+            remove: remove,
+            update: update,
+            getComparators: getComparators
+        };
 
-        this.getById = function(id) {
+        function getById(id) {
             return Metric.get({id: id}).$promise;
-        };
+        }
 
-        this.getAll = function() {
+        function getAll() {
             return Metric.query().$promise;
-        };
+        }
 
-        this.save = function(metric) {
-            return Metric.save(metric).$promise;
-        };
+        function create(metric, testId) {
+            return $http.post(API_URL + '/tests/' + testId + '/metric-addition', metric);
+        }
 
-        this.update = function(metric) {
-            return Metric.update(metric).$promise;
-        };
+        function remove(metricId, testId) {
+            return $http.post(API_URL + '/tests/' + testId + '/metric-removal/' + metricId);
+        }
 
-        this.delete = function(metric) {
-            return Metric.delete(metric).$promise;
-        };
-    };
+        function update(metric) {
+            return $http.put(API_URL + '/metrics/', metric);
+        }
 
-    angular.module('org.perfrepo.test')
-        .service('metricService', MetricService)
-        .factory('Metric', Metric);
-
+        function getComparators() {
+            return [{'name':'HB', 'text': 'Higher better'}, {'name':'LB', 'text': 'Lower better'}];
+        }
+    }
 })();

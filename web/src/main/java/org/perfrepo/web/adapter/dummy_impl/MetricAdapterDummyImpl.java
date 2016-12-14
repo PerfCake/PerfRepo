@@ -33,6 +33,18 @@ public class MetricAdapterDummyImpl implements MetricAdapter {
 
     @Override
     public MetricDto updateMetric(MetricDto metric) {
+
+        MetricDto origin = storage.metric().getById(metric.getId());
+
+        if (!origin.getName().equals(metric.getName())) {
+            storage.test().getAll().forEach(test -> {
+                if (test.getMetrics().remove(origin)) {
+                    test.getMetrics().add(metric);
+                }
+            });
+
+        }
+
         return storage.metric().update(metric);
     }
 
@@ -50,11 +62,14 @@ public class MetricAdapterDummyImpl implements MetricAdapter {
         // TODO validate metric
 
         MetricDto metricToAdd = storage.metric().getByName(metric.getName());
+
         if (metricToAdd == null) {
             metricToAdd = storage.metric().create(metric);
         }
 
-        storage.test().addMetric(test, metricToAdd);
+        if (!test.getMetrics().contains(metricToAdd)) {
+            storage.test().addMetric(test, metricToAdd);
+        }
 
         return metricToAdd;
     }
