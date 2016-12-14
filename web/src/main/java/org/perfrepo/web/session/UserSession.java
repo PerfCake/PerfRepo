@@ -3,7 +3,7 @@ package org.perfrepo.web.session;
 import org.perfrepo.model.user.User;
 
 /**
- * TODO: document this
+ * Interface remembering currently logged user and his session settings.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

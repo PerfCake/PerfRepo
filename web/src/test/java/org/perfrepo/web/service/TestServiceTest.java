@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
- * TODO: document this
+ * Tests for {@link TestService}.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

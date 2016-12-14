@@ -1,7 +1,7 @@
 package org.perfrepo.web.service.exceptions;
 
 /**
- * TODO: document this
+ * Exception signalizing that provided passwords don't match.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

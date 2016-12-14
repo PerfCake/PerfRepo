@@ -1,7 +1,7 @@
 package org.perfrepo.web.service.validation;
 
 /**
- * TODO: document this
+ * Defines type of validation that should be performed on provided entity.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

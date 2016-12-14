@@ -5,7 +5,8 @@ import org.perfrepo.web.util.MessageUtils;
 import javax.ejb.ApplicationException;
 
 /**
- * TODO: document this
+ * Exception signalizing that user is not authorized for particular action.
+ * Throwing of this exception is done withing {@link org.perfrepo.web.security.SecurityInterceptor}.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

@@ -4,7 +4,8 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import java.util.List;
 
 /**
- * TODO: document this
+ * This is wrapper class for communication over REST to allow syntax
+ * like <tags><tag></tag><tag></tag></tags>
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

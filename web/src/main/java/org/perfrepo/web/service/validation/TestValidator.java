@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * TODO: document this
+ * Validator for {@link Test} entity.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO: document this
+ * Validation marker for {@link org.perfrepo.model.Test}.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

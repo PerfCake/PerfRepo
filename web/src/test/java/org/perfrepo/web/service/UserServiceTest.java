@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
- * TODO: document this
+ * Tests for {@link UserService}.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
