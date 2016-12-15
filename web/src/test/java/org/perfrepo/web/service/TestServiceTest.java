@@ -87,17 +87,18 @@ public class TestServiceTest {
     @After
     public void cleanUp() {
         UserSessionMock.setLoggedUser(adminUser);
+
+        //removing of the test also removes test executions and metrics
+        for (Test test: testService.getAllTests()) {
+            testService.removeTest(test);
+        }
+
         for (User user: userService.getAllUsers()) {
             userService.removeUser(user);
         }
 
         for (Group group: groupService.getAllGroups()) {
             groupService.removeGroup(group);
-        }
-
-        //removing of the test also removes test executions and metrics
-        for (Test test: testService.getAllTests()) {
-            testService.removeTest(test);
         }
     }
 
@@ -456,6 +457,7 @@ public class TestServiceTest {
             testService.createTest(null);
             fail("TestService.createTest should fail when argument null.");
         } catch (ConstraintViolationException ex) {
+            System.out.println("neco");
             // expected
         }
 
@@ -511,6 +513,21 @@ public class TestServiceTest {
             fail("TestService.removeTest should fail when test doesn't exist.");
         } catch (ConstraintViolationException ex) {
             // expected
+        }
+    }
+
+    @org.junit.Test
+    public void testInvalidTestMissingName() throws DuplicateEntityException {
+        Test test1 = new Test();
+        fillTest("test1", test1);
+        test1.setGroup(testGroup);
+
+        test1.setName(null);
+
+        try {
+            testService.createTest(test1);
+        } catch (ConstraintViolationException ex) {
+            System.out.println(ex);
         }
     }
 

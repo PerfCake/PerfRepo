@@ -6,6 +6,8 @@ import org.perfrepo.web.dao.TestDAO;
 import javax.inject.Inject;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +22,9 @@ public class TestValidator implements ConstraintValidator<ValidTest, Test> {
     private Set<ValidationType> type;
 
     @Inject
+    private Validator validator;
+
+    @Inject
     private TestDAO testDAO;
 
     @Override
@@ -28,22 +33,37 @@ public class TestValidator implements ConstraintValidator<ValidTest, Test> {
     }
 
     @Override
-    public boolean isValid(Test value, ConstraintValidatorContext context) {
-        if (value == null) {
+    public boolean isValid(Test test, ConstraintValidatorContext context) {
+        context.disableDefaultConstraintViolation();
+        if (test == null) {
+            context.buildConstraintViolationWithTemplate("{test.notNull}")
+                    .addConstraintViolation();
             return false;
         }
 
-        if (type.contains(ValidationType.ID_NULL) && value.getId() != null) {
+        if (type.contains(ValidationType.ID_NULL) && test.getId() != null) {
+            context.buildConstraintViolationWithTemplate("{test.idNotNull}")
+                    .addConstraintViolation();
             return false;
         }
 
-        if (type.contains(ValidationType.EXISTS) && (value.getId() == null || testDAO.get(value.getId()) == null)) {
+        if (type.contains(ValidationType.EXISTS) && (test.getId() == null || testDAO.get(test.getId()) == null)) {
+            context.buildConstraintViolationWithTemplate("{test.doesntExist}")
+                    .addConstraintViolation();
             return false;
         }
 
         if (type.contains(ValidationType.SEMANTIC_CHECK)) {
-            //TODO: implement full check
-            System.out.println("Not implemented yet, just a placeholder because of checkstyle");
+            Set<ConstraintViolation<Test>> violations = validator.validate(test);
+
+            if (!violations.isEmpty()) {
+                for (ConstraintViolation<Test> violation : violations) {
+                    context.buildConstraintViolationWithTemplate(violation.getMessageTemplate())
+                            .addConstraintViolation();
+                }
+
+                return false;
+            }
         }
 
         return true;

@@ -44,7 +44,7 @@ public interface TestService {
     * @return
     * @throws DuplicateEntityException
      */
-   public Test createTest(@ValidTest(type = { ValidationType.ID_NULL, ValidationType.SEMANTIC_CHECK}) @AuthEntity Test test) throws DuplicateEntityException;
+   public Test createTest(@ValidTest(type = { ValidationType.ID_NULL, ValidationType.SEMANTIC_CHECK}) Test test) throws DuplicateEntityException;
 
    /**
     * Updates the test.

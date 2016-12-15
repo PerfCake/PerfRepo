@@ -76,8 +76,9 @@ public class TestServiceBean implements TestService {
 
    @Secured
    @Override
-   public Test createTest(@ValidTest(type = { ValidationType.ID_NULL, ValidationType.SEMANTIC_CHECK})
-                          @AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") Test test)
+   //public Test createTest(@ValidTest(type = { ValidationType.ID_NULL, ValidationType.SEMANTIC_CHECK})
+                          //@AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") Test test)
+   public Test createTest(@AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") Test test)
            throws DuplicateEntityException {
 
       if (getTest(test.getUid()) != null) {
