@@ -120,6 +120,7 @@
 			<url-pattern>/resources/js/*</url-pattern>
 			<url-pattern>/org.richfaces.resources/*</url-pattern>
 			<url-pattern>/javax.faces.resource/*</url-pattern>
+			<url-pattern>/rfRes/*</url-pattern>
 		</web-resource-collection>
 	</security-constraint>
 	<security-constraint>

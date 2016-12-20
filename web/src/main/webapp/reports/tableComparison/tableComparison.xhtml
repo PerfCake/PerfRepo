@@ -4,16 +4,16 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:a4j="http://richfaces.org/a4j"
                 xmlns:rich="http://richfaces.org/rich">
-    <ui:define name="head">
-        <link href="#{request.contextPath}/rfRes/datatable.ecss.jsf?ln=org.richfaces" rel="stylesheet"
-              type="text/css"></link>
-    </ui:define>
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{tableComparisonReportBean.init()}"/>
         </f:metadata>
     </ui:define>
     <ui:define name="title">#{tableComparisonReportBean.name}</ui:define>
+    <ui:define name="head">
+        <link href="#{request.contextPath}/rfRes/datatable.ecss.jsf?ln=org.richfaces" rel="stylesheet"
+              type="text/css"></link>
+    </ui:define>
     <ui:define name="content">
         <h:form id="tableComparisonReport">
             <div style=" overflow: hidden;">
