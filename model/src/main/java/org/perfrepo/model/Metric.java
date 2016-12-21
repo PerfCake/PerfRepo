@@ -59,12 +59,12 @@ public class Metric implements Entity<Metric>, Comparable<Metric> {
    private Long id;
 
    @Column(name = "comparator")
-   @NotNull(message = "{page.metric.comparatorRequired}")
+   @NotNull(message = "{metric.comparatorRequired}")
    @Enumerated(EnumType.STRING)
    private MetricComparator comparator;
 
    @Column(name = "name")
-   @NotNull(message = "{page.metric.nameRequired}")
+   @NotNull(message = "{metric.nameRequired}")
    @Size(max = 2047)
    private String name;
 

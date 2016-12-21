@@ -11,13 +11,13 @@ import org.perfrepo.model.Test;
 import org.perfrepo.model.user.Group;
 import org.perfrepo.model.user.Membership.MembershipType;
 import org.perfrepo.model.user.User;
-import org.perfrepo.web.service.exceptions.DuplicateEntityException;
 import org.perfrepo.web.service.exceptions.IncorrectPasswordException;
 import org.perfrepo.web.service.exceptions.UnauthorizedException;
 import org.perfrepo.web.service.util.TestUtils;
 import org.perfrepo.web.service.util.UserSessionMock;
 
 import javax.inject.Inject;
+import javax.validation.ConstraintViolationException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +54,7 @@ public class UserServiceTest {
     }
 
     @Before
-    public void init() throws DuplicateEntityException, UnauthorizedException {
+    public void init() {
         adminUser = new User();
         adminUser.setUsername("adminUser");
         fillUser("admin", adminUser);
@@ -154,7 +154,7 @@ public class UserServiceTest {
     }
 
     @org.junit.Test
-    public void testChangePassword() throws DuplicateEntityException, IncorrectPasswordException, UnauthorizedException {
+    public void testChangePassword() throws IncorrectPasswordException {
         User user = new User();
         user.setUsername("test_user");
         fillUser("test_user", user);
@@ -250,7 +250,7 @@ public class UserServiceTest {
     }
 
     @org.junit.Test
-    public void testDuplicateUsernames() throws DuplicateEntityException, UnauthorizedException {
+    public void testDuplicateUsernames() {
         User user1 = new User();
         fillUser("user1", user1);
         user1.setUsername("test_user1");
@@ -269,7 +269,7 @@ public class UserServiceTest {
         try {
             userService.createUser(duplicateUser);
             fail("Duplicate username creation should fail.");
-        } catch (DuplicateEntityException ex) {
+        } catch (ConstraintViolationException ex) {
             // expected
         }
 
@@ -279,13 +279,13 @@ public class UserServiceTest {
         try {
             userService.updateUser(duplicateUser);
             fail("Duplicate username update should fail.");
-        } catch (DuplicateEntityException ex) {
+        } catch (ConstraintViolationException ex) {
             // expected
         }
     }
 
     @org.junit.Test
-    public void testUnauthorizedManagement() throws DuplicateEntityException, UnauthorizedException {
+    public void testUnauthorizedManagement() {
         User user = new User();
         user.setUsername("regularUser");
         fillUser("regularUser", user);

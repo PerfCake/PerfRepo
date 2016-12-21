@@ -1,4 +1,7 @@
-package org.perfrepo.web.service.validation;
+package org.perfrepo.web.service.validation.annotation;
+
+import org.perfrepo.web.service.validation.MetricValidator;
+import org.perfrepo.web.service.validation.ValidationType;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -8,14 +11,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Validation marker for {@link org.perfrepo.model.Test}.
+ * Validation marker for {@link org.perfrepo.model.Metric}.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
-@Constraint(validatedBy = TestValidator.class)
+@Constraint(validatedBy = MetricValidator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidTest {
+public @interface ValidMetric {
 
     String message() default "";
 

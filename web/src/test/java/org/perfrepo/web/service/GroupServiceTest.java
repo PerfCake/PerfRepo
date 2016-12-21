@@ -8,16 +8,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.perfrepo.model.user.Group;
-import org.perfrepo.model.user.Membership;
 import org.perfrepo.model.user.Membership.MembershipType;
 import org.perfrepo.model.user.User;
-import org.perfrepo.web.service.exceptions.DuplicateEntityException;
 import org.perfrepo.web.service.exceptions.UnauthorizedException;
 import org.perfrepo.web.service.util.TestUtils;
 import org.perfrepo.web.service.util.UserSessionMock;
 
-import javax.ejb.EJBException;
 import javax.inject.Inject;
+import javax.validation.ConstraintViolationException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -52,7 +50,7 @@ public class GroupServiceTest {
     private User adminUser;
     
     @Before
-    public void init() throws DuplicateEntityException {
+    public void init() {
         adminUser = createUser("admin");
         adminUser.setType(User.UserType.SUPER_ADMIN);
         UserSessionMock.setLoggedUser(adminUser); // hack, because we need some super admin to create a super admin :)
@@ -74,7 +72,7 @@ public class GroupServiceTest {
     }
 
     @org.junit.Test
-    public void testUserCRUDOperations() throws DuplicateEntityException {
+    public void testUserCRUDOperations() {
         Group group = new Group();
         fillGroup("group", group);
 
@@ -102,7 +100,7 @@ public class GroupServiceTest {
     }
 
     @org.junit.Test
-    public void testGetAllGroups() throws DuplicateEntityException {
+    public void testGetAllGroups() {
         Group group1 = new Group();
         fillGroup("group1", group1);
 
@@ -121,7 +119,7 @@ public class GroupServiceTest {
     }
 
     @org.junit.Test
-    public void testGetUserGroupsAndIsUserInGroup() throws DuplicateEntityException {
+    public void testGetUserGroupsAndIsUserInGroup() {
         Group group1 = new Group();
         fillGroup("group1", group1);
 
@@ -153,7 +151,7 @@ public class GroupServiceTest {
     }
 
     @org.junit.Test
-    public void testAssignUserToGroup() throws DuplicateEntityException {
+    public void testAssignUserToGroup() {
         Group group1 = new Group();
         fillGroup("group1", group1);
 
@@ -185,7 +183,7 @@ public class GroupServiceTest {
     }
 
     @Test
-    public void testDuplicateNames() throws DuplicateEntityException {
+    public void testDuplicateNames() {
         Group group1 = new Group();
         fillGroup("group1", group1);
 
@@ -201,7 +199,7 @@ public class GroupServiceTest {
         try {
             groupService.createGroup(duplicateGroup);
             fail("Duplicate group name creation should fail.");
-        } catch (DuplicateEntityException ex) {
+        } catch (ConstraintViolationException ex) {
             // expected
         }
 
@@ -211,13 +209,13 @@ public class GroupServiceTest {
         try {
             groupService.updateGroup(duplicateGroup);
             fail("Duplicate group name update should fail.");
-        } catch (DuplicateEntityException ex) {
+        } catch (ConstraintViolationException ex) {
             // expected
         }
     }
 
     @Test
-    public void testUnauthorizedManagement() throws DuplicateEntityException {
+    public void testUnauthorizedManagement() {
         User user = createUser("test");
         User regularUser = userService.createUser(user);
         UserSessionMock.setLoggedUser(regularUser);

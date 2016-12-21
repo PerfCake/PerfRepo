@@ -14,13 +14,13 @@ import org.perfrepo.model.to.SearchResultWrapper;
 import org.perfrepo.model.user.Group;
 import org.perfrepo.model.user.User;
 import org.perfrepo.web.dao.MetricDAO;
-import org.perfrepo.web.service.exceptions.DuplicateEntityException;
 import org.perfrepo.web.service.exceptions.UnauthorizedException;
 import org.perfrepo.web.service.search.TestSearchCriteria;
 import org.perfrepo.web.service.util.TestUtils;
 import org.perfrepo.web.service.util.UserSessionMock;
 
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -65,7 +65,7 @@ public class TestServiceTest {
     }
 
     @Before
-    public void init() throws DuplicateEntityException {
+    public void init() {
         adminUser = createUser("admin");
         adminUser.setType(User.UserType.SUPER_ADMIN);
         UserSessionMock.setLoggedUser(adminUser); // hack, because we need some super admin to create a super admin :)
@@ -103,7 +103,7 @@ public class TestServiceTest {
     }
 
     @org.junit.Test
-    public void testTestCRUDOperations() throws DuplicateEntityException {
+    public void testTestCRUDOperations() {
         Test test = new Test();
         fillTest("test1", test);
         test.setGroup(testGroup);
@@ -124,7 +124,7 @@ public class TestServiceTest {
         try {
             testService.createTest(duplicateTest);
             fail("TestService.createTest should fail when creating test with duplicate UID.");
-        } catch (DuplicateEntityException ex) {
+        } catch (ConstraintViolationException ex) {
             // expected
         }
 
@@ -145,7 +145,7 @@ public class TestServiceTest {
         try {
             testService.updateTest(duplicateTestForUpdate);
             fail("TestService.updateTest should fail when updating test with duplicate UID.");
-        } catch (DuplicateEntityException ex) {
+        } catch (ConstraintViolationException ex) {
             // expected
         }
 
@@ -156,7 +156,7 @@ public class TestServiceTest {
     }
 
     @org.junit.Test
-    public void testTestModificationsFromInvalidGroup() throws DuplicateEntityException {
+    public void testTestModificationsFromInvalidGroup() {
         Test test = new Test();
         fillTest("test1", test);
         test.setGroup(testGroup);
@@ -172,9 +172,9 @@ public class TestServiceTest {
             fail("TestService.createTest should fail when trying to create a test with group that user doesn't belong to.");
         } catch (UnauthorizedException ex) {
             // expected
-        } finally {
-            UserSessionMock.setLoggedUser(testUser);
         }
+
+        UserSessionMock.setLoggedUser(testUser);
 
         // test update from user that is not part of the group
         Test createdTest = testService.createTest(test);
@@ -197,7 +197,7 @@ public class TestServiceTest {
     }
 
     @org.junit.Test
-    public void testCreateWithMetrics() throws DuplicateEntityException {
+    public void testCreateWithMetrics() {
         Test test = new Test();
         fillTest("test", test);
         test.setGroup(testGroup);
@@ -222,7 +222,7 @@ public class TestServiceTest {
     }
 
     @org.junit.Test
-    public void testGetAllTests() throws DuplicateEntityException {
+    public void testGetAllTests() {
         Test test1 = new Test();
         fillTest("test1", test1);
         test1.setGroup(testGroup);
@@ -247,7 +247,7 @@ public class TestServiceTest {
     }
 
     @org.junit.Test
-    public void testMetricCRUDOperations() throws DuplicateEntityException {
+    public void testMetricCRUDOperations() {
         Test test = new Test();
         fillTest("test1", test);
         test.setGroup(testGroup);
@@ -281,7 +281,7 @@ public class TestServiceTest {
     }
 
     @org.junit.Test
-    public void testGetTestsByUidPrefix() throws DuplicateEntityException {
+    public void testGetTestsByUidPrefix() {
         Test test1 = new Test();
         fillTest("a_test", test1);
         test1.setGroup(testGroup);
@@ -313,7 +313,7 @@ public class TestServiceTest {
     }
 
     @org.junit.Test
-    public void testMetricManipulationWithTest() throws DuplicateEntityException {
+    public void testMetricManipulationWithTest() {
         Test test1 = new Test();
         fillTest("test1", test1);
         test1.setGroup(testGroup);
@@ -369,7 +369,7 @@ public class TestServiceTest {
     }
 
     @org.junit.Test
-    public void testSearchTests() throws DuplicateEntityException {
+    public void testSearchTests() {
         UserSessionMock.setLoggedUser(adminUser);
         Group group2 = createGroup("second_group");
         groupService.createGroup(group2);
@@ -438,7 +438,7 @@ public class TestServiceTest {
     }
 
     @org.junit.Test
-    public void testSubscribing() throws DuplicateEntityException {
+    public void testSubscribing() {
         Test test1 = new Test();
         fillTest("test1", test1);
         test1.setGroup(testGroup);
@@ -452,12 +452,11 @@ public class TestServiceTest {
     }
 
     @org.junit.Test
-    public void testNulls() throws DuplicateEntityException {
+    public void testNulls() {
         try {
             testService.createTest(null);
             fail("TestService.createTest should fail when argument null.");
         } catch (ConstraintViolationException ex) {
-            System.out.println("neco");
             // expected
         }
 
@@ -517,7 +516,7 @@ public class TestServiceTest {
     }
 
     @org.junit.Test
-    public void testInvalidTestMissingName() throws DuplicateEntityException {
+    public void testInvalidTestMissingName() {
         Test test1 = new Test();
         fillTest("test1", test1);
         test1.setGroup(testGroup);
@@ -526,8 +525,45 @@ public class TestServiceTest {
 
         try {
             testService.createTest(test1);
+            fail("TestService.createTest should fail when test name not specified.");
         } catch (ConstraintViolationException ex) {
-            System.out.println(ex);
+            // expected
+        }
+    }
+
+    @org.junit.Test
+    public void testInvalidTestMissingUid() {
+        Test test1 = new Test();
+        fillTest("test1", test1);
+        test1.setGroup(testGroup);
+
+        test1.setUid(null);
+
+        try {
+            testService.createTest(test1);
+            fail("TestService.createTest should fail when test UID not specified.");
+        } catch (ConstraintViolationException ex) {
+            // expected
+        }
+    }
+
+    @org.junit.Test
+    public void testMultipleValidationsFail() {
+        Test test1 = new Test();
+        fillTest("test1", test1);
+        test1.setGroup(testGroup);
+
+        test1.setId(1L);
+        test1.setUid(null);
+        test1.setName(null);
+
+        try {
+            testService.createTest(test1);
+        } catch (ConstraintViolationException ex) {
+            assertEquals(3, ex.getConstraintViolations().size());
+            for (ConstraintViolation violation: ex.getConstraintViolations()) {
+                System.out.println(violation);
+            }
         }
     }
 

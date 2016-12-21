@@ -27,9 +27,9 @@ import org.perfrepo.web.dao.MembershipDAO;
 import org.perfrepo.web.dao.TestDAO;
 import org.perfrepo.web.dao.UserDAO;
 import org.perfrepo.web.dao.UserPropertyDAO;
-import org.perfrepo.web.service.exceptions.DuplicateEntityException;
 import org.perfrepo.web.service.exceptions.IncorrectPasswordException;
 import org.perfrepo.web.service.exceptions.UnauthorizedException;
+import org.perfrepo.web.service.validation.annotation.ValidUser;
 import org.perfrepo.web.session.UserSession;
 
 import javax.ejb.Stateless;
@@ -46,6 +46,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.perfrepo.web.service.validation.ValidationType.DUPLICATE_CHECK;
+import static org.perfrepo.web.service.validation.ValidationType.EXISTS;
+import static org.perfrepo.web.service.validation.ValidationType.SEMANTIC_CHECK;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
@@ -74,13 +78,9 @@ public class UserServiceBean implements UserService {
    private UserSession userSession;
 
    @Override
-   public User createUser(User user) throws DuplicateEntityException, UnauthorizedException {
+   public User createUser(User user) {
       if (!userSession.getLoggedUser().isSuperAdmin() && !isUserGroupAdmin(userSession.getLoggedUser())) {
          throw new UnauthorizedException("authorization.user.notAllowedToCreateUsers", userSession.getLoggedUser().getUsername());
-      }
-
-      if (getUser(user.getUsername()) != null) {
-         throw new DuplicateEntityException("user.duplicateUsername", user.getUsername());
       }
 
       user.setPassword(computeMd5(user.getPassword()));
@@ -90,14 +90,9 @@ public class UserServiceBean implements UserService {
    }
 
    @Override
-   public User updateUser(User user) throws DuplicateEntityException, UnauthorizedException {
+   public User updateUser(@ValidUser(type = { EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK}) User user) {
       if (!userSession.getLoggedUser().equals(user) && !userSession.getLoggedUser().isSuperAdmin()) {
          throw new UnauthorizedException("authorization.user.notAllowedToUpdateDifferentUser", userSession.getLoggedUser().getUsername());
-      }
-
-      User possibleDuplicate = getUser(user.getUsername());
-      if (possibleDuplicate != null && !possibleDuplicate.getId().equals(user.getId())) {
-         throw new DuplicateEntityException("user.duplicateUsername", user.getUsername());
       }
 
       user.setPassword(computeMd5(user.getPassword()));
@@ -107,7 +102,7 @@ public class UserServiceBean implements UserService {
    }
 
    @Override
-   public void removeUser(User user) throws UnauthorizedException {
+   public void removeUser(@ValidUser User user) {
       if (!userSession.getLoggedUser().isSuperAdmin()) {
          throw new UnauthorizedException("authorization.user.notAllowedToRemoveUsers", userSession.getLoggedUser().getUsername());
       }

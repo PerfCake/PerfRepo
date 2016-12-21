@@ -51,27 +51,27 @@ public class User implements Entity<User>, Comparable<User> {
    private Long id;
 
    @Column(name = "username", unique = true, updatable = false)
-   @NotNull
+   @NotNull(message = "{user.usernameRequired}")
    @Size(max = 2047)
    private String username;
 
    @Column(name = "password")
-   @NotNull
+   @NotNull(message = "{user.passwordRequired}")
    @Size(max = 300)
    private String password;
 
    @Column(name = "first_name")
-   @NotNull(message = "{page.profile.firstNameRequired}")
+   @NotNull(message = "{user.firstNameRequired}")
    @Size(max = 2047)
    private String firstName;
 
    @Column(name = "last_name")
-   @NotNull(message = "{page.profile.lastNameRequired}")
+   @NotNull(message = "{user.lastNameRequired}")
    @Size(max = 2047)
    private String lastName;
 
    @Column(name = "email")
-   @NotNull(message = "{page.profile.emailRequired}")
+   @NotNull(message = "{user.emailRequired}")
    @Email
    @Size(max = 2047)
    private String email;

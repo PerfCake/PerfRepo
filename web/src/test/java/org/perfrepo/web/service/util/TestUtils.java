@@ -32,6 +32,7 @@ public class TestUtils {
         war.addAsResource("test-persistence.xml", "META-INF/persistence.xml");
         war.addAsResource("test-beans.xml", "META-INF/beans.xml");
         war.addAsWebInfResource("test-ejb-jar.xml", "ejb-jar.xml");
+        war.addAsWebInfResource(new File("src/main/webapp/WEB-INF/classes/ValidationMessages.properties"), "classes/ValidationMessages.properties");
         war.addAsResource(new File("src/main/resources/lang"));
 
         return war;

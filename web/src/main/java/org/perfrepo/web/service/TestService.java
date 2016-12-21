@@ -18,15 +18,17 @@ import org.perfrepo.model.Metric;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.to.SearchResultWrapper;
 import org.perfrepo.model.user.User;
-import org.perfrepo.web.security.AuthEntity;
-import org.perfrepo.web.service.exceptions.DuplicateEntityException;
 import org.perfrepo.web.service.search.TestSearchCriteria;
-import org.perfrepo.web.service.validation.ValidTest;
-import org.perfrepo.web.service.validation.ValidationType;
+import org.perfrepo.web.service.validation.annotation.ValidMetric;
+import org.perfrepo.web.service.validation.annotation.ValidTest;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
+
+import static org.perfrepo.web.service.validation.ValidationType.DUPLICATE_CHECK;
+import static org.perfrepo.web.service.validation.ValidationType.EXISTS;
+import static org.perfrepo.web.service.validation.ValidationType.ID_NULL;
+import static org.perfrepo.web.service.validation.ValidationType.SEMANTIC_CHECK;
 
 /**
  * Service for tests
@@ -42,18 +44,16 @@ public interface TestService {
     *
     * @param test
     * @return
-    * @throws DuplicateEntityException
      */
-   public Test createTest(@ValidTest(type = { ValidationType.ID_NULL, ValidationType.SEMANTIC_CHECK}) Test test) throws DuplicateEntityException;
+   public Test createTest(@ValidTest(type = { ID_NULL, SEMANTIC_CHECK, DUPLICATE_CHECK}) Test test);
 
    /**
     * Updates the test.
     *
     * @param test
     * @return
-    * @throws DuplicateEntityException
      */
-   public Test updateTest(@ValidTest(type = { ValidationType.EXISTS, ValidationType.SEMANTIC_CHECK}) @AuthEntity Test test) throws DuplicateEntityException;
+   public Test updateTest(@ValidTest(type = { EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK}) Test test);
 
    /**
     * Delete a test with all it's sub-objects, but first it disassociates all the metrics from it.
@@ -61,7 +61,7 @@ public interface TestService {
     *
     * @param test
     */
-   public void removeTest(@ValidTest @AuthEntity Test test);
+   public void removeTest(@ValidTest Test test);
 
    /**
     * Get test.
@@ -117,24 +117,24 @@ public interface TestService {
     * @param test
     * @return metric
     */
-   public Metric addMetric(Metric metric, @ValidTest @AuthEntity Test test);
+   public Metric addMetric(@ValidMetric(type = { SEMANTIC_CHECK }) Metric metric, @ValidTest Test test);
 
    /**
     * Update metric.
     *
     * @param metric
     * @return Updated metric
-    * @throws DuplicateEntityException
     */
-   public Metric updateMetric(Metric metric) throws DuplicateEntityException;
+   public Metric updateMetric(@ValidMetric(type = { EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK }) Metric metric);
 
    /**
     * Disassociate metric from the test. If there are no more tests associated with the metric,
     * the metric is automatically removed.
     *
     * @param metric
+    * @param test
     */
-   public void removeMetricFromTest(Metric metric, @ValidTest Test test);
+   public void removeMetricFromTest(@ValidMetric Metric metric, @ValidTest Test test);
 
    /**
     * Retrieves metric.
@@ -142,14 +142,14 @@ public interface TestService {
     * @param id
     * @return metric
     */
-   public Metric getMetric(@NotNull Long id);
+   public Metric getMetric(Long id);
 
    /**
     * Returns all metrics, which are defined on the Test
     *
     * @return metrics
     */
-   public Set<Metric> getMetricsForTest(@ValidTest Test test);
+   public Set<Metric> getMetricsForTest(Test test);
 
    /******** Methods related to subscribers ********/
 

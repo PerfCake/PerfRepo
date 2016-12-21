@@ -9,7 +9,7 @@ public enum ValidationType {
 
     SEMANTIC_CHECK,
 
-    DUPLICATE_FORBIDDEN,
+    DUPLICATE_CHECK,
 
     ID_NULL,
 

@@ -14,7 +14,6 @@ import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.to.SearchResultWrapper;
 import org.perfrepo.model.user.Group;
 import org.perfrepo.model.user.User;
-import org.perfrepo.web.service.exceptions.DuplicateEntityException;
 import org.perfrepo.web.service.exceptions.UnauthorizedException;
 import org.perfrepo.web.service.util.TestUtils;
 import org.perfrepo.web.service.util.UserSessionMock;
@@ -62,7 +61,7 @@ public class TestExecutionServiceTest {
     }
 
     @Before
-    public void init() throws DuplicateEntityException {
+    public void init() {
         adminUser = createUser("admin");
         adminUser.setType(User.UserType.SUPER_ADMIN);
         UserSessionMock.setLoggedUser(adminUser); // hack, because we need some super admin to create a super admin :)
@@ -113,7 +112,7 @@ public class TestExecutionServiceTest {
     }
 
     @org.junit.Test
-    public void testTestExecutionBasicCRUDOperations() throws DuplicateEntityException {
+    public void testTestExecutionBasicCRUDOperations() {
         TestExecution testExecution = new TestExecution();
         fillTestExecution("exec1", tests.get(0), testExecution);
 

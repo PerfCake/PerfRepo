@@ -24,10 +24,9 @@ import org.perfrepo.web.dao.TestDAO;
 import org.perfrepo.web.dao.UserDAO;
 import org.perfrepo.web.security.AuthEntity;
 import org.perfrepo.web.security.Secured;
-import org.perfrepo.web.service.exceptions.DuplicateEntityException;
 import org.perfrepo.web.service.search.TestSearchCriteria;
-import org.perfrepo.web.service.validation.ValidTest;
-import org.perfrepo.web.service.validation.ValidationType;
+import org.perfrepo.web.service.validation.annotation.ValidMetric;
+import org.perfrepo.web.service.validation.annotation.ValidTest;
 import org.perfrepo.web.session.UserSession;
 
 import javax.ejb.Stateless;
@@ -36,11 +35,15 @@ import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.perfrepo.web.service.validation.ValidationType.DUPLICATE_CHECK;
+import static org.perfrepo.web.service.validation.ValidationType.EXISTS;
+import static org.perfrepo.web.service.validation.ValidationType.ID_NULL;
+import static org.perfrepo.web.service.validation.ValidationType.SEMANTIC_CHECK;
 
 /**
  * Implements {@link TestService}.
@@ -76,15 +79,8 @@ public class TestServiceBean implements TestService {
 
    @Secured
    @Override
-   //public Test createTest(@ValidTest(type = { ValidationType.ID_NULL, ValidationType.SEMANTIC_CHECK})
-                          //@AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") Test test)
-   public Test createTest(@AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") Test test)
-           throws DuplicateEntityException {
-
-      if (getTest(test.getUid()) != null) {
-         throw new DuplicateEntityException("test.duplicateUid", test.getUid());
-      }
-
+   public Test createTest(@ValidTest(type = { ID_NULL, SEMANTIC_CHECK, DUPLICATE_CHECK})
+                          @AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") Test test) {
       Set<Metric> metrics = test.getMetrics();
       test.setMetrics(new HashSet<>());
       Test createdTest = testDAO.create(test);
@@ -98,21 +94,14 @@ public class TestServiceBean implements TestService {
 
    @Secured
    @Override
-   public Test updateTest(@ValidTest(type = { ValidationType.EXISTS, ValidationType.SEMANTIC_CHECK})
-                          @AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") Test test)
-           throws DuplicateEntityException {
-
-      Test possibleDuplicate = getTest(test.getUid());
-      if (possibleDuplicate != null && !possibleDuplicate.getId().equals(test.getId())) {
-         throw new DuplicateEntityException("test.duplicateUid", test.getUid());
-      }
-
+   public Test updateTest(@AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt")
+                          @ValidTest(type = { EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK}) Test test) {
       return testDAO.merge(test);
    }
 
    @Secured
    @Override
-   public void removeTest(@ValidTest @AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") Test test) {
+   public void removeTest(@AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") @ValidTest Test test) {
       Test managedTest = testDAO.get(test.getId());
 
       Set<Metric> metrics = getMetricsForTest(managedTest);
@@ -165,9 +154,7 @@ public class TestServiceBean implements TestService {
 
    @Secured
    @Override
-   public Metric addMetric(Metric metric,
-                           @ValidTest @AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") Test test) {
-
+   public Metric addMetric(@ValidMetric(type = { SEMANTIC_CHECK }) Metric metric, @AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") @ValidTest Test test) {
       Test managedTest = testDAO.get(test.getId());
 
       Metric managedMetric = metricDAO.getByName(metric.getName());
@@ -181,18 +168,15 @@ public class TestServiceBean implements TestService {
       return managedMetric;
    }
 
+   //TODO: add @Secured and figure out authorization for metric
    @Override
-   public Metric updateMetric(Metric metric) throws DuplicateEntityException {
-      Metric possibleDuplicate = getMetric(metric.getId());
-      if (possibleDuplicate != null && !possibleDuplicate.getId().equals(metric.getId())) {
-         throw new DuplicateEntityException("metric.duplicateName", metric.getName());
-      }
-
+   public Metric updateMetric(@ValidMetric(type = { EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK }) Metric metric) {
       return metricDAO.merge(metric);
    }
 
+   @Secured
    @Override
-   public void removeMetricFromTest(Metric metric, @ValidTest Test test) {
+   public void removeMetricFromTest(@ValidMetric Metric metric, @AuthEntity(messageKey = "authorization.test.cannotCreateOrModifyTestInGroupIfNotInIt") @ValidTest Test test) {
       Metric managedMetric = metricDAO.get(metric.getId());
       Test managedTest = testDAO.get(test.getId());
 
@@ -205,12 +189,12 @@ public class TestServiceBean implements TestService {
    }
 
    @Override
-   public Metric getMetric(@NotNull Long id) {
+   public Metric getMetric(Long id) {
       return metricDAO.get(id);
    }
 
    @Override
-   public Set<Metric> getMetricsForTest(@ValidTest Test test) {
+   public Set<Metric> getMetricsForTest(Test test) {
       Test managedTest = testDAO.get(test.getId());
       return metricDAO.getMetricsByTest(managedTest);
    }

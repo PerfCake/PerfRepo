@@ -22,6 +22,11 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * TODO: document this
+ *
+ * @author Jiri Holusa (jholusa@redhat.com)
+ */
 @Retention(RUNTIME)
 @Target({METHOD, TYPE})
 @InterceptorBinding

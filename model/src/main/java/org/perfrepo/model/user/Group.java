@@ -24,6 +24,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @javax.persistence.Entity
 @Table(name = "\"group\"")
@@ -44,6 +45,7 @@ public class Group implements Entity<Group>, Comparable<Group> {
    private Long id;
 
    @Column(name = "name", unique = true)
+   @NotNull(message = "{group.nameRequired}")
    private String name;
 
    public Long getId() {

@@ -1,9 +1,9 @@
 package org.perfrepo.web.service.validation;
 
 import org.hibernate.validator.internal.engine.path.PathImpl;
-import org.perfrepo.model.Test;
-import org.perfrepo.web.dao.TestDAO;
-import org.perfrepo.web.service.validation.annotation.ValidTest;
+import org.perfrepo.model.user.User;
+import org.perfrepo.web.dao.UserDAO;
+import org.perfrepo.web.service.validation.annotation.ValidUser;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintValidator;
@@ -15,11 +15,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Validator for {@link Test} entity.
+ * Validator for {@link org.perfrepo.model.user.User} entity.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
-public class TestValidator implements ConstraintValidator<ValidTest, Test> {
+public class UserValidator implements ConstraintValidator<ValidUser, User> {
 
     private Set<ValidationType> type;
 
@@ -27,51 +27,51 @@ public class TestValidator implements ConstraintValidator<ValidTest, Test> {
     private Validator validator;
 
     @Inject
-    private TestDAO testDAO;
+    private UserDAO userDAO;
 
     @Override
-    public void initialize(ValidTest constraintAnnotation) {
+    public void initialize(ValidUser constraintAnnotation) {
         type = new HashSet<>(Arrays.asList(constraintAnnotation.type()));
     }
 
     @Override
-    public boolean isValid(Test test, ConstraintValidatorContext context) {
+    public boolean isValid(User user, ConstraintValidatorContext context) {
         context.disableDefaultConstraintViolation();
 
         boolean isValid = true;
-        if (test == null) {
-            context.buildConstraintViolationWithTemplate("{test.notNull}")
+        if (user == null) {
+            context.buildConstraintViolationWithTemplate("{user.notNull}")
                     .addConstraintViolation();
             return false; // in case entity is null, we cannot check anything else, return immediately
         }
 
-        if (type.contains(ValidationType.ID_NULL) && test.getId() != null) {
-            context.buildConstraintViolationWithTemplate("{test.idNotNull}")
+        if (type.contains(ValidationType.ID_NULL) && user.getId() != null) {
+            context.buildConstraintViolationWithTemplate("{user.idNotNull}")
                     .addConstraintViolation();
             isValid = false;
         }
 
         if (type.contains(ValidationType.DUPLICATE_CHECK)) {
-            Test possibleDuplicate = testDAO.findByUid(test.getUid());
-            if (possibleDuplicate != null && !possibleDuplicate.getId().equals(test.getId())) {
-                context.buildConstraintViolationWithTemplate("{test.duplicateUid}")
-                        .addPropertyNode("uid")
+            User possibleDuplicate = userDAO.findByUsername(user.getUsername());
+            if (possibleDuplicate != null && !possibleDuplicate.getId().equals(user.getId())) {
+                context.buildConstraintViolationWithTemplate("{user.duplicateUsername}")
+                        .addPropertyNode("username")
                         .addConstraintViolation();
                 isValid = false;
             }
         }
 
-        if (type.contains(ValidationType.EXISTS) && (test.getId() == null || testDAO.get(test.getId()) == null)) {
-            context.buildConstraintViolationWithTemplate("{;}")
+        if (type.contains(ValidationType.EXISTS) && (user.getId() == null || userDAO.get(user.getId()) == null)) {
+            context.buildConstraintViolationWithTemplate("{user.doesntExist}")
                     .addConstraintViolation();
             isValid =  false;
         }
 
         if (type.contains(ValidationType.SEMANTIC_CHECK)) {
-            Set<ConstraintViolation<Test>> violations = validator.validate(test);
+            Set<ConstraintViolation<User>> violations = validator.validate(user);
 
             if (!violations.isEmpty()) {
-                for (ConstraintViolation<Test> violation : violations) {
+                for (ConstraintViolation<User> violation : violations) {
                     context.buildConstraintViolationWithTemplate(violation.getMessageTemplate())
                             .addPropertyNode(((PathImpl) violation.getPropertyPath()).getLeafNode().getName())
                             .addConstraintViolation();

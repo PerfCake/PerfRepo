@@ -63,7 +63,7 @@ public class Test implements Entity<Test> {
    private Long id;
 
    @Column(name = "name")
-   @NotNull(message = "{page.test.nameRequired}")
+   @NotNull(message = "{test.nameRequired}")
    @Size(max = 2047)
    private String name;
 
@@ -84,12 +84,13 @@ public class Test implements Entity<Test> {
    private Set<User> subscribers = new HashSet<>();
 
    @Column(name = "uid", unique = true)
-   @NotNull(message = "{page.test.uidRequired}")
+   @NotNull(message = "{test.uidRequired}")
    @Size(max = 2047)
    private String uid;
 
    @ManyToOne(fetch = FetchType.EAGER)
-   @JoinColumn(name = "group_id", referencedColumnName = "id")
+   @NotNull(message = "{test.groupRequired}")
+   @JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false)
    private Group group;
 
    @Column(name = "description")

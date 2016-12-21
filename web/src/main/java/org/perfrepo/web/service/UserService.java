@@ -18,13 +18,17 @@ import org.perfrepo.model.FavoriteParameter;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.user.Group;
 import org.perfrepo.model.user.User;
-import org.perfrepo.web.service.exceptions.DuplicateEntityException;
 import org.perfrepo.web.service.exceptions.IncorrectPasswordException;
-import org.perfrepo.web.service.exceptions.UnauthorizedException;
+import org.perfrepo.web.service.validation.annotation.ValidUser;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.perfrepo.web.service.validation.ValidationType.DUPLICATE_CHECK;
+import static org.perfrepo.web.service.validation.ValidationType.EXISTS;
+import static org.perfrepo.web.service.validation.ValidationType.ID_NULL;
+import static org.perfrepo.web.service.validation.ValidationType.SEMANTIC_CHECK;
 
 /**
  * TODO: document this
@@ -37,7 +41,7 @@ public interface UserService {
     * @param user
     * @return user
     */
-   public User createUser(User user) throws DuplicateEntityException, UnauthorizedException;
+   public User createUser(@ValidUser(type = { ID_NULL, SEMANTIC_CHECK, DUPLICATE_CHECK}) User user);
 
    /**
     * Updates user. THE USER'S PASSWORD MUST BE IN PLAIN TEXT!
@@ -45,14 +49,14 @@ public interface UserService {
     * @param user
     * @return user
     */
-   public User updateUser(User user) throws DuplicateEntityException, UnauthorizedException;
+   public User updateUser(@ValidUser(type = { EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK}) User user);
 
    /**
     * Deletes user
     *
     * @param user
     */
-   public void removeUser(User user) throws UnauthorizedException;
+   public void removeUser(@ValidUser User user);
 
    /**
     * Retrieves managed entity of user
