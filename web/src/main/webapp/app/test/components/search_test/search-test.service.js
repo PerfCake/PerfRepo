@@ -2,56 +2,92 @@
     'use strict';
 
     angular
-        .module('org.perfrepo.test')
-        .service('testModalService', TestModalService);
+        .module('org.perfrepo.test.search')
+        .service('testSearchService', TestModalService);
 
-    function TestModalService($modal) {
+    function TestModalService(pfViewUtils) {
 
         return {
-            createTest: createTest,
-            editTest: editTest,
-            removeTest: removeTest
+            getToolbarConfig: getToolbarConfig,
+            getSearchOffset: getSearchOffset
         };
 
-        function createTest() {
-            return $modal.open({
-                animation: true,
-                backdrop: 'static',
-                keyboard: false,
-                templateUrl: 'app/test/create/create-test.view.html',
-                controller: 'CreateTestController',
-                controllerAs: 'vm',
-                size: 'md',
-                resolve : {
-                    _groups: function(groupService) {
-                        return groupService.getUserGroups();
-                    }
-                }
-            });
+        function getToolbarConfig(onFilterChange, onSortChange, onViewSelect) {
+            return {
+                viewsConfig: prepareViewConfig(onViewSelect),
+                filterConfig: prepareFilterConfig(onFilterChange),
+                sortConfig: prepareSortConfig(onSortChange)
+            };
         }
 
-        function editTest(id) {
-            return $modal.open({
-                animation: true,
-                backdrop: 'static',
-                keyboard: false,
-                templateUrl: 'app/test/edit/edit-test.view.html',
-                controller: 'EditTestController',
-                controllerAs: 'vm',
-                size: 'md',
-                resolve : {
-                    _groups: function(groupService) {
-                        return groupService.getUserGroups();
-                    },
-                    _test: function (testService) {
-                        return testService.getById(id);
-                    }
-                }
-            });
+        function prepareViewConfig(onViewSelect) {
+            var views = [pfViewUtils.getListView(), pfViewUtils.getCardView()];
+
+            return {
+                views: views,
+                onViewSelect: onViewSelect,
+                currentView: views[0].id
+            };
         }
 
-        function removeTest(id) {
+        function prepareSortConfig(onSortChange) {
+            var sortFields = [
+                {
+                    id: 'name',
+                    title:  'Name',
+                    sortType: 'alpha'
+                },
+                {
+                    id: 'uid',
+                    title: 'Uid',
+                    sortType: 'alpha'
+                },
+                {
+                    id: 'group',
+                    title: 'Group',
+                    sortType: 'alpha'
+                }
+            ];
 
+            return  {
+                fields: sortFields,
+                onSortChange: onSortChange,
+                currentField: sortFields[0],
+                isAscending: true
+            };
+        }
+
+        function prepareFilterConfig(onFilterChange) {
+            var fields = [
+                {
+                    id: 'name',
+                    title:  'Name',
+                    placeholder: 'Filter by Name...',
+                    filterType: 'text'
+                },
+                {
+                    id: 'uid',
+                    title:  'Uid',
+                    placeholder: 'Filter by Uid...',
+                    filterType: 'text'
+                },
+                {
+                    id: 'group',
+                    title:  'Group',
+                    placeholder: 'Filter by Group...',
+                    filterType: 'text'
+                }
+            ];
+
+            return {
+                fields: fields,
+                appliedFilters: [],
+                onFilterChange: onFilterChange
+            }
+        }
+
+        function getSearchOffset(currentPage, limit) {
+            return ((currentPage - 1) * limit) || 0;
         }
     }
 })();
