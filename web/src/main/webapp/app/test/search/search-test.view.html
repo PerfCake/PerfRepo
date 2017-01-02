@@ -1,20 +1,27 @@
-<div class="row">
-    <div class="col-md-12">
-        <h1>Search test</h1>
+<div class="row header">
+    <div class="col-sm-12 col-md-4">
+        <h1>Tests overview</h1>
+    </div>
+    <div class="col-sm-12 col-md-8">
+        <div class="pull-right header-controls">
+            <button class="btn btn-default" ng-click="vm.createTest()">
+                <span class="pficon pficon-add-circle-o" aria-hidden="true"></span> Create new test
+            </button>
+        </div>
     </div>
 </div>
-
-<div class="row" ng-controller="SearchTestController as search">
+<div class="row">
     <div class="col-md-12">
-        <div pf-toolbar id="exampleToolbar" config="search.toolbarConfig">
+        <div pf-toolbar id="exampleToolbar" config="vm.toolbarConfig">
         </div>
     </div>
     <hr class="col-md-12">
     <div class="col-md-12">
         <label class="events-label">Valid Items: </label>
     </div>
-    <div class="col-md-12 list-view-container" ng-if="search.viewType == 'listView'">
-        <div pf-list-view config="search.listConfig" items="search.items">
+
+    <div class="col-md-12 list-view-container" ng-if="vm.toolbarConfig.viewsConfig.currentView == 'listView'">
+        <div pf-list-view config="vm.listConfig" items="vm.items">
             <div class="list-view-pf-description">
                 <div class="list-group-item-heading">
                     {{item.name}}
@@ -28,32 +35,43 @@
                     <button ui-sref="app.testDetail({id: item.id})" class="btn btn-primary">Detail</button>
                 </div>
                 <div class="list-view-pf-additional-info-item">
-                    <button ui-sref="app.testEdit({id: item.id})" class="btn btn-default">Edit</button>
+                    <div class="dropdown  dropdown-kebab-pf">
+                        <button class="btn btn-link dropdown-toggle" type="button" id="dropdownKebab" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <span class="fa fa-ellipsis-v"></span>
+                        </button>
+                        <ul class="dropdown-menu " aria-labelledby="dropdownKebab">
+                            <li><a ng-click="vm.editTest(item.id)">Edit</a></li>
+                            <li><a ng-click="vm.removeTest(item.id)">Remove</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-12 card-view-container" ng-if="search.viewType == 'cardView'">
-        <div pf-card-view config="search.listConfig" items="search.items">
+    <div class="col-md-12 card-view-container" ng-if="vm.toolbarConfig.viewsConfig.currentView == 'cardView'">
+        <div pf-card-view config="vm.listConfig" items="vm.items">
             <div class="col-md-12">
                 <span>{{item.name}}</span>
             </div>
             <div class="col-md-12">
                 <span>{{item.uid}}</span>
+                <li><a ng-click="alert('aaa');">Edit</a></li>
             </div>
         </div>
     </div>
+</div>
+
+<div class="row">
     <div class="col-md-12">
-        <div>
-            <pagination total-items="search.filterConfig.resultsCount" ng-model="search.currentPage"
-                        ng-change="search.updateSearch()" items-per-page="search.searchParams.limit"
-                        previous-text="&lsaquo;" next-text="&rsaquo;">
-            </pagination>
-        </div>
-        <select class="page-limit" select-picker ng-model="search.searchParams.limit" ng-change="search.updateSearch()" ng-options="size for size in [5, 10, 20]">
-        </select>
+        <pr-search-pagination
+                items-count="vm.filterConfig.resultsCount"
+                current-page="vm.currentPage"
+                page-size="vm.searchParams.limit"
+                on-change="vm.updateSearch()">
+        </pr-search-pagination>
     </div>
 </div>
+
 <!-- <search-test-form search-params="vm.searchParams" on-search="vm.search(searchParams)"></search-test-form> -->
 
 <!-- <search-test-list tests="vm.tests"></search-test-list> -->

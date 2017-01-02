@@ -22,10 +22,6 @@
                 href: $state.href('app.testSearch')
             },
             {
-                title: "Create test",
-                href: $state.href('app.testCreate')
-            },
-            {
                 title: "Test executions",
                 iconClass : "fa fa-cogs",
                 href: $state.href('app.testExecution')

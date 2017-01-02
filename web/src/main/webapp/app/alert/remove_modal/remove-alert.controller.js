@@ -5,9 +5,9 @@
         .module('org.perfrepo.alert.remove')
         .controller('RemoveAlertController', RemoveAlertController);
 
-    function RemoveAlertController(alertService, $modalInstance, alert) {
+    function RemoveAlertController(_alert, alertService, $modalInstance) {
         var vm = this;
-        vm.alert = alert;
+        vm.alert = _alert;
         vm.remove = remove;
         vm.cancel = cancel;
 

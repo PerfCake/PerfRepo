@@ -4,8 +4,12 @@
         .module('org.perfrepo.test.search')
         .controller('SearchTestController', SearchTestController);
 
-    function SearchTestController(testService, pfViewUtils) {
+    function SearchTestController(testService, testModalService, pfViewUtils, $state) {
         var vm = this;
+        vm.createTest = createTest;
+        vm.editTest = editTest;
+        vm.removeTest = removeTest;
+        vm.updateSearch = updateSearch;
 
         vm.pagination = {};
         vm.currentPage = 1;
@@ -14,46 +18,8 @@
             offset: 0,
             orderBy: 'NAME_ASC'
         };
-        vm.updateSearch = updateSearch;
-        update();
 
-        function updateSearch() {
-            update();
-        }
-
-        function update() {
-            vm.searchParams.offset = ((vm.currentPage - 1) * vm.pagination.pageCount) || 0;
-
-            testService.search(vm.searchParams).then(function(response){
-                vm.items = response.data;
-                vm.filterConfig.resultsCount = response.headers('X-Pagination-Total-Count');
-                vm.pagination.pageCount = parseInt(response.headers('X-Pagination-Page-Count'));
-                vm.pagination.currentPage = response.headers('X-Pagination-Current-Page');
-            });
-        }
-
-        var applyFilters = function (filters) {
-
-            vm.searchParams.nameFilters = [];
-            vm.searchParams.uidFilters = [];
-
-            filters.forEach(function(filter) {
-                if(filter.id == 'name') {
-                    vm.searchParams.nameFilters.push(filter.value);
-                } else if(filter.id == 'uid') {
-                    vm.searchParams.uidFilters.push(filter.value);
-                }
-            });
-
-            update();
-
-        };
-
-        var filterChange = function (filters) {
-            applyFilters(filters);
-            vm.toolbarConfig.filterConfig.resultsCount = vm.items.length;
-        };
-
+        // ******************* filter config
         vm.filterConfig = {
             fields: [
                 {
@@ -67,44 +33,50 @@
                     title:  'Uid',
                     placeholder: 'Filter by Uid...',
                     filterType: 'text'
+                },
+                {
+                    id: 'group',
+                    title:  'Group',
+                    placeholder: 'Filter by Group...',
+                    filterType: 'text'
                 }
             ],
-            //resultsCount: vm.items.length,
             appliedFilters: [],
             onFilterChange: filterChange
         };
 
-        var viewSelected = function(viewId) {
-            vm.viewType = viewId
-        };
-
+        var views = [pfViewUtils.getListView(), pfViewUtils.getCardView()];
         vm.viewsConfig = {
-            views: [pfViewUtils.getListView(), pfViewUtils.getCardView()],
-            onViewSelect: viewSelected
+            views: views,
+            onViewSelect: viewSelected,
+            currentView: views[0].id
         };
-        vm.viewsConfig.currentView = vm.viewsConfig.views[0].id;
-        vm.viewType = vm.viewsConfig.currentView;
 
-
-        var sortChange = function (sortFiled, isAscending) {
-            vm.searchParams.orderBy = sortFiled.id.toUpperCase() + (isAscending ? "_ASC" : "_DESC");
-            update();
-        };
+        // ******************* sort config
+        var sortFields = [
+            {
+                id: 'name',
+                title:  'Name',
+                sortType: 'alpha'
+            },
+            {
+                id: 'uid',
+                title: 'Uid',
+                sortType: 'alpha'
+            },
+            {
+                id: 'group',
+                title: 'Group',
+                sortType: 'alpha'
+            }
+        ];
 
         vm.sortConfig = {
-            fields: [
-                {
-                    id: 'name',
-                    title:  'Name',
-                    sortType: 'alpha'
-                },
-                {
-                    id: 'uid',
-                    title: 'Uid',
-                    sortType: 'alpha'
-                }
-            ],
-            onSortChange: sortChange
+            fields: sortFields,
+            onSortChange: sortChange,
+            currentField: sortFields[0],
+            isAscending: true
+
         };
 
         vm.toolbarConfig = {
@@ -117,5 +89,71 @@
             selectionMatchProp: 'name',
             checkDisabled: false
         };
+
+        updateSearch();
+
+        function createTest() {
+            var modalInstance = testModalService.createTest();
+
+            modalInstance.result.then(function (id) {
+                $state.go('app.testDetail', {id: id});
+            });
+        }
+
+        function editTest(id) {
+            var modalInstance = testModalService.editTest(id);
+
+            modalInstance.result.then(function () {
+                $state.go('app.testDetail', {id: id});
+            });
+        }
+
+        function removeTest(id) {
+            alert("Not yet implemented");
+        }
+
+        function updateSearch() {
+            update();
+        }
+
+        function update() {
+            vm.searchParams.offset = ((vm.currentPage - 1) * vm.searchParams.limit) || 0;
+
+            return testService.search(vm.searchParams).then(function(result){
+                vm.items = result.data;
+                vm.filterConfig.resultsCount = result.totalCount;
+                vm.pagination.pageCount = result.pageCount;
+                vm.pagination.currentPage = result.currentPage;
+            });
+        }
+
+        function applyFilters(filters) {
+            vm.searchParams.nameFilters = [];
+            vm.searchParams.uidFilters = [];
+            vm.searchParams.groupFilters = [];
+
+            filters.forEach(function(filter) {
+                if(filter.id == 'name') {
+                    vm.searchParams.nameFilters.push(filter.value);
+                } else if(filter.id == 'uid') {
+                    vm.searchParams.uidFilters.push(filter.value);
+                } else if(filter.id == 'group') {
+                    vm.searchParams.groupFilters.push(filter.value);
+                }
+            });
+        }
+
+        function filterChange(filters) {
+            applyFilters(filters);
+            updateSearch();
+        }
+
+        function viewSelected(viewId) {
+        }
+
+        function sortChange (sortFiled, isAscending) {
+            vm.searchParams.orderBy = sortFiled.id.toUpperCase() + (isAscending ? "_ASC" : "_DESC");
+            updateSearch();
+        }
     }
 })();

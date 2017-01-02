@@ -1,11 +1,11 @@
-<div class="row">
-    <div class="col-md-12">
-        <h1>Create test</h1>
-    </div>
+<div class="modal-header">
+    <button ng-click="vm.cancel()" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title">New test</h3>
+</div>
+<div class="modal-body">
+    <test-form groups="vm.groups"
+               test="vm.test"
+               on-save="vm.save(test, form)">
+    </test-form>
 </div>
 
-<test-form metrics="vm.metrics"
-           groups="vm.groups"
-           test="vm.test"
-           on-save="vm.save(test)">
-</test-form>

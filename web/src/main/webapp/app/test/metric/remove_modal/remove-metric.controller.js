@@ -5,10 +5,10 @@
         .module('org.perfrepo.test.metric.remove')
         .controller('RemoveMetricController', RemoveMetricController);
 
-    function RemoveMetricController(metricService, $modalInstance, metric, testId) {
+    function RemoveMetricController(_testId, _metric, metricService, $modalInstance) {
         var vm = this;
-        vm.metric = metric;
-        vm.testId = testId;
+        vm.metric = _metric;
+        vm.testId = _testId;
         vm.remove = remove;
         vm.cancel = cancel;
 

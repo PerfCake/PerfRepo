@@ -4,6 +4,8 @@
     <meta charset="utf-8"/>
     <title>PerfRepo</title>
 
+    <!-- jQuery -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <!-- Angular -->
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
@@ -17,8 +19,6 @@
     <!-- PatternFly Styles -->
     <link rel="stylesheet" href="bower_components/patternfly/dist/css/patternfly.min.css"/>
     <link rel="stylesheet" href="bower_components/patternfly/dist/css/patternfly-additions.min.css"/>
-    <!-- jQuery -->
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap JS -->
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="bower_components/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
@@ -35,6 +35,9 @@
     <!-- Bootstrap Date Picker -->
     <script src="bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
     <!-- Bootstrap Select -->
+
+    <script src="bower_components/angular-ui-select/dist/select.js"></script>
+    <link rel="stylesheet" href="bower_components/angular-ui-select/dist/select.css"/>
 
     <!-- Bootstrap Switch -->
     <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
@@ -84,6 +87,7 @@
     <script src="app/test/test.module.js"></script>
     <script src="app/test/test.config.js"></script>
     <script src="app/test/test.service.js"></script>
+    <script src="app/test/test.modal.service.js"></script>
     <!-- test form -->
     <script src="app/test/form/form-test.module.js"></script>
     <script src="app/test/form/components/form-test.component.js"></script>
@@ -136,8 +140,14 @@
 
     <!-- common -->
     <script src="app/common/common.module.js"></script>
-    <script src="app/common/directives/select-picker.directive.js"></script>
     <script src="app/common/directives/combo-box.directive.js"></script>
+    <script src="app/common/directives/server-error.directive.js"></script>
+    <script src="app/common/components/search-pagination/search-pagination.component.js"></script>
+    <script src="app/common/components/kebab-dropdown/kebab-dropdown.component.js"></script>
+
+    <!-- utils -->
+    <script src="app/utils/utils.module.js"></script>
+    <script src="app/utils/validation/validation-helper.service.js"></script>
 
     <!-- groups -->
     <script src="app/group/group.module.js"></script>

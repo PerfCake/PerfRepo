@@ -54,7 +54,7 @@
                 return;
             }
 
-            this.onSave({alert: vm.alert});
+            this.onSave({alert: vm.alert, form: form});
         }
     }
 })();

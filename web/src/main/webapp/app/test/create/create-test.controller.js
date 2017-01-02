@@ -5,22 +5,24 @@
         .module('org.perfrepo.test.create')
         .controller('CreateTestController', CreateTestController);
 
-    function CreateTestController($state, testService, groups, metrics) {
+    function CreateTestController(_groups, testService, validationHelper, $modalInstance) {
         var vm = this;
         vm.test = {};
-        vm.groups = groups;
-        vm.metrics = metrics;
+        vm.groups = _groups;
         vm.save = save;
+        vm.cancel = cancel;
 
-        if (vm.groups != undefined && vm.groups.length > 0) {
-            vm.test.group = vm.groups[0];
+        function save(test, form) {
+            testService.save(test)
+                .then(function (id) {
+                    $modalInstance.close(id);
+                }, function(errorResponse) {
+                    validationHelper.setFormErrors(errorResponse, form);
+                });
         }
 
-        function save(test) {
-            testService.save(test)
-                .then(function () {
-                    $state.go('app.testSearch');
-                });
+        function cancel() {
+            $modalInstance.dismiss('cancel');
         }
     }
 })();

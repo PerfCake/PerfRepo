@@ -24,8 +24,7 @@
             if (form.$invalid) {
                 return;
             }
-
-            this.onSave({metric: vm.metric});
+            this.onSave({metric: vm.metric, form: form});
         }
     }
 })();

@@ -5,10 +5,16 @@
         .module('org.perfrepo.test.metric')
         .service('metricService', MetricService);
 
-    function MetricService(API_URL, $http, $resource) {
-        var Metric = $resource(
-            API_URL + '/metrics/:id',
-            {id: '@id'});
+    function MetricService(API_METRIC_URL, API_TEST_URL, $http, $resource) {
+        var MetricResource = $resource(API_METRIC_URL + '/:id',
+            {
+                id: '@id'
+            },
+            {
+                'update': {
+                    method: 'PUT', isArray: false, url: API_METRIC_URL, params: {}
+                }
+            });
 
         return {
             getById: getById,
@@ -20,27 +26,31 @@
         };
 
         function getById(id) {
-            return Metric.get({id: id}).$promise;
+            return MetricResource.get({id: id}).$promise;
         }
 
         function getAll() {
-            return Metric.query().$promise;
+            return MetricResource.query().$promise;
         }
 
         function create(metric, testId) {
-            return $http.post(API_URL + '/tests/' + testId + '/metric-addition', metric);
+            return $http.post(API_TEST_URL + '/' + testId + '/metric-addition', metric).then(function(response) {
+                return response.data;
+            });
         }
 
         function remove(metricId, testId) {
-            return $http.post(API_URL + '/tests/' + testId + '/metric-removal/' + metricId);
+            return $http.post(API_TEST_URL + '/' + testId + '/metric-removal/' + metricId).then(function(response) {
+                return response.data;
+            });
         }
 
         function update(metric) {
-            return $http.put(API_URL + '/metrics/', metric);
+            return MetricResource.update(metric).$promise;
         }
 
         function getComparators() {
-            return [{'name':'HB', 'text': 'Higher better'}, {'name':'LB', 'text': 'Lower better'}];
+            return [{'name':'HIGHER_BETTER', 'text': 'Higher better'}, {'name':'LOWER_BETTER', 'text': 'Lower better'}];
         }
     }
 })();

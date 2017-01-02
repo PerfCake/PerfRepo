@@ -5,18 +5,24 @@
         .module('org.perfrepo.test.edit')
         .controller('EditTestController', EditTestController);
 
-    function EditTestController($state, testService, test, groups, metrics) {
+    function EditTestController(_test, _groups, testService, validationHelper, $modalInstance) {
         var vm = this;
-        vm.test = test;
-        vm.groups = groups;
-        vm.metrics = metrics;
-        vm.update = update;
+        vm.test = _test;
+        vm.groups = _groups;
+        vm.save = save;
+        vm.cancel = cancel;
 
-        function update(test) {
+        function save(test, form) {
             testService.update(test)
-                .then(function () {
-                    $state.go('app.testSearch');
+                .then(function (id) {
+                    $modalInstance.close(id);
+                }, function (errorResponse) {
+                    validationHelper.setFormErrors(errorResponse, form);
                 });
+        }
+
+        function cancel() {
+            $modalInstance.dismiss('cancel');
         }
     }
 })();

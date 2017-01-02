@@ -5,20 +5,18 @@
         .module('org.perfrepo.alert.create')
         .controller('CreateAlertController', CreateAlertController);
 
-    function CreateAlertController($scope, alertService, metrics, $modalInstance, testId) {
+    function CreateAlertController(_testId, _metrics, alertService, validationHelper, $modalInstance) {
         var vm = this;
-        vm.metrics = metrics;
-        vm.alert = {testId: testId};
+        vm.metrics = _metrics;
+        vm.alert = {testId: _testId};
         vm.save = save;
         vm.cancel = cancel;
 
-        if (vm.metrics != undefined && vm.metrics.length > 0) {
-            vm.alert.metric = vm.metrics[0];
-        }
-
-        function save(alert) {
+        function save(alert, form) {
             alertService.create(alert).then(function () {
                 $modalInstance.close(alert);
+            }, function(errorResponse) {
+                validationHelper.setFormErrors(errorResponse, form);
             });
         }
 

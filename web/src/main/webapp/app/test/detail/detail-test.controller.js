@@ -11,15 +11,31 @@
         ])
         .controller('DetailTestController', DetailTestController);
 
-    function DetailTestController(test, $modal, testService, $scope) {
+    function DetailTestController(_test, testService, testModalService, $modal) {
         var vm = this;
-        vm.test = test;
+        vm.test = _test;
+        vm.editTest = editTest;
+        vm.createTestExecution = createTestExecution;
+        vm.showTestExecutions = showTestExecutions;
+        vm.subscribeAlerts = subscribeAlerts;
         vm.addMetric = addMetric;
         vm.editMetric = editMetric;
         vm.removeMetric = removeMetric;
         vm.addAlert = addAlert;
         vm.editAlert = editAlert;
         vm.removeAlert = removeAlert;
+
+        function createTestExecution(testId) {
+            alert("Not yet implemented.");
+        }
+
+        function showTestExecutions(testId) {
+            alert("Not yet implemented.");
+        }
+
+        function subscribeAlerts(testId) {
+            alert("Not yet implemented.");
+        }
 
         function addAlert() {
             var modalInstance = $modal.open({
@@ -31,20 +47,17 @@
                 controllerAs: 'vm',
                 size: 'md',
                 resolve : {
-                    metrics: function() {
+                    _metrics: function() {
                         return vm.test.metrics;
                     },
-                    testId: function () {
+                    _testId: function () {
                         return vm.test.id;
                     }
                 }
             });
 
             modalInstance.result.then(function () {
-                // update test detail
-                testService.getById(vm.test.id).then(function(response) {
-                    vm.test = response;
-                });
+                updateDetail();
             }, function () {
                 console.log('Modal dismissed');
             });
@@ -60,20 +73,17 @@
                 controllerAs: 'vm',
                 size: 'md',
                 resolve : {
-                    metrics: function() {
+                    _metrics: function() {
                         return vm.test.metrics;
                     },
-                    alert: function (alertService) {
+                    _alert: function (alertService) {
                         return alertService.getById(alert.id);
                     }
                 }
             });
 
             modalInstance.result.then(function () {
-                // update test detail
-                testService.getById(vm.test.id).then(function(response) {
-                    vm.test = response;
-                });
+                updateDetail();
             }, function () {
                 console.log('Modal dismissed');
             });
@@ -89,17 +99,14 @@
                 controllerAs: 'vm',
                 size: 'sm',
                 resolve : {
-                    alert: function() {
+                    _alert: function() {
                         return alert;
                     }
                 }
             });
 
             modalInstance.result.then(function () {
-                // update test detail
-                testService.getById(vm.test.id).then(function(response) {
-                    vm.test = response;
-                });
+                updateDetail();
             }, function () {
                 console.log('Modal dismissed');
             });
@@ -115,20 +122,17 @@
                 controllerAs: 'vm',
                 size: 'md',
                 resolve : {
-                    comparators: function(metricService) {
+                    _comparators: function(metricService) {
                         return metricService.getComparators();
                     },
-                    testId: function () {
+                    _testId: function () {
                         return vm.test.id;
                     }
                 }
             });
 
             modalInstance.result.then(function () {
-                // update test detail
-                testService.getById(vm.test.id).then(function(response) {
-                    vm.test = response;
-                });
+                updateDetail();
             }, function () {
                 console.log('Modal dismissed');
             });
@@ -144,20 +148,17 @@
                 controllerAs: 'vm',
                 size: 'md',
                 resolve : {
-                    comparators: function(metricService) {
+                    _comparators: function(metricService) {
                         return metricService.getComparators();
                     },
-                    metric: function (metricService) {
+                    _metric: function (metricService) {
                         return metricService.getById(metric.id);
                     }
                 }
             });
 
             modalInstance.result.then(function () {
-                // update test detail
-                testService.getById(vm.test.id).then(function(response) {
-                    vm.test = response;
-                });
+                updateDetail();
             }, function () {
                 console.log('Modal dismissed');
             });
@@ -173,22 +174,35 @@
                 controllerAs: 'vm',
                 size: 'sm',
                 resolve : {
-                    metric: function() {
+                    _metric: function() {
                         return metric;
                     },
-                    testId: function () {
+                    _testId: function () {
                         return vm.test.id;
                     }
                 }
             });
 
             modalInstance.result.then(function () {
-                // update test detail
-                testService.getById(vm.test.id).then(function(response) {
-                    vm.test = response;
-                });
+                updateDetail();
             }, function () {
                 console.log('Modal dismissed');
+            });
+        }
+
+        function editTest(id) {
+            var modalInstance = testModalService.editTest(id);
+
+            modalInstance.result.then(function () {
+                updateDetail();
+            }, function () {
+                console.log('Modal dismissed');
+            });
+        }
+
+        function updateDetail() {
+            testService.getById(vm.test.id).then(function(response) {
+                vm.test = response;
             });
         }
     }

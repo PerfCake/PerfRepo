@@ -5,12 +5,18 @@
         .module('org.perfrepo.alert')
         .service('alertService', AlertService);
 
-    function AlertService(API_URL, $http, $resource) {
-        var Alert = $resource(
-            API_URL + '/alerts/:id',
-            {id: '@id'},
+    function AlertService(API_ALERT_URL, $resource) {
+        var AlertResource = $resource(API_ALERT_URL + '/:id',
             {
-                'update': {method: 'PUT', isArray: false, url:  API_URL + '/alerts', params: {}}
+                id: '@id'
+            },
+            {
+                'update': {
+                    method: 'PUT',
+                    isArray: false,
+                    url: API_ALERT_URL,
+                    params: {}
+                }
             });
 
         return {
@@ -22,23 +28,23 @@
         };
 
         function getById(id) {
-            return Alert.get({id: id}).$promise;
+            return AlertResource.get({id: id}).$promise;
         }
 
         function getAll() {
-            return Alert.query().$promise;
+            return AlertResource.query().$promise;
         }
 
         function create(alert) {
-            return Alert.save(alert).$promise;
+            return AlertResource.save(alert).$promise;
         }
 
         function remove(id) {
-            return Alert.remove({id: id}).$promise;
+            return AlertResource.remove({id: id}).$promise;
         }
 
         function update(alert) {
-            return Alert.update(alert).$promise;
+            return AlertResource.update(alert).$promise;
         }
     }
 })();

@@ -4,15 +4,15 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label" for="metricName">Name:</label>
                 <div class="col-sm-10">
-                    <input type="text" id="metricName" ng-model="vm.metric.name" class="form-control">
+                    <input type="text" id="metricName" name="name" ng-model="vm.metric.name" class="form-control" pr-server-validation>
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="col-sm-2 control-label" for="metricComparator">Comparator:</label>
                 <div class="col-sm-10">
-                    <select select-picker ng-model="vm.metric.comparator" id="metricComparator" class="form-control"
-                            ng-options="comparator.name as comparator.text for comparator in vm.comparators">
+                    <select pf-select ng-model="vm.metric.comparator" id="metricComparator" name="comparator" class="form-control"
+                            ng-options="comparator.name as comparator.text for comparator in vm.comparators" pr-server-validation>
                     </select>
                 </div>
             </div>
@@ -20,8 +20,10 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label">Description:</label>
                 <div class="col-sm-10">
-                    <div class="editor-wrap">
-                        <trix-editor ng-if="true" angular-trix ng-model="vm.metric.description" class="trix-content"></trix-editor>
+                    <div class="editor-wrap form-control-border">
+                        <trix-editor ng-if="true" angular-trix ng-model="vm.metric.description" class="trix-content"
+                            name="description" pr-server-validation>
+                        </trix-editor>
                     </div>
                 </div>
             </div>

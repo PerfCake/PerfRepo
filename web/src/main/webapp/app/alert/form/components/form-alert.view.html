@@ -4,7 +4,7 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label" for="alertName">Name:</label>
                 <div class="col-sm-10">
-                    <input type="text" id="alertName" ng-model="vm.alert.name" class="form-control">
+                    <input type="text" id="alertName" name="name" ng-model="vm.alert.name" class="form-control" pr-server-validation>
                 </div>
             </div>
 
@@ -18,9 +18,12 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label" for="alertMetric">Metric:</label>
                 <div class="col-sm-10">
-                    <select combo-box id="alertMetric" ng-model="vm.alert.metric" class="form-control"
-                            ng-options="metric.name for metric in vm.metrics track by metric.id">
-                    </select>
+                    <ui-select ng-model="vm.alert.metric" id="alertMetric" name="metric" title="Choose a group" pr-server-validation>
+                        <ui-select-match placeholder="Select or search a metric...">{{$select.selected.name}}</ui-select-match>
+                        <ui-select-choices repeat="metric in vm.metrics | filter: $select.search">
+                            <span ng-bind-html="metric.name | highlight: $select.search"></span>
+                        </ui-select-choices>
+                    </ui-select>
                 </div>
             </div>
 

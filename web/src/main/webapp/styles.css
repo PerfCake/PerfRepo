@@ -1,5 +1,17 @@
 .content-container {
     padding-top: 40px;
+    width: 970px;
+}
+
+.header {
+    background-color: rgb(245, 245, 245);
+    border-bottom: 1px #ddd solid;
+    border-right: 1px #ddd solid;
+}
+
+.header-controls {
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
 trix-editor {
@@ -15,7 +27,12 @@ trix-toolbar .button_group {
 
 trix-toolbar .button_group button {
     border-color: #bbb;
-    height: 25px;
+    height: 20px;
+    width: 25px;
+}
+
+trix-toolbar .button_group button::before {
+    background-size: 90% 90%;
 }
 
 /* TODO */
@@ -84,4 +101,25 @@ tags-input .tags .tag-item .remove-button {
 *:-ms-input-placeholder {
     /* IE 10+ */
     font: 12px "Open Sans",Helvetica,Arial,sans-serif;
+}
+
+div.ui-select-match.btn-default-focus {
+    outline: none;
+}
+
+input.ui-select-search {
+    width: 100% !important;
+}
+
+span.ui-select-placeholder {
+    font-weight: normal;
+}
+
+.ui-select-bootstrap .ui-select-toggle > .caret {
+    font-style: normal;
+}
+
+.has-error.form-control-border {
+    border-color: #c00;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
 }

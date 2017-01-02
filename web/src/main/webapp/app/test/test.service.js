@@ -3,43 +3,65 @@
 
     angular
         .module('org.perfrepo.test')
-        .service('testService', TestService)
-        .factory('Test', Test);
+        .service('testService', TestService);
 
-    function Test($resource, API_URL) {
-        var url = API_URL + '/tests';
-        return $resource(
-            url + '/:id',
-            {id: '@id'},
+    function TestService($http, $resource, API_TEST_URL) {
+
+        var testResource = $resource(API_TEST_URL + '/:id',
             {
-                'query': {
-                    method: 'GET', isArray: false
-                },
+                id: '@id'
+            },
+            {
                 'update': {
-                    method: 'PUT', isArray: false, url: url, params: {}
+                    method: 'PUT',
+                    isArray: false,
+                    url:  API_TEST_URL,
+                    params: {}
+                },
+                'save': {
+                    method: 'POST',
+                    interceptor: {
+                        response: function(response) {
+                            return response.headers("Location").split("/").pop();
+                        }
+                    }
                 }
             });
-    }
 
-    function TestService($http, Test, API_URL) {
-        this.search = function(searchParams){
-            return $http.post(API_URL + '/tests/search', searchParams);
+        return {
+            search: search,
+            getById: getById,
+            save: save,
+            update: update,
+            remove: remove
+
+        };
+
+        function search(searchParams){
+            return $http.post(API_TEST_URL + '/search', searchParams).then(function(response) {
+                return {
+                    data : response.data,
+                    totalCount : parseInt(response.headers('X-Pagination-Total-Count')),
+                    pageCount : parseInt(response.headers('X-Pagination-Page-Count')),
+                    currentPage : parseInt(response.headers('X-Pagination-Current-Page'))
+                };
+            });
         }
 
-        this.getById = function(id) {
-            return Test.get({id: id}).$promise;
-        };
+        function getById(id) {
+            return testResource.get({id: id}).$promise;
+        }
 
-        this.save = function(test) {
-            return Test.save(test).$promise;
-        };
+        function save(test) {
+            return testResource.save(test).$promise;
+        }
 
-        this.update = function(test) {
-            return Test.update(test).$promise;
-        };
+        function update(test) {
+            return testResource.update(test).$promise;
+        }
 
-        this.delete = function(test) {
-            return Test.delete(test).$promise;
-        };
+        function remove(test) {
+            return testResource.delete(test).$promise;
+        }
     }
 })();
