@@ -3,10 +3,12 @@ package org.perfrepo.web.adapter.dummy_impl;
 import org.perfrepo.dto.alert.AlertDto;
 import org.perfrepo.dto.test.TestDto;
 import org.perfrepo.dto.user.UserDto;
+import org.perfrepo.dto.util.validation.ValidationErrors;
 import org.perfrepo.web.adapter.AlertAdapter;
 import org.perfrepo.web.adapter.dummy_impl.storage.Storage;
 import org.perfrepo.web.adapter.exceptions.BadRequestException;
 import org.perfrepo.web.adapter.exceptions.NotFoundException;
+import org.perfrepo.web.adapter.exceptions.ValidationException;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public class AlertAdapterDummyImpl implements AlertAdapter {
 
     @Override
     public AlertDto createAlert(AlertDto alert) {
-        // TODO validate alert
+        validate(alert);
 
         AlertDto createdAlert = storage.alert().create(alert);
 
@@ -48,7 +50,7 @@ public class AlertAdapterDummyImpl implements AlertAdapter {
 
     @Override
     public AlertDto updateAlert(AlertDto alert) {
-        // TODO validate alert
+        validate(alert);
 
         AlertDto origin = storage.alert().getById(alert.getId());
 
@@ -57,7 +59,7 @@ public class AlertAdapterDummyImpl implements AlertAdapter {
         }
 
         if (!origin.getName().equals(alert.getName())
-                || !origin.getCondition().equals(alert.getCondition()) ) {
+                || !origin.getCondition().equals(alert.getCondition())) {
             storage.test().getAll().forEach(test -> {
                 if (test.getAlerts().remove(origin)) {
                     test.getAlerts().add(alert);
@@ -104,5 +106,30 @@ public class AlertAdapterDummyImpl implements AlertAdapter {
     @Override
     public List<UserDto> getAlertSubscribers(Long testId) {
         throw new UnsupportedOperationException();
+    }
+
+    private void validate(AlertDto alert) {
+        ValidationErrors validation = new ValidationErrors();
+
+        // alert name
+        if (alert.getName() == null) {
+            validation.addFieldError("name", "Alert name is a required field");
+        } else if(alert.getName().trim().length() < 3) {
+            validation.addFieldError("name", "Alert name must be at least three characters.");
+        }
+
+        // alert metric
+        if (alert.getMetric() == null) {
+            validation.addFieldError("metric", "Alert metric is a required field");
+        }
+
+        // alert description
+        if (alert.getDescription() != null && alert.getDescription().length() > 100) {
+            validation.addFieldError("description", "Alert description must not be more than 100 characters.");
+        }
+
+        if (validation.hasFieldErrors()) {
+            throw new ValidationException("Test contains validation errors, please fix it.", validation);
+        }
     }
 }

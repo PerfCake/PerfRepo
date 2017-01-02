@@ -201,10 +201,10 @@ public class TestDAO extends DAO<Test, Long> {
          case UID_DESC:
             order = cb.desc(root.get("uid"));
             break;
-         case GROUP_ID_ASC:
+         case GROUP_ASC:
             order = cb.asc(root.get("groupId"));
             break;
-         case GROUP_ID_DESC:
+         case GROUP_DESC:
             order = cb.desc(root.get("groupId"));
             break;
          default:

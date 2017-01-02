@@ -1,13 +1,14 @@
 package org.perfrepo.web.rest.exception_mapper;
 
 import org.apache.http.HttpStatus;
-import org.perfrepo.dto.util.validation.ValidationError;
+import org.perfrepo.dto.util.validation.FieldError;
 import org.perfrepo.web.adapter.exceptions.ValidationException;
 
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import java.util.List;
 
 /**
  *
@@ -18,8 +19,12 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
 
     @Override
     public Response toResponse(ValidationException exception) {
-
-        ValidationExceptionResponse responseEntity = new ValidationExceptionResponse(exception.getMessage(), exception.getValidationErrors());
+        List<FieldError> fieldErrors = null;
+        if (exception.getValidationErrors() != null) {
+            fieldErrors = exception.getValidationErrors().getFieldErrors();
+        }
+        ValidationExceptionResponse responseEntity =
+                new ValidationExceptionResponse(exception.getMessage(), fieldErrors);
 
         return Response.status(HttpStatus.SC_UNPROCESSABLE_ENTITY).entity(responseEntity).build();
     }
@@ -28,19 +33,19 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
 
         private String message;
 
-        private ValidationError validation;
+        private List<FieldError> fieldErrors;
 
-        public ValidationExceptionResponse(String message, ValidationError validationErrors) {
+        public ValidationExceptionResponse(String message, List<FieldError> fieldErrors) {
             this.message = message;
-            this.validation = validationErrors;
+            this.fieldErrors = fieldErrors;
         }
 
         public String getMessage() {
             return message;
         }
 
-        public ValidationError getValidation() {
-            return validation;
+        public List<FieldError> getFieldErrors() {
+            return fieldErrors;
         }
     }
 }

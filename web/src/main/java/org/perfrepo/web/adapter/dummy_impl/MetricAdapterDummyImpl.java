@@ -2,10 +2,12 @@ package org.perfrepo.web.adapter.dummy_impl;
 
 import org.perfrepo.dto.metric.MetricDto;
 import org.perfrepo.dto.test.TestDto;
+import org.perfrepo.dto.util.validation.ValidationErrors;
 import org.perfrepo.web.adapter.exceptions.BadRequestException;
 import org.perfrepo.web.adapter.exceptions.NotFoundException;
 import org.perfrepo.web.adapter.MetricAdapter;
 import org.perfrepo.web.adapter.dummy_impl.storage.Storage;
+import org.perfrepo.web.adapter.exceptions.ValidationException;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -33,6 +35,7 @@ public class MetricAdapterDummyImpl implements MetricAdapter {
 
     @Override
     public MetricDto updateMetric(MetricDto metric) {
+        validate(metric);
 
         MetricDto origin = storage.metric().getById(metric.getId());
 
@@ -59,7 +62,7 @@ public class MetricAdapterDummyImpl implements MetricAdapter {
             throw new BadRequestException("Test does not exist.");
         }
 
-        // TODO validate metric
+        validate(metric);
 
         MetricDto metricToAdd = storage.metric().getByName(metric.getName());
 
@@ -100,5 +103,35 @@ public class MetricAdapterDummyImpl implements MetricAdapter {
     @Override
     public List<MetricDto> getAllMetrics() {
         return storage.metric().getAll();
+    }
+
+    private void validate(MetricDto metric) {
+        ValidationErrors validation = new ValidationErrors();
+
+        // metric name
+        if (metric.getName() == null) {
+            validation.addFieldError("name", "Metric name is a required field");
+        } else if(metric.getName().trim().length() < 3) {
+            validation.addFieldError("name", "Metric name must be at least three characters.");
+        } else {
+            MetricDto existing = storage.metric().getByName(metric.getName());
+            if (existing != null && !existing.getId().equals(metric.getId())) {
+                validation.addFieldError("name", "Metric with this name already exists.");
+            }
+        }
+
+        // metric comparator
+        if (metric.getComparator() == null) {
+            validation.addFieldError("comparator", "Metric comparator is a required field.");
+        }
+
+        // metric description
+        if (metric.getDescription() != null && metric.getDescription().length() > 100) {
+            validation.addFieldError("description", "Metric description must not be more than 100 characters.");
+        }
+
+        if (validation.hasFieldErrors()) {
+            throw new ValidationException("Metric contains validation errors, please fix it.", validation);
+        }
     }
 }

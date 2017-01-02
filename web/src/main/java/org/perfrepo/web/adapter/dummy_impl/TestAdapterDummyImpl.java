@@ -3,11 +3,13 @@ package org.perfrepo.web.adapter.dummy_impl;
 import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.dto.test.TestDto;
 import org.perfrepo.dto.test.TestSearchParams;
+import org.perfrepo.dto.util.validation.ValidationErrors;
 import org.perfrepo.web.adapter.exceptions.AdapterException;
 import org.perfrepo.web.adapter.exceptions.BadRequestException;
 import org.perfrepo.web.adapter.exceptions.NotFoundException;
 import org.perfrepo.web.adapter.TestAdapter;
 import org.perfrepo.web.adapter.dummy_impl.storage.Storage;
+import org.perfrepo.web.adapter.exceptions.ValidationException;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -47,7 +49,7 @@ public class TestAdapterDummyImpl implements TestAdapter {
 
     @Override
     public TestDto createTest(TestDto test) {
-        // TODO validation
+        validate(test);
         // it is not possible to set it, metrics and alerts can be added in test detail
         test.setMetrics(new HashSet<>());
         test.setAlerts(new HashSet<>());
@@ -71,7 +73,7 @@ public class TestAdapterDummyImpl implements TestAdapter {
             throw new NotFoundException("Test does not exist.");
         }
 
-        // TODO validation
+       validate(test);
 
         test.setAlerts(originTest.getAlerts());
         test.setMetrics(originTest.getMetrics());
@@ -102,5 +104,42 @@ public class TestAdapterDummyImpl implements TestAdapter {
     @Override
     public SearchResult<TestDto> searchTests(TestSearchParams searchParams) {
         return storage.test().search(searchParams);
+    }
+
+    private void validate(TestDto test) {
+        ValidationErrors validation = new ValidationErrors();
+
+        // test name
+        if (test.getName() == null) {
+            validation.addFieldError("name", "Test name is a required field");
+        } else if(test.getName().trim().length() < 3) {
+            validation.addFieldError("name", "Test name must be at least three characters.");
+        }
+
+        // test uid
+        if (test.getUid() == null) {
+            validation.addFieldError("uid", "Test uid is a required field");
+        } else if(test.getUid().trim().length() < 3) {
+            validation.addFieldError("uid", "Test uid must be at least three characters.");
+        } else {
+            TestDto existing = storage.test().getByUid(test.getUid());
+            if (existing != null && !existing.getId().equals(test.getId())) {
+                validation.addFieldError("uid", "Test with this UID already exists.");
+            }
+        }
+
+        // test group
+        if (test.getGroup() == null) {
+            validation.addFieldError("group", "Test group is a required field");
+        }
+
+        // test description
+        if (test.getDescription() != null && test.getDescription().length() > 100) {
+            validation.addFieldError("description", "Test description must not be more than 100 characters.");
+        }
+
+        if (validation.hasFieldErrors()) {
+            throw new ValidationException("Test contains validation errors, please fix it.", validation);
+        }
     }
 }

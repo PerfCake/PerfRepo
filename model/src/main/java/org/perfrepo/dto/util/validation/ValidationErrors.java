@@ -8,7 +8,7 @@ import java.util.List;
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class ValidationError {
+public class ValidationErrors {
 
     private List<FieldError> fieldErrors = new ArrayList<>();
 
@@ -37,5 +37,13 @@ public class ValidationError {
      */
     public List<FieldError> getFieldErrors() {
         return fieldErrors;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean hasFieldErrors() {
+        return !fieldErrors.isEmpty();
     }
 }

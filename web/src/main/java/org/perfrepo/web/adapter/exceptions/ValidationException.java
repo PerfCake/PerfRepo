@@ -1,10 +1,10 @@
 package org.perfrepo.web.adapter.exceptions;
 
-import org.perfrepo.dto.util.validation.ValidationError;
+import org.perfrepo.dto.util.validation.ValidationErrors;
 
 /**
  * This unchecked exception is thrown when service adapter performed validation
- * and it was not successful. The exception contains {@link ValidationError} object
+ * and it was not successful. The exception contains {@link ValidationErrors} object
  * which contains the list of particular validation
  * errors ({@link org.perfrepo.dto.util.validation.FieldError}).
  *
@@ -12,7 +12,7 @@ import org.perfrepo.dto.util.validation.ValidationError;
  */
 public class ValidationException extends AdapterException {
 
-    private ValidationError validationErrors;
+    private ValidationErrors validationErrors;
 
     /**
      * Constructs a {@link ValidationException} with the specified detail message
@@ -21,19 +21,19 @@ public class ValidationException extends AdapterException {
      * @param message Detailed message.
      * @param validationErrors The list of fields validation errors.
      */
-    public ValidationException(String message, ValidationError validationErrors) {
+    public ValidationException(String message, ValidationErrors validationErrors) {
         super(message);
         this.validationErrors = validationErrors;
     }
 
     /**
-     * Returns {@link ValidationError} object
+     * Returns {@link ValidationErrors} object
      * which contains validation errors.
      *
-     * @return {@link ValidationError} object which contains the list of particular validation
-     * errors ({@link FieldError}).
+     * @return {@link ValidationErrors} object which contains the list of particular validation
+     * errors ({@link org.perfrepo.dto.util.validation.FieldError}).
      */
-    public ValidationError getValidationErrors() {
+    public ValidationErrors getValidationErrors() {
         return validationErrors;
     }
 }

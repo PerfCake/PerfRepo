@@ -27,8 +27,8 @@ public enum OrderBy {
 
    UID_DESC,
 
-   GROUP_ID_ASC,
+   GROUP_ASC,
 
-   GROUP_ID_DESC;
+   GROUP_DESC;
 
 }

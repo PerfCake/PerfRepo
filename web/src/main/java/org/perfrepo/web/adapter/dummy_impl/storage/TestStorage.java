@@ -76,7 +76,7 @@ public class TestStorage {
         if (test != null) {
             test.setName(dto.getName());
             test.setUid(dto.getUid());
-            test.setGroup(dto.getGroup());//TODO
+            test.setGroup(dto.getGroup());
             test.setDescription(dto.getDescription());
             return test;
         } else {
@@ -109,6 +109,12 @@ public class TestStorage {
             case UID_DESC:
                 sortComparator = (test1, test2) -> test2.getUid().compareToIgnoreCase(test1.getUid());
                 break;
+            case GROUP_ASC:
+                sortComparator = (test1, test2) -> test1.getGroup().getName().compareToIgnoreCase(test2.getGroup().getName());
+                break;
+            case GROUP_DESC:
+                sortComparator = (test1, test2) -> test2.getGroup().getName().compareToIgnoreCase(test1.getGroup().getName());
+                break;
             default:
                 sortComparator = (test1, test2) -> test1.getName().compareToIgnoreCase(test2.getName());
         }
@@ -118,18 +124,21 @@ public class TestStorage {
                         || searchParams.getNameFilters()
                                 .stream().allMatch(nameFilter -> StringUtils.containsIgnoreCase(test.getName(), nameFilter));
 
-
-
         Predicate<TestDto> uidFilterPredicate =
                 test -> searchParams.getUidFilters() == null
                         || searchParams.getUidFilters()
                                 .stream().allMatch(uidFilter -> StringUtils.containsIgnoreCase(test.getUid(), uidFilter));
 
+        Predicate<TestDto> groupFilterPredicate =
+                test -> searchParams.getGroupIdFilters() == null
+                        || searchParams.getGroupIdFilters()
+                        .stream().allMatch(groupFilter -> StringUtils.containsIgnoreCase(test.getGroup().getName(), groupFilter));
+
         Supplier<Stream<TestDto>> testStream = () ->  data.stream()
                 .filter(nameFilterPredicate)
                 .filter(uidFilterPredicate)
+                .filter(groupFilterPredicate)
                 .sorted(sortComparator);
-
 
         int total = (int) testStream.get().count();
         List<TestDto> tests = testStream.get()
