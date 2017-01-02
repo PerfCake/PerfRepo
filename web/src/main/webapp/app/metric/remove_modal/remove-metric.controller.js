@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('org.perfrepo.test.metric.remove')
+        .module('org.perfrepo.metric.remove')
         .controller('RemoveMetricController', RemoveMetricController);
 
     function RemoveMetricController(_testId, _metric, metricService, $modalInstance) {

@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('org.perfrepo.test.metric.create')
+        .module('org.perfrepo.metric.create')
         .controller('CreateMetricController', CreateMetricController);
 
     function CreateMetricController(_testId, _comparators, metricService, validationHelper, $modalInstance) {

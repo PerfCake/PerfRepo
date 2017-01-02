@@ -11,7 +11,7 @@
             },
             controller: FormTestController,
             controllerAs: 'vm',
-            templateUrl: 'app/test/form/components/form-test.view.html'
+            templateUrl: 'app/test/components/form_test/form-test.view.html'
         });
 
     function FormTestController($scope) {

@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('org.perfrepo.test.metric.edit')
+        .module('org.perfrepo.metric.edit')
         .controller('EditMetricController', EditMetricController);
 
     function EditMetricController(_metric, _comparators, metricService, validationHelper, $modalInstance) {

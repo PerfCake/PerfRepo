@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('org.perfrepo.test.metric.form', [
+        .module('org.perfrepo.metric.form', [
             'ui.bootstrap',
             'angularTrix'
         ]);

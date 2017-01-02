@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('org.perfrepo.test.metric.form')
+        .module('org.perfrepo.metric.form')
         .component('metricForm', {
             bindings: {
                 metric: '=',
@@ -12,7 +12,7 @@
 
             controller: FormMetricController,
             controllerAs: 'vm',
-            templateUrl: 'app/test/metric/form/components/form-metric.view.html'
+            templateUrl: 'app/metric/form/components/form-metric.view.html'
         });
 
     function FormMetricController() {

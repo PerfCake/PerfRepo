@@ -19,7 +19,7 @@
             {
                 title: "Tests",
                 iconClass : "fa fa-shield",
-                href: $state.href('app.testSearch')
+                href: $state.href('app.testOverview')
             },
             {
                 title: "Test executions",

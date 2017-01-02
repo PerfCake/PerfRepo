@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('org.perfrepo.test.metric')
+        .module('org.perfrepo.metric')
         .service('metricService', MetricService);
 
     function MetricService(API_METRIC_URL, API_TEST_URL, $http, $resource) {

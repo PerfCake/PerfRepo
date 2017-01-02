@@ -1,10 +1,10 @@
 (function() {
 
     angular
-        .module('org.perfrepo.test.search')
-        .controller('SearchTestController', SearchTestController);
+        .module('org.perfrepo.test.overview')
+        .controller('TestOverviewController', TestOverviewController);
 
-    function SearchTestController(testService, testModalService, pfViewUtils, $state) {
+    function TestOverviewController(testService, testModalService, pfViewUtils, $state) {
         var vm = this;
         vm.createTest = createTest;
         vm.editTest = editTest;

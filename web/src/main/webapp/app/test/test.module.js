@@ -6,11 +6,11 @@
             'ngResource',
             'ui.router',
 
-            'org.perfrepo.test.search',
+            'org.perfrepo.test.overview',
             'org.perfrepo.test.detail',
             'org.perfrepo.test.create',
             'org.perfrepo.test.edit',
-            'org.perfrepo.test.metric',
+            'org.perfrepo.metric',
             'org.perfrepo.alert'
         ]);
 })();

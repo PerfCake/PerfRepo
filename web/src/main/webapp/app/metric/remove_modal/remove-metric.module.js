@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('org.perfrepo.test.metric.remove', [
+        .module('org.perfrepo.metric.remove', [
 
         ]);
 })();

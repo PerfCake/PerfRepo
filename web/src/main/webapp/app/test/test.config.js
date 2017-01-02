@@ -19,10 +19,10 @@
                 }
             })
 
-            .state('app.testSearch', {
-                url: 'test/search',
-                templateUrl: 'app/test/search/search-test.view.html',
-                controller: 'SearchTestController',
+            .state('app.testOverview', {
+                url: 'test/overview',
+                templateUrl: 'app/test/overview/test-overview.view.html',
+                controller: 'TestOverviewController',
                 controllerAs: 'vm'
             });
     }
