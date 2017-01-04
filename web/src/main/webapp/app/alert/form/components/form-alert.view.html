@@ -11,14 +11,14 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label" for="alertCondition">Condition:</label>
                 <div class="col-sm-10">
-                    <textarea id="alertCondition" ng-model="vm.alert.condition" rows="4" class="form-control"></textarea>
+                    <textarea id="alertCondition" name="condition" ng-model="vm.alert.condition" rows="4" class="form-control" pr-server-validation></textarea>
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="col-sm-2 control-label" for="alertMetric">Metric:</label>
                 <div class="col-sm-10">
-                    <ui-select ng-model="vm.alert.metric" id="alertMetric" name="metric" title="Choose a group" pr-server-validation>
+                    <ui-select name="metric" ng-model="vm.alert.metric" id="alertMetric" name="metric" title="Choose a group" pr-server-validation>
                         <ui-select-match placeholder="Select or search a metric...">{{$select.selected.name}}</ui-select-match>
                         <ui-select-choices repeat="metric in vm.metrics | filter: $select.search">
                             <span ng-bind-html="metric.name | highlight: $select.search"></span>
@@ -49,8 +49,8 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label">Description:</label>
                 <div class="col-sm-10">
-                    <div class="editor-wrap">
-                        <trix-editor ng-if="true" angular-trix ng-model="vm.alert.description" class="trix-content"></trix-editor>
+                    <div class="editor-wrap form-control-border">
+                        <trix-editor ng-if="true" angular-trix name="description" ng-model="vm.alert.description" class="trix-content" pr-server-validation></trix-editor>
                     </div>
                 </div>
             </div>
