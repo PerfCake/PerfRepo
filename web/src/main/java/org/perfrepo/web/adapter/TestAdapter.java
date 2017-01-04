@@ -78,4 +78,28 @@ public interface TestAdapter {
      */
     SearchResult<TestDto> searchTests(TestSearchParams searchParams);
 
+    /**
+     * TODO
+     * @param testId
+     * @return
+     */
+    boolean isSubscriber(Long testId);
+
+    /**
+     * Subscribe the logged user to the test alerts.
+     *
+     * @param testId Test {@link org.perfrepo.dto.test.TestDto} identifier.
+     * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the test or user does not exist.
+     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
+     */
+    void addSubscriber(Long testId);
+
+    /**
+     * Unsubscribe the logged user from the test alerts.
+     *
+     * @param testId Test {@link org.perfrepo.dto.test.TestDto} identifier.
+     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
+     */
+    void removeSubscriber(Long testId);
+
 }

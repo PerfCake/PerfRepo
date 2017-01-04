@@ -30,11 +30,15 @@
 
         return {
             search: search,
+            defaultSearch: defaultSearch,
             getById: getById,
             save: save,
             update: update,
-            remove: remove
-
+            remove: remove,
+            isUserAlertsSubscriber: isUserAlertsSubscriber,
+            subscribeAlerts: subscribeAlerts,
+            unsubscribeAlerts: unsubscribeAlerts,
+            getDefaultSearchParams: getDefaultSearchParams
         };
 
         function search(searchParams){
@@ -46,6 +50,18 @@
                     currentPage : parseInt(response.headers('X-Pagination-Current-Page'))
                 };
             });
+        }
+
+        function defaultSearch() {
+            return search(getDefaultSearchParams());
+        }
+
+        function getDefaultSearchParams() {
+            return {
+                limit: 5,
+                offset: 0,
+                orderBy: 'NAME_ASC'
+            };
         }
 
         function getById(id) {
@@ -62,6 +78,24 @@
 
         function remove(test) {
             return testResource.delete(test).$promise;
+        }
+
+        function isUserAlertsSubscriber(testId) {
+            return $http.get(API_TEST_URL + '/' + testId + '/subscriber').then(function(response) {
+                return response.data;
+            });
+        }
+
+        function subscribeAlerts(testId) {
+            return $http.post(API_TEST_URL + '/' + testId + '/subscriber-addition').then(function(response) {
+                return response.data;
+            });
+        }
+
+        function unsubscribeAlerts(testId) {
+            return $http.post(API_TEST_URL + '/' + testId + '/subscriber-removal').then(function(response) {
+                return response.data;
+            });
         }
     }
 })();

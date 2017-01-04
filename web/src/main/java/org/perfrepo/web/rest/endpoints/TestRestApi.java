@@ -107,6 +107,29 @@ public class TestRestApi {
    }
 
    @GET
+   @Path("/{id}/subscriber")
+   public Response isUserSubscriber(@PathParam("id") Long testId) {
+      boolean isSubscriber = testAdapter.isSubscriber(testId);
+      return Response.ok().entity(isSubscriber).build();
+   }
+
+   @POST
+   @Path("/{id}/subscriber-addition")
+   public Response addSubscriber(@PathParam("id") Long testId) {
+      testAdapter.addSubscriber(testId);
+
+      return Response.noContent().build();
+   }
+
+   @POST
+   @Path("/{id}/subscriber-removal")
+   public Response removeSubscriber(@PathParam("id") Long testId) {
+      testAdapter.removeSubscriber(testId);
+
+      return Response.noContent().build();
+   }
+
+   @GET
    @Path("/{id}/alerts")
    public Response getAllAlertsForTest(@PathParam("id") Long testId) {
       List<AlertDto> alerts = alertAdapter.getAllAlertsForTest(testId);

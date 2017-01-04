@@ -1,9 +1,4 @@
-<div>
-    <select class="page-limit" pf-select ng-model="vm.pageSize"
-            ng-options="size for size in [5, 10, 20]">
-    </select>
-</div>
-<div>
+<div class="pagination">
     <pagination total-items="vm.itemsCount"
                 ng-model="vm.currentPage"
                 items-per-page="vm.pageSize"
@@ -13,3 +8,8 @@
     </pagination>
 </div>
 
+<div class="page-limit">
+    <select pf-select ng-model="vm.pageSize"
+            ng-options="size for size in [5, 10, 20]">
+    </select>
+</div>

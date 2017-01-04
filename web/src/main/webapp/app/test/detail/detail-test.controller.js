@@ -11,13 +11,16 @@
         ])
         .controller('DetailTestController', DetailTestController);
 
-    function DetailTestController(_test, testService, testModalService, $modal) {
+    function DetailTestController(_test, _isUserAlertsSubscriber, testService, testModalService, $modal) {
         var vm = this;
         vm.test = _test;
+        vm.isUserAlertsSubscriber = _isUserAlertsSubscriber;
+        vm.alertButtonEnabled = true;
         vm.editTest = editTest;
         vm.createTestExecution = createTestExecution;
         vm.showTestExecutions = showTestExecutions;
         vm.subscribeAlerts = subscribeAlerts;
+        vm.unsubscribeAlerts = unsubscribeAlerts;
         vm.addMetric = addMetric;
         vm.editMetric = editMetric;
         vm.removeMetric = removeMetric;
@@ -25,16 +28,28 @@
         vm.editAlert = editAlert;
         vm.removeAlert = removeAlert;
 
-        function createTestExecution(testId) {
+        function createTestExecution() {
             alert("Not yet implemented.");
         }
 
-        function showTestExecutions(testId) {
+        function showTestExecutions() {
             alert("Not yet implemented.");
         }
 
-        function subscribeAlerts(testId) {
-            alert("Not yet implemented.");
+        function subscribeAlerts() {
+            vm.alertButtonEnabled = false;
+            testService.subscribeAlerts(vm.test.id).then(function() {
+                vm.isUserAlertsSubscriber = true;
+                vm.alertButtonEnabled = true;
+            });
+        }
+
+        function unsubscribeAlerts() {
+            vm.alertButtonEnabled = false;
+            testService.unsubscribeAlerts(vm.test.id).then(function() {
+                vm.isUserAlertsSubscriber = false;
+                vm.alertButtonEnabled = true;
+            });
         }
 
         function addAlert() {
@@ -190,8 +205,8 @@
             });
         }
 
-        function editTest(id) {
-            var modalInstance = testModalService.editTest(id);
+        function editTest() {
+            var modalInstance = testModalService.editTest(vm.test.id);
 
             modalInstance.result.then(function () {
                 updateDetail();

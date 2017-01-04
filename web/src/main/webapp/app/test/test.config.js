@@ -14,16 +14,24 @@
                 controllerAs: 'vm',
                 resolve: {
                     _test: function(testService, $stateParams) {
-                        return testService.getById($stateParams.id)
+                        return testService.getById($stateParams.id);
+                    },
+                    _isUserAlertsSubscriber: function(testService, $stateParams) {
+                        return testService.isUserAlertsSubscriber($stateParams.id);
                     }
                 }
             })
 
             .state('app.testOverview', {
-                url: 'test/overview',
+                url: 'test/search',
                 templateUrl: 'app/test/overview/test-overview.view.html',
                 controller: 'TestOverviewController',
-                controllerAs: 'vm'
+                controllerAs: 'vm',
+                resolve: {
+                    _initialSearchResult: function(testService) {
+                        return testService.defaultSearch();
+                    }
+                }
             });
     }
 })();

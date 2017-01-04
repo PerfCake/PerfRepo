@@ -13,6 +13,8 @@
             .state('app', {
                 url: '/',
                 templateUrl: 'app/app.view.html',
+                controller: 'AppController',
+                controllerAs: 'app',
                 abstract: true,
                 data: {
                     requireLogin: true
@@ -21,6 +23,8 @@
             .state('login', {
                 url: '/login',
                 templateUrl: 'app/login/login.view.html',
+                controller: 'LoginController',
+                controllerAs: 'login',
                 params: {
                     'toState': 'app.dashboard',
                     'toParams': {}
@@ -31,15 +35,24 @@
             });
     }
 
-    function run($rootScope, $state, authenticationService){
+    function run($rootScope, $state, authenticationService, ngProgressFactory){
+        var ngProgress = ngProgressFactory.createInstance();
+        $rootScope.ngProgress = ngProgress;
+        ngProgress.setHeight('5px');
+        ngProgress.setColor('#39a5dc');
 
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
+            ngProgress.start();
             var requireLogin = toState.data.requireLogin;
 
             if (requireLogin && !authenticationService.isAuthenticated()) {
                 event.preventDefault();
                 $state.go('login', {'toState': toState.name, 'toParams': toParams});
             }
+        });
+
+        $rootScope.$on('$stateChangeSuccess', function() {
+            ngProgress.complete();
         });
 
         $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {

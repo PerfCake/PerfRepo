@@ -15,7 +15,7 @@
 
     function TestListViewController($state,  $templateCache, testModalService) {
         var vm = this;
-        $templateCache.put('test-detail-button-template', '<span class="fa fa-columns"></span> {{actionButton.name}}');
+        $templateCache.put('test-detail-button-template', '<span class="fa fa-pencil-square-o"></span> {{actionButton.name}}');
 
         vm.actionButtons = getActionButtons();
         vm.menuActions = getMenuActions();
@@ -33,10 +33,10 @@
         function getActionButtons() {
             return [
                 {
-                    name: 'Detail page',
+                    name: 'Test detail',
                     include: 'test-detail-button-template',
                     title: 'Go to test detail page',
-                    class: 'btn btn-primary',
+                    class: 'btn btn-default',
                     actionFn: showTestDetailAction
                 }
             ];

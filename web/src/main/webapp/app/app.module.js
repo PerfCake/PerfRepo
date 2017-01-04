@@ -5,6 +5,7 @@
         .module('org.perfrepo', [
             'patternfly.navigation',
             'ui.router',
+            'ngProgress',
 
             'org.perfrepo.authentication',
             'org.perfrepo.login',

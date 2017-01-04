@@ -94,16 +94,6 @@ public class AlertAdapterDummyImpl implements AlertAdapter {
     }
 
     @Override
-    public void subscribeAlerts(Long alertId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void unsubscribeAlerts(Long alertId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public List<UserDto> getAlertSubscribers(Long testId) {
         throw new UnsupportedOperationException();
     }
@@ -114,8 +104,13 @@ public class AlertAdapterDummyImpl implements AlertAdapter {
         // alert name
         if (alert.getName() == null) {
             validation.addFieldError("name", "Alert name is a required field");
-        } else if(alert.getName().trim().length() < 3) {
+        } else if (alert.getName().trim().length() < 3) {
             validation.addFieldError("name", "Alert name must be at least three characters.");
+        }
+
+        // alert condition
+        if (alert.getCondition() == null) {
+            validation.addFieldError("condition", "Alert condition is a required field");
         }
 
         // alert metric
@@ -124,8 +119,8 @@ public class AlertAdapterDummyImpl implements AlertAdapter {
         }
 
         // alert description
-        if (alert.getDescription() != null && alert.getDescription().length() > 100) {
-            validation.addFieldError("description", "Alert description must not be more than 100 characters.");
+        if (alert.getDescription() != null && alert.getDescription().length() > 500) {
+            validation.addFieldError("description", "Alert description must not be more than 500 characters.");
         }
 
         if (validation.hasFieldErrors()) {

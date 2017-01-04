@@ -54,23 +54,6 @@ public interface AlertAdapter {
     void removeAlert(Long id);
 
     /**
-     * Subscribe the logged user to the test alerts.
-     *
-     * @param testId Test {@link org.perfrepo.dto.test.TestDto} identifier.
-     * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the test or user does not exist.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
-     */
-    void subscribeAlerts(Long testId);
-
-    /**
-     * Unsubscribe the logged user from the test alerts.
-     *
-     * @param testId Test {@link org.perfrepo.dto.test.TestDto} identifier.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
-     */
-    void unsubscribeAlerts(Long testId);
-
-    /**
      * Return subscribed users to test alerts.
      *
      * @param testId Test {@link org.perfrepo.dto.test.TestDto} identifier.

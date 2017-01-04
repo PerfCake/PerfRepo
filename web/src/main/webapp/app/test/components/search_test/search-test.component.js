@@ -5,30 +5,27 @@
         .module('org.perfrepo.test.search')
         .component('searchTest', {
             bindings: {
-
+                initialSearchResult: '='
             },
             controller: SearchTestController,
             controllerAs: 'vm',
             templateUrl: 'app/test/components/search_test/search-test.view.html'
         });
 
-    function SearchTestController(testService, testSearchService) {
+    function SearchTestController(testService, testSearchService, $rootScope) {
         var vm = this;
 
         vm.pagination = {};
         vm.currentPage = 1;
-        vm.searchParams = {
-            limit: 5,
-            offset: 0,
-            orderBy: 'NAME_ASC'
-        };
+        vm.searchParams = testService.getDefaultSearchParams();
+
         vm.toolbarConfig = testSearchService.getToolbarConfig(filterChanged, sortChanged, viewChanged);
 
         vm.paginationChanged = paginationChanged;
         vm.updateSearch = updateSearch;
 
-        // call initial search
-        updateSearch();
+        // apply initial search
+        applySearchResult(vm.initialSearchResult);
 
         function paginationChanged() {
             vm.searchParams.offset = testSearchService.getSearchOffset(vm.currentPage, vm.searchParams.limit);
@@ -62,12 +59,19 @@
         }
 
         function updateSearch() {
-            return testService.search(vm.searchParams).then(function(result){
-                vm.items = result.data;
-                vm.toolbarConfig.filterConfig.resultsCount = result.totalCount;
-                vm.pagination.pageCount = result.pageCount;
-                vm.pagination.currentPage = result.currentPage;
+            $rootScope.ngProgress.start();
+
+            testService.search(vm.searchParams).then(function(searchResult) {
+                applySearchResult(searchResult);
+                $rootScope.ngProgress.complete();
             });
+        }
+
+        function applySearchResult(searchResult) {
+            vm.items = searchResult.data;
+            vm.toolbarConfig.filterConfig.resultsCount = searchResult.totalCount;
+            vm.pagination.pageCount = searchResult.pageCount;
+            vm.pagination.currentPage = searchResult.currentPage;
         }
     }
 })();

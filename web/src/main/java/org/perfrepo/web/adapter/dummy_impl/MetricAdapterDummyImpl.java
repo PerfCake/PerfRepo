@@ -111,7 +111,7 @@ public class MetricAdapterDummyImpl implements MetricAdapter {
         // metric name
         if (metric.getName() == null) {
             validation.addFieldError("name", "Metric name is a required field");
-        } else if(metric.getName().trim().length() < 3) {
+        } else if (metric.getName().trim().length() < 3) {
             validation.addFieldError("name", "Metric name must be at least three characters.");
         } else {
             MetricDto existing = storage.metric().getByName(metric.getName());
@@ -126,8 +126,8 @@ public class MetricAdapterDummyImpl implements MetricAdapter {
         }
 
         // metric description
-        if (metric.getDescription() != null && metric.getDescription().length() > 100) {
-            validation.addFieldError("description", "Metric description must not be more than 100 characters.");
+        if (metric.getDescription() != null && metric.getDescription().length() > 500) {
+            validation.addFieldError("description", "Metric description must not be more than 500 characters.");
         }
 
         if (validation.hasFieldErrors()) {

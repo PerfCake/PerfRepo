@@ -1,4 +1,4 @@
-<div class="layout-pf layout-pf-fixed" ng-controller="AppController as app">
+<div class="layout-pf layout-pf-fixed">
     <div pf-vertical-navigation items="app.navigationItems" brand-alt="PerfRepo"
          show-badges="true" pinnable-menus="true" update-active-items-on-click="true">
         <div>
@@ -15,7 +15,7 @@
             </ul>
         </div>
     </div>
-    <div class="content-container container-fluid container-cards-pf container-pf-nav-pf-vertical">
+    <div id="container-repo" class="content-container container-fluid container-cards-pf container-pf-nav-pf-vertical">
         <ui-view>
             <!-- content -->
         </ui-view>

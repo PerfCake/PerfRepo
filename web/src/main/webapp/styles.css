@@ -1,12 +1,30 @@
+.navbar-pf-vertical {
+    border-top: 2px solid #1d1d1d;
+}
+
+#ngProgress {
+    box-shadow: none;
+}
+
+.pagination>li>a {
+    cursor: pointer;
+}
+
 .content-container {
     padding-top: 40px;
-    width: 970px;
 }
 
 .header {
     background-color: rgb(245, 245, 245);
     border-bottom: 1px #ddd solid;
-    border-right: 1px #ddd solid;
+}
+
+.content {
+    max-width: 1140px;
+}
+
+.header-content {
+    max-width: 1180px;
 }
 
 .header-controls {
@@ -35,15 +53,36 @@ trix-toolbar .button_group button::before {
     background-size: 90% 90%;
 }
 
+pr-search-pagination {
+    display: flex;
+}
+
+pr-search-pagination {
+    float: right;
+}
+
+hr.pagination {
+    border-top: 1px solid #d1d1d1;
+    margin-top: 0;
+}
+
+.page-limit .bootstrap-select {
+    width: 50px !important;
+}
+
+.pagination {
+    margin: 0;
+}
+
+.pagination + .page-limit {
+    margin-left: 10px;
+}
+
 /* TODO */
 .editor-wrap {
     border: 1px solid #bbb;
     padding: 3px;
     background-color: #f8f8f8;
-}
-
-.page-limit {
-    width: 50px !important;
 }
 
 .login-pf {

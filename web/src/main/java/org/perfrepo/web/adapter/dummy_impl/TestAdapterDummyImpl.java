@@ -103,7 +103,67 @@ public class TestAdapterDummyImpl implements TestAdapter {
 
     @Override
     public SearchResult<TestDto> searchTests(TestSearchParams searchParams) {
+        // delay...
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return storage.test().search(searchParams);
+    }
+
+    @Override
+    public boolean isSubscriber(Long testId) {
+        TestDto test = storage.test().getById(testId);
+
+        if (test == null) {
+            throw new NotFoundException("Test does not exist.");
+        }
+
+        // TODO, logged user
+        Long userId = storage.user().getByUsername("grunwjir").getId();
+        return storage.testToAlert().contains(testId, userId);
+    }
+
+    @Override
+    public void addSubscriber(Long testId) {
+        TestDto test = storage.test().getById(testId);
+
+        if (test == null) {
+            throw new NotFoundException("Test does not exist.");
+        }
+
+        // delay...
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // TODO, logged user
+        Long userId = storage.user().getByUsername("grunwjir").getId();
+        storage.testToAlert().add(testId, userId);
+    }
+
+    @Override
+    public void removeSubscriber(Long testId) {
+        TestDto test = storage.test().getById(testId);
+
+        if (test == null) {
+            throw new NotFoundException("Test does not exist.");
+        }
+
+        // delay...
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // TODO, logged user
+        Long userId = storage.user().getByUsername("grunwjir").getId();
+        storage.testToAlert().remove(testId, userId);
     }
 
     private void validate(TestDto test) {
@@ -112,14 +172,14 @@ public class TestAdapterDummyImpl implements TestAdapter {
         // test name
         if (test.getName() == null) {
             validation.addFieldError("name", "Test name is a required field");
-        } else if(test.getName().trim().length() < 3) {
+        } else if (test.getName().trim().length() < 3) {
             validation.addFieldError("name", "Test name must be at least three characters.");
         }
 
         // test uid
         if (test.getUid() == null) {
             validation.addFieldError("uid", "Test uid is a required field");
-        } else if(test.getUid().trim().length() < 3) {
+        } else if (test.getUid().trim().length() < 3) {
             validation.addFieldError("uid", "Test uid must be at least three characters.");
         } else {
             TestDto existing = storage.test().getByUid(test.getUid());
@@ -134,8 +194,8 @@ public class TestAdapterDummyImpl implements TestAdapter {
         }
 
         // test description
-        if (test.getDescription() != null && test.getDescription().length() > 100) {
-            validation.addFieldError("description", "Test description must not be more than 100 characters.");
+        if (test.getDescription() != null && test.getDescription().length() > 500) {
+            validation.addFieldError("description", "Test description must not be more than 500 characters.");
         }
 
         if (validation.hasFieldErrors()) {

@@ -30,6 +30,8 @@ public class Storage {
 
     private final AlertStorage alertStorage;
 
+    private final TestToAlertStorage testToAlertStorage;
+
     public Storage() {
         testStorage = new TestStorage();
         metricStorage = new MetricStorage();
@@ -37,6 +39,7 @@ public class Storage {
         userStorage = new UserStorage();
         tokenStorage = new TokenStorage();
         alertStorage = new AlertStorage();
+        testToAlertStorage = new TestToAlertStorage();
         initialize();
     }
 
@@ -62,6 +65,10 @@ public class Storage {
 
     public AlertStorage alert() {
         return alertStorage;
+    }
+
+    public TestToAlertStorage testToAlert() {
+        return testToAlertStorage;
     }
 
     private void initialize() {

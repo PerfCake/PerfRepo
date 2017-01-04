@@ -1,14 +1,17 @@
-<div class="row header">
-    <div class="col-sm-12 col-md-4">
-        <h1>Tests overview</h1>
-    </div>
-    <div class="col-sm-12 col-md-8">
-        <div class="pull-right header-controls">
-            <button class="btn btn-default" ng-click="vm.createTest()">
-                <span class="pficon pficon-add-circle-o" aria-hidden="true"></span> Create new test
-            </button>
+<div id="row-header" class="row header">
+    <div class="header-content">
+        <div class="col-sm-12 col-md-4">
+            <h1>Tests search</h1>
+        </div>
+        <div class="col-sm-12 col-md-8">
+            <div class="pull-right header-controls">
+                <button class="btn btn-primary" ng-click="vm.createTest()">
+                    <span class="pficon pficon-add-circle-o" aria-hidden="true"></span> Create new test
+                </button>
+            </div>
         </div>
     </div>
 </div>
-
-<search-test></search-test>
+<div class="content">
+    <search-test initial-search-result="vm.initialSearchResult"></search-test>
+</div>
