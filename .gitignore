@@ -6,3 +6,4 @@ target
 eclipse-formatter.xml
 .idea
 *.iml
+web/src/main/webapp/bower_components/
