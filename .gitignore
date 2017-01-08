@@ -6,5 +6,10 @@ target
 eclipse-formatter.xml
 .idea
 *.iml
+web/node
 web/node_modules
-web/src/main/webapp/bower_components
+web/webapp_content/bower_components
+web/webapp_content/vendor
+web/src/main/webapp/app
+web/src/main/webapp/index.html
+web/src/main/webapp/vendor

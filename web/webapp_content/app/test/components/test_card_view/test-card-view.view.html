@@ -1,0 +1,11 @@
+<div pf-card-view config="vm.config" items="vm.items">
+    <div class="col-md-12">
+        <strong>{{item.name}}</strong>
+    </div>
+    <div class="col-md-12">
+        <span>{{item.uid}}</span>
+    </div>
+    <div class="col-md-12">
+        <span ng-bind-html="item.description"></span>
+    </div>
+</div>
