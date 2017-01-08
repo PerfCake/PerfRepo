@@ -1,14 +1,12 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
-
-import org.perfrepo.dto.user.UserDto;
 import org.perfrepo.model.MetricComparator;
-import org.perfrepo.dto.metric.MetricDto;
-import org.perfrepo.dto.test.TestDto;
-import org.perfrepo.dto.group.GroupDto;
+import org.perfrepo.web.adapter.dummy_impl.builders.GroupDtoBuilder;
+import org.perfrepo.web.adapter.dummy_impl.builders.MetricDtoBuilder;
+import org.perfrepo.web.adapter.dummy_impl.builders.TestDtoBuilder;
+import org.perfrepo.web.adapter.dummy_impl.builders.UserDtoBuilder;
 
 import javax.inject.Singleton;
-import java.util.HashSet;
 
 /**
  * Temporary in-memory storage interface for development purpose.
@@ -72,118 +70,107 @@ public class Storage {
     }
 
     private void initialize() {
-        //TODO create builders...
+        // ***** USERS *****
+        // user 1
+        userStorage.create(new UserDtoBuilder()
+                .username("grunwjir")
+                .email("grunwjir@gmail.com")
+                .firstName("Jiri")
+                .lastName("Grunwald")
+                .password("123456").build());
 
-        UserDto user1 = new UserDto();
-        user1.setUsername("grunwjir");
-        user1.setEmail("grunwjir@gmail.com");
-        user1.setFirstName("Jiri");
-        user1.setLastName("Grunwald");
-        user1.setPassword("123456");
-        userStorage.create(user1);
+        // ***** GROUPS *****
+        // group 1
+        groupStorage.create(new GroupDtoBuilder()
+                .name("perfrepouser")
+                .build());
+        // group 2
+        groupStorage.create(new GroupDtoBuilder()
+                .name("super user group")
+                .build());
 
-        GroupDto group1 = new GroupDto();
-        group1.setName("perfrepouser");
-        groupStorage.create(group1);
+        // ***** METRICS *****
+        // metric 1
+        metricStorage.create(new MetricDtoBuilder()
+                .comparator(MetricComparator.HIGHER_BETTER)
+                .name("Throughput")
+                .description("Amount of transactions produced over time during a test.")
+                .build());
+        // metric 2
+        metricStorage.create(new MetricDtoBuilder()
+                .comparator(MetricComparator.LOWER_BETTER)
+                .name("Response time")
+                .build());
 
-        GroupDto group2 = new GroupDto();
-        group2.setName("super user group");
-        groupStorage.create(group2);
-
-        MetricDto metric1 = new MetricDto();
-        metric1.setComparator(MetricComparator.HIGHER_BETTER);
-        metric1.setName("Throughput");
-        metric1.setDescription("Amount of transactions produced over time during a test.");
-        metricStorage.create(metric1);
-
-        MetricDto metric2 = new MetricDto();
-        metric2.setComparator(MetricComparator.LOWER_BETTER);
-        metric2.setName("Response time");
-        metricStorage.create(metric2);
-
-        TestDto test1 = new TestDto();
-        test1.setName("Echo socket test");
-        test1.setUid("echo_socket_test");
-        test1.setDescription("Bla bla");
-        test1.setGroup(groupStorage.getById(1L));
-        test1.setMetrics(new HashSet<>());
-        test1.getMetrics().add(metricStorage.getById(1L));
-        test1.getMetrics().add(metricStorage.getById(2L));
-        test1.setAlerts(new HashSet<>());
-        testStorage.create(test1);
-
-        TestDto test2 = new TestDto();
-        test2.setName("Second sample test");
-        test2.setUid("sample_second_test");
-        test2.setGroup(groupStorage.getById(2L));
-        test2.setMetrics(new HashSet<>());
-        test2.getMetrics().add(metricStorage.getById(2L));
-        test2.setAlerts(new HashSet<>());
-        testStorage.create(test2);
-
-        TestDto test3 = new TestDto();
-        test3.setName("Third sample test");
-        test3.setUid("sample_third_test");
-        test3.setGroup(groupStorage.getById(1L));
-        test3.setMetrics(new HashSet<>());
-        test3.getMetrics().add(metricStorage.getById(1L));
-        test3.setAlerts(new HashSet<>());
-        testStorage.create(test3);
-
-        TestDto test4 = new TestDto();
-        test4.setName("Sample test 4");
-        test4.setUid("sample_4_test");
-        test4.setGroup(groupStorage.getById(1L));
-        test4.setMetrics(new HashSet<>());
-        test4.getMetrics().add(metricStorage.getById(1L));
-        test4.setAlerts(new HashSet<>());
-        testStorage.create(test4);
-
-        TestDto test5 = new TestDto();
-        test5.setName("Sample test 5");
-        test5.setUid("sample_5_test");
-        test5.setGroup(groupStorage.getById(1L));
-        test5.setMetrics(new HashSet<>());
-        test5.getMetrics().add(metricStorage.getById(1L));
-        test5.setAlerts(new HashSet<>());
-        testStorage.create(test5);
-
-        TestDto test6 = new TestDto();
-        test6.setName("Sample test 6");
-        test6.setUid("sample_6_test");
-        test6.setGroup(groupStorage.getById(1L));
-        test6.setMetrics(new HashSet<>());
-        test6.getMetrics().add(metricStorage.getById(1L));
-        test6.setAlerts(new HashSet<>());
-        testStorage.create(test6);
-
-        TestDto test7 = new TestDto();
-        test7.setName("Sample test 7");
-        test7.setUid("sample_7_test");
-        test7.setGroup(groupStorage.getById(1L));
-        test7.setMetrics(new HashSet<>());
-        test7.getMetrics().add(metricStorage.getById(1L));
-        test7.setAlerts(new HashSet<>());
-        testStorage.create(test7);
-
-        TestDto test8 = new TestDto();
-        test8.setName("Sample test 8");
-        test8.setUid("sample_8_test");
-        test8.setGroup(groupStorage.getById(1L));
-        test8.setMetrics(new HashSet<>());
-        test8.getMetrics().add(metricStorage.getById(1L));
-        test8.setAlerts(new HashSet<>());
-        testStorage.create(test8);
-        
-        TestDto test9 = new TestDto();
-        test9.setName("Sample test 9");
-        test9.setUid("sample_9_test");
-        test9.setGroup(groupStorage.getById(1L));
-        test9.setMetrics(new HashSet<>());
-        test9.getMetrics().add(metricStorage.getById(1L));
-        test9.setAlerts(new HashSet<>());
-        testStorage.create(test9);
-
+        // ***** TESTS *****
+        // test 1
+        testStorage.create(new TestDtoBuilder()
+                .name("Echo socket test")
+                .uid("echo_socket_test")
+                .description("Bla bla")
+                .group(groupStorage.getById(1L))
+                .metric(metricStorage.getById(1L))
+                .metric(metricStorage.getById(2L))
+                .build());
+        // test 2
+        testStorage.create(new TestDtoBuilder()
+                .name("Second sample test")
+                .uid("sample_second_test")
+                .group(groupStorage.getById(2L))
+                .metric(metricStorage.getById(2L))
+                .build());
+        // test 3
+        testStorage.create(new TestDtoBuilder()
+                .name("Third sample test")
+                .uid("sample_third_test")
+                .group(groupStorage.getById(2L))
+                .metric(metricStorage.getById(1L))
+                .metric(metricStorage.getById(2L))
+                .build());
+        // test 4
+        testStorage.create(new TestDtoBuilder()
+                .name("Sample test 4")
+                .uid("sample_test_4")
+                .group(groupStorage.getById(1L))
+                .metric(metricStorage.getById(2L))
+                .build());
+        // test 5
+        testStorage.create(new TestDtoBuilder()
+                .name("Sample test 5")
+                .uid("sample_test_5")
+                .group(groupStorage.getById(1L))
+                .metric(metricStorage.getById(2L))
+                .build());
+        // test 6
+        testStorage.create(new TestDtoBuilder()
+                .name("Sample test 6")
+                .uid("sample_test_6")
+                .group(groupStorage.getById(2L))
+                .metric(metricStorage.getById(1L))
+                .build());
+        // test 7
+        testStorage.create(new TestDtoBuilder()
+                .name("Sample test 7")
+                .uid("sample_test_7")
+                .group(groupStorage.getById(2L))
+                .metric(metricStorage.getById(1L))
+                .metric(metricStorage.getById(2L))
+                .build());
+        // test 8
+        testStorage.create(new TestDtoBuilder()
+                .name("Sample test 8")
+                .uid("sample_test_8")
+                .group(groupStorage.getById(2L))
+                .metric(metricStorage.getById(2L))
+                .build());
+        // test 9
+        testStorage.create(new TestDtoBuilder()
+                .name("Sample test 9")
+                .uid("sample_test_9")
+                .group(groupStorage.getById(1L))
+                .metric(metricStorage.getById(2L))
+                .metric(metricStorage.getById(1L))
+                .build());
     }
 }
 
