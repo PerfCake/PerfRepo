@@ -6,11 +6,29 @@
         .config(config);
 
     function config($stateProvider) {
-        $stateProvider.state('app.testExecution', {
-            url: 'test-execution',
-            templateUrl: 'app/test_execution/test-execution.view.html',
-            controller: 'TestExecutionController',
-            controllerAs: 'testExecution'
-        });
+        $stateProvider
+            .state('app.testExecutionDetail', {
+                url: 'test-execution/detail/:id',
+                templateUrl: 'app/test_execution/detail/detail-test-execution.view.html',
+                controller: 'DetailTestExecutionController',
+                controllerAs: 'vm',
+                resolve: {
+                    _testExecution: function(testExecutionService, $stateParams) {
+                        return testExecutionService.getById($stateParams.id);
+                    }
+                }
+            })
+
+            .state('app.testExecutionOverview', {
+                url: 'test-execution/search',
+                templateUrl: 'app/test_execution/overview/test-execution-overview.view.html',
+                controller: 'TestExecutionOverviewController',
+                controllerAs: 'vm',
+                resolve: {
+                    _initialSearchResult: function(testExecutionService) {
+                        return testExecutionService.defaultSearch();
+                    }
+                }
+            });
     }
 })();

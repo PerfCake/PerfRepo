@@ -13,7 +13,7 @@
             templateUrl: 'app/test/components/test_list_view/test-list-view.view.html'
         });
 
-    function TestListViewController($state,  $templateCache, testModalService) {
+    function TestListViewController($state,  $templateCache, testModalService, testExecutionModalService) {
         var vm = this;
         $templateCache.put('test-detail-button-template', '<span class="fa fa-pencil-square-o"></span> {{actionButton.name}}');
 
@@ -53,6 +53,19 @@
                     isSeparator: true
                 },
                 {
+                    name: 'Create test execution',
+                    title: 'Create test execution',
+                    actionFn: createTestExecutionAction
+                },
+                {
+                    name: 'Show test executions',
+                    title: 'Show test executions',
+                    actionFn: showTestExecutionsAction
+                },
+                {
+                    isSeparator: true
+                },
+                {
                     name: 'Delete test',
                     title: 'Delete test',
                     actionFn: deleteTestAction
@@ -62,6 +75,18 @@
 
         function showTestDetailAction(action, item) {
             $state.go('app.testDetail', {id: item.id});
+        }
+
+        function createTestExecutionAction(action, item) {
+            var modalInstance = testExecutionModalService.createTestExecution(item.id);
+
+            modalInstance.result.then(function (id) {
+                $state.go('app.testExecutionDetail', {id: id});
+            });
+        }
+
+        function showTestExecutionsAction(action, item) {
+            alert('Not yet implemented.');
         }
 
         function editTestAction(action, item) {

@@ -3,6 +3,12 @@
 
     angular
         .module('org.perfrepo.testExecution', [
-            'ui.router'
+            'ngResource',
+            'ui.router',
+
+            'org.perfrepo.testExecution.overview',
+            'org.perfrepo.testExecution.detail',
+            'org.perfrepo.testExecution.create',
+            'org.perfrepo.testExecution.edit'
         ]);
 })();

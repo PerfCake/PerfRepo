@@ -1,12 +1,12 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
+import org.perfrepo.dto.test_execution.TestExecutionGroupValueDto;
 import org.perfrepo.model.MetricComparator;
-import org.perfrepo.web.adapter.dummy_impl.builders.GroupDtoBuilder;
-import org.perfrepo.web.adapter.dummy_impl.builders.MetricDtoBuilder;
-import org.perfrepo.web.adapter.dummy_impl.builders.TestDtoBuilder;
-import org.perfrepo.web.adapter.dummy_impl.builders.UserDtoBuilder;
+import org.perfrepo.web.adapter.dummy_impl.builders.*;
 
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Temporary in-memory storage interface for development purpose.
@@ -30,6 +30,8 @@ public class Storage {
 
     private final TestToAlertStorage testToAlertStorage;
 
+    private final TestExecutionStorage testExecutionStorage;
+
     public Storage() {
         testStorage = new TestStorage();
         metricStorage = new MetricStorage();
@@ -38,6 +40,7 @@ public class Storage {
         tokenStorage = new TokenStorage();
         alertStorage = new AlertStorage();
         testToAlertStorage = new TestToAlertStorage();
+        testExecutionStorage = new TestExecutionStorage();
         initialize();
     }
 
@@ -67,6 +70,10 @@ public class Storage {
 
     public TestToAlertStorage testToAlert() {
         return testToAlertStorage;
+    }
+
+    public TestExecutionStorage testExecution() {
+        return testExecutionStorage;
     }
 
     private void initialize() {
@@ -170,6 +177,68 @@ public class Storage {
                 .group(groupStorage.getById(1L))
                 .metric(metricStorage.getById(2L))
                 .metric(metricStorage.getById(1L))
+                .build());
+
+        // ***** TEST EXECUTIONS *****
+        // test execution 1
+
+        TestExecutionGroupValueDto g = new TestExecutionGroupValueDto();
+
+        g.setMetricId(1L);
+        g.setValues(new ArrayList<>());
+        g.getValues().add(new TestExecutionValueDtoBuilder()
+                .value(10.0)
+                .parameter("time", "1")
+                .build());
+        g.getValues().add(new TestExecutionValueDtoBuilder()
+                .value(15.0)
+                .parameter("time", "2")
+                .build());
+        g.getValues().add(new TestExecutionValueDtoBuilder()
+                .value(17.0)
+                .parameter("time", "3")
+                .build());
+
+        TestExecutionGroupValueDto g2 = new TestExecutionGroupValueDto();
+
+        g2.setMetricId(1L);
+        g2.setValues(new ArrayList<>());
+        g2.getValues().add(new TestExecutionValueDtoBuilder()
+                .value(11.0)
+                .parameter("time", "1")
+                .build());
+        g2.getValues().add(new TestExecutionValueDtoBuilder()
+                .value(16.0)
+                .parameter("time", "2")
+                .build());
+        g2.getValues().add(new TestExecutionValueDtoBuilder()
+                .value(23.0)
+                .parameter("time", "3")
+                .build());
+
+        testExecutionStorage.create(new TestExecutionDtoBuilder()
+                .name("Execution 1 of Echo socket test")
+                .test(testStorage.getById(1L))
+                .tag("echo")
+                .tag("socket")
+                .tag("1.0")
+                .started(new Date())
+                .executionParameter("environment", "test")
+                .executionValue(g)
+                .executionValue(g2)
+                .comment("Bla bla")
+                .build());
+        // test execution 2
+        testExecutionStorage.create(new TestExecutionDtoBuilder()
+                .name("Execution 2 of Echo socket test")
+                .test(testStorage.getById(1L))
+                .tag("echo")
+                .tag("socket")
+                .tag("1.1")
+                .started(new Date())
+                .executionParameter("environment", "test")
+                .executionValue(g2)
+                .comment("Bla bla")
                 .build());
     }
 }

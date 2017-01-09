@@ -20,5 +20,6 @@
         .constant('API_URL', 'rest/json')
         .constant('API_TEST_URL', 'rest/json/tests')
         .constant('API_METRIC_URL', 'rest/json/metrics')
-        .constant('API_ALERT_URL', 'rest/json/alerts');
+        .constant('API_ALERT_URL', 'rest/json/alerts')
+        .constant('API_TEST_EXECUTION_URL', 'rest/json/test-executions');
 })();

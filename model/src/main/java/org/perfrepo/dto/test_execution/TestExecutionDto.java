@@ -1,7 +1,4 @@
 package org.perfrepo.dto.test_execution;
-
-import org.perfrepo.dto.group.GroupDto;
-import org.perfrepo.dto.metric.MetricDto;
 import org.perfrepo.dto.test.TestDto;
 
 import java.util.Date;
@@ -10,8 +7,7 @@ import java.util.Set;
 
 /**
  * Data transfer object for {@link org.perfrepo.model.TestExecution} entity that represents a execution of the test.
- * Not completed! TODO
- *
+ * TODO add attachments
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public class TestExecutionDto {
@@ -30,7 +26,7 @@ public class TestExecutionDto {
 
     private Map<String, String> executionParameters;
 
-    private Map<MetricDto, TestExecutionValueDto> executionValues;
+    private Set<TestExecutionGroupValueDto> executionValues;
 
     public Long getId() {
         return id;
@@ -88,11 +84,11 @@ public class TestExecutionDto {
         this.executionParameters = executionParameters;
     }
 
-    public Map<MetricDto, TestExecutionValueDto> getExecutionValues() {
+    public Set<TestExecutionGroupValueDto> getExecutionValues() {
         return executionValues;
     }
 
-    public void setExecutionValues(Map<MetricDto, TestExecutionValueDto> executionValues) {
+    public void setExecutionValues(Set<TestExecutionGroupValueDto> executionValues) {
         this.executionValues = executionValues;
     }
 

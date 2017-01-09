@@ -6,6 +6,7 @@ import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.web.adapter.TestExecutionAdapter;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -22,7 +23,7 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class TestExecutionRestApi {
 
-   //@Inject
+   @Inject
    private TestExecutionAdapter testExecutionAdapter;
 
    @GET

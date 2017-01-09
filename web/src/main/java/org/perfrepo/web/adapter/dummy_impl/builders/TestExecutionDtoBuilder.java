@@ -3,11 +3,10 @@ package org.perfrepo.web.adapter.dummy_impl.builders;
 import org.perfrepo.dto.metric.MetricDto;
 import org.perfrepo.dto.test.TestDto;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
+import org.perfrepo.dto.test_execution.TestExecutionGroupValueDto;
 import org.perfrepo.dto.test_execution.TestExecutionValueDto;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * @author Jiri Grunwald (grunwjir@gmail.com)
@@ -20,7 +19,7 @@ public class TestExecutionDtoBuilder {
         testExecutionDto = new TestExecutionDto();
         testExecutionDto.setTags(new HashSet<>());
         testExecutionDto.setExecutionParameters(new HashMap<>());
-        testExecutionDto.setExecutionValues(new HashMap<>());
+        testExecutionDto.setExecutionValues(new HashSet<>());
     }
 
     public TestExecutionDtoBuilder name(String name) {
@@ -38,7 +37,7 @@ public class TestExecutionDtoBuilder {
         return this;
     }
 
-    public TestExecutionDtoBuilder commnet(String comment) {
+    public TestExecutionDtoBuilder comment(String comment) {
         testExecutionDto.setComment(comment);
         return this;
     }
@@ -53,8 +52,8 @@ public class TestExecutionDtoBuilder {
         return this;
     }
 
-    public TestExecutionDtoBuilder executionValue(MetricDto metric, TestExecutionValueDto value) {
-        testExecutionDto.getExecutionValues().put(metric, value);
+    public TestExecutionDtoBuilder executionValue(TestExecutionGroupValueDto groupValue) {
+        testExecutionDto.getExecutionValues().add(groupValue);
         return this;
     }
 

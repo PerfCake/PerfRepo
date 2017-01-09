@@ -1,8 +1,18 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
+import org.apache.commons.lang.StringUtils;
+import org.perfrepo.dto.test.TestDto;
+import org.perfrepo.dto.test.TestSearchParams;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
+import org.perfrepo.dto.test_execution.TestExecutionSearchParams;
+import org.perfrepo.dto.util.SearchResult;
+import org.perfrepo.model.TestExecution;
 
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Temporary in-memory test execution storage for development purpose.
@@ -27,6 +37,84 @@ public class TestExecutionStorage {
 
     public List<TestExecutionDto> getAll() {
         return data;
+    }
+
+    public boolean delete(Long id) {
+        return data.removeIf(testExecution -> testExecution.getId().equals(id));
+    }
+
+    public SearchResult<TestExecutionDto> search(TestExecutionSearchParams searchParams) {
+
+        Comparator<TestExecutionDto> sortComparator;
+
+        switch (searchParams.getOrderBy()) {
+            case NAME_ASC:
+                sortComparator = (testExecution1, testExecution2) -> testExecution1.getTest().getName().compareToIgnoreCase(testExecution2.getTest().getName());
+                break;
+            case NAME_DESC:
+                sortComparator = (testExecution1, testExecution2) -> testExecution2.getTest().getName().compareToIgnoreCase(testExecution1.getTest().getName());
+                break;
+            case UID_ASC:
+                sortComparator = (testExecution1, testExecution2) -> testExecution1.getTest().getUid().compareToIgnoreCase(testExecution2.getTest().getUid());
+                break;
+            case UID_DESC:
+                sortComparator = (testExecution1, testExecution2) -> testExecution2.getTest().getUid().compareToIgnoreCase(testExecution1.getTest().getUid());
+                break;
+            case DATE_ASC:
+                sortComparator = (testExecution1, testExecution2) -> testExecution1.getStarted().compareTo(testExecution2.getStarted());
+                break;
+            case DATE_DESC:
+                sortComparator = (testExecution1, testExecution2) -> testExecution2.getStarted().compareTo(testExecution1.getStarted());
+                break;
+            default:
+                sortComparator = (testExecution1, testExecution2) -> testExecution1.getTest().getName().compareToIgnoreCase(testExecution2.getTest().getName());
+        }
+
+        Predicate<TestExecutionDto> testNameFilterPredicate =
+                testExecution -> searchParams.getTestNameFilters() == null
+                        || searchParams.getTestNameFilters()
+                        .stream().allMatch(testNameFilter -> StringUtils.containsIgnoreCase(testExecution.getTest().getName(), testNameFilter));
+
+        Predicate<TestExecutionDto> testUidFilterPredicate =
+                testExecution -> searchParams.getTestUidFilters() == null
+                        || searchParams.getTestUidFilters()
+                        .stream().allMatch(testUidFilter -> StringUtils.containsIgnoreCase(testExecution.getTest().getUid(), testUidFilter));
+
+        // TODO case insensitive, no tags = NPE
+        Predicate<TestExecutionDto> tagFilterPredicate =
+                testExecution -> searchParams.getTagFilters() == null
+                        || searchParams.getTagFilters()
+                        .stream().allMatch(tagFilter -> testExecution.getTags().contains(tagFilter));
+
+        Supplier<Stream<TestExecutionDto>> testExecutionStream = () ->  data.stream()
+                .filter(testNameFilterPredicate)
+                .filter(testUidFilterPredicate)
+                .filter(tagFilterPredicate)
+                .sorted(sortComparator);
+
+        int total = (int) testExecutionStream.get().count();
+        List<TestExecutionDto> testExecutions = testExecutionStream.get()
+                .skip(searchParams.getOffset())
+                .limit(searchParams.getLimit())
+                .collect(Collectors.toList());
+
+        return new SearchResult<>(testExecutions, total, searchParams.getLimit(), searchParams.getOffset());
+
+    }
+
+    public TestExecutionDto update(TestExecutionDto dto) {
+
+        TestExecutionDto testExecution = getById(dto.getId());
+
+        if (testExecution != null) {
+            testExecution.setName(dto.getName());
+            testExecution.setStarted(dto.getStarted());
+            testExecution.setComment(dto.getComment());
+            testExecution.setTags(dto.getTags());
+            return testExecution;
+        } else {
+            return null;
+        }
     }
 
     private Long getNextId() {

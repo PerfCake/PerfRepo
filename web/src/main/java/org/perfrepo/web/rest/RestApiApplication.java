@@ -23,6 +23,7 @@ public class RestApiApplication extends Application {
       classes.add(UserRestApi.class);
       classes.add(GroupRestApi.class);
       classes.add(AuthenticationRestApi.class);
+      classes.add(TestExecutionRestApi.class);
    }
 
    @Override

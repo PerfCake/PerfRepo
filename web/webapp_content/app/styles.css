@@ -163,6 +163,6 @@ span.ui-select-placeholder {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
 }
 
-.search-test-wrapper {
+.search-test-wrapper, .search-test-execution-wrapper {
     margin-left: -20px;
 }

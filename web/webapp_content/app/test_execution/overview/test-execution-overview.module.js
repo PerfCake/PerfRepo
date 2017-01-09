@@ -3,6 +3,8 @@
     angular
         .module('org.perfrepo.testExecution.overview', [
             'patternfly.toolbars',
-            'patternfly.select'
+            'patternfly.select',
+
+            'org.perfrepo.testExecution.search'
         ]);
 })();
