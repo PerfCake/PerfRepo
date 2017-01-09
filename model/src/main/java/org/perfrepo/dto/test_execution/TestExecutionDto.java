@@ -1,8 +1,11 @@
 package org.perfrepo.dto.test_execution;
 
 import org.perfrepo.dto.group.GroupDto;
+import org.perfrepo.dto.metric.MetricDto;
+import org.perfrepo.dto.test.TestDto;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -17,15 +20,17 @@ public class TestExecutionDto {
 
     private String name;
 
-    private Long testId;
+    private TestDto test;
 
     private Set<String> tags;
 
     private String comment;
 
-    private GroupDto group;
-
     private Date started;
+
+    private Map<String, String> executionParameters;
+
+    private Map<MetricDto, TestExecutionValueDto> executionValues;
 
     public Long getId() {
         return id;
@@ -43,12 +48,12 @@ public class TestExecutionDto {
         this.name = name;
     }
 
-    public Long getTestId() {
-        return testId;
+    public TestDto getTest() {
+        return test;
     }
 
-    public void setTestId(Long testId) {
-        this.testId = testId;
+    public void setTest(TestDto test) {
+        this.test = test;
     }
 
     public Set<String> getTags() {
@@ -67,20 +72,28 @@ public class TestExecutionDto {
         this.comment = comment;
     }
 
-    public GroupDto getGroup() {
-        return group;
-    }
-
-    public void setGroup(GroupDto group) {
-        this.group = group;
-    }
-
     public Date getStarted() {
         return started;
     }
 
     public void setStarted(Date started) {
         this.started = started;
+    }
+
+    public Map<String, String> getExecutionParameters() {
+        return executionParameters;
+    }
+
+    public void setExecutionParameters(Map<String, String> executionParameters) {
+        this.executionParameters = executionParameters;
+    }
+
+    public Map<MetricDto, TestExecutionValueDto> getExecutionValues() {
+        return executionValues;
+    }
+
+    public void setExecutionValues(Map<MetricDto, TestExecutionValueDto> executionValues) {
+        this.executionValues = executionValues;
     }
 
     @Override

@@ -1,5 +1,11 @@
 package org.perfrepo.web.adapter;
 
+import org.perfrepo.dto.test_execution.TestExecutionDto;
+import org.perfrepo.dto.test_execution.TestExecutionSearchParams;
+import org.perfrepo.dto.util.SearchResult;
+
+import java.util.List;
+
 /**
  * Service adapter for {@link org.perfrepo.dto.test_execution.TestExecutionDto} object.
  * Adapter supports CRUD and another operations over this object.
@@ -9,7 +15,6 @@ package org.perfrepo.web.adapter;
  */
 public interface TestExecutionAdapter {
 
-    /*
     TestExecutionDto getTestExecution(Long id);
 
     TestExecutionDto createTestExecution(TestExecutionDto testExecution);
@@ -21,6 +26,4 @@ public interface TestExecutionAdapter {
     List<TestExecutionDto> getAllTestExecutions();
 
     SearchResult<TestExecutionDto> searchTestExecutions(TestExecutionSearchParams searchParams);
-    */
-
 }
