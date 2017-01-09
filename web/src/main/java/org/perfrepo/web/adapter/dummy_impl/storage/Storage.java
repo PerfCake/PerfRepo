@@ -109,7 +109,11 @@ public class Storage {
                 .name("Response time")
                 .build());
 
-        // ***** TESTS *****
+        initializeTests();
+        initializeTestExecutions();
+    }
+
+    private void initializeTests() {
         // test 1
         testStorage.create(new TestDtoBuilder()
                 .name("Echo socket test")
@@ -178,10 +182,10 @@ public class Storage {
                 .metric(metricStorage.getById(2L))
                 .metric(metricStorage.getById(1L))
                 .build());
+    }
 
-        // ***** TEST EXECUTIONS *****
-        // test execution 1
-
+    private void initializeTestExecutions() {
+        //TODO
         TestExecutionGroupValueDto g = new TestExecutionGroupValueDto();
 
         g.setMetricId(1L);
@@ -215,7 +219,7 @@ public class Storage {
                 .value(23.0)
                 .parameter("time", "3")
                 .build());
-
+        // test execution 1
         testExecutionStorage.create(new TestExecutionDtoBuilder()
                 .name("Execution 1 of Echo socket test")
                 .test(testStorage.getById(1L))

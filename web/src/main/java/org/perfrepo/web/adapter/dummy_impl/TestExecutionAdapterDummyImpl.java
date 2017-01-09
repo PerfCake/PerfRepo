@@ -1,13 +1,10 @@
 
 package org.perfrepo.web.adapter.dummy_impl;
 
-import org.perfrepo.dto.test.TestDto;
-import org.perfrepo.dto.test.TestSearchParams;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
 import org.perfrepo.dto.test_execution.TestExecutionSearchParams;
 import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.dto.util.validation.ValidationErrors;
-import org.perfrepo.web.adapter.TestAdapter;
 import org.perfrepo.web.adapter.TestExecutionAdapter;
 import org.perfrepo.web.adapter.dummy_impl.storage.Storage;
 import org.perfrepo.web.adapter.exceptions.AdapterException;
@@ -120,7 +117,7 @@ public class TestExecutionAdapterDummyImpl implements TestExecutionAdapter {
             validation.addFieldError("name", "Test execution name must be at least three characters.");
         }
 
-        if(testExecution.getTags() == null) {
+        if (testExecution.getTags() == null) {
             validation.addFieldError("tags", "Test execution tags is a required field");
         } else if (testExecution.getTags().isEmpty()) {
             validation.addFieldError("tags", "Test execution tags is a required field");

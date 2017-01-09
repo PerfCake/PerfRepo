@@ -1,7 +1,5 @@
 package org.perfrepo.dto.test_execution;
 
-import org.perfrepo.dto.metric.MetricDto;
-
 import java.util.List;
 
 /**

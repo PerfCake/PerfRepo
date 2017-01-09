@@ -1,10 +1,8 @@
 package org.perfrepo.web.adapter.dummy_impl.builders;
 
-import org.perfrepo.dto.metric.MetricDto;
 import org.perfrepo.dto.test.TestDto;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
 import org.perfrepo.dto.test_execution.TestExecutionGroupValueDto;
-import org.perfrepo.dto.test_execution.TestExecutionValueDto;
 
 import java.util.*;
 

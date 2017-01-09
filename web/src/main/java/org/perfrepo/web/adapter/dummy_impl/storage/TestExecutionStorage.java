@@ -1,12 +1,9 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
 import org.apache.commons.lang.StringUtils;
-import org.perfrepo.dto.test.TestDto;
-import org.perfrepo.dto.test.TestSearchParams;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
 import org.perfrepo.dto.test_execution.TestExecutionSearchParams;
 import org.perfrepo.dto.util.SearchResult;
-import org.perfrepo.model.TestExecution;
 
 import java.util.*;
 import java.util.function.Predicate;
