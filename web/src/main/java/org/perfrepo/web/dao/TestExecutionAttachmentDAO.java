@@ -16,9 +16,9 @@ package org.perfrepo.web.dao;
 
 import org.perfrepo.model.TestExecutionAttachment;
 
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * DAO for {@link TestExecutionAttachment}
@@ -27,9 +27,9 @@ import java.util.TreeMap;
  */
 public class TestExecutionAttachmentDAO extends DAO<TestExecutionAttachment, Long> {
 
-   public Collection<TestExecutionAttachment> findByExecution(Long testExecutionId) {
-      Map<String, Object> params = new TreeMap<String, Object>();
-      params.put("exec", testExecutionId);
+   public List<TestExecutionAttachment> findByExecution(Long testExecutionId) {
+      Map<String, Object> params = new HashMap<>();
+      params.put("executionId", testExecutionId);
       return findByNamedQuery(TestExecutionAttachment.FIND_BY_EXECUTION, params);
    }
 }

@@ -33,10 +33,13 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Represents one execution of a test.
@@ -73,7 +76,7 @@ public class TestExecution implements Entity<TestExecution> {
            joinColumns = {@JoinColumn(name = "test_execution_id", nullable = false, updatable = false)},
            inverseJoinColumns = {@JoinColumn(name = "tag_id", nullable = false, updatable = false)}
    )
-   private Set<Tag> tags = new HashSet<>();
+   private Set<Tag> tags = new TreeSet<>();
 
    @NotNull(message = "{page.testExecution.startedRequired}")
    @Column(name = "started")
@@ -85,7 +88,13 @@ public class TestExecution implements Entity<TestExecution> {
 
    @OneToMany(mappedBy = "testExecution")
    @MapKey(name = "name")
-   private Map<String, TestExecutionParameter> parameters;
+   private Map<String, TestExecutionParameter> parameters = new HashMap<>();
+
+   @OneToMany(mappedBy = "testExecution")
+   private List<Value> values = new ArrayList<>();
+
+   @OneToMany(mappedBy = "testExecution")
+   private List<TestExecutionAttachment> attachments = new ArrayList<>();
 
    public Long getId() {
       return id;
@@ -141,6 +150,22 @@ public class TestExecution implements Entity<TestExecution> {
 
    public void setComment(String comment) {
       this.comment = comment;
+   }
+
+   public List<TestExecutionAttachment> getAttachments() {
+      return attachments;
+   }
+
+   public void setAttachments(List<TestExecutionAttachment> attachments) {
+      this.attachments = attachments;
+   }
+
+   public List<Value> getValues() {
+      return values;
+   }
+
+   public void setValues(List<Value> values) {
+      this.values = values;
    }
 
    public static TestExecutionBuilder builder() {

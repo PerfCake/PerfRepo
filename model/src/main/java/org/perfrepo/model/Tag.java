@@ -18,16 +18,25 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
 
 @javax.persistence.Entity
 @Table(name = "tag")
+@NamedQueries({
+        @NamedQuery(name = Tag.FIND_BY_TEST_EXECUTION, query = "SELECT tag FROM TestExecution testExecution, Tag tag WHERE testExecution.id = :executionId AND tag MEMBER OF testExecution.tags")
+})
 public class Tag implements Entity<Tag>, Comparable<Tag> {
 
    private static final long serialVersionUID = -5239043908577304531L;
 
    public static final String FIND_BY_PREFIX = "Tag.findByPrefix";
+   public static final String FIND_BY_TEST_EXECUTION = "Tag.findByTestExecution";
 
    @Id
    @SequenceGenerator(name = "TAG_ID_GENERATOR", sequenceName = "TAG_SEQUENCE", allocationSize = 1)
@@ -37,6 +46,9 @@ public class Tag implements Entity<Tag>, Comparable<Tag> {
    @Column(name = "name")
    private String name;
 
+   @ManyToMany(mappedBy = "tags")
+   private Set<TestExecution> testExecutions = new HashSet<>();
+
    public Long getId() {
       return id;
    }
@@ -45,20 +57,20 @@ public class Tag implements Entity<Tag>, Comparable<Tag> {
       this.id = id;
    }
 
-   public String getStringId() {
-      return id == null ? null : String.valueOf(id);
-   }
-
-   public void setStringId(String id) {
-      this.id = Long.valueOf(id);
-   }
-
    public void setName(String name) {
       this.name = name;
    }
 
    public String getName() {
       return this.name;
+   }
+
+   public Set<TestExecution> getTestExecutions() {
+      return testExecutions;
+   }
+
+   public void setTestExecutions(Set<TestExecution> testExecutions) {
+      this.testExecutions = testExecutions;
    }
 
    @Override

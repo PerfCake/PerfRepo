@@ -14,17 +14,11 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.Value;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DAO for {@link Value}
@@ -34,26 +28,11 @@ import java.util.List;
  */
 public class ValueDAO extends DAO<Value, Long> {
 
-   public Value getValue(Long id) {
-      return findWithDepth(id, "parameters");
+   public List<Value> findByMetricAndExecution(Long metricId, Long testExecutionId) {
+      Map<String, Object> params = new HashMap<>();
+      params.put("metricId", metricId);
+      params.put("executionId", testExecutionId);
+      return findByNamedQuery(Value.FIND_BY_METRIC_AND_EXECUTION, params);
    }
 
-   public List<Value> find(Long execId, Long metricId) {
-      CriteriaQuery<Value> criteria = createCriteria();
-      CriteriaBuilder cb = criteriaBuilder();
-
-      Root<Value> rValue = criteria.from(Value.class);
-      Join<Value, Metric> rMetric = rValue.join("metric");
-      Join<Value, TestExecution> rExec = rValue.join("testExecution");
-      Predicate pFixExec = cb.equal(rMetric.get("id"), cb.parameter(Long.class, "metricId"));
-      Predicate pFixMetric = cb.equal(rExec.get("id"), cb.parameter(Long.class, "execId"));
-
-      rValue.fetch("parameters");
-      criteria.select(rValue);
-      criteria.where(cb.and(pFixExec, pFixMetric));
-      TypedQuery<Value> query = query(criteria);
-      query.setParameter("metricId", metricId);
-      query.setParameter("execId", execId);
-      return query.getResultList();
-   }
 }

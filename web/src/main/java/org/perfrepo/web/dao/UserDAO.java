@@ -36,7 +36,7 @@ public class UserDAO extends DAO<User, Long> {
    }
 
    public List<User> findSubscribersForTest(Long testId) {
-      Map<String, Object> params = new HashMap<String, Object>();
+      Map<String, Object> params = new HashMap<>();
       params.put("testId", testId);
       return findByNamedQuery(User.GET_SUBSCRIBERS_FOR_TEST, params);
    }

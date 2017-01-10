@@ -14,6 +14,7 @@
  */
 package org.perfrepo.web.service;
 
+import org.perfrepo.model.Metric;
 import org.perfrepo.model.Tag;
 import org.perfrepo.model.TestExecution;
 import org.perfrepo.model.TestExecutionAttachment;
@@ -89,9 +90,9 @@ public interface TestExecutionService {
     * Add attachment to the test execution.
     *
     * @param attachment
-    * @return id of newly created attachment
+    * @return newly created attachment
     */
-   public Long addAttachment(TestExecutionAttachment attachment);
+   public TestExecutionAttachment addAttachment(TestExecutionAttachment attachment);
 
    /**
     * Delete attachment.
@@ -107,6 +108,14 @@ public interface TestExecutionService {
     * @return attachment
     */
    public TestExecutionAttachment getAttachment(Long id);
+
+    /**
+     * Get all attachments for test execution.
+     *
+     * @param testExecution
+     * @return
+     */
+   public List<TestExecutionAttachment> getAttachments(TestExecution testExecution);
 
    /******** Methods related to test execution parameters ********/
 
@@ -142,12 +151,20 @@ public interface TestExecutionService {
    public TestExecutionParameter getParameter(Long id);
 
    /**
-    * Returns test execution parameters matching prefix
+    * Returns test execution parameters matching prefix.
     *
     * @param prefix
     * @return
     */
    public List<TestExecutionParameter> getParametersByPrefix(String prefix);
+
+    /**
+     * Returns test executions parameters for test execution.
+     *
+     * @param testExecution
+     * @return
+     */
+   public List<TestExecutionParameter> getParameters(TestExecution testExecution);
 
    /******** Methods related to values ********/
 
@@ -174,29 +191,54 @@ public interface TestExecutionService {
     */
    public void removeValue(Value value);
 
+    /**
+     * Returns value.
+     *
+     * @param id
+     */
+   public Value getValue(Long id);
+
+    /**
+     * Retrieves values for test execution and given metric.
+     *
+     * @param metric
+     * @param testExecution
+     */
+   public List<Value> getValues(Metric metric, TestExecution testExecution);
+
    /******** Methods related to tags ********/
 
    /**
-    * Adds tag
+    * Adds tag to test execution. If it's already existing, it assigns the existing one. If not, creates a new one.
     *
     * @param tag
+    * @param testExecution
     * @return
     */
    public Tag addTag(Tag tag, TestExecution testExecution);
 
    /**
+    * Disassociate tag from the test execution. If there are no more test executions associated with the tag,
+    * the tag is automatically removed.
     *
     * @param tag
-    * @return
     */
-   public Tag updateTag(Tag tag);
+   public void removeTagFromTestExecution(Tag tag, TestExecution testExecution);
 
-   /**
-    *
-    *
-    * @param tag
-    */
-   public void removeTag(Tag tag);
+    /**
+     * Retrieves all tags associated with provided test execution.
+     *
+     * @param testExecution
+     * @return
+     */
+   public Set<Tag> getTags(TestExecution testExecution);
+
+    /**
+     * Probably not useful for real-world scenario, only for testing.
+     *
+     * @return
+     */
+   public Set<Tag> getAllTags();
 
    /**
     * Returns tags matching prefix
@@ -204,7 +246,7 @@ public interface TestExecutionService {
     * @param prefix
     * @return tag prefixes
     */
-   public List<String> getTagsByPrefix(String prefix);
+   public Set<Tag> getTagsByPrefix(String prefix);
 
    /**
     * Perform mass operation. Adds tags to provided test executions.

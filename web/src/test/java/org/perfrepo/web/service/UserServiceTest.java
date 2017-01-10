@@ -13,8 +13,8 @@ import org.perfrepo.model.user.Membership.MembershipType;
 import org.perfrepo.model.user.User;
 import org.perfrepo.web.service.exceptions.IncorrectPasswordException;
 import org.perfrepo.web.service.exceptions.UnauthorizedException;
-import org.perfrepo.web.service.util.TestUtils;
-import org.perfrepo.web.service.util.UserSessionMock;
+import org.perfrepo.web.util.TestUtils;
+import org.perfrepo.web.util.UserSessionMock;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;

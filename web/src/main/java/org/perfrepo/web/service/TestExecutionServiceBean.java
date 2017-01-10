@@ -1,5 +1,6 @@
 package org.perfrepo.web.service;
 
+import org.perfrepo.model.Metric;
 import org.perfrepo.model.Tag;
 import org.perfrepo.model.Test;
 import org.perfrepo.model.TestExecution;
@@ -8,13 +9,13 @@ import org.perfrepo.model.TestExecutionParameter;
 import org.perfrepo.model.Value;
 import org.perfrepo.model.to.SearchResultWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
+import org.perfrepo.web.dao.MetricDAO;
 import org.perfrepo.web.dao.TagDAO;
 import org.perfrepo.web.dao.TestDAO;
 import org.perfrepo.web.dao.TestExecutionAttachmentDAO;
 import org.perfrepo.web.dao.TestExecutionDAO;
 import org.perfrepo.web.dao.TestExecutionParameterDAO;
-import org.perfrepo.web.service.exceptions.ServiceException;
-import org.perfrepo.web.util.MultiValue;
+import org.perfrepo.web.dao.ValueDAO;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -23,9 +24,12 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * TODO: document this
@@ -41,7 +45,13 @@ public class TestExecutionServiceBean implements TestExecutionService {
     private TestDAO testDAO;
 
     @Inject
+    private MetricDAO metricDAO;
+
+    @Inject
     private TestExecutionDAO testExecutionDAO;
+
+    @Inject
+    private ValueDAO valueDAO;
 
     @Inject
     private TestExecutionParameterDAO testExecutionParameterDAO;
@@ -55,93 +65,67 @@ public class TestExecutionServiceBean implements TestExecutionService {
     @Inject
     private TagDAO tagDAO;
 
+    /******** Methods related directly to test execution object ********/
+
     @Override
     public TestExecution createTestExecution(TestExecution testExecution) {
         Test managedTest = testDAO.get(testExecution.getTest().getId());
         testExecution.setTest(managedTest);
 
+        TestExecution createdExecution = testExecutionDAO.create(testExecution);
+
         Set<Tag> tags = testExecution.getTags();
         for (Tag tag: tags) {
-            addTag(tag, testExecution);
+            addTag(tag, createdExecution);
         }
 
-
-        return testExecutionDAO.create(testExecution);
-        /*Collection<Tag> detachedTags = testExecution.getTags();
-        testExecution.setTags(new HashSet<>());
-        TestExecution storedTestExecution = testExecutionDAO.create(testExecution);
-        // execution params
-        if (testExecution.getParameters() != null && testExecution.getParameters().size() > 0) {
-            for (String paramKey : testExecution.getParameters().keySet()) {
-                TestExecutionParameter parameter = testExecution.getParameters().get(paramKey);
-                parameter.setTestExecution(storedTestExecution);
-                testExecutionParameterDAO.create(parameter);
-            }
+        Map<String, TestExecutionParameter> parameters = testExecution.getParameters();
+        for (TestExecutionParameter parameter: parameters.values()) {
+            parameter.setTestExecution(createdExecution);
+            addParameter(parameter);
         }
-        // tags
-        if (detachedTags != null && detachedTags.size() > 0) {
-            for (Tag teg : detachedTags) {
-                Tag tag = tagDAO.findByName(teg.getName());
-                if (tag == null) {
-                    tag = tagDAO.create(teg);
-                }
 
-                storedTestExecution.getTags().add(tag);
-            }
+        List<Value> values = testExecution.getValues();
+        for (Value value: values) {
+            value.setTestExecution(createdExecution);
+            addValue(value);
         }
-        // values
-        //TODO: solve this
-      /*
-      if (testExecution.getValues() != null && !testExecution.getValues().isEmpty()) {
-         for (Value value : testExecution.getValues()) {
-            value.setTestExecution(storedTestExecution);
-            if (value.getMetricName() == null) {
-               throw new IllegalArgumentException("Metric name is mandatory");
-            }
-            Metric metric = test.getMetrics().stream().filter(m -> m.getName().equals(value.getMetricName())).findFirst().get();
-            if (metric == null) {
-               throw new ServiceException("serviceException.metricNotInTest", test.getName(), test.getId().toString(), value.getMetricName());
-            }
-            value.setMetric(metric);
-            valueDAO.create(value);
-            if (value.getParameters() != null && value.getParameters().size() > 0) {
-               for (ValueParameter vp : value.getParameters()) {
-                  vp.setValue(value);
-                  valueParameterDAO.create(vp);
-               }
-            }
-         }
-      }*/
-        /*
-        storedTestExecution = testExecutionDAO.merge(storedTestExecution);
 
-        TestExecution clone = storedTestExecution;
+        List<TestExecutionAttachment> attachments = testExecution.getAttachments();
+        for (TestExecutionAttachment attachment: attachments) {
+            attachment.setTestExecution(createdExecution);
+            addAttachment(attachment);
+        }
 
-        alertingService.processAlerts(clone);
-        */
+        // TODO: add alerting
+
+        return createdExecution;
     }
 
     @Override
     public TestExecution updateTestExecution(TestExecution updatedTestExecution) {
-        TestExecution managedTestExecution = testExecutionDAO.merge(updatedTestExecution);
-
-        return managedTestExecution;
+        return testExecutionDAO.merge(updatedTestExecution);
     }
 
     @Override
     public void removeTestExecution(TestExecution testExecution) {
-        TestExecution freshTestExecution = testExecutionDAO.get(testExecution.getId());
-        /*if (freshTestExecution == null) {
+        TestExecution managedExecution = testExecutionDAO.get(testExecution.getId());
+
+        Set<Tag> tags = new HashSet<>(managedExecution.getTags());
+        for (Tag tag: tags) {
+            removeTagFromTestExecution(tag, managedExecution);
+        }
+        /*if (managedExecution == null) {
             throw new ServiceException("serviceException.testExecutionNotFound", testExecution.getName());
         }*/
         //TODO: solve this
       /*
-      for (TestExecutionParameter testExecutionParameter : freshTestExecution.getParameters()) {
+      for (TestExecutionParameter testExecutionParameter : managedExecution.getParameters()) {
          testExecutionParameterDAO.remove(testExecutionParameter);
       }*/
         //TODO: solve this
       /*
-      for (Value value : freshTestExecution.getValues()) {
+      for (Value value : managedExecution.getValues()) {
          for (ValueParameter valueParameter : value.getParameters()) {
             valueParameterDAO.remove(valueParameter);
          }
@@ -150,23 +134,23 @@ public class TestExecutionServiceBean implements TestExecutionService {
 
         //TODO: solve this
       /*
-      Iterator<TestExecutionAttachment> allTestExecutionAttachments = freshTestExecution.getAttachments().iterator();
+      Iterator<TestExecutionAttachment> allTestExecutionAttachments = managedExecution.getAttachments().iterator();
       while (allTestExecutionAttachments.hasNext()) {
          testExecutionAttachmentDAO.remove(allTestExecutionAttachments.next());
          allTestExecutionAttachments.remove();
       }
       */
-        testExecutionDAO.remove(freshTestExecution);
+        testExecutionDAO.remove(managedExecution);
     }
 
     @Override
     public TestExecution getTestExecution(Long id) {
-        return null;
+        return testExecutionDAO.get(id);
     }
 
     @Override
     public List<TestExecution> getAllTestExecutions() {
-        return null;
+        return testExecutionDAO.getAll();
     }
 
     @Override
@@ -186,27 +170,20 @@ public class TestExecutionServiceBean implements TestExecutionService {
         return null;
     }
 
+    /******** Methods related to test execution attachments ********/
+
     @Override
-    public Long addAttachment(TestExecutionAttachment attachment) {
-        TestExecution exec = testExecutionDAO.get(attachment.getTestExecution().getId());
-        /*if (exec == null) {
-            throw new ServiceException("serviceException.addAttachment.testExecutionNotFound", attachment.getTestExecution().getName());
-        }*/
-        attachment.setTestExecution(exec);
-        TestExecutionAttachment newAttachment = testExecutionAttachmentDAO.create(attachment);
-        return newAttachment.getId();
+    public TestExecutionAttachment addAttachment(TestExecutionAttachment attachment) {
+        TestExecution managedExecution = testExecutionDAO.get(attachment.getTestExecution().getId());
+        attachment.setTestExecution(managedExecution);
+
+        return testExecutionAttachmentDAO.create(attachment);
     }
 
     @Override
     public void removeAttachment(TestExecutionAttachment attachment) {
-        TestExecution exec = testExecutionDAO.get(attachment.getTestExecution().getId());
-        /*if (exec == null) {
-            throw new ServiceException("serviceException.removeAttachment.testExecutionNotFound", attachment.getTestExecution().getName());
-        }*/
-        TestExecutionAttachment freshAttachment = testExecutionAttachmentDAO.get(attachment.getId());
-        if (freshAttachment != null) {
-            testExecutionAttachmentDAO.remove(freshAttachment);
-        }
+        TestExecutionAttachment managedAttachment = testExecutionAttachmentDAO.get(attachment.getId());
+        testExecutionAttachmentDAO.remove(managedAttachment);
     }
 
     @Override
@@ -215,88 +192,141 @@ public class TestExecutionServiceBean implements TestExecutionService {
     }
 
     @Override
+    public List<TestExecutionAttachment> getAttachments(TestExecution testExecution) {
+        return testExecutionAttachmentDAO.findByExecution(testExecution.getId());
+    }
+
+    /******** Methods related to test execution parameters ********/
+
+    @Override
     public TestExecutionParameter addParameter(TestExecutionParameter parameter) {
-        return null;
+        TestExecution managedExecution = testExecutionDAO.get(parameter.getTestExecution().getId());
+        parameter.setTestExecution(managedExecution);
+
+        return testExecutionParameterDAO.create(parameter);
     }
 
     @Override
     public TestExecutionParameter updateParameter(TestExecutionParameter parameter) {
-        return null;
+        return testExecutionParameterDAO.merge(parameter);
     }
 
     @Override
     public void removeParameter(TestExecutionParameter parameter) {
-
+        TestExecutionParameter managedParameter = testExecutionParameterDAO.get(parameter.getId());
+        testExecutionParameterDAO.remove(managedParameter);
     }
 
     @Override
     public TestExecutionParameter getParameter(Long id) {
-        return null;
+        return testExecutionParameterDAO.get(id);
     }
 
     @Override
     public List<TestExecutionParameter> getParametersByPrefix(String prefix) {
-        return null;
+        return testExecutionParameterDAO.findByPrefix(prefix);
     }
 
     @Override
+    public List<TestExecutionParameter> getParameters(TestExecution testExecution) {
+        return testExecutionParameterDAO.findByExecution(testExecution.getId());
+    }
+
+    /******** Methods related to values ********/
+
+    @Override
     public Value addValue(Value value) {
-        return null;
+        TestExecution managedExecution = testExecutionDAO.get(value.getTestExecution().getId());
+        Metric managedMetric = metricDAO.get(value.getMetric().getId());
+
+        value.setTestExecution(managedExecution);
+        value.setMetric(managedMetric);
+
+        return valueDAO.create(value);
     }
 
     @Override
     public Value updateValue(Value value) {
-        return null;
+        return valueDAO.merge(value);
     }
 
     @Override
     public void removeValue(Value value) {
-
+        Value managedValue = valueDAO.get(value.getId());
+        valueDAO.remove(managedValue);
     }
+
+    @Override
+    public Value getValue(Long id) {
+        return valueDAO.get(id);
+    }
+
+    @Override
+    public List<Value> getValues(Metric metric, TestExecution testExecution) {
+        return valueDAO.findByMetricAndExecution(metric.getId(), testExecution.getId());
+    }
+
+    /******** Methods related to tags ********/
 
     @Override
     public Tag addTag(Tag tag, TestExecution testExecution) {
-        return null;
+        TestExecution managedExecution = testExecutionDAO.get(testExecution.getId());
+
+        Tag managedTag = tagDAO.findByName(tag.getName());
+        if (managedTag == null) {
+            managedTag = tagDAO.create(tag);
+        }
+
+        managedExecution.getTags().add(managedTag);
+        managedTag.getTestExecutions().add(managedExecution);
+
+        return managedTag;
     }
 
     @Override
-    public Tag updateTag(Tag tag) {
-        return null;
+    public void removeTagFromTestExecution(Tag tag, TestExecution testExecution) {
+        TestExecution managedExecution = testExecutionDAO.get(testExecution.getId());
+        Tag managedTag = tagDAO.get(tag.getId());
+
+        managedExecution.getTags().remove(managedTag);
+        managedTag.getTestExecutions().remove(managedExecution);
+
+        if (managedTag.getTestExecutions().isEmpty()) {
+            tagDAO.remove(managedTag);
+        }
     }
 
     @Override
-    public void removeTag(Tag tag) {
-
+    public Set<Tag> getTags(TestExecution testExecution) {
+        return new TreeSet<>(tagDAO.findByExecution(testExecution.getId()));
     }
 
     @Override
-    public List<String> getTagsByPrefix(String prefix) {
-        return null;
+    public Set<Tag> getAllTags() {
+        return new TreeSet<>(tagDAO.getAll());
+    }
+
+    @Override
+    public Set<Tag> getTagsByPrefix(String prefix) {
+        return tagDAO.findByPrefix(prefix);
     }
 
     @Override
     public void addTagsToTestExecutions(Set<Tag> tags, Collection<TestExecution> testExecutions) {
-
+        for (TestExecution testExecution: testExecutions) {
+            for (Tag tag: tags) {
+                addTag(tag, testExecution);
+            }
+        }
     }
 
     @Override
     public void removeTagsFromTestExecutions(Set<Tag> tags, Collection<TestExecution> testExecutions) {
-
-    }
-
-    /**** HELPER METHODS ****/
-
-    /**
-     * Validates correct format of test execution.
-     *
-     * @param testExecution
-     * @throws ServiceException
-     */
-    private void validateTestExecution(TestExecution testExecution) throws ServiceException {
-        try {
-            boolean isMultivalue = MultiValue.isMultivalue(testExecution);
-        } catch (IllegalStateException ex) {
-            throw new ServiceException("page.exec.invalidMultiValue", testExecution.getName());
+        for (TestExecution testExecution: testExecutions) {
+            for (Tag tag: tags) {
+                removeTagFromTestExecution(tag, testExecution);
+            }
         }
     }
+
 }

@@ -19,7 +19,11 @@ import org.perfrepo.model.Tag;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * DAO for {@link Tag}
@@ -37,12 +41,18 @@ public class TagDAO extends DAO<Tag, Long> {
       return null;
    }
 
-   public List<Tag> findByPrefix(String prefix) {
+   public Set<Tag> findByExecution(Long testExecutionId) {
+      Map<String, Object> params = new HashMap<>();
+      params.put("executionId", testExecutionId);
+      return new TreeSet<>(findByNamedQuery(Tag.FIND_BY_TEST_EXECUTION, params));
+   }
+
+   public Set<Tag> findByPrefix(String prefix) {
       CriteriaQuery<Tag> criteria = createCriteria();
       Root<Tag> root = criteria.from(Tag.class);
       criteria.select(root);
       CriteriaBuilder cb = criteriaBuilder();
       criteria.where(cb.like(cb.lower(root.<String>get("name")), prefix.toLowerCase() + "%"));
-      return query(criteria).getResultList();
+      return new TreeSet<>(query(criteria).getResultList());
    }
 }

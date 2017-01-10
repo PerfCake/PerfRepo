@@ -37,12 +37,14 @@ import java.util.Map;
  */
 @javax.persistence.Entity
 @Table(name = "value")
-@NamedQueries({@NamedQuery(name = Value.GET_TEST, query = "SELECT test from Value v inner join v.testExecution te inner join te.test test where v= :entity")})
+@NamedQueries({
+        @NamedQuery(name = Value.FIND_BY_METRIC_AND_EXECUTION, query = "SELECT value FROM Value value WHERE value.metric.id = :metricId AND value.testExecution.id = :executionId")
+})
 public class Value implements Entity<Value> {
 
    private static final long serialVersionUID = 1227873698917395252L;
 
-   public static final String GET_TEST = "Value.getTest";
+   public static final String FIND_BY_METRIC_AND_EXECUTION = "Value.findByMetricAndExecution";
 
    @Id
    @SequenceGenerator(name = "VALUE_ID_GENERATOR", sequenceName = "VALUE_SEQUENCE", allocationSize = 1)
@@ -104,26 +106,8 @@ public class Value implements Entity<Value> {
       this.parameters = parameters;
    }
 
-   public String getMetricName() {
-      return metric == null ? null : metric.getName();
-   }
-
-   public void setMetricName(String metricName) {
-      if (metric == null) {
-         metric = new Metric();
-      }
-      metric.setName(metricName);
-   }
-
    public MetricComparator getMetricComparator() {
       return metric == null ? null : metric.getComparator();
-   }
-
-   public void setMetricComparator(MetricComparator metricComparator) {
-      if (metric == null) {
-         metric = new Metric();
-      }
-      metric.setComparator(metricComparator);
    }
 
    public boolean hasParameters() {

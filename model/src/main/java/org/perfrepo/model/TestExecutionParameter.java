@@ -30,15 +30,15 @@ import javax.validation.constraints.Size;
 @javax.persistence.Entity
 @Table(name = "test_execution_parameter")
 @NamedQueries({
-    @NamedQuery(name = TestExecutionParameter.GET_TEST, query = "SELECT test FROM TestExecutionParameter tep INNER JOIN tep.testExecution.test test WHERE tep = :entity"),
-    @NamedQuery(name = TestExecutionParameter.FIND_BY_TEST_ID, query = "SELECT DISTINCT p.name FROM TestExecutionParameter p, TestExecution e WHERE p.testExecution.id = e.id AND e.test.id = :testId")})
+    @NamedQuery(name = TestExecutionParameter.FIND_BY_TEST_ID, query = "SELECT DISTINCT p.name FROM TestExecutionParameter p, TestExecution e WHERE p.testExecution.id = e.id AND e.test.id = :testId"),
+    @NamedQuery(name = TestExecutionParameter.FIND_BY_TEST_EXECUTION, query = "SELECT parameter FROM TestExecutionParameter parameter WHERE parameter.testExecution.id = :executionId")
+})
 public class TestExecutionParameter implements Entity<TestExecutionParameter>, Comparable<TestExecutionParameter> {
 
    private static final long serialVersionUID = -5534543562306898358L;
 
-   public static final String FIND_ALL = "TestExecutionParameter.findAll";
-   public static final String GET_TEST = "TestExecutionParameter.getTest";
    public static final String FIND_BY_TEST_ID = "TestExecutionParameter.findByTestId";
+   public static final String FIND_BY_TEST_EXECUTION = "TestExecutionParameter.findByTestExecution";
 
    @Id
    @SequenceGenerator(name = "TEST_EXECUTION_PARAMETER_ID_GENERATOR", sequenceName = "TEST_EXECUTION_PARAMETER_SEQUENCE", allocationSize = 1)

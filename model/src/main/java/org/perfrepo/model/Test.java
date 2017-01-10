@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -73,7 +74,7 @@ public class Test implements Entity<Test> {
            joinColumns = {@JoinColumn(name = "test_id", nullable = false, updatable = false)},
            inverseJoinColumns = {@JoinColumn(name = "metric_id", nullable = false, updatable = false)}
    )
-   private Set<Metric> metrics = new HashSet<>();
+   private Set<Metric> metrics = new TreeSet<>();
 
    @ManyToMany(fetch = FetchType.LAZY)
    @JoinTable(

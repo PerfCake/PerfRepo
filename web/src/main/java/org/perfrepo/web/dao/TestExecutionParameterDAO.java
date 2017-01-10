@@ -23,7 +23,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DAO for {@link TestExecutionParameter}
@@ -108,5 +110,11 @@ public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long>
       criteria.where(cb.like(cb.lower(testExecutionParameter.<String>get("name")), prefix.toLowerCase() + "%"));
 
       return query(criteria).getResultList();
+   }
+
+   public List<TestExecutionParameter> findByExecution(Long testExecutionId) {
+      Map<String, Object> params = new HashMap<>();
+      params.put("executionId", testExecutionId);
+      return findByNamedQuery(TestExecutionParameter.FIND_BY_TEST_EXECUTION, params);
    }
 }

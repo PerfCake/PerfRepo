@@ -26,7 +26,9 @@ import org.perfrepo.model.to.MultiValueResultWrapper;
 import org.perfrepo.model.to.OrderBy;
 import org.perfrepo.model.to.SingleValueResultWrapper;
 import org.perfrepo.model.to.TestExecutionSearchTO;
+import org.perfrepo.model.user.Group;
 import org.perfrepo.web.dao.DAO;
+import org.perfrepo.web.dao.GroupDAO;
 import org.perfrepo.web.dao.MetricDAO;
 import org.perfrepo.web.dao.TagDAO;
 import org.perfrepo.web.dao.TestDAO;
@@ -35,6 +37,7 @@ import org.perfrepo.web.dao.TestExecutionParameterDAO;
 import org.perfrepo.web.dao.ValueDAO;
 import org.perfrepo.web.dao.ValueParameterDAO;
 import org.perfrepo.web.util.TagUtils;
+import org.perfrepo.web.util.TestUtils;
 
 import javax.inject.Inject;
 import javax.transaction.Status;
@@ -77,6 +80,9 @@ public class TestExecutionDAOTest {
    private ValueDAO valueDAO;
 
    @Inject
+   private GroupDAO groupDAO;
+
+   @Inject
    private ValueParameterDAO valueParameterDAO;
 
    @Inject
@@ -94,15 +100,7 @@ public class TestExecutionDAOTest {
 
    @Deployment
    public static Archive<?> createDeployment() {
-      WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
-      war.addPackages(true, DAO.class.getPackage());
-      war.addPackages(true, Entity.class.getPackage());
-      war.addPackages(true, DefaultArtifactVersion.class.getPackage());
-      war.addPackages(true, ArtifactResolutionException.class.getPackage());
-      war.addClass(TagUtils.class);
-      war.addAsResource("test-persistence.xml", "META-INF/persistence.xml");
-      war.addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
-      return war;
+      return TestUtils.createDeployment();
    }
 
    @Before
@@ -511,12 +509,20 @@ public class TestExecutionDAOTest {
    }
 
    private Test createTest(String groupId, String uid) {
-      return Test.builder()
-          .name("test1")
-          .groupId(groupId)
-          .uid(uid)
-          .description("this is a test test")
-          .build();
+      Group group = groupDAO.findByName(groupId);
+      if (group == null) {
+         Group newGroup = new Group();
+         newGroup.setName(groupId);
+         group = groupDAO.create(newGroup);
+      }
+
+      Test test = new Test();
+      test.setName("test1");
+      test.setUid(uid);
+      test.setDescription("This is a test test");
+      test.setGroup(group);
+
+      return test;
    }
 
    private TestExecution createTestExecution(String name, Date startedDate, Test test) {

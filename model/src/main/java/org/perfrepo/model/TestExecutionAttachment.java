@@ -37,13 +37,11 @@ import java.util.Arrays;
 @javax.persistence.Entity
 @Table(name = "test_execution_attachment")
 @NamedQueries({
-    @NamedQuery(name = TestExecutionAttachment.FIND_BY_EXECUTION, query = "SELECT new TestExecutionAttachment(a.id, a.filename, a.mimetype) from TestExecutionAttachment a WHERE a.testExecution.id = :exec"),
-    @NamedQuery(name = TestExecutionAttachment.GET_TEST, query = "SELECT test FROM TestExecutionAttachment attachment INNER JOIN attachment.testExecution.test test WHERE attachment = :entity")
+    @NamedQuery(name = TestExecutionAttachment.FIND_BY_EXECUTION, query = "SELECT attachment FROM TestExecutionAttachment attachment WHERE attachment.testExecution.id = :executionId")
 })
 public class TestExecutionAttachment implements Entity<TestExecutionAttachment> {
 
    private static final long serialVersionUID = -3358483095886229881L;
-   public static final String GET_TEST = "TestExecutionAttachment.getTest";
    public static final String FIND_BY_EXECUTION = "TestExecutionAttachment.findByExecution";
 
    /**
@@ -98,14 +96,6 @@ public class TestExecutionAttachment implements Entity<TestExecutionAttachment> 
 
    public void setId(Long id) {
       this.id = id;
-   }
-
-   public String getStringId() {
-      return id == null ? null : String.valueOf(id);
-   }
-
-   public void setStringId(String id) {
-      this.id = Long.valueOf(id);
    }
 
    public void setTestExecution(TestExecution testExecution) {
