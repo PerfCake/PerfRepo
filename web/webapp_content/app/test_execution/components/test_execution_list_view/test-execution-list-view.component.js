@@ -25,7 +25,6 @@
             return {
                 showSelectBox: false,
                 selectItems: true,
-                useExpandingRows: true,
                 selectionMatchProp: 'id'
             };
         }
