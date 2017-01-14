@@ -1,7 +1,7 @@
 package org.perfrepo.web.rest.endpoints;
 
 import org.perfrepo.dto.test_execution.TestExecutionDto;
-import org.perfrepo.dto.test_execution.TestExecutionSearchParams;
+import org.perfrepo.dto.test_execution.TestExecutionSearchCriteria;
 import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.web.adapter.TestExecutionAdapter;
 
@@ -36,7 +36,7 @@ public class TestExecutionRestApi {
 
    @POST
    @Path("/search")
-   public Response search(TestExecutionSearchParams searchParams) {
+   public Response search(TestExecutionSearchCriteria searchParams) {
       SearchResult<TestExecutionDto> result = testExecutionAdapter.searchTestExecutions(searchParams);
 
       return Response
@@ -47,7 +47,6 @@ public class TestExecutionRestApi {
               .header("X-Pagination-Per-Page", result.getPerPage())
               .entity(result.getData()).build();
    }
-
 
    @POST
    public Response create(TestExecutionDto testExecutionDto) {

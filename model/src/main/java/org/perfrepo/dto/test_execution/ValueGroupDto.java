@@ -5,11 +5,11 @@ import java.util.List;
 /**
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class TestExecutionGroupValueDto {
+public class ValueGroupDto {
 
     private Long metricId;
 
-    private List<TestExecutionValueDto> values;
+    private List<ValueDto> values;
 
     public Long getMetricId() {
         return metricId;
@@ -19,11 +19,11 @@ public class TestExecutionGroupValueDto {
         this.metricId = metricId;
     }
 
-    public List<TestExecutionValueDto> getValues() {
+    public List<ValueDto> getValues() {
         return values;
     }
 
-    public void setValues(List<TestExecutionValueDto> values) {
+    public void setValues(List<ValueDto> values) {
         this.values = values;
     }
 }

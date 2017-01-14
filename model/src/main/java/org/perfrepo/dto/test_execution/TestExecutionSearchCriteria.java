@@ -9,7 +9,7 @@ import java.util.Set;
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class TestExecutionSearchParams {
+public class TestExecutionSearchCriteria {
 
     private Set<String> testNameFilters;
 

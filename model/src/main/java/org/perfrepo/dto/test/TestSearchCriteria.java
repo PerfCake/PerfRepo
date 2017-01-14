@@ -9,7 +9,7 @@ import java.util.Set;
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class TestSearchParams {
+public class TestSearchCriteria {
 
     private Set<String> nameFilters;
 

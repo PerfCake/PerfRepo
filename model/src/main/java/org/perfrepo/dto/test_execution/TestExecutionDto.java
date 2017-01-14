@@ -26,7 +26,7 @@ public class TestExecutionDto {
 
     private Map<String, String> executionParameters;
 
-    private Set<TestExecutionGroupValueDto> executionValues;
+    private Set<ValueGroupDto> executionValues;
 
     public Long getId() {
         return id;
@@ -84,11 +84,11 @@ public class TestExecutionDto {
         this.executionParameters = executionParameters;
     }
 
-    public Set<TestExecutionGroupValueDto> getExecutionValues() {
+    public Set<ValueGroupDto> getExecutionValues() {
         return executionValues;
     }
 
-    public void setExecutionValues(Set<TestExecutionGroupValueDto> executionValues) {
+    public void setExecutionValues(Set<ValueGroupDto> executionValues) {
         this.executionValues = executionValues;
     }
 

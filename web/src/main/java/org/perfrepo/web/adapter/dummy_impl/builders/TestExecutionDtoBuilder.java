@@ -2,7 +2,7 @@ package org.perfrepo.web.adapter.dummy_impl.builders;
 
 import org.perfrepo.dto.test.TestDto;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
-import org.perfrepo.dto.test_execution.TestExecutionGroupValueDto;
+import org.perfrepo.dto.test_execution.ValueGroupDto;
 
 import java.util.*;
 
@@ -50,8 +50,8 @@ public class TestExecutionDtoBuilder {
         return this;
     }
 
-    public TestExecutionDtoBuilder executionValue(TestExecutionGroupValueDto groupValue) {
-        testExecutionDto.getExecutionValues().add(groupValue);
+    public TestExecutionDtoBuilder executionValue(ValueGroupDto valueGroup) {
+        testExecutionDto.getExecutionValues().add(valueGroup);
         return this;
     }
 

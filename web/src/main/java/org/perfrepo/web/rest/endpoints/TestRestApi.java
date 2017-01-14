@@ -3,7 +3,7 @@ package org.perfrepo.web.rest.endpoints;
 import org.perfrepo.dto.alert.AlertDto;
 import org.perfrepo.dto.metric.MetricDto;
 import org.perfrepo.dto.util.SearchResult;
-import org.perfrepo.dto.test.TestSearchParams;
+import org.perfrepo.dto.test.TestSearchCriteria;
 import org.perfrepo.dto.test.TestDto;
 import org.perfrepo.web.adapter.AlertAdapter;
 import org.perfrepo.web.adapter.MetricAdapter;
@@ -46,7 +46,7 @@ public class TestRestApi {
 
    @POST
    @Path("/search")
-   public Response search(TestSearchParams searchParams) {
+   public Response search(TestSearchCriteria searchParams) {
       SearchResult<TestDto> result = testAdapter.searchTests(searchParams);
 
       return Response

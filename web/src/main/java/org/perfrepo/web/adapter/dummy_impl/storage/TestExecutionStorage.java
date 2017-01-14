@@ -2,7 +2,7 @@ package org.perfrepo.web.adapter.dummy_impl.storage;
 
 import org.apache.commons.lang.StringUtils;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
-import org.perfrepo.dto.test_execution.TestExecutionSearchParams;
+import org.perfrepo.dto.test_execution.TestExecutionSearchCriteria;
 import org.perfrepo.dto.util.SearchResult;
 
 import java.util.*;
@@ -40,8 +40,7 @@ public class TestExecutionStorage {
         return data.removeIf(testExecution -> testExecution.getId().equals(id));
     }
 
-    public SearchResult<TestExecutionDto> search(TestExecutionSearchParams searchParams) {
-
+    public SearchResult<TestExecutionDto> search(TestExecutionSearchCriteria searchParams) {
         Comparator<TestExecutionDto> sortComparator;
 
         switch (searchParams.getOrderBy()) {
@@ -100,7 +99,6 @@ public class TestExecutionStorage {
     }
 
     public TestExecutionDto update(TestExecutionDto dto) {
-
         TestExecutionDto testExecution = getById(dto.getId());
 
         if (testExecution != null) {

@@ -1,6 +1,6 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
-import org.perfrepo.dto.test_execution.TestExecutionGroupValueDto;
+import org.perfrepo.dto.test_execution.ValueGroupDto;
 import org.perfrepo.model.MetricComparator;
 import org.perfrepo.web.adapter.dummy_impl.builders.*;
 
@@ -186,36 +186,36 @@ public class Storage {
 
     private void initializeTestExecutions() {
         //TODO
-        TestExecutionGroupValueDto g = new TestExecutionGroupValueDto();
+        ValueGroupDto g = new ValueGroupDto();
 
         g.setMetricId(1L);
         g.setValues(new ArrayList<>());
-        g.getValues().add(new TestExecutionValueDtoBuilder()
+        g.getValues().add(new ValueDtoBuilder()
                 .value(10.0)
                 .parameter("time", "1")
                 .build());
-        g.getValues().add(new TestExecutionValueDtoBuilder()
+        g.getValues().add(new ValueDtoBuilder()
                 .value(15.0)
                 .parameter("time", "2")
                 .build());
-        g.getValues().add(new TestExecutionValueDtoBuilder()
+        g.getValues().add(new ValueDtoBuilder()
                 .value(17.0)
                 .parameter("time", "3")
                 .build());
 
-        TestExecutionGroupValueDto g2 = new TestExecutionGroupValueDto();
+        ValueGroupDto g2 = new ValueGroupDto();
 
         g2.setMetricId(1L);
         g2.setValues(new ArrayList<>());
-        g2.getValues().add(new TestExecutionValueDtoBuilder()
+        g2.getValues().add(new ValueDtoBuilder()
                 .value(11.0)
                 .parameter("time", "1")
                 .build());
-        g2.getValues().add(new TestExecutionValueDtoBuilder()
+        g2.getValues().add(new ValueDtoBuilder()
                 .value(16.0)
                 .parameter("time", "2")
                 .build());
-        g2.getValues().add(new TestExecutionValueDtoBuilder()
+        g2.getValues().add(new ValueDtoBuilder()
                 .value(23.0)
                 .parameter("time", "3")
                 .build());

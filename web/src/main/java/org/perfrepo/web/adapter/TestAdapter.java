@@ -2,7 +2,7 @@ package org.perfrepo.web.adapter;
 
 import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.dto.test.TestDto;
-import org.perfrepo.dto.test.TestSearchParams;
+import org.perfrepo.dto.test.TestSearchCriteria;
 
 import java.util.List;
 
@@ -76,7 +76,7 @@ public interface TestAdapter {
      * @return List of {@link TestDto} tests.
      * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
-    SearchResult<TestDto> searchTests(TestSearchParams searchParams);
+    SearchResult<TestDto> searchTests(TestSearchCriteria searchParams);
 
     /**
      * TODO

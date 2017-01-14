@@ -2,7 +2,7 @@ package org.perfrepo.web.adapter.dummy_impl;
 
 import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.dto.test.TestDto;
-import org.perfrepo.dto.test.TestSearchParams;
+import org.perfrepo.dto.test.TestSearchCriteria;
 import org.perfrepo.dto.util.validation.ValidationErrors;
 import org.perfrepo.web.adapter.exceptions.AdapterException;
 import org.perfrepo.web.adapter.exceptions.BadRequestException;
@@ -102,7 +102,7 @@ public class TestAdapterDummyImpl implements TestAdapter {
     }
 
     @Override
-    public SearchResult<TestDto> searchTests(TestSearchParams searchParams) {
+    public SearchResult<TestDto> searchTests(TestSearchCriteria searchParams) {
         // delay...
         try {
             Thread.sleep(500);

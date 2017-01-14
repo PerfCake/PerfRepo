@@ -2,7 +2,7 @@
 package org.perfrepo.web.adapter.dummy_impl;
 
 import org.perfrepo.dto.test_execution.TestExecutionDto;
-import org.perfrepo.dto.test_execution.TestExecutionSearchParams;
+import org.perfrepo.dto.test_execution.TestExecutionSearchCriteria;
 import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.dto.util.validation.ValidationErrors;
 import org.perfrepo.web.adapter.TestExecutionAdapter;
@@ -96,7 +96,7 @@ public class TestExecutionAdapterDummyImpl implements TestExecutionAdapter {
     }
 
     @Override
-    public SearchResult<TestExecutionDto> searchTestExecutions(TestExecutionSearchParams searchParams) {
+    public SearchResult<TestExecutionDto> searchTestExecutions(TestExecutionSearchCriteria searchParams) {
         // delay...
         try {
             Thread.sleep(500);

@@ -1,7 +1,7 @@
 package org.perfrepo.web.adapter;
 
 import org.perfrepo.dto.test_execution.TestExecutionDto;
-import org.perfrepo.dto.test_execution.TestExecutionSearchParams;
+import org.perfrepo.dto.test_execution.TestExecutionSearchCriteria;
 import org.perfrepo.dto.util.SearchResult;
 
 import java.util.List;
@@ -25,5 +25,5 @@ public interface TestExecutionAdapter {
 
     List<TestExecutionDto> getAllTestExecutions();
 
-    SearchResult<TestExecutionDto> searchTestExecutions(TestExecutionSearchParams searchParams);
+    SearchResult<TestExecutionDto> searchTestExecutions(TestExecutionSearchCriteria searchParams);
 }

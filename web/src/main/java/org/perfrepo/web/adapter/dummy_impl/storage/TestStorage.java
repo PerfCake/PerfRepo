@@ -3,7 +3,7 @@ package org.perfrepo.web.adapter.dummy_impl.storage;
 import org.apache.commons.lang.StringUtils;
 import org.perfrepo.dto.alert.AlertDto;
 import org.perfrepo.dto.metric.MetricDto;
-import org.perfrepo.dto.test.TestSearchParams;
+import org.perfrepo.dto.test.TestSearchCriteria;
 import org.perfrepo.dto.test.TestDto;
 import org.perfrepo.dto.util.SearchResult;
 
@@ -70,7 +70,6 @@ public class TestStorage {
     }
 
     public TestDto update(TestDto dto) {
-
         TestDto test = getById(dto.getId());
 
         if (test != null) {
@@ -92,8 +91,7 @@ public class TestStorage {
         return data;
     }
 
-    public SearchResult<TestDto> search(TestSearchParams searchParams) {
-
+    public SearchResult<TestDto> search(TestSearchCriteria searchParams) {
         Comparator<TestDto> sortComparator;
 
         switch (searchParams.getOrderBy()) {

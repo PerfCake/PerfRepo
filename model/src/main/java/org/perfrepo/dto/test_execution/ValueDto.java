@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class TestExecutionValueDto {
+public class ValueDto {
 
     private double value;
 
