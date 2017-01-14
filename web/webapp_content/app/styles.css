@@ -19,14 +19,6 @@
     border-bottom: 1px #ddd solid;
 }
 
-.content {
-    max-width: 1140px;
-}
-
-.header-content {
-    max-width: 1180px;
-}
-
 .header-controls {
     margin-top: 20px;
     margin-bottom: 10px;

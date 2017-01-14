@@ -1,82 +1,77 @@
 <div class="row header">
-    <div class="header-content">
-        <div class="col-sm-12 col-md-4">
-            <h1>Test detail</h1>
-        </div>
-        <div class="col-sm-12 col-md-8">
-            <div class="pull-right header-controls">
-                <button class="btn btn-default" ng-click="vm.editTest()">
-                    <span class="pficon pficon-edit" aria-hidden="true"></span> Edit
-                </button>
-                <button class="btn btn-default" ng-click="vm.createTestExecution()">
-                    <span class="pficon-add-circle-o" aria-hidden="true"></span> Create test execution
-                </button>
-                <button class="btn btn-default" ng-click="vm.showTestExecutions()">
-                    <span class="fa fa-list" aria-hidden="true"></span> Show test executions
-                </button>
-                <button ng-disabled="!vm.alertButtonEnabled" ng-show="!vm.isUserAlertsSubscriber" class="btn btn-default" ng-click="vm.subscribeAlerts()">
-                    <span class="fa fa-bell-o" aria-hidden="true"></span> Subscribe to alerts
-                </button>
-                <button ng-disabled="!vm.alertButtonEnabled" ng-show="vm.isUserAlertsSubscriber" class="btn btn-danger" ng-click="vm.unsubscribeAlerts()">
-                    <span class="fa fa-bell-slash-o" aria-hidden="true"></span> Unsubscribe from alerts
-                </button>
-            </div>
+    <div class="col-sm-12 col-md-4">
+        <h1>Test detail</h1>
+    </div>
+    <div class="col-sm-12 col-md-8">
+        <div class="pull-right header-controls">
+            <button class="btn btn-default" ng-click="vm.editTest()">
+                <span class="pficon pficon-edit" aria-hidden="true"></span> Edit
+            </button>
+            <button class="btn btn-default" ng-click="vm.createTestExecution()">
+                <span class="pficon-add-circle-o" aria-hidden="true"></span> Create test execution
+            </button>
+            <button class="btn btn-default" ng-click="vm.showTestExecutions()">
+                <span class="fa fa-list" aria-hidden="true"></span> Show test executions
+            </button>
+            <button ng-disabled="!vm.alertButtonEnabled" ng-show="!vm.isUserAlertsSubscriber" class="btn btn-default" ng-click="vm.subscribeAlerts()">
+                <span class="fa fa-bell-o" aria-hidden="true"></span> Subscribe to alerts
+            </button>
+            <button ng-disabled="!vm.alertButtonEnabled" ng-show="vm.isUserAlertsSubscriber" class="btn btn-danger" ng-click="vm.unsubscribeAlerts()">
+                <span class="fa fa-bell-slash-o" aria-hidden="true"></span> Unsubscribe from alerts
+            </button>
         </div>
     </div>
 </div>
-<div class="content">
-    <div class="row">
-        <div class="col-sm-12">
-            <h3>{{vm.test.name}}</h3>
+<div class="row">
+    <div class="col-sm-12">
+        <h3>{{vm.test.name}}</h3>
 
-            <dl class="dl-horizontal">
-                <dt>Uid</dt>
-                <dd>{{vm.test.uid}}</dd>
+        <dl class="dl-horizontal">
+            <dt>Uid</dt>
+            <dd>{{vm.test.uid}}</dd>
 
-                <dt>Group</dt>
-                <dd>{{vm.test.group.name}}</dd>
+            <dt>Group</dt>
+            <dd>{{vm.test.group.name}}</dd>
 
-                <dt>Description</dt>
-                <dd ng-bind-html="vm.test.description"></dd>
-            </dl>
+            <dt>Description</dt>
+            <dd ng-bind-html="vm.test.description"></dd>
+        </dl>
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Metrics</h3>
-                </div>
-                <div class="panel-body">
-                    <ul class="list-group">
-                        <li class="list-group-item" ng-repeat="metric in vm.test.metrics">
-                            <div>
-                                <strong>{{metric.name}}</strong>
-                            </div>
-                            <a ng-click="vm.editMetric(metric)" class="btn btn-default">Edit</a>
-                            <a ng-click="vm.removeMetric(metric)" class="btn btn-danger">Remove</a>
-                        </li>
-                    </ul>
-                    <a ng-click="vm.addMetric()" class="btn btn-primary">Add metric</a>
-                </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Metrics</h3>
             </div>
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Alerts</h3>
-                </div>
-                <div class="panel-body">
-                    <ul class="list-group">
-                        <li class="list-group-item" ng-repeat="alert in vm.test.alerts">
-                            <div>
-                                <strong>{{alert.name}}</strong>
-                            </div>
-                            <a ng-click="vm.editAlert(alert)" class="btn btn-default">Edit</a>
-                            <a ng-click="vm.removeAlert(alert)" class="btn btn-danger">Remove</a>
-                        </li>
-                    </ul>
-                    <a ng-click="vm.addAlert()" class="btn btn-primary">Add alert</a>
-                </div>
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="metric in vm.test.metrics">
+                        <div>
+                            <strong>{{metric.name}}</strong>
+                        </div>
+                        <a ng-click="vm.editMetric(metric)" class="btn btn-default">Edit</a>
+                        <a ng-click="vm.removeMetric(metric)" class="btn btn-danger">Remove</a>
+                    </li>
+                </ul>
+                <a ng-click="vm.addMetric()" class="btn btn-primary">Add metric</a>
             </div>
-
-
         </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Alerts</h3>
+            </div>
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="alert in vm.test.alerts">
+                        <div>
+                            <strong>{{alert.name}}</strong>
+                        </div>
+                        <a ng-click="vm.editAlert(alert)" class="btn btn-default">Edit</a>
+                        <a ng-click="vm.removeAlert(alert)" class="btn btn-danger">Remove</a>
+                    </li>
+                </ul>
+                <a ng-click="vm.addAlert()" class="btn btn-primary">Add alert</a>
+            </div>
+        </div>
+
     </div>
 </div>

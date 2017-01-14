@@ -1,29 +1,26 @@
 <div class="row header">
-    <div class="header-content">
-        <div class="col-sm-12 col-md-4">
-            <h1>Test execution detail</h1>
-        </div>
-        <div class="col-sm-12 col-md-8">
-            <div class="pull-right header-controls">
-                <button class="btn btn-default" ng-click="vm.editTestExecution()">
-                    <span class="pficon pficon-edit" aria-hidden="true"></span> Edit
-                </button>
-            </div>
+    <div class="col-sm-12 col-md-4">
+        <h1>Test execution detail</h1>
+    </div>
+    <div class="col-sm-12 col-md-8">
+        <div class="pull-right header-controls">
+            <button class="btn btn-default" ng-click="vm.editTestExecution()">
+                <span class="pficon pficon-edit" aria-hidden="true"></span> Edit
+            </button>
         </div>
     </div>
 </div>
-<div class="content">
-    <div class="row">
-        <div class="col-sm-12">
-            <h3>{{vm.testExecution.name}}</h3>
 
-            <dl class="dl-horizontal">
-                <dt>Uid</dt>
-                <dd>{{vm.testExecution.created}}</dd>
+<div class="row">
+    <div class="col-sm-12">
+        <h3>{{vm.testExecution.name}}</h3>
 
-                <dt>Description</dt>
-                <dd ng-bind-html="vm.testExecution.description"></dd>
-            </dl>
-        </div>
+        <dl class="dl-horizontal">
+            <dt>Uid</dt>
+            <dd>{{vm.testExecution.created}}</dd>
+
+            <dt>Description</dt>
+            <dd ng-bind-html="vm.testExecution.description"></dd>
+        </dl>
     </div>
 </div>
