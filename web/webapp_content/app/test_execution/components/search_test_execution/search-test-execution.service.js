@@ -5,28 +5,17 @@
         .module('org.perfrepo.testExecution.search')
         .service('testExecutionSearchService', TestExecutionModalService);
 
-    function TestExecutionModalService(pfViewUtils) {
+    function TestExecutionModalService() {
 
         return {
             getToolbarConfig: getToolbarConfig,
             getSearchOffset: getSearchOffset
         };
 
-        function getToolbarConfig(onFilterChange, onSortChange, onViewSelect) {
+        function getToolbarConfig(onFilterChange, onSortChange) {
             return {
-                viewsConfig: prepareViewConfig(onViewSelect),
                 filterConfig: prepareFilterConfig(onFilterChange),
                 sortConfig: prepareSortConfig(onSortChange)
-            };
-        }
-
-        function prepareViewConfig(onViewSelect) {
-            var views = [pfViewUtils.getListView(), pfViewUtils.getCardView()];
-
-            return {
-                views: views,
-                onViewSelect: onViewSelect,
-                currentView: views[0].id
             };
         }
 

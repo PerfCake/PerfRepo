@@ -4,16 +4,12 @@
         </div>
     </div>
 
-    <div class="col-md-12 list-view-container" ng-if="vm.toolbarConfig.viewsConfig.currentView == 'listView'">
+    <div class="col-md-12 list-view-container">
         <test-list-view
                 items="vm.items"
                 on-update-list="vm.updateSearch()">
 
         </test-list-view>
-    </div>
-
-    <div class="col-md-12 card-view-container" ng-if="vm.toolbarConfig.viewsConfig.currentView == 'cardView'">
-        <test-card-view items="vm.items"></test-card-view>
     </div>
 </div>
 <div class="row">

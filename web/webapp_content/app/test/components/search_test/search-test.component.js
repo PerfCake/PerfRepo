@@ -19,7 +19,7 @@
         vm.currentPage = 1;
         vm.searchParams = testService.getDefaultSearchParams();
 
-        vm.toolbarConfig = testSearchService.getToolbarConfig(filterChanged, sortChanged, viewChanged);
+        vm.toolbarConfig = testSearchService.getToolbarConfig(filterChanged, sortChanged);
 
         vm.paginationChanged = paginationChanged;
         vm.updateSearch = updateSearch;
@@ -52,10 +52,6 @@
         function sortChanged(sortFiled, isAscending) {
             vm.searchParams.orderBy = sortFiled.id.toUpperCase() + (isAscending ? "_ASC" : "_DESC");
             updateSearch();
-        }
-
-        function viewChanged() {
-
         }
 
         function updateSearch() {
