@@ -15,7 +15,9 @@
 
     function TestListViewController($state,  $templateCache, testModalService, testExecutionModalService) {
         var vm = this;
-        $templateCache.put('test-detail-button-template', '<span class="fa fa-pencil-square-o"></span> {{actionButton.name}}');
+        $templateCache.put('test-detail-button-template', '<span class="fa fa-th-list"></span> {{actionButton.name}}');
+        $templateCache.put('test-edit-button-template', '<span class="pficon pficon-edit"></span> {{actionButton.name}}');
+        $templateCache.put('test-delete-button-template', '<span class="pficon-delete"></span> {{actionButton.name}}');
 
         vm.actionButtons = getActionButtons();
         vm.menuActions = getMenuActions();
@@ -32,11 +34,23 @@
         function getActionButtons() {
             return [
                 {
-                    name: 'Test detail',
+                    name: 'Detail',
                     include: 'test-detail-button-template',
-                    title: 'Go to test detail page',
+                    title: 'Test detail',
                     class: 'btn btn-default',
                     actionFn: showTestDetailAction
+                },
+                {
+                    name: 'Edit',
+                    include: 'test-edit-button-template',
+                    title: 'Edit test',
+                    actionFn: editTestAction
+                },
+                {
+                    name: 'Delete',
+                    include: 'test-delete-button-template',
+                    title: 'Delete test',
+                    actionFn: deleteTestAction
                 }
             ];
         }
@@ -44,30 +58,14 @@
         function getMenuActions() {
             return [
                 {
-                    name: 'Edit test',
-                    title: 'Edit test',
-                    actionFn: editTestAction
-                },
-                {
-                    isSeparator: true
-                },
-                {
-                    name: 'Create test execution',
+                    name: 'Create execution',
                     title: 'Create test execution',
                     actionFn: createTestExecutionAction
                 },
                 {
-                    name: 'Show test executions',
+                    name: 'Show executions',
                     title: 'Show test executions',
                     actionFn: showTestExecutionsAction
-                },
-                {
-                    isSeparator: true
-                },
-                {
-                    name: 'Delete test',
-                    title: 'Delete test',
-                    actionFn: deleteTestAction
                 }
             ];
         }

@@ -15,7 +15,9 @@
 
     function TestExecutionListViewController($state,  $templateCache, testExecutionModalService) {
         var vm = this;
-        $templateCache.put('test-execution-detail-button-template', '<span class="fa fa-pencil-square-o"></span> {{actionButton.name}}');
+        $templateCache.put('test-execution-detail-button-template', '<span class="fa fa-th-list"></span> {{actionButton.name}}');
+        $templateCache.put('test-execution-edit-button-template', '<span class="pficon pficon-edit"></span> {{actionButton.name}}');
+        $templateCache.put('test-execution-delete-button-template', '<span class="pficon-delete"></span> {{actionButton.name}}');
 
         vm.actionButtons = getActionButtons();
         vm.menuActions = getMenuActions();
@@ -32,30 +34,29 @@
         function getActionButtons() {
             return [
                 {
-                    name: 'Test execution detail',
+                    name: 'Detail',
                     include: 'test-execution-detail-button-template',
-                    title: 'Go to test execution detail page',
+                    title: 'Test execution detail',
                     class: 'btn btn-default',
                     actionFn: showTestExecutionDetailAction
+                },
+                {
+                    name: 'Edit',
+                    include: 'test-execution-edit-button-template',
+                    title: 'Edit test execution',
+                    actionFn: editTestExecutionAction
+                },
+                {
+                    name: 'Delete',
+                    include: 'test-execution-delete-button-template',
+                    title: 'Delete test execution',
+                    actionFn: deleteTestExecutionAction
                 }
             ];
         }
 
         function getMenuActions() {
             return [
-                {
-                    name: 'Edit test execution',
-                    title: 'Edit test execution',
-                    actionFn: editTestExecutionAction
-                },
-                {
-                    isSeparator: true
-                },
-                {
-                    name: 'Delete test execution',
-                    title: 'Delete test execution',
-                    actionFn: deleteTestExecutionAction
-                }
             ];
         }
 
