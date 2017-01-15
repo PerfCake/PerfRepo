@@ -2,21 +2,21 @@
     <div class="col-md-12">
         <form role="form" name="alertForm" ng-submit="vm.save(alertForm)" class="form-horizontal" novalidate>
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="alertName">Name:</label>
+                <label class="col-sm-2 control-label" for="alertName">Name</label>
                 <div class="col-sm-10">
                     <input type="text" id="alertName" name="name" ng-model="vm.alert.name" class="form-control" pr-server-validation>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="alertCondition">Condition:</label>
+                <label class="col-sm-2 control-label" for="alertCondition">Condition</label>
                 <div class="col-sm-10">
                     <textarea id="alertCondition" name="condition" ng-model="vm.alert.condition" rows="4" class="form-control" pr-server-validation></textarea>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="alertMetric">Metric:</label>
+                <label class="col-sm-2 control-label" for="alertMetric">Metric</label>
                 <div class="col-sm-10">
                     <ui-select name="metric" ng-model="vm.alert.metric" id="alertMetric" name="metric" title="Choose a group" pr-server-validation>
                         <ui-select-match placeholder="Select or search a metric...">{{$select.selected.name}}</ui-select-match>
@@ -28,7 +28,7 @@
             </div>
 
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="alertTags">Tags:</label>
+                <label class="col-sm-2 control-label" for="alertTags">Tags</label>
                 <div class="col-sm-10">
                     <tags-input id="alertTags" ng-model="vm.tagsObject"
                                 replace-spaces-with-dashes="false">
@@ -37,7 +37,7 @@
             </div>
 
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="alertLinks">Links:</label>
+                <label class="col-sm-2 control-label" for="alertLinks">Links</label>
                 <div class="col-sm-10">
                     <tags-input id="alertLinks" ng-model="vm.linksObject"
                                 placeholder="Add a link"
@@ -47,7 +47,7 @@
             </div>
 
             <div class="form-group">
-                <label class="col-sm-2 control-label">Description:</label>
+                <label class="col-sm-2 control-label">Description</label>
                 <div class="col-sm-10">
                     <div class="editor-wrap form-control-border">
                         <trix-editor ng-if="true" angular-trix name="description" ng-model="vm.alert.description" class="trix-content" pr-server-validation></trix-editor>
