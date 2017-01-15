@@ -79,9 +79,10 @@ public interface TestAdapter {
     SearchResult<TestDto> searchTests(TestSearchCriteria searchParams);
 
     /**
-     * TODO
-     * @param testId
-     * @return
+     * Return true if logged user subscribes the test alerts.
+     *
+     * @param testId Test id.
+     * @return true if logged user subscribes the test alerts.
      */
     boolean isSubscriber(Long testId);
 

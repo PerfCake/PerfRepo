@@ -3,6 +3,8 @@ package org.perfrepo.dto.test_execution;
 import java.util.List;
 
 /**
+ * Represents group of test execution values. The value group is for each test metric.
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public class ValueGroupDto {

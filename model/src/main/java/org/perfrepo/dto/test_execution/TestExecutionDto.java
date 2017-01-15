@@ -7,7 +7,8 @@ import java.util.Set;
 
 /**
  * Data transfer object for {@link org.perfrepo.model.TestExecution} entity that represents a execution of the test.
- * TODO add attachments
+ * TODO add file attachments property
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public class TestExecutionDto {

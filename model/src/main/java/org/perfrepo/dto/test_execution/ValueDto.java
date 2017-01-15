@@ -3,6 +3,8 @@ package org.perfrepo.dto.test_execution;
 import java.util.Map;
 
 /**
+ * Represents one value of test execution {@link TestExecutionDto}.
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public class ValueDto {
