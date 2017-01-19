@@ -14,8 +14,8 @@
  */
 package org.perfrepo.web.service.search;
 
-import org.perfrepo.model.to.OrderBy;
-import org.perfrepo.model.user.Group;
+import org.perfrepo.enums.OrderBy;
+import org.perfrepo.web.model.user.Group;
 
 import java.io.Serializable;
 import java.util.Set;

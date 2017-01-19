@@ -14,16 +14,16 @@
  */
 package org.perfrepo.web.service;
 
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.auth.AccessLevel;
-import org.perfrepo.model.auth.AccessType;
-import org.perfrepo.model.auth.Permission;
-import org.perfrepo.model.report.Report;
-import org.perfrepo.model.report.ReportProperty;
-import org.perfrepo.model.to.MetricReportTO;
-import org.perfrepo.model.user.Group;
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.Metric;
+import org.perfrepo.web.model.Test;
+import org.perfrepo.enums.AccessLevel;
+import org.perfrepo.enums.AccessType;
+import org.perfrepo.web.model.auth.Permission;
+import org.perfrepo.web.model.report.Report;
+import org.perfrepo.web.model.report.ReportProperty;
+import org.perfrepo.web.model.to.MetricReportTO;
+import org.perfrepo.web.model.user.Group;
+import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.dao.MetricDAO;
 import org.perfrepo.web.dao.PermissionDAO;
 import org.perfrepo.web.dao.ReportDAO;

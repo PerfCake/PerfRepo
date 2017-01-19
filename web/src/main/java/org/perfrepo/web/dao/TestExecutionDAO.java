@@ -15,22 +15,20 @@
 package org.perfrepo.web.dao;
 
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Tag;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionParameter;
-import org.perfrepo.model.Value;
-import org.perfrepo.model.ValueParameter;
-import org.perfrepo.model.to.MetricReportTO;
-import org.perfrepo.model.to.MultiValueResultWrapper;
-import org.perfrepo.model.to.OrderBy;
-import org.perfrepo.model.to.SearchResultWrapper;
-import org.perfrepo.model.to.SingleValueResultWrapper;
-import org.perfrepo.model.to.TestExecutionSearchTO;
-import org.perfrepo.model.to.TestExecutionSearchTO.ParamCriteria;
-import org.perfrepo.model.userproperty.GroupFilter;
-import org.perfrepo.web.util.TagUtils;
+import org.perfrepo.enums.GroupFilter;
+import org.perfrepo.enums.OrderBy;
+import org.perfrepo.web.model.Metric;
+import org.perfrepo.web.model.Tag;
+import org.perfrepo.web.model.Test;
+import org.perfrepo.web.model.TestExecution;
+import org.perfrepo.web.model.TestExecutionParameter;
+import org.perfrepo.web.model.Value;
+import org.perfrepo.web.model.ValueParameter;
+import org.perfrepo.web.model.to.MetricReportTO;
+import org.perfrepo.web.model.to.MultiValueResultWrapper;
+import org.perfrepo.web.model.to.SearchResultWrapper;
+import org.perfrepo.web.model.to.SingleValueResultWrapper;
+import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
 
 import javax.inject.Inject;
 import javax.persistence.Tuple;
@@ -53,6 +51,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -66,12 +65,6 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
    @Inject
    private TestExecutionParameterDAO testExecutionParameterDAO;
-
-   public List<TestExecution> getByTest(Long testId) {
-      Test test = new Test();
-      test.setId(testId);
-      return getAllByProperty("test", test);
-   }
 
    /**
     * Returns test executions with property value between selected boundaries. This can be applied only on
@@ -97,18 +90,18 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * Allows to search test executions by many complex criterias.
     *
     * @param search
-    * @param userGroups
     * @return
     */
-   public SearchResultWrapper<TestExecution> searchTestExecutions(TestExecutionSearchTO search, List<String> userGroups) {
+   public SearchResultWrapper<TestExecution> searchTestExecutions(TestExecutionSearchCriteria search) {
       CriteriaBuilder cb = criteriaBuilder();
 
-      List<String> tags = TagUtils.parseTags(search.getTags() != null ? search.getTags().toLowerCase() : "");
+      //normalize tags
+      List<String> tags = search.getTags().stream().map(tag -> tag.getName().toLowerCase()).collect(Collectors.toList());
       List<String> excludedTags = new ArrayList<>();
       List<String> includedTags = new ArrayList<>();
       divideTags(tags, includedTags, excludedTags);
 
-      int lastQueryResultsCount = processSearchCountQuery(search, includedTags, excludedTags, userGroups);
+      int lastQueryResultsCount = processSearchCountQuery(search, includedTags, excludedTags);
 
       CriteriaQuery<TestExecution> criteria = (CriteriaQuery) createSearchSubquery(cb.createQuery(TestExecution.class), search, includedTags, excludedTags);
       Root<TestExecution> root = (Root<TestExecution>) criteria.getRoots().toArray()[0];
@@ -116,7 +109,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       setOrderBy(criteria, search.getOrderBy(), root);
 
       TypedQuery<TestExecution> query = query(criteria);
-      fillParameterValues(query, search, includedTags, excludedTags, userGroups);
+      fillParameterValues(query, search, includedTags, excludedTags);
 
       //handle pagination
       int firstResult = search.getLimitFrom() == null ? 0 : search.getLimitFrom();
@@ -201,14 +194,13 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     *
     * @param search search criteria object
     * @param metric
-    * @param userGroups
     * @return
     */
-   public List<SingleValueResultWrapper> searchValues(TestExecutionSearchTO search, Metric metric, List<String> userGroups) {
+   public List<SingleValueResultWrapper> searchValues(TestExecutionSearchCriteria search, Metric metric) {
       CriteriaBuilder cb = criteriaBuilder();
       CriteriaQuery<SingleValueResultWrapper> criteriaQuery = cb.createQuery(SingleValueResultWrapper.class);
 
-      List<TestExecution> testExecutions = searchTestExecutions(search, userGroups).getResult();
+      List<TestExecution> testExecutions = searchTestExecutions(search).getResult();
       List<Long> testExecutionIds = testExecutions.stream().map(TestExecution::getId).collect(Collectors.toList());
 
       Root<TestExecution> testExecution = criteriaQuery.from(TestExecution.class);
@@ -236,14 +228,13 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     *
     * @param search search criteria object
     * @param metric
-    * @param userGroups
     * @return
     */
-   public List<MultiValueResultWrapper> searchMultiValues(TestExecutionSearchTO search, Metric metric, List<String> userGroups) {
+   public List<MultiValueResultWrapper> searchMultiValues(TestExecutionSearchCriteria search, Metric metric) {
       CriteriaBuilder cb = criteriaBuilder();
       CriteriaQuery<Tuple> criteriaQuery = cb.createQuery(Tuple.class);
 
-      List<TestExecution> testExecutions = searchTestExecutions(search, userGroups).getResult();
+      List<TestExecution> testExecutions = searchTestExecutions(search).getResult();
       List<Long> testExecutionIds = testExecutions.stream().map(TestExecution::getId).collect(Collectors.toList());
 
       Root<TestExecution> testExecution = criteriaQuery.from(TestExecution.class);
@@ -437,7 +428,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     *
     * @param search
     */
-   private AbstractQuery createSearchSubquery(AbstractQuery criteriaQuery, TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags) {
+   private AbstractQuery createSearchSubquery(AbstractQuery criteriaQuery, TestExecutionSearchCriteria search, List<String> includedTags, List<String> excludedTags) {
       AbstractQuery criteria = criteriaQuery;
       CriteriaBuilder cb = criteriaBuilder();
 
@@ -457,7 +448,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
       // construct criteria
       if (search.getIds() != null && !search.getIds().isEmpty()) {
-         pIds = rExec.<Long>get("id").in(cb.parameter(List.class, "ids"));
+         pIds = rExec.<Long>get("id").in(cb.parameter(Set.class, "ids"));
       }
       if (search.getStartedFrom() != null) {
          pStartedFrom = cb.greaterThanOrEqualTo(rExec.<Date>get("started"), cb.parameter(Date.class, "startedFrom"));
@@ -518,10 +509,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param search
     * @param includedTags
     * @param excludedTags
-    * @param userGroups
     * @return
     */
-   private Integer processSearchCountQuery(TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags, List<String> userGroups) {
+   private Integer processSearchCountQuery(TestExecutionSearchCriteria search, List<String> includedTags, List<String> excludedTags) {
       CriteriaBuilder cb = criteriaBuilder();
 
       CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
@@ -534,7 +524,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
       countQuery.where(cb.in(root.get("id")).value(subquery));
       TypedQuery<Long> typedCountQuery = query(countQuery);
-      fillParameterValues(typedCountQuery, search, includedTags, excludedTags, userGroups);
+      fillParameterValues(typedCountQuery, search, includedTags, excludedTags);
 
       Long count = typedCountQuery.getSingleResult();
       return count.intValue();
@@ -546,7 +536,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param testExecutions
     * @param search
     */
-   private void orderResultsByParameters(List<TestExecution> testExecutions, TestExecutionSearchTO search) {
+   private void orderResultsByParameters(List<TestExecution> testExecutions, TestExecutionSearchCriteria search) {
       if (!Arrays.asList(OrderBy.PARAMETER_ASC,
                          OrderBy.PARAMETER_DESC,
                          OrderBy.VERSION_ASC,
@@ -578,7 +568,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param search
     * @return
     */
-   private int performCompare(String value1, String value2, TestExecutionSearchTO search) {
+   private int performCompare(String value1, String value2, TestExecutionSearchCriteria search) {
       if (search.getOrderBy() == OrderBy.VERSION_ASC || search.getOrderBy() == OrderBy.VERSION_DESC) {
          DefaultArtifactVersion version1 = new DefaultArtifactVersion(value1);
          DefaultArtifactVersion version2 = new DefaultArtifactVersion(value2);
@@ -625,10 +615,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param search
     * @param includedTags
     * @param excludedTags
-    * @param userGroups
     */
-   private void fillParameterValues(TypedQuery query, TestExecutionSearchTO search, List<String> includedTags, List<String> excludedTags, List<String> userGroups) {
-      if (search.getIds() != null) {
+   private void fillParameterValues(TypedQuery query, TestExecutionSearchCriteria search, List<String> includedTags, List<String> excludedTags) {
+      if (search.getIds() != null && !search.getIds().isEmpty()) {
          query.setParameter("ids", search.getIds());
       }
       if (search.getStartedFrom() != null) {
@@ -661,13 +650,13 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          }
       }
       if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
-         query.setParameter("groupNames", userGroups);
+         query.setParameter("groupNames", search.getGroups().stream().map(group -> group.getName()).collect(Collectors.toList()));
       }
       if (search.getParameters() != null && !search.getParameters().isEmpty()) {
          int pCount = 1;
-         for (ParamCriteria paramCriteria : search.getParameters()) {
-            query.setParameter("paramName" + pCount, paramCriteria.getName());
-            query.setParameter("paramValue" + pCount, paramCriteria.getValue());
+         for (String key: search.getParameters().keySet()) {
+            query.setParameter("paramName" + pCount, key);
+            query.setParameter("paramValue" + pCount, search.getParameters().get(key));
             pCount++;
          }
       }

@@ -14,8 +14,8 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionParameter;
+import org.perfrepo.web.model.TestExecution;
+import org.perfrepo.web.model.TestExecutionParameter;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;

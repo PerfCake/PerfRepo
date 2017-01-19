@@ -1,6 +1,6 @@
 package org.perfrepo.web.security;
 
-import org.perfrepo.model.auth.AccessType;
+import org.perfrepo.enums.AccessType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

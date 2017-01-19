@@ -14,7 +14,7 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.Value;
+import org.perfrepo.web.model.Value;
 
 import java.util.HashMap;
 import java.util.List;

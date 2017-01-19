@@ -14,14 +14,14 @@
  */
 package org.perfrepo.web.service;
 
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Tag;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionAttachment;
-import org.perfrepo.model.TestExecutionParameter;
-import org.perfrepo.model.Value;
-import org.perfrepo.model.to.SearchResultWrapper;
-import org.perfrepo.model.to.TestExecutionSearchTO;
+import org.perfrepo.web.model.Metric;
+import org.perfrepo.web.model.Tag;
+import org.perfrepo.web.model.TestExecution;
+import org.perfrepo.web.model.TestExecutionAttachment;
+import org.perfrepo.web.model.TestExecutionParameter;
+import org.perfrepo.web.model.Value;
+import org.perfrepo.web.model.to.SearchResultWrapper;
+import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
 
 import java.util.Collection;
 import java.util.List;
@@ -77,12 +77,12 @@ public interface TestExecutionService {
    public List<TestExecution> getAllTestExecutions();
 
    /**
-    * Returns list of TestExecutions according to criteria defined by TestExecutionSearchTO
+    * Returns list of TestExecutions according to criteria defined by TestExecutionSearchCriteria
     *
     * @param search
     * @return result
     */
-   public SearchResultWrapper<TestExecution> searchTestExecutions(TestExecutionSearchTO search);
+   public SearchResultWrapper<TestExecution> searchTestExecutions(TestExecutionSearchCriteria search);
 
    /******** Methods related to test execution attachments ********/
 

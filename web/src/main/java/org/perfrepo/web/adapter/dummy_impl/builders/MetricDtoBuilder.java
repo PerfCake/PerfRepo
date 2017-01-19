@@ -1,7 +1,7 @@
 package org.perfrepo.web.adapter.dummy_impl.builders;
 
 import org.perfrepo.dto.metric.MetricDto;
-import org.perfrepo.model.MetricComparator;
+import org.perfrepo.enums.MetricComparator;
 
 /**
  * @author Jiri Grunwald (grunwjir@gmail.com)

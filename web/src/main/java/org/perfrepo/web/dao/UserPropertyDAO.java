@@ -14,7 +14,7 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.UserProperty;
+import org.perfrepo.web.model.UserProperty;
 
 import java.util.HashMap;
 import java.util.List;

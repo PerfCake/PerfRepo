@@ -11,7 +11,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Validation marker for {@link org.perfrepo.model.Test}.
+ * Validation marker for {@link org.perfrepo.web.model.Test}.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

@@ -14,13 +14,13 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.auth.Permission;
-import org.perfrepo.model.report.Report;
+import org.perfrepo.web.model.auth.Permission;
+import org.perfrepo.web.model.report.Report;
 
 import java.util.List;
 
 /**
- * DAO for {@link org.perfrepo.model.auth.Permission}
+ * DAO for {@link org.perfrepo.web.model.auth.Permission}
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

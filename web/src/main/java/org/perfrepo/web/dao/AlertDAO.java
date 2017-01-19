@@ -14,16 +14,16 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.Alert;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Test;
+import org.perfrepo.web.model.Alert;
+import org.perfrepo.web.model.Metric;
+import org.perfrepo.web.model.Test;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * DAO for {@link org.perfrepo.model.Alert}
+ * DAO for {@link org.perfrepo.web.model.Alert}
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

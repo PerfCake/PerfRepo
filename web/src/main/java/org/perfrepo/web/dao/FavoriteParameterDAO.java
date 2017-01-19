@@ -14,14 +14,14 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.FavoriteParameter;
+import org.perfrepo.web.model.FavoriteParameter;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * DAO for {@link org.perfrepo.model.FavoriteParameter}
+ * DAO for {@link org.perfrepo.web.model.FavoriteParameter}
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

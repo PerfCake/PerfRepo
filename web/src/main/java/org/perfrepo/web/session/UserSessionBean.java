@@ -14,7 +14,7 @@
  */
 package org.perfrepo.web.session;
 
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.service.UserService;
 
 import javax.annotation.PostConstruct;

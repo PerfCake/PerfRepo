@@ -6,13 +6,15 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.builder.TestExecutionBuilder;
-import org.perfrepo.model.to.TestExecutionSearchTO;
 import org.perfrepo.web.dao.TestExecutionDAO;
+import org.perfrepo.web.model.Metric;
+import org.perfrepo.web.model.TestExecution;
+import org.perfrepo.web.model.Value;
+import org.perfrepo.web.model.ValueParameter;
+import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
 import org.perfrepo.web.service.UserService;
 import org.perfrepo.web.util.MultiValue;
+import org.perfrepo.web.util.TagUtils;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -32,8 +34,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of @link{ConditionChecker}
@@ -79,16 +84,14 @@ public class ConditionCheckerImpl implements ConditionChecker {
         // if we had a 'perfect' grammar, we would only need to call parseTree(condition);
         // but ATM we need script engine to evaluate CONDITION and tell us if there were any errors
         // e.g. current grammar cannot catch nonsenses such as: CONDITION x <!= 10
-        TestExecution testExecution;
-        TestExecutionBuilder builder = TestExecution.builder();
-        if (condition.trim().startsWith("MULTIVALUE")) {           
+        TestExecution testExecution = new TestExecution();
+        if (condition.trim().startsWith("MULTIVALUE")) {
             String paramName = "foo";
-            builder.value(metric.getName(), 0d, paramName, "0");          
-            builder.value(metric.getName(), 1d, paramName, "1");          
+            addDummyValue(0, metric, paramName, "0", testExecution);
+            addDummyValue(1, metric, paramName, "1", testExecution);
         } else {
-            builder.value(metric.getName(), 0d);
+            addDummyValue(0, metric, null, null, testExecution);
         }
-        testExecution = builder.build();
         checkCondition(condition, testExecution, metric);
     }
 
@@ -392,7 +395,7 @@ public class ConditionCheckerImpl implements ConditionChecker {
             throw new IllegalArgumentException("Wrong syntax, expected SELECT.");
         }
 
-        TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
+        TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
         List<TestExecution> testExecutions = null;
         Tree whereOrLast = select.getChild(0);
         Map<String, Integer> parsedLast = null;
@@ -516,16 +519,16 @@ public class ConditionCheckerImpl implements ConditionChecker {
      * @param parsedLast    if there is also LAST clause, it's parsed in this Map. See processLast() method for details.
      * @param operator      operator of the condition, e.g. '=', '>=', '<=' ... @ return
      */
-    private void addCriteriaByPropertyName(TestExecutionSearchTO searchCriteria, String propertyName, String propertyValue, Map<String, Integer> parsedLast, String operator) {
+    private void addCriteriaByPropertyName(TestExecutionSearchCriteria searchCriteria, String propertyName, String propertyValue, Map<String, Integer> parsedLast, String operator) {
         if (propertyName.equalsIgnoreCase("tags")) {
-            searchCriteria.setTags(propertyValue);
+            searchCriteria.setTags(TagUtils.parseTags(propertyValue));
 
             if (parsedLast != null) { //LAST is present
                 searchCriteria.setLimitFrom(parsedLast.get("lastFrom"));
                 searchCriteria.setLimitHowMany(parsedLast.get("howMany"));
             }
         } else if (propertyName.equalsIgnoreCase("id")) {
-            List<Long> ids = Arrays.asList(Long.parseLong(propertyValue));
+            Set<Long> ids = new HashSet<>(Arrays.asList(Long.parseLong(propertyValue)));
             searchCriteria.setIds(ids);
         } else if (propertyName.equalsIgnoreCase("date")) {
             Date parsedDate = null;
@@ -553,12 +556,9 @@ public class ConditionCheckerImpl implements ConditionChecker {
      * @param values
      * @return
      */
-    private void addCriteriaByPropertyIn(TestExecutionSearchTO searchCriteria, String propertyName, Collection<String> values) {
+    private void addCriteriaByPropertyIn(TestExecutionSearchCriteria searchCriteria, String propertyName, Collection<String> values) {
         if (propertyName.equalsIgnoreCase("id")) {
-            List<Long> ids = new ArrayList<>();
-            for (String id : values) {
-                ids.add(Long.parseLong(id));
-            }
+            Set<Long> ids = values.stream().map(id -> Long.parseLong(id)).collect(Collectors.toSet());
             searchCriteria.setIds(ids);
 
             return;
@@ -614,5 +614,19 @@ public class ConditionCheckerImpl implements ConditionChecker {
     public Map<String, Object> getEvaluatedVariables() {
         // within evaluate() method we detect failure and in such case store the variables for reporting
         return Collections.unmodifiableMap(failedEvaluationVariables);
+    }
+
+    private void addDummyValue(double resultValue, Metric metric, String valueParamName, String valueParamValue, TestExecution testExecution) {
+        Value value = new Value();
+        value.setResultValue(resultValue);
+        value.setMetric(metric);
+
+        ValueParameter parameter = new ValueParameter();
+        parameter.setName(valueParamName);
+        parameter.setParamValue(valueParamValue);
+        parameter.setValue(value);
+
+        value.getParameters().put(valueParamName, parameter);
+        testExecution.getValues().add(value);
     }
 }

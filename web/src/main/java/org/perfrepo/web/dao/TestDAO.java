@@ -14,13 +14,11 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.Entity;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.to.OrderBy;
-import org.perfrepo.model.to.SearchResultWrapper;
+import org.perfrepo.enums.OrderBy;
+import org.perfrepo.web.model.Test;
+import org.perfrepo.web.model.to.SearchResultWrapper;
 import org.perfrepo.web.service.search.TestSearchCriteria;
 
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -87,19 +85,6 @@ public class TestDAO extends DAO<Test, Long> {
       }
 
       return new SearchResultWrapper<>(query.getResultList(), lastQueryResultsCount);
-   }
-
-   /**
-    * Method used primarily for authorization purposes. It retrieves corresponding test
-    * that the entity is related to.
-    *
-    * @param entity
-    * @return
-    */
-   public Test getTestByRelation(Entity<?> entity) {
-      Query q = createNamedQuery(entity.getClass().getSimpleName() + ".getTest");
-      q.setParameter("entity", entity);
-      return ((Test) q.getSingleResult());
    }
 
    /**

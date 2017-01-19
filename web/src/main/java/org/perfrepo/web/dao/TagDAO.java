@@ -14,7 +14,7 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.Tag;
+import org.perfrepo.web.model.Tag;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;

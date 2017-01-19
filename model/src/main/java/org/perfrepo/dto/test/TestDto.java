@@ -7,7 +7,7 @@ import org.perfrepo.dto.group.GroupDto;
 import java.util.Set;
 
 /**
- * Data transfer object for {@link org.perfrepo.model.Test} entity that represents a test.
+ * Data transfer object for {@link org.perfrepo.web.model.Test} entity that represents a test.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */

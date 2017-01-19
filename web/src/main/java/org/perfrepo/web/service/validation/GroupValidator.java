@@ -1,7 +1,7 @@
 package org.perfrepo.web.service.validation;
 
 import org.hibernate.validator.internal.engine.path.PathImpl;
-import org.perfrepo.model.user.Group;
+import org.perfrepo.web.model.user.Group;
 import org.perfrepo.web.dao.GroupDAO;
 import org.perfrepo.web.service.validation.annotation.ValidGroup;
 
@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Validator for {@link org.perfrepo.model.user.Group} entity.
+ * Validator for {@link org.perfrepo.web.model.user.Group} entity.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

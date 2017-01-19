@@ -14,8 +14,8 @@
  */
 package org.perfrepo.web.util;
 
-import org.perfrepo.model.report.Report;
-import org.perfrepo.model.report.ReportProperty;
+import org.perfrepo.web.model.report.Report;
+import org.perfrepo.web.model.report.ReportProperty;
 
 import java.util.Map;
 

@@ -1,16 +1,22 @@
 package org.perfrepo.web.alerting;
 
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.Value;
-import org.perfrepo.model.builder.TestExecutionBuilder;
-import org.perfrepo.model.to.TestExecutionSearchTO;
+import org.perfrepo.web.model.Metric;
+import org.perfrepo.web.model.Tag;
+import org.perfrepo.web.model.TestExecution;
+import org.perfrepo.web.model.Value;
+import org.perfrepo.web.model.ValueParameter;
+import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.model.user.Group;
+import org.perfrepo.web.util.TagUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Provides some utility functionality for tests. Namely allows to create dummy TestExecution instances for mock tests
@@ -55,8 +61,8 @@ public class TestUtils {
         return createTestExecutionWithProvidedResult(1001d);
     }
 
-    public static org.perfrepo.model.Test createTest() {
-        org.perfrepo.model.Test test = new org.perfrepo.model.Test();
+    public static org.perfrepo.web.model.Test createTest() {
+        org.perfrepo.web.model.Test test = new org.perfrepo.web.model.Test();
         test.setId(1L);
         test.setUid("test_test");
 
@@ -74,21 +80,24 @@ public class TestUtils {
         return metric;
     }
 
-    public static TestExecutionSearchTO createSearchCriteria(List<Long> ids, String tags, Integer limitFrom, Integer limitHowMany, Date dateFrom, Date dateTo) {
-        TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
-        searchCriteria.setIds(ids);
-        searchCriteria.setTags(tags);
+    public static TestExecutionSearchCriteria createSearchCriteria(List<Long> ids, String tags, Integer limitFrom, Integer limitHowMany, Date dateFrom, Date dateTo) {
+        TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+        searchCriteria.setIds(new HashSet<>(ids));
+        searchCriteria.setTags(TagUtils.parseTags(tags));
         searchCriteria.setLimitFrom(limitFrom);
         searchCriteria.setLimitHowMany(limitHowMany);
         searchCriteria.setStartedFrom(dateFrom);
         searchCriteria.setStartedTo(dateTo);
 
+        Group group = new Group();
+        group.setName("testuser");
+        searchCriteria.setGroups(new HashSet<>(Arrays.asList(group)));
+
         return searchCriteria;
     }
 
     public static TestExecution createMultivalueTestExecution() {
-        // laziness rules -> use builder to create multi value executions ;-)
-        TestExecutionBuilder builder = TestExecution.builder();
+        TestExecution testExecution = new TestExecution();
         Metric metric = createMetric();
         Metric additionalMetric = createMetricWithGivenName("useless");
         String paramName = "iteration";
@@ -96,18 +105,16 @@ public class TestUtils {
 
         for (int i = 1; i < 11; i++) {
             // `i` will be a number of iteration and base for value
-            builder.value(metric.getName(), i * 100d, paramName, String.valueOf(i));
+            addValue(i * 100d, metric, paramName, String.valueOf(i), testExecution);
             // add another complex value with nonsence params, just for test purposes
-            builder.value(additionalMetric.getName(), Double.valueOf(i), additionalParam, String.valueOf(new Random(i).nextInt()));
+            addValue(Double.valueOf(i), additionalMetric, additionalParam, String.valueOf(new Random(i).nextInt()), testExecution);
         }
 
-        TestExecution result = builder.build();
-        return result;
+        return testExecution;
     }
     
     public static TestExecution createMultivalueTestExecutionWithMoreIterations() {
-        // laziness rules -> use builder to create multi value executions ;-)
-        TestExecutionBuilder builder = TestExecution.builder();
+        TestExecution testExecution = new TestExecution();
         Metric metric = createMetric();
         Metric additionalMetric = createMetricWithGivenName("useless");
         String paramName = "iteration";
@@ -115,18 +122,16 @@ public class TestUtils {
 
         for (int i = 1; i < 20; i++) {
             // `i` will be a number of iteration and base for value
-            builder.value(metric.getName(), i * 100d, paramName, String.valueOf(i));
+            addValue(i * 100d, metric, paramName, String.valueOf(i), testExecution);
             // add another complex value with nonsence params, just for test purposes
-            builder.value(additionalMetric.getName(), Double.valueOf(i), additionalParam, String.valueOf(new Random(i).nextInt()));
+            addValue(Double.valueOf(i), additionalMetric, additionalParam, String.valueOf(new Random(i).nextInt()), testExecution);
         }
 
-        TestExecution result = builder.build();
-        return result;
+        return testExecution;
     }
     
     public static TestExecution createMultivalueTestExecutionWithLowerLastValue() {
-        // laziness rules -> use builder to create multi value executions ;-)
-        TestExecutionBuilder builder = TestExecution.builder();
+        TestExecution testExecution = new TestExecution();
         Metric metric = createMetric();
         Metric additionalMetric = createMetricWithGivenName("useless");
         String paramName = "iteration";
@@ -136,21 +141,19 @@ public class TestUtils {
             // `i` will be a number of iteration and base for value
             if (i == 9) { 
                 // drop in increasing values
-                builder.value(metric.getName(), 20d, paramName, String.valueOf(i));
+                addValue(20d, metric, paramName, String.valueOf(i), testExecution);
             } else {
-                builder.value(metric.getName(), i * 100d, paramName, String.valueOf(i));
+                addValue(i * 100d, metric, paramName, String.valueOf(i), testExecution);
             }
             // add another complex value with nonsence params, just for test purposes
-            builder.value(additionalMetric.getName(), Double.valueOf(i), additionalParam, String.valueOf(new Random(i).nextInt()));
+            addValue(Double.valueOf(i), additionalMetric, additionalParam, String.valueOf(new Random(i).nextInt()), testExecution);
         }
 
-        TestExecution result = builder.build();
-        return result;
+        return testExecution;
     }
     
     public static TestExecution createMultivalueTestExecutionWithZeroValues() {
-        // laziness rules -> use builder to create multi value executions ;-)
-        TestExecutionBuilder builder = TestExecution.builder();
+        TestExecution testExecution = new TestExecution();
         Metric metric = createMetric();
         Metric additionalMetric = createMetricWithGivenName("useless");
         String paramName = "iteration";
@@ -158,18 +161,16 @@ public class TestUtils {
 
         for (int i = 0; i < 10; i++) {
             // `i` will be a number of iteration and base for value
-            builder.value(metric.getName(), 0d, paramName, String.valueOf(i));
+            addValue(0d, metric, paramName, String.valueOf(i), testExecution);
             // add another complex value with nonsence params, just for test purposes
-            builder.value(additionalMetric.getName(), Double.valueOf(i), additionalParam, String.valueOf(new Random(i).nextInt()));
+            addValue(Double.valueOf(i), additionalMetric, additionalParam, String.valueOf(new Random(i).nextInt()), testExecution);
         }
 
-        TestExecution result = builder.build();
-        return result;
+        return testExecution;
     }
     
     public static TestExecution createMultivalueTestExecutionWithVaryingValues() {
-        // laziness rules -> use builder to create multi value executions ;-)
-        TestExecutionBuilder builder = TestExecution.builder();
+        TestExecution testExecution = new TestExecution();
         Metric metric = createMetric();
         String paramName = "iteration";
 
@@ -177,11 +178,10 @@ public class TestUtils {
         for (int i = 1; i < 20; i++) {
             // randomly generate values from 95 to 105, there will be more than 10 iterations
             double value = random.nextInt((102 - 98) + 1) + 100;
-            builder.value(metric.getName(), value, paramName, String.valueOf(i));
+            addValue(value, metric, paramName, String.valueOf(i), testExecution);
         }
 
-        TestExecution result = builder.build();
-        return result;
+        return testExecution;
     }
     
     public static TestExecution createMultivalueTestExecutionWithConstantValues() {
@@ -189,8 +189,7 @@ public class TestUtils {
     }
     
     public static TestExecution createMultivalueTestExecutionWithConstantGivenValue(Double value) {
-        // laziness rules -> use builder to create multi value executions ;-)
-        TestExecutionBuilder builder = TestExecution.builder();
+        TestExecution testExecution = new TestExecution();
         Metric metric = createMetric();
         Metric additionalMetric = createMetricWithGivenName("useless");
         String paramName = "iteration";
@@ -198,12 +197,25 @@ public class TestUtils {
 
         for (int i = 1; i < 11; i++) {
             // put 100d all the time
-            builder.value(metric.getName(), value, paramName, String.valueOf(i));
+            addValue(value, metric, paramName, String.valueOf(i), testExecution);
             // add another complex value with nonsence params, just for test purposes
-            builder.value(additionalMetric.getName(), Double.valueOf(i), additionalParam, String.valueOf(new Random(i).nextInt()));
+            addValue(Double.valueOf(i), additionalMetric, additionalParam, String.valueOf(new Random(i).nextInt()), testExecution);
         }
 
-        TestExecution result = builder.build();
-        return result;
+        return testExecution;
+    }
+
+    private static void addValue(double resultValue, Metric metric, String valueParamName, String valueParamValue, TestExecution testExecution) {
+        Value value = new Value();
+        value.setResultValue(resultValue);
+        value.setMetric(metric);
+
+        ValueParameter parameter = new ValueParameter();
+        parameter.setName(valueParamName);
+        parameter.setParamValue(valueParamValue);
+        parameter.setValue(value);
+
+        value.getParameters().put(valueParamName, parameter);
+        testExecution.getValues().add(value);
     }
 }

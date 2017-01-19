@@ -14,16 +14,16 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.user.Group;
-import org.perfrepo.model.user.Membership;
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.user.Group;
+import org.perfrepo.web.model.user.Membership;
+import org.perfrepo.web.model.user.User;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * DAO for {@link org.perfrepo.model.user.Membership}
+ * DAO for {@link org.perfrepo.web.model.user.Membership}
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

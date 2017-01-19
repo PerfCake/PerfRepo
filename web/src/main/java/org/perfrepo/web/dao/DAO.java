@@ -14,7 +14,7 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.Entity;
+import org.perfrepo.web.model.Entity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

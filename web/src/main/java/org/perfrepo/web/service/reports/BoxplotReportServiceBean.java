@@ -1,14 +1,14 @@
 //package org.perfrepo.web.service.reports;
 //
-//import org.perfrepo.model.Metric;
-//import org.perfrepo.model.Test;
-//import org.perfrepo.model.auth.Permission;
-//import org.perfrepo.model.report.Report;
-//import org.perfrepo.model.report.ReportProperty;
-//import org.perfrepo.model.to.MultiValueResultWrapper;
-//import org.perfrepo.model.to.OrderBy;
-//import org.perfrepo.model.to.TestExecutionSearchTO;
-//import org.perfrepo.model.user.User;
+//import org.perfrepo.web.model.Metric;
+//import org.perfrepo.web.model.Test;
+//import org.perfrepo.web.model.auth.Permission;
+//import org.perfrepo.web.model.report.Report;
+//import org.perfrepo.web.model.report.ReportProperty;
+//import org.perfrepo.web.model.to.MultiValueResultWrapper;
+//import org.perfrepo.enums.OrderBy;
+//import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+//import org.perfrepo.web.model.user.User;
 //import org.perfrepo.web.controller.reports.boxplot.Chart;
 //import org.perfrepo.web.dao.MetricDAO;
 //import org.perfrepo.web.dao.TestDAO;
@@ -144,7 +144,7 @@
 //         }
 //
 //         for (Chart.Series series : chart.getSeriesList()) {
-//            TestExecutionSearchTO searchCriteria = new TestExecutionSearchTO();
+//            TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
 //            searchCriteria.setTestUID(test.getUid());
 //            searchCriteria.setTags(series.getTags());
 //

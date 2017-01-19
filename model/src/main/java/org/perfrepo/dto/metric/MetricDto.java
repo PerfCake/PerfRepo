@@ -1,9 +1,10 @@
 package org.perfrepo.dto.metric;
 
-import org.perfrepo.model.MetricComparator;
+
+import org.perfrepo.enums.MetricComparator;
 
 /**
- * Data transfer object for {@link org.perfrepo.model.Metric} that represents a test metric.
+ * Data transfer object for {@link Metric} that represents a test metric.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */

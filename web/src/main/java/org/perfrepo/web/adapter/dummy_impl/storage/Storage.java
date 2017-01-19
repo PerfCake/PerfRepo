@@ -1,7 +1,7 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
 import org.apache.commons.lang.time.DateUtils;
-import org.perfrepo.model.MetricComparator;
+import org.perfrepo.enums.MetricComparator;
 import org.perfrepo.web.adapter.dummy_impl.builders.*;
 
 import javax.inject.Singleton;

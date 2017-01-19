@@ -14,10 +14,10 @@
  */
 package org.perfrepo.web.service;
 
-import org.perfrepo.model.FavoriteParameter;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.user.Group;
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.FavoriteParameter;
+import org.perfrepo.web.model.Test;
+import org.perfrepo.web.model.user.Group;
+import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.service.exceptions.IncorrectPasswordException;
 import org.perfrepo.web.service.validation.annotation.ValidUser;
 

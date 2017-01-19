@@ -1,7 +1,7 @@
 package org.perfrepo.web.alerting;
 
 import org.mockito.ArgumentMatcher;
-import org.perfrepo.model.to.TestExecutionSearchTO;
+import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -12,21 +12,21 @@ import java.util.Date;
  * hour and minute), calling equals returns false. This is the reason why this ArgumentMatcher class is used, to do the matching
  * manually.
  */
-public class SearchCriteriaMatcher extends ArgumentMatcher<TestExecutionSearchTO> {
+public class SearchCriteriaMatcher extends ArgumentMatcher<TestExecutionSearchCriteria> {
 
-    private TestExecutionSearchTO searchCriteria;
+    private TestExecutionSearchCriteria searchCriteria;
 
-    public SearchCriteriaMatcher(TestExecutionSearchTO searchCriteria) {
+    public SearchCriteriaMatcher(TestExecutionSearchCriteria searchCriteria) {
         this.searchCriteria = searchCriteria;
     }
 
     @Override
     public boolean matches(Object o) {
-        if (!(o instanceof TestExecutionSearchTO)) {
+        if (!(o instanceof TestExecutionSearchCriteria)) {
             return false;
         }
 
-        TestExecutionSearchTO object = (TestExecutionSearchTO) o;
+        TestExecutionSearchCriteria object = (TestExecutionSearchCriteria) o;
 
         if (!((searchCriteria.getTags() == null && object.getTags() == null)
             || (searchCriteria.getTags() != null && object.getTags() != null))) {

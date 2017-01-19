@@ -14,7 +14,7 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.report.Report;
+import org.perfrepo.web.model.report.Report;
 
 import java.util.HashMap;
 import java.util.List;

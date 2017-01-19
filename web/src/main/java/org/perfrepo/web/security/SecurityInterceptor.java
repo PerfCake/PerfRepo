@@ -14,7 +14,7 @@
  */
 package org.perfrepo.web.security;
 
-import org.perfrepo.model.Entity;
+import org.perfrepo.web.model.Entity;
 import org.perfrepo.web.service.exceptions.UnauthorizedException;
 
 import javax.inject.Inject;

@@ -14,7 +14,7 @@
  */
 package org.perfrepo.web.util;
 
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.session.UserSession;
 
 import javax.enterprise.context.SessionScoped;

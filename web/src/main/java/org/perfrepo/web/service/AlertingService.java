@@ -1,9 +1,9 @@
 package org.perfrepo.web.service;
 
-import org.perfrepo.model.Alert;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.TestExecution;
+import org.perfrepo.web.model.Alert;
+import org.perfrepo.web.model.Metric;
+import org.perfrepo.web.model.Test;
+import org.perfrepo.web.model.TestExecution;
 
 import java.util.List;
 

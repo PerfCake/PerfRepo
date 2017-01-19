@@ -14,8 +14,8 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.user.Group;
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.user.Group;
+import org.perfrepo.web.model.user.User;
 
 import java.util.HashMap;
 import java.util.HashSet;

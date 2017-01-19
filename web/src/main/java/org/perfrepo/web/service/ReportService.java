@@ -14,9 +14,9 @@
  */
 package org.perfrepo.web.service;
 
-import org.perfrepo.model.auth.Permission;
-import org.perfrepo.model.report.Report;
-import org.perfrepo.model.to.MetricReportTO;
+import org.perfrepo.web.model.auth.Permission;
+import org.perfrepo.web.model.report.Report;
+import org.perfrepo.web.model.to.MetricReportTO;
 import org.perfrepo.web.service.exceptions.ServiceException;
 
 import java.util.Collection;

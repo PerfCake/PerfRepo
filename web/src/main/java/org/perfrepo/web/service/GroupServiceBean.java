@@ -1,9 +1,9 @@
 package org.perfrepo.web.service;
 
-import org.perfrepo.model.user.Group;
-import org.perfrepo.model.user.Membership;
-import org.perfrepo.model.user.Membership.MembershipType;
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.user.Group;
+import org.perfrepo.web.model.user.Membership;
+import org.perfrepo.web.model.user.Membership.MembershipType;
+import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.dao.GroupDAO;
 import org.perfrepo.web.dao.MembershipDAO;
 import org.perfrepo.web.dao.UserDAO;

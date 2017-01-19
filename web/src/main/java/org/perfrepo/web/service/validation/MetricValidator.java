@@ -1,7 +1,7 @@
 package org.perfrepo.web.service.validation;
 
 import org.hibernate.validator.internal.engine.path.PathImpl;
-import org.perfrepo.model.Metric;
+import org.perfrepo.web.model.Metric;
 import org.perfrepo.web.dao.MetricDAO;
 import org.perfrepo.web.service.validation.annotation.ValidMetric;
 
@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Validator for {@link org.perfrepo.model.Test} entity.
+ * Validator for {@link org.perfrepo.web.model.Test} entity.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

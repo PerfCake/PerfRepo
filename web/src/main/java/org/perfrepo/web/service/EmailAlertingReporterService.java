@@ -1,8 +1,8 @@
 package org.perfrepo.web.service;
 
-import org.perfrepo.model.Alert;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.Alert;
+import org.perfrepo.web.model.TestExecution;
+import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.dao.UserDAO;
 
 import javax.inject.Inject;

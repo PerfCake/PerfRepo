@@ -1,7 +1,7 @@
 package org.perfrepo.web.service.validation;
 
 import org.hibernate.validator.internal.engine.path.PathImpl;
-import org.perfrepo.model.Test;
+import org.perfrepo.web.model.Test;
 import org.perfrepo.web.dao.TestDAO;
 import org.perfrepo.web.service.validation.annotation.ValidTest;
 

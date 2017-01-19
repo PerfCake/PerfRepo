@@ -14,10 +14,10 @@
  */
 package org.perfrepo.web.service;
 
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.to.SearchResultWrapper;
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.Metric;
+import org.perfrepo.web.model.Test;
+import org.perfrepo.web.model.to.SearchResultWrapper;
+import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.service.search.TestSearchCriteria;
 import org.perfrepo.web.service.validation.annotation.ValidMetric;
 import org.perfrepo.web.service.validation.annotation.ValidTest;

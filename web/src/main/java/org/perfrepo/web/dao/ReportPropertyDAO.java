@@ -14,7 +14,7 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.report.ReportProperty;
+import org.perfrepo.web.model.report.ReportProperty;
 
 /**
  * DAO for {@link ReportProperty}

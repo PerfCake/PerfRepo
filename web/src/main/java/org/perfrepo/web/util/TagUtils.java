@@ -14,9 +14,13 @@
  */
 package org.perfrepo.web.util;
 
+import org.perfrepo.web.model.Tag;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TagUtils {
 
@@ -28,15 +32,23 @@ public class TagUtils {
     * @param tags
     * @return List of tags
     */
-   public static List<String> parseTags(String tags) {
+   public static Set<Tag> parseTags(String tags) {
       if (tags == null) {
-         return Collections.emptyList();
+         return Collections.emptySet();
       } else {
          String trimmed = tags.trim();
          if ("".equals(trimmed)) {
-            return Collections.emptyList();
+            return Collections.emptySet();
          } else {
-            return Arrays.asList(trimmed.split(" "));
+            List<String> tagsStrings = Arrays.asList(trimmed.split(" "));
+            Set<Tag> tagsObjects = tagsStrings.stream()
+                    .map(tagString -> {
+                       Tag tag = new Tag();
+                       tag.setName(tagString);
+                       return tag;
+                    })
+                    .collect(Collectors.toSet());
+            return tagsObjects;
          }
       }
    }

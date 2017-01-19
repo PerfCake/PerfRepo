@@ -14,7 +14,7 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.ValueParameter;
+import org.perfrepo.web.model.ValueParameter;
 
 /**
  * DAO for {@link ValueParameter}

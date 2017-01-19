@@ -14,13 +14,13 @@
  */
 package org.perfrepo.web.security;
 
-import org.perfrepo.model.Entity;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.auth.AccessLevel;
-import org.perfrepo.model.auth.AccessType;
-import org.perfrepo.model.auth.Permission;
-import org.perfrepo.model.report.Report;
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.Entity;
+import org.perfrepo.web.model.Test;
+import org.perfrepo.enums.AccessLevel;
+import org.perfrepo.enums.AccessType;
+import org.perfrepo.web.model.auth.Permission;
+import org.perfrepo.web.model.report.Report;
+import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.dao.PermissionDAO;
 import org.perfrepo.web.dao.TestDAO;
 import org.perfrepo.web.service.GroupService;

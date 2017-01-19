@@ -14,7 +14,7 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.TestExecutionAttachment;
+import org.perfrepo.web.model.TestExecutionAttachment;
 
 import java.util.HashMap;
 import java.util.List;

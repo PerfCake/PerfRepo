@@ -15,8 +15,8 @@
 package org.perfrepo.web.alerting;
 
 
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.TestExecution;
+import org.perfrepo.web.model.Metric;
+import org.perfrepo.web.model.TestExecution;
 
 import java.util.Map;
 

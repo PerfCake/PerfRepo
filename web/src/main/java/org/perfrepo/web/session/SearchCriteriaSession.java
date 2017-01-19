@@ -14,8 +14,8 @@
  */
 package org.perfrepo.web.session;
 
-import org.perfrepo.model.to.OrderBy;
-import org.perfrepo.model.to.TestExecutionSearchTO;
+import org.perfrepo.enums.OrderBy;
+import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
 import org.perfrepo.web.service.search.TestSearchCriteria;
 
 import javax.enterprise.context.SessionScoped;
@@ -32,13 +32,13 @@ public class SearchCriteriaSession implements Serializable {
 
    private static final long serialVersionUID = 9050986914006178498L;
 
-   private TestExecutionSearchTO executionSearchCriteria;
+   private TestExecutionSearchCriteria executionSearchCriteria;
 
    private TestSearchCriteria testSearchCriteria;
 
-   public TestExecutionSearchTO getExecutionSearchCriteria() {
+   public TestExecutionSearchCriteria getExecutionSearchCriteria() {
       if (executionSearchCriteria == null) {
-         executionSearchCriteria = new TestExecutionSearchTO();
+         executionSearchCriteria = new TestExecutionSearchCriteria();
 
          //by default, do not list all the test executions
          executionSearchCriteria.setLimitHowMany(50);

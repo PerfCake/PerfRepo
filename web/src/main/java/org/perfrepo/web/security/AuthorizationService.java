@@ -14,9 +14,9 @@
  */
 package org.perfrepo.web.security;
 
-import org.perfrepo.model.Entity;
-import org.perfrepo.model.auth.AccessType;
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.Entity;
+import org.perfrepo.enums.AccessType;
+import org.perfrepo.web.model.user.User;
 
 /**
  * Authorization Service is responsible for permission verification on entities

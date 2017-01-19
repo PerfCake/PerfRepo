@@ -1,14 +1,14 @@
 package org.perfrepo.web.service;
 
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Tag;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionAttachment;
-import org.perfrepo.model.TestExecutionParameter;
-import org.perfrepo.model.Value;
-import org.perfrepo.model.to.SearchResultWrapper;
-import org.perfrepo.model.to.TestExecutionSearchTO;
+import org.perfrepo.web.model.Metric;
+import org.perfrepo.web.model.Tag;
+import org.perfrepo.web.model.Test;
+import org.perfrepo.web.model.TestExecution;
+import org.perfrepo.web.model.TestExecutionAttachment;
+import org.perfrepo.web.model.TestExecutionParameter;
+import org.perfrepo.web.model.Value;
+import org.perfrepo.web.model.to.SearchResultWrapper;
+import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
 import org.perfrepo.web.dao.MetricDAO;
 import org.perfrepo.web.dao.TagDAO;
 import org.perfrepo.web.dao.TestDAO;
@@ -25,7 +25,6 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -115,31 +114,9 @@ public class TestExecutionServiceBean implements TestExecutionService {
         for (Tag tag: tags) {
             removeTagFromTestExecution(tag, managedExecution);
         }
-        /*if (managedExecution == null) {
-            throw new ServiceException("serviceException.testExecutionNotFound", testExecution.getName());
-        }*/
-        //TODO: solve this
-      /*
-      for (TestExecutionParameter testExecutionParameter : managedExecution.getParameters()) {
-         testExecutionParameterDAO.remove(testExecutionParameter);
-      }*/
-        //TODO: solve this
-      /*
-      for (Value value : managedExecution.getValues()) {
-         for (ValueParameter valueParameter : value.getParameters()) {
-            valueParameterDAO.remove(valueParameter);
-         }
-         valueDAO.remove(value);
-      }*/
 
-        //TODO: solve this
-      /*
-      Iterator<TestExecutionAttachment> allTestExecutionAttachments = managedExecution.getAttachments().iterator();
-      while (allTestExecutionAttachments.hasNext()) {
-         testExecutionAttachmentDAO.remove(allTestExecutionAttachments.next());
-         allTestExecutionAttachments.remove();
-      }
-      */
+        // other entities are removed by DB associations
+
         testExecutionDAO.remove(managedExecution);
     }
 
@@ -154,20 +131,8 @@ public class TestExecutionServiceBean implements TestExecutionService {
     }
 
     @Override
-    public SearchResultWrapper<TestExecution> searchTestExecutions(TestExecutionSearchTO search) {
-        // remove param criteria with empty param name
-        if (search.getParameters() != null) {
-            for (Iterator<TestExecutionSearchTO.ParamCriteria> allParams = search.getParameters().iterator(); allParams.hasNext();) {
-                TestExecutionSearchTO.ParamCriteria param = allParams.next();
-                if (param.isNameEmpty()) {
-                    allParams.remove();
-                }
-            }
-        }
-
-        //TODO: solve this
-        //return testExecutionDAO.searchTestExecutions(search, userService.getLoggedUserGroupNames());
-        return null;
+    public SearchResultWrapper<TestExecution> searchTestExecutions(TestExecutionSearchCriteria search) {
+        return testExecutionDAO.searchTestExecutions(search);
     }
 
     /******** Methods related to test execution attachments ********/

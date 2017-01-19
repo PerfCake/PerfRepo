@@ -15,12 +15,12 @@
 package org.perfrepo.web.service;
 
 import org.apache.commons.codec.binary.Base64;
-import org.perfrepo.model.FavoriteParameter;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.UserProperty;
-import org.perfrepo.model.user.Group;
-import org.perfrepo.model.user.Membership;
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.FavoriteParameter;
+import org.perfrepo.web.model.Test;
+import org.perfrepo.web.model.UserProperty;
+import org.perfrepo.web.model.user.Group;
+import org.perfrepo.web.model.user.Membership;
+import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.dao.FavoriteParameterDAO;
 import org.perfrepo.web.dao.GroupDAO;
 import org.perfrepo.web.dao.MembershipDAO;

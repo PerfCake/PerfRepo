@@ -20,8 +20,8 @@ public class TestUtils {
         // we need to exclude the actual UserSessionBean and substitute it with test one
         war.addPackages(true, Filters.exclude(".*UserSessionBean.*"),"org.perfrepo.web");
         war.addClass(UserSessionMock.class);
-        war.addPackages(true, "org.perfrepo.model");
         war.addPackages(true, "org.perfrepo.dto");
+        war.addPackages(true, "org.perfrepo.enums");
 
         war.addAsLibraries(Maven.resolver().resolve("commons-codec:commons-codec:1.9").withTransitivity().asFile());
         war.addAsLibraries(Maven.resolver().resolve("org.antlr:antlr:3.5.2").withTransitivity().asFile());

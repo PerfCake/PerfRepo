@@ -6,17 +6,18 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.MetricComparator;
-import org.perfrepo.model.Tag;
-import org.perfrepo.model.Test;
-import org.perfrepo.model.TestExecution;
-import org.perfrepo.model.TestExecutionAttachment;
-import org.perfrepo.model.TestExecutionParameter;
-import org.perfrepo.model.Value;
-import org.perfrepo.model.to.SearchResultWrapper;
-import org.perfrepo.model.user.Group;
-import org.perfrepo.model.user.User;
+import org.perfrepo.web.model.Metric;
+import org.perfrepo.enums.MetricComparator;
+import org.perfrepo.web.model.Tag;
+import org.perfrepo.web.model.Test;
+import org.perfrepo.web.model.TestExecution;
+import org.perfrepo.web.model.TestExecutionAttachment;
+import org.perfrepo.web.model.TestExecutionParameter;
+import org.perfrepo.web.model.Value;
+import org.perfrepo.web.model.to.SearchResultWrapper;
+import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.model.user.Group;
+import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.service.exceptions.UnauthorizedException;
 import org.perfrepo.web.util.TestUtils;
 import org.perfrepo.web.util.UserSessionMock;
@@ -423,8 +424,18 @@ public class TestExecutionServiceTest {
 
     @org.junit.Test
     public void testExecutionSearch() {
+        TestExecution testExecution = new TestExecution();
+        fillTestExecution("exec1", tests.get(0), testExecution);
 
+        TestExecution createdTestExecution = testExecutionService.createTestExecution(testExecution);
+        assertNotNull(testExecutionService.getTestExecution(createdTestExecution.getId()));
 
+        // search is heavily tested in TestExecutionDAO test, hence just verify that the method is called
+        TestExecutionSearchCriteria criteria = new TestExecutionSearchCriteria();
+        SearchResultWrapper<TestExecution> result = testExecutionService.searchTestExecutions(criteria);
+
+        assertEquals(1, result.getTotalSearchResultsCount());
+        assertEquals(createdTestExecution.getId(), result.getResult().get(0).getId());
     }
 
     /*** HELPER METHODS ***/

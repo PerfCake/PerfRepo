@@ -14,7 +14,7 @@
  */
 package org.perfrepo.web.util;
 
-import org.perfrepo.model.Value;
+import org.perfrepo.web.model.Value;
 
 public class ValueComparator {
 

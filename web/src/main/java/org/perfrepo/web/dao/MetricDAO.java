@@ -14,8 +14,8 @@
  */
 package org.perfrepo.web.dao;
 
-import org.perfrepo.model.Metric;
-import org.perfrepo.model.Test;
+import org.perfrepo.web.model.Metric;
+import org.perfrepo.web.model.Test;
 
 import java.util.HashMap;
 import java.util.HashSet;
