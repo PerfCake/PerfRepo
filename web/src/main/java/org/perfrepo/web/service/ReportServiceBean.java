@@ -207,8 +207,9 @@ public class ReportServiceBean implements ReportService {
                      continue;
                   }
                   seriesResponse.setSelectedMetric(metric);
-                  List<MetricReportTO.DataPoint> datapoints = testExecutionDAO.searchValues(freshTest.getId(), seriesRequest.getMetricName(),
-                                                                                            seriesRequest.getTags(), request.getLimitSize());
+                  List<MetricReportTO.DataPoint> datapoints = null;
+                  //TODO: fix this
+                  //List<MetricReportTO.DataPoint> datapoints = testExecutionDAO.searchValues(freshTest.getId(), seriesRequest.getMetricName(), seriesRequest.getTags(), request.getLimitSize());
                   if (datapoints.isEmpty()) {
                      continue;
                   }
@@ -232,7 +233,8 @@ public class ReportServiceBean implements ReportService {
                   }
                   baselineResponse.setSelectedMetric(metric);
                   baselineResponse.setExecId(baselineRequest.getExecId());
-                  baselineResponse.setValue(testExecutionDAO.getValueForMetric(baselineRequest.getExecId(), baselineRequest.getMetricName()));
+                  //TODO: fix this
+                  //baselineResponse.setValue(testExecutionDAO.getValueForMetric(baselineRequest.getExecId(), baselineRequest.getMetricName()));
                }
             }
          }

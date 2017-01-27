@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +108,8 @@ public class TestExecutionDAOTest {
                                            testExecutionDAO.create(createTestExecution("test execution 3", createStartDate(-4), tests[0])),
                                            testExecutionDAO.create(createTestExecution("test execution 4", createStartDate(-2), tests[0])),
                                            testExecutionDAO.create(createTestExecution("test execution 5", createStartDate(-1), tests[1])),
-                                           testExecutionDAO.create(createTestExecution("test execution 6", createStartDate(11), tests[1])),};
+                                           testExecutionDAO.create(createTestExecution("test execution 6", createStartDate(11), tests[1])),
+                                           testExecutionDAO.create(createTestExecution("test execution 7", createStartDate(13), tests[2]))};
 
       values = new Value[]{createValue(10d, testExecutions[0], metrics[0]),
                            createValue(20d, testExecutions[1], metrics[0]),
@@ -121,7 +123,7 @@ public class TestExecutionDAOTest {
       createTestExecutionParameter("param", "1", testExecutions[1]);
       createTestExecutionParameter("param", "4", testExecutions[2]);
       createTestExecutionParameter("param", "2", testExecutions[3]);
-
+      createTestExecutionParameter("labelParam", "label", testExecutions[5]);
 
       createTag("tag1", testExecutions[0]);
       createTag("tag2", testExecutions[0]);
@@ -201,6 +203,24 @@ public class TestExecutionDAOTest {
    }
 
    @org.junit.Test
+   public void testSearchByTestName() {
+      TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+      searchCriteria.setTestName((tests[0].getName()));
+      searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
+
+      assertEquals("Search by test UID retrieved unexpected results.", 4, testExecutionDAO.searchTestExecutions(searchCriteria).getResult().size());
+   }
+
+   @org.junit.Test
+   public void testSearchByTestNameWithWildcard() {
+      TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+      searchCriteria.setTestName((tests[0].getName().substring(0, 2)) + "*");
+      searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup(), tests[2].getGroup())));
+
+      assertEquals("Search by test UID retrieved unexpected results.", testExecutions.length, testExecutionDAO.searchTestExecutions(searchCriteria).getResult().size());
+   }
+
+   @org.junit.Test
    public void testSearchByTestUID() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
       searchCriteria.setTestUIDs(Stream.of(tests[0].getUid()).collect(Collectors.toSet()));
@@ -215,7 +235,13 @@ public class TestExecutionDAOTest {
       searchCriteria.setTestUIDs(Stream.of(tests[0].getUid(), tests[1].getUid()).collect(Collectors.toSet()));
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
 
-      assertEquals("Search by multiple test UIDs retrieved unexpected results.", testExecutions.length, testExecutionDAO.searchTestExecutions(searchCriteria).getResult().size());
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId(), testExecutions[2].getId(), testExecutions[3].getId(),
+              testExecutions[4].getId(), testExecutions[5].getId());
+
+      assertEquals(expectedResultIds.size(), result.size());
+      assertTrue(expectedResultIds.stream().
+              allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
    }
 
    @org.junit.Test
@@ -253,6 +279,20 @@ public class TestExecutionDAOTest {
    }
 
    @org.junit.Test
+   public void testSearchByExclusionTags() {
+      TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+      searchCriteria.setTags(TagUtils.parseTags("tag1 -tag2"));
+      searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[2].getId());
+
+      assertEquals(expectedResultIds.size(), result.size());
+      assertTrue(expectedResultIds.stream().
+              allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
+   }
+
+   @org.junit.Test
    public void testSearchByTagsWithLimit() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
       searchCriteria.setTags(TagUtils.parseTags("tag1"));
@@ -283,6 +323,60 @@ public class TestExecutionDAOTest {
 
       assertTrue(expectedResultIds.stream().
           allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
+   }
+
+   @org.junit.Test
+   public void testSearchByGroups() {
+      TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+      searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[2].getGroup())));
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[6].getId());
+
+      assertEquals(expectedResultIds.size(), result.size());
+      assertTrue(expectedResultIds.stream().
+              allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
+   }
+
+   @org.junit.Test
+   public void testSearchByGroups2() {
+      TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+      searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[1].getGroup(), tests[2].getGroup())));
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
+      assertEquals(testExecutions.length, result.size());
+   }
+
+   @org.junit.Test
+   public void testSearchByParameters() {
+      TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+      Map<String, String> parameters = new HashMap<>();
+      parameters.put("param", "2");
+      searchCriteria.setParameters(parameters);
+      searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[3].getId());
+
+      assertEquals(expectedResultIds.size(), result.size());
+      assertTrue(expectedResultIds.stream().
+              allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
+   }
+
+   @org.junit.Test
+   public void testSearchByParametersWithWildcard() {
+      TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+      Map<String, String> parameters = new HashMap<>();
+      parameters.put("param", "*");
+      searchCriteria.setParameters(parameters);
+      searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId(), testExecutions[2].getId(), testExecutions[3].getId());
+
+      assertEquals(expectedResultIds.size(), result.size());
+      assertTrue(expectedResultIds.stream().
+              allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
    }
 
    @org.junit.Test
@@ -366,7 +460,7 @@ public class TestExecutionDAOTest {
    public void testSearchByVersionAscendingOrdering() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
       searchCriteria.setTestUIDs(Stream.of(tests[0].getUid()).collect(Collectors.toSet()));
-      searchCriteria.setOrderBy(OrderBy.PARAMETER_ASC);
+      searchCriteria.setOrderBy(OrderBy.VERSION_ASC);
       searchCriteria.setOrderByParameter("param");
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
 
@@ -386,7 +480,7 @@ public class TestExecutionDAOTest {
    public void testSearchByVersionDescendingOrdering() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
       searchCriteria.setTestUIDs(Stream.of(tests[0].getUid()).collect(Collectors.toSet()));
-      searchCriteria.setOrderBy(OrderBy.PARAMETER_DESC);
+      searchCriteria.setOrderBy(OrderBy.VERSION_DESC);
       searchCriteria.setOrderByParameter("param");
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
 
@@ -438,6 +532,7 @@ public class TestExecutionDAOTest {
    @org.junit.Test
    public void testSearchMultiValues() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+      searchCriteria.setLabelParameter("labelParam");
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[1].getGroup())));
       Metric metric = metricDAO.get(metrics[1].getId());
 
@@ -462,9 +557,12 @@ public class TestExecutionDAOTest {
       test1.setMetrics(new HashSet<>(Arrays.asList(metrics[0])));
       Test test2 = createTest("testuser1", "uid2");
       test2.setMetrics(new HashSet<>(Arrays.asList(metrics[0])));
+      Test test3 = createTest("testuser2", "uid3");
+      test3.setMetrics(new HashSet<>(Arrays.asList(metrics[0])));
 
       tests = new Test[]{ testDAO.create(test1),
-                          testDAO.create(test2) };
+                          testDAO.create(test2),
+                          testDAO.create(test3) };
    }
 
    private Test createTest(String groupId, String uid) {

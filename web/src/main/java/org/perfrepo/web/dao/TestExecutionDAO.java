@@ -15,7 +15,6 @@
 package org.perfrepo.web.dao;
 
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.perfrepo.enums.GroupFilter;
 import org.perfrepo.enums.OrderBy;
 import org.perfrepo.web.model.Metric;
 import org.perfrepo.web.model.Tag;
@@ -24,11 +23,11 @@ import org.perfrepo.web.model.TestExecution;
 import org.perfrepo.web.model.TestExecutionParameter;
 import org.perfrepo.web.model.Value;
 import org.perfrepo.web.model.ValueParameter;
-import org.perfrepo.web.model.to.MetricReportTO;
 import org.perfrepo.web.model.to.MultiValueResultWrapper;
 import org.perfrepo.web.model.to.SearchResultWrapper;
 import org.perfrepo.web.model.to.SingleValueResultWrapper;
 import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.model.user.Group;
 
 import javax.inject.Inject;
 import javax.persistence.Tuple;
@@ -234,95 +233,6 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    }
 
    /**
-    * Finds all values used for computing MetricHistory report
-    *
-    * @param testId
-    * @param metricName
-    * @param tagList
-    * @param limitSize
-    * @return List of SingleValueResultWrapper objects
-    */
-   public List<MetricReportTO.DataPoint> searchValues(Long testId, String metricName, List<String> tagList, int limitSize) {
-      boolean useTags = tagList != null && !tagList.isEmpty();
-      CriteriaBuilder cb = criteriaBuilder();
-      CriteriaQuery<MetricReportTO.DataPoint> criteria = cb.createQuery(MetricReportTO.DataPoint.class);
-      // test executions
-      Root<TestExecution> rExec = criteria.from(TestExecution.class);
-      // test joined via test exec.
-      Join<TestExecution, Test> rTestExec = rExec.join("test");
-      // values
-      Join<TestExecution, Value> rValue = rExec.join("values");
-      // metrics
-      Join<Value, Metric> rMetric = rValue.join("metric");
-      // test joined via metric
-      Join<Metric, Test> rTestMetric = rMetric.join("tests");
-      // tag
-      Join<TestExecution, Tag> rTag = null;
-      Predicate pTagNameInFixedList = cb.and(); // default for this predicate is true
-      Predicate pHavingAllTagsPresent = cb.and();
-      if (useTags) {
-         rTag = rExec.join("tags");
-         pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
-         pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
-      }
-
-      Predicate pMetricNameFixed = cb.equal(rMetric.get("name"), cb.parameter(String.class, "metricName"));
-      Predicate pTestFixed = cb.equal(rTestExec.get("id"), cb.parameter(Long.class, "testId"));
-      Predicate pMetricFromSameTest = cb.equal(rTestMetric.get("id"), rTestExec.get("id"));
-
-      //sort by date
-      criteria.select(cb.construct(MetricReportTO.DataPoint.class, rExec.get("started"), rValue.get("resultValue"), rExec.get("id")));
-      criteria.where(cb.and(pMetricNameFixed, pTagNameInFixedList, pTestFixed, pMetricFromSameTest));
-      criteria.groupBy(rValue.get("resultValue"), rExec.get("id"), rExec.get("started"));
-      criteria.orderBy(cb.desc(rExec.get("started")));
-
-      criteria.having(pHavingAllTagsPresent);
-
-      TypedQuery<MetricReportTO.DataPoint> query = query(criteria);
-      query.setParameter("testId", testId);
-      query.setParameter("metricName", metricName);
-
-      if (useTags) {
-         query.setParameter("tagList", tagList);
-         query.setParameter("tagListSize", new Long(tagList.size()));
-      }
-      query.setMaxResults(limitSize);
-      return query.getResultList();
-   }
-
-   public Double getValueForMetric(Long execId, String metricName) {
-      CriteriaBuilder cb = criteriaBuilder();
-      CriteriaQuery<Double> criteria = cb.createQuery(Double.class);
-      // test executions
-      Root<TestExecution> rExec = criteria.from(TestExecution.class);
-      // test joined via test exec.
-      Join<TestExecution, Test> rTestExec = rExec.join("test");
-      // values
-      Join<TestExecution, Value> rValue = rExec.join("values");
-      // metrics
-      Join<Value, Metric> rMetric = rValue.join("metric");
-      // test joined via metric
-      Join<Metric, Test> rTestMetric = rMetric.join("tests");
-
-      Predicate pMetricNameFixed = cb.equal(rMetric.get("name"), cb.parameter(String.class, "metricName"));
-      Predicate pExecFixed = cb.equal(rExec.get("id"), cb.parameter(Long.class, "execId"));
-      Predicate pMetricFromSameTest = cb.equal(rTestMetric.get("id"), rTestExec.get("id"));
-      criteria.multiselect(rValue.get("resultValue"));
-      criteria.where(cb.and(pMetricNameFixed, pExecFixed, pMetricFromSameTest));
-
-      TypedQuery<Double> query = query(criteria);
-      query.setParameter("execId", execId);
-      query.setParameter("metricName", metricName);
-
-      List<Double> r = query.getResultList();
-      if (r.isEmpty()) {
-         return null;
-      } else {
-         return r.get(0);
-      }
-   }
-
-   /**
     * Helper method. Adds ordering to the query depending on the criteria option.
     *
     * @param criteria
@@ -417,9 +327,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          Join<TestExecution, Test> rTest = rExec.join("test");
          pTestUID = cb.lower(rTest.<String>get("uid")).in(cb.parameter(Set.class, "testUIDs"));
       }
-      if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
-         Join<TestExecution, Test> rTest = rExec.join("test");
-         pTestGroups = cb.and(rTest.<String>get("groupId").in(cb.parameter(List.class, "groupNames")));
+      if (!search.getGroups().isEmpty()) {
+         Join<TestExecution, Group> rGroup = rExec.join("test").join("group");
+         pTestGroups = cb.and(rGroup.get("name").in(cb.parameter(Set.class, "groupNames")));
       }
       if (search.getParameters() != null && !search.getParameters().isEmpty()) {
          for (int pCount = 1; pCount < search.getParameters().size() + 1; pCount++) {
@@ -480,10 +390,6 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          return;
       }
 
-      List<Long> executionIds = testExecutions.stream().map(TestExecution::getId).collect(Collectors.toList());
-      List<TestExecutionParameter> parameters = testExecutionParameterDAO.find(executionIds, Arrays.asList(search.getOrderByParameter()));
-      Map<Long, List<TestExecutionParameter>> parametersByExecution = parameters.stream().collect(Collectors.groupingBy(parameter -> parameter.getTestExecution().getId()));
-
       Collections.sort(testExecutions,
                        (o1, o2) -> {
                           String o1paramValue = o1.getParameters().get(search.getOrderByParameter()).getValue();
@@ -516,34 +422,6 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    }
 
    /**
-    * Helper method. Because when trying to retrieve count of test executions according to
-    * some restrictions (like tags etc, in general when the query has having, where, group by together) via
-    * Criteria API, there is no way to reuse the query even though it differs in two lines.
-    *
-    * Hence, the basics of the query are extracted to this method to avoid code duplication.
-    *
-    * @param criteriaQuery
-    * @return
-    */
-   private AbstractQuery createSubqueryByTags(AbstractQuery criteriaQuery) {
-      CriteriaBuilder cb = criteriaBuilder();
-
-      AbstractQuery query = criteriaQuery;
-      Root<TestExecution> rExec = query.from(TestExecution.class);
-      Join<TestExecution, Test> rTest = rExec.join("test");
-      Predicate pTestUID = rTest.<String>get("uid").in(cb.parameter(List.class, "testUID"));
-      Join<TestExecution, Tag> rTag = rExec.join("tags");
-      Predicate pTagNameInFixedList = rTag.get("name").in(cb.parameter(List.class, "tagList"));
-      Predicate pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
-
-      query.where(cb.and(pTagNameInFixedList, pTestUID));
-      query.having(pHavingAllTagsPresent);
-      query.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("started"), rExec.get("comment"));
-
-      return query;
-   }
-
-   /**
     * Helper method. Search query is quite complicated and has a lot of parameters. This method
     * assigns the value to every predefined parameter.
     *
@@ -571,7 +449,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       }
       if (search.getTestName() != null && !"".equals(search.getTestName())) {
          if (search.getTestName().endsWith("*")) {
-            String pattern = search.getTestName().substring(0, search.getTestName().length() - 1).concat("%").toLowerCase();
+            String pattern = search.getTestName().replace('*', '%');
             query.setParameter("testName", pattern);
          } else {
             query.setParameter("testName", search.getTestName().toLowerCase());
@@ -580,38 +458,22 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       if (!search.getTestUIDs().isEmpty()) {
          query.setParameter("testUIDs", search.getTestUIDs());
       }
-      if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
-         query.setParameter("groupNames", search.getGroups().stream().map(group -> group.getName()).collect(Collectors.toList()));
+      if (!search.getGroups().isEmpty()) {
+         query.setParameter("groupNames", search.getGroups().stream().map(Group::getName).collect(Collectors.toSet()));
       }
       if (search.getParameters() != null && !search.getParameters().isEmpty()) {
          int pCount = 1;
          for (String key: search.getParameters().keySet()) {
             query.setParameter("paramName" + pCount, key);
-            query.setParameter("paramValue" + pCount, search.getParameters().get(key));
+            if (search.getParameters().get(key).endsWith("*")) {
+               String pattern = search.getParameters().get(key).replace('*', '%').toLowerCase();
+               query.setParameter("paramValue" + pCount, pattern);
+            } else {
+               query.setParameter("paramValue" + pCount, search.getParameters().get(key).toLowerCase());
+            }
             pCount++;
          }
       }
-   }
-
-   /**
-    * Helper method. Because when trying to retrieve count of test executions according to
-    * some restrictions (like tags etc, in general when the query has having, where, group by together) via
-    * Criteria API, there is no way to reuse the query even though it differs in two lines.
-    *
-    * Hence, the basics of the query are extracted to this method to avoid code duplication.
-    *
-    * @param criteriaQuery
-    * @param testUIDs
-    * @param tags
-    * @return
-    */
-   private TypedQuery createTypedQueryByTags(CriteriaQuery criteriaQuery, List<String> testUIDs, List<String> tags) {
-      TypedQuery<TestExecution> query = query(criteriaQuery);
-      query.setParameter("testUID", testUIDs);
-      query.setParameter("tagList", tags);
-      query.setParameter("tagListSize", new Long(tags.size()));
-
-      return query;
    }
 
    /**
