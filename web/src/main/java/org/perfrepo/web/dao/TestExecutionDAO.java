@@ -286,13 +286,11 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Predicate pIds = cb.and();
       Predicate pStartedFrom = cb.and();
       Predicate pStartedTo = cb.and();
-      Predicate pTagNameInFixedList = cb.and();
       Predicate pExcludedTags = cb.and();
       Predicate pTestName = cb.and();
       Predicate pTestUID = cb.and();
       Predicate pTestGroups = cb.and();
       Predicate pParamsMatch = cb.and();
-      Predicate pHavingAllTagsPresent = cb.and();
       List<Predicate> pTags = new ArrayList<>();
 
       Root<TestExecution> rExec = criteria.from(TestExecution.class);
@@ -308,17 +306,18 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          pStartedTo = cb.lessThanOrEqualTo(rExec.<Date>get("started"), cb.parameter(Date.class, "startedTo"));
       }
       if (!includedTags.isEmpty() || !excludedTags.isEmpty()) {
-         Join<TestExecution, Tag> rTag = rExec.join("tags");
+         Path<Collection<Tag>> tagsPath = rExec.<Collection<Tag>>get("tags");
          if (!includedTags.isEmpty()) {
             for (int i = 0; i < includedTags.size(); i++) {
-               Predicate includedTag = cb.isMember(cb.parameter(Tag.class, "tag" + i), rExec.<Collection<Tag>>get("tags"));
+
+               Predicate includedTag = cb.isMember(cb.parameter(Tag.class, "tag" + i), tagsPath);
                pTags.add(includedTag);
             }
          }
 
          if (!excludedTags.isEmpty()) {
             for (int i = 0; i < excludedTags.size(); i++) {
-               Predicate excludedTag = cb.isNotMember(cb.parameter(Tag.class, "excludedTag" + i), rExec.<Collection<Tag>>get("tags"));
+               Predicate excludedTag = cb.isNotMember(cb.parameter(Tag.class, "excludedTag" + i), tagsPath);
                pTags.add(excludedTag);
             }
          }
@@ -343,13 +342,11 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          }
       }
       // construct query
-//      criteria.where(cb.and(pIds, pStartedFrom, pStartedTo, pTagNameInFixedList, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch));
       Predicate whereClause = cb.and(pIds, pStartedFrom, pStartedTo, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch);
       for (Predicate predicate: pTags) {
          whereClause = cb.and(whereClause, predicate);
       }
       criteria.where(whereClause);
-//      criteria.having(pHavingAllTagsPresent);
       // this isn't very elegant, but Postgres 8.4 doesn't allow GROUP BY only with id
       // this feature is allowed only since Postgres 9.1+
       criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("started"), rExec.get("comment"));

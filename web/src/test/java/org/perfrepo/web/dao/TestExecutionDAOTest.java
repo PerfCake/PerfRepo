@@ -1,4 +1,4 @@
-package org.perfrepo.web;
+package org.perfrepo.web.dao;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
