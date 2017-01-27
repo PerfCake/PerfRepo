@@ -16,7 +16,6 @@ package org.perfrepo.web.model.to;
 
 import org.perfrepo.enums.GroupFilter;
 import org.perfrepo.enums.OrderBy;
-import org.perfrepo.web.model.Tag;
 import org.perfrepo.web.model.user.Group;
 
 import java.util.Date;
@@ -35,7 +34,7 @@ public class TestExecutionSearchCriteria {
    private Set<Long> ids = new HashSet<>();
    private Date startedFrom; //means "Test executed after"
    private Date startedTo; //means "Test executed before"
-   private Set<Tag> tags = new HashSet<>();
+   private String tagsQuery;
    private Set<Group> groups = new HashSet<>();
    private Set<String> testUIDs = new HashSet<>();
    private String testName;
@@ -135,12 +134,12 @@ public class TestExecutionSearchCriteria {
       this.startedTo = startedTo;
    }
 
-   public Set<Tag> getTags() {
-      return tags;
+   public String getTagsQuery() {
+      return tagsQuery;
    }
 
-   public void setTags(Set<Tag> tags) {
-      this.tags = tags;
+   public void setTagsQuery(String tagsQuery) {
+      this.tagsQuery = tagsQuery;
    }
 
    public String getTestName() {

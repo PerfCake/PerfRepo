@@ -28,8 +28,8 @@ public class SearchCriteriaMatcher extends ArgumentMatcher<TestExecutionSearchCr
 
         TestExecutionSearchCriteria object = (TestExecutionSearchCriteria) o;
 
-        if (!((searchCriteria.getTags() == null && object.getTags() == null)
-            || (searchCriteria.getTags() != null && object.getTags() != null))) {
+        if (!((searchCriteria.getTagsQuery() == null && object.getTagsQuery() == null)
+            || (searchCriteria.getTagsQuery() != null && object.getTagsQuery() != null))) {
             return false;
         }
 
@@ -75,7 +75,7 @@ public class SearchCriteriaMatcher extends ArgumentMatcher<TestExecutionSearchCr
             }
         }
 
-        if (searchCriteria.getTags() != null && !searchCriteria.getTags().equals(object.getTags())) {
+        if (searchCriteria.getTagsQuery() != null && !searchCriteria.getTagsQuery().equals(object.getTagsQuery())) {
             return false;
         }
 

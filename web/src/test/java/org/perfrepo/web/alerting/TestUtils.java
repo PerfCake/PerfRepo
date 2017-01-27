@@ -1,13 +1,11 @@
 package org.perfrepo.web.alerting;
 
 import org.perfrepo.web.model.Metric;
-import org.perfrepo.web.model.Tag;
 import org.perfrepo.web.model.TestExecution;
 import org.perfrepo.web.model.Value;
 import org.perfrepo.web.model.ValueParameter;
 import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
 import org.perfrepo.web.model.user.Group;
-import org.perfrepo.web.util.TagUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +14,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * Provides some utility functionality for tests. Namely allows to create dummy TestExecution instances for mock tests
@@ -83,7 +80,7 @@ public class TestUtils {
     public static TestExecutionSearchCriteria createSearchCriteria(List<Long> ids, String tags, Integer limitFrom, Integer limitHowMany, Date dateFrom, Date dateTo) {
         TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
         searchCriteria.setIds(new HashSet<>(ids));
-        searchCriteria.setTags(TagUtils.parseTags(tags));
+        searchCriteria.setTagsQuery(tags);
         searchCriteria.setLimitFrom(limitFrom);
         searchCriteria.setLimitHowMany(limitHowMany);
         searchCriteria.setStartedFrom(dateFrom);

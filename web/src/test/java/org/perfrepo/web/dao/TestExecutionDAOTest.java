@@ -8,14 +8,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.perfrepo.enums.MetricComparator;
 import org.perfrepo.enums.OrderBy;
-import org.perfrepo.web.dao.GroupDAO;
-import org.perfrepo.web.dao.MetricDAO;
-import org.perfrepo.web.dao.TagDAO;
-import org.perfrepo.web.dao.TestDAO;
-import org.perfrepo.web.dao.TestExecutionDAO;
-import org.perfrepo.web.dao.TestExecutionParameterDAO;
-import org.perfrepo.web.dao.ValueDAO;
-import org.perfrepo.web.dao.ValueParameterDAO;
 import org.perfrepo.web.model.Metric;
 import org.perfrepo.web.model.Tag;
 import org.perfrepo.web.model.Test;
@@ -27,7 +19,6 @@ import org.perfrepo.web.model.to.MultiValueResultWrapper;
 import org.perfrepo.web.model.to.SingleValueResultWrapper;
 import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
 import org.perfrepo.web.model.user.Group;
-import org.perfrepo.web.util.TagUtils;
 import org.perfrepo.web.util.TestUtils;
 
 import javax.inject.Inject;
@@ -266,7 +257,7 @@ public class TestExecutionDAOTest {
    @org.junit.Test
    public void testSearchByTags() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      searchCriteria.setTags(TagUtils.parseTags("tag1 tag2"));
+      searchCriteria.setTagsQuery("tag1 tag2");
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
 
       List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
@@ -281,7 +272,7 @@ public class TestExecutionDAOTest {
    @org.junit.Test
    public void testSearchByExclusionTags() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      searchCriteria.setTags(TagUtils.parseTags("tag1 -tag2"));
+      searchCriteria.setTagsQuery("tag1 -tag2");
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
 
       List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
@@ -293,9 +284,23 @@ public class TestExecutionDAOTest {
    }
 
    @org.junit.Test
+   public void testSearchByComplexTagsQuery() {
+      TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+      searchCriteria.setTagsQuery("(tag1 AND -tag3) OR tag4");
+      searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup(), tests[2].getGroup())));
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[1].getId(), testExecutions[3].getId());
+
+      assertEquals(expectedResultIds.size(), result.size());
+      assertTrue(expectedResultIds.stream().
+              allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
+   }
+
+   @org.junit.Test
    public void testSearchByTagsWithLimit() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      searchCriteria.setTags(TagUtils.parseTags("tag1"));
+      searchCriteria.setTagsQuery("tag1");
       searchCriteria.setLimitFrom(1);
       searchCriteria.setLimitHowMany(2);
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));

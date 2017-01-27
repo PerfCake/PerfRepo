@@ -16,6 +16,10 @@ package org.perfrepo.web.dao;
 
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.perfrepo.enums.OrderBy;
+import org.perfrepo.web.dao.search.AndExpression;
+import org.perfrepo.web.dao.search.OrExpression;
+import org.perfrepo.web.dao.search.TagQueryParser;
+import org.perfrepo.web.dao.search.Term;
 import org.perfrepo.web.model.Metric;
 import org.perfrepo.web.model.Tag;
 import org.perfrepo.web.model.Test;
@@ -48,10 +52,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -68,6 +72,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
    @Inject
    private TagDAO tagDAO;
+
+   //TODO: document this
+   private Map<String, String> tagsParametersNameToValueMapping = new HashMap<>();
 
    /**
     * Returns test executions with property value between selected boundaries. This can be applied only on
@@ -98,21 +105,15 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    public SearchResultWrapper<TestExecution> searchTestExecutions(TestExecutionSearchCriteria search) {
       CriteriaBuilder cb = criteriaBuilder();
 
-      //normalize tags
-      List<String> tags = search.getTags().stream().map(tag -> tag.getName().toLowerCase()).collect(Collectors.toList());
-      List<String> excludedTags = new ArrayList<>();
-      List<String> includedTags = new ArrayList<>();
-      divideTags(tags, includedTags, excludedTags);
+      int lastQueryResultsCount = processSearchCountQuery(search);
 
-      int lastQueryResultsCount = processSearchCountQuery(search, includedTags, excludedTags);
-
-      CriteriaQuery<TestExecution> criteria = (CriteriaQuery) createSearchSubquery(cb.createQuery(TestExecution.class), search, includedTags, excludedTags);
+      CriteriaQuery<TestExecution> criteria = (CriteriaQuery) createSearchSubquery(cb.createQuery(TestExecution.class), search);
       Root<TestExecution> root = (Root<TestExecution>) criteria.getRoots().toArray()[0];
       criteria.select(root);
       setOrderBy(criteria, search.getOrderBy(), root);
 
       TypedQuery<TestExecution> query = query(criteria);
-      fillParameterValues(query, search, includedTags, excludedTags);
+      fillParameterValues(query, search);
 
       //handle pagination
       int firstResult = search.getLimitFrom() == null ? 0 : search.getLimitFrom();
@@ -278,7 +279,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     *
     * @param search
     */
-   private AbstractQuery createSearchSubquery(AbstractQuery criteriaQuery, TestExecutionSearchCriteria search, List<String> includedTags, List<String> excludedTags) {
+   private AbstractQuery createSearchSubquery(AbstractQuery criteriaQuery, TestExecutionSearchCriteria search) {
       AbstractQuery criteria = criteriaQuery;
       CriteriaBuilder cb = criteriaBuilder();
 
@@ -291,7 +292,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Predicate pTestUID = cb.and();
       Predicate pTestGroups = cb.and();
       Predicate pParamsMatch = cb.and();
-      List<Predicate> pTags = new ArrayList<>();
+      Predicate pTags = cb.and();
 
       Root<TestExecution> rExec = criteria.from(TestExecution.class);
 
@@ -305,22 +306,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       if (search.getStartedTo() != null) {
          pStartedTo = cb.lessThanOrEqualTo(rExec.<Date>get("started"), cb.parameter(Date.class, "startedTo"));
       }
-      if (!includedTags.isEmpty() || !excludedTags.isEmpty()) {
+      if (search.getTagsQuery() != null && !search.getTagsQuery().isEmpty()) {
          Path<Collection<Tag>> tagsPath = rExec.<Collection<Tag>>get("tags");
-         if (!includedTags.isEmpty()) {
-            for (int i = 0; i < includedTags.size(); i++) {
-
-               Predicate includedTag = cb.isMember(cb.parameter(Tag.class, "tag" + i), tagsPath);
-               pTags.add(includedTag);
-            }
-         }
-
-         if (!excludedTags.isEmpty()) {
-            for (int i = 0; i < excludedTags.size(); i++) {
-               Predicate excludedTag = cb.isNotMember(cb.parameter(Tag.class, "excludedTag" + i), tagsPath);
-               pTags.add(excludedTag);
-            }
-         }
+         pTags = createTagsPredicates(search.getTagsQuery(), tagsPath);
       }
       if (search.getTestName() != null && !"".equals(search.getTestName())) {
          Join<TestExecution, Test> rTest = rExec.join("test");
@@ -342,10 +330,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          }
       }
       // construct query
-      Predicate whereClause = cb.and(pIds, pStartedFrom, pStartedTo, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch);
-      for (Predicate predicate: pTags) {
-         whereClause = cb.and(whereClause, predicate);
-      }
+      Predicate whereClause = cb.and(pIds, pStartedFrom, pStartedTo, pExcludedTags, pTags, pTestName, pTestUID, pTestGroups, pParamsMatch);
       criteria.where(whereClause);
       // this isn't very elegant, but Postgres 8.4 doesn't allow GROUP BY only with id
       // this feature is allowed only since Postgres 9.1+
@@ -359,24 +344,22 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * the test executions suit the conditions.
     *
     * @param search
-    * @param includedTags
-    * @param excludedTags
     * @return
     */
-   private Integer processSearchCountQuery(TestExecutionSearchCriteria search, List<String> includedTags, List<String> excludedTags) {
+   private Integer processSearchCountQuery(TestExecutionSearchCriteria search) {
       CriteriaBuilder cb = criteriaBuilder();
 
       CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
       Root<TestExecution> root = countQuery.from(TestExecution.class);
       countQuery.select(cb.countDistinct(root));
 
-      Subquery<Long> subquery = (Subquery) createSearchSubquery(countQuery.subquery(Long.class), search, includedTags, excludedTags);
+      Subquery<Long> subquery = (Subquery) createSearchSubquery(countQuery.subquery(Long.class), search);
       Root<TestExecution> subqueryRoot = (Root<TestExecution>) subquery.getRoots().toArray()[0];
       subquery.select(subqueryRoot.<Long>get("id"));
 
       countQuery.where(cb.in(root.get("id")).value(subquery));
       TypedQuery<Long> typedCountQuery = query(countQuery);
-      fillParameterValues(typedCountQuery, search, includedTags, excludedTags);
+      fillParameterValues(typedCountQuery, search);
 
       Long count = typedCountQuery.getSingleResult();
       return count.intValue();
@@ -433,10 +416,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     *
     * @param query
     * @param search
-    * @param includedTags
-    * @param excludedTags
     */
-   private void fillParameterValues(TypedQuery query, TestExecutionSearchCriteria search, List<String> includedTags, List<String> excludedTags) {
+   private void fillParameterValues(TypedQuery query, TestExecutionSearchCriteria search) {
       if (search.getIds() != null && !search.getIds().isEmpty()) {
          query.setParameter("ids", search.getIds());
       }
@@ -446,16 +427,10 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       if (search.getStartedTo() != null) {
          query.setParameter("startedTo", search.getStartedTo());
       }
-      if (!includedTags.isEmpty()) {
-         for (int i = 0; i < includedTags.size(); i++) {
-            Tag tag = tagDAO.findByName(includedTags.get(i));
-            query.setParameter("tag" + i, tag);
-         }
-      }
-      if (!excludedTags.isEmpty()) {
-         for (int i = 0; i < excludedTags.size(); i++) {
-            Tag tag = tagDAO.findByName(excludedTags.get(i));
-            query.setParameter("excludedTag" + i, tag);
+      if (search.getTagsQuery() != null && !search.getTagsQuery().isEmpty()) {
+         for (String tagParamName: tagsParametersNameToValueMapping.keySet()) {
+            Tag tag = tagDAO.findByName(tagsParametersNameToValueMapping.get(tagParamName));
+            query.setParameter(tagParamName, tag);
          }
       }
       if (search.getTestName() != null && !"".equals(search.getTestName())) {
@@ -488,27 +463,46 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    }
 
    /**
-    * Helper method. Divides the list of tags to two groups - included and excluded tags. Excluded tags have
-    * prefix '-'. Divides and stores it into the parameters.
+    * TODO: document this
     *
-    * @param inputTags
-    * @param outputExcluded
-    * @param outputIncluded
+    * @param query
     * @return
-    */
-   private void divideTags(List<String> inputTags, List<String> outputIncluded, List<String> outputExcluded) {
-      Iterator<String> iterator = inputTags.iterator();
-      while (iterator.hasNext()) {
-         String value = iterator.next();
-         if (value.isEmpty()) {
-            continue;
-         }
-
-         if (value.startsWith("-")) {
-            outputExcluded.add(value.substring(1));
-         } else {
-            outputIncluded.add(value);
-         }
-      }
+     */
+   private Predicate createTagsPredicates(String query, Path<Collection<Tag>> tagsPath) {
+      TagQueryParser parser = new TagQueryParser();
+      org.perfrepo.web.dao.search.Expression expression = parser.process(query);
+      AtomicInteger counter = new AtomicInteger(0);
+      tagsParametersNameToValueMapping = new HashMap<>();
+      return processExpression(expression, counter, tagsPath);
    }
+
+   /**
+    * TODO: document this
+    *
+    * @param expression
+    * @return
+     */
+   private Predicate processExpression(org.perfrepo.web.dao.search.Expression expression, AtomicInteger counter, Path<Collection<Tag>> tagsPath) {
+      CriteriaBuilder cb = criteriaBuilder();
+      if (expression instanceof Term) {
+         Term term = (Term) expression;
+         String tagParameterName = "tag" + counter.getAndIncrement();
+         if (term.getValue().startsWith("-")) {
+            tagsParametersNameToValueMapping.put(tagParameterName, term.getValue().substring(1));
+            return cb.isNotMember(cb.parameter(Tag.class, tagParameterName), tagsPath);
+         } else {
+            tagsParametersNameToValueMapping.put(tagParameterName, term.getValue());
+            return cb.isMember(cb.parameter(Tag.class, tagParameterName), tagsPath);
+         }
+      } else if (expression instanceof AndExpression) {
+         AndExpression andExpression = (AndExpression) expression;
+         return cb.and(processExpression(andExpression.getLeftOperand(), counter, tagsPath), processExpression(andExpression.getRightOperand(), counter, tagsPath));
+      } else if (expression instanceof OrExpression) {
+         OrExpression orExpression = (OrExpression) expression;
+         return cb.or(processExpression(orExpression.getLeftOperand(), counter, tagsPath), processExpression(orExpression.getRightOperand(), counter, tagsPath));
+      }
+
+      throw new IllegalArgumentException("Tags query is not valid.");
+   }
+
 }

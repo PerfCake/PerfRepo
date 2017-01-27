@@ -14,7 +14,6 @@ import org.perfrepo.web.model.ValueParameter;
 import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
 import org.perfrepo.web.service.UserService;
 import org.perfrepo.web.util.MultiValue;
-import org.perfrepo.web.util.TagUtils;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -521,7 +520,7 @@ public class ConditionCheckerImpl implements ConditionChecker {
      */
     private void addCriteriaByPropertyName(TestExecutionSearchCriteria searchCriteria, String propertyName, String propertyValue, Map<String, Integer> parsedLast, String operator) {
         if (propertyName.equalsIgnoreCase("tags")) {
-            searchCriteria.setTags(TagUtils.parseTags(propertyValue));
+            searchCriteria.setTagsQuery(propertyValue);
 
             if (parsedLast != null) { //LAST is present
                 searchCriteria.setLimitFrom(parsedLast.get("lastFrom"));
