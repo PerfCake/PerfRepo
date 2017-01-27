@@ -44,6 +44,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -64,6 +65,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
 
    @Inject
    private TestExecutionParameterDAO testExecutionParameterDAO;
+
+   @Inject
+   private TagDAO tagDAO;
 
    /**
     * Returns test executions with property value between selected boundaries. This can be applied only on
@@ -289,6 +293,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Predicate pTestGroups = cb.and();
       Predicate pParamsMatch = cb.and();
       Predicate pHavingAllTagsPresent = cb.and();
+      List<Predicate> pTags = new ArrayList<>();
 
       Root<TestExecution> rExec = criteria.from(TestExecution.class);
 
@@ -305,18 +310,17 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       if (!includedTags.isEmpty() || !excludedTags.isEmpty()) {
          Join<TestExecution, Tag> rTag = rExec.join("tags");
          if (!includedTags.isEmpty()) {
-            pTagNameInFixedList = cb.lower(rTag.<String>get("name")).in(cb.parameter(List.class, "tagList"));
-            pHavingAllTagsPresent = cb.ge(cb.count(rTag.get("id")), cb.parameter(Long.class, "tagListSize"));
+            for (int i = 0; i < includedTags.size(); i++) {
+               Predicate includedTag = cb.isMember(cb.parameter(Tag.class, "tag" + i), rExec.<Collection<Tag>>get("tags"));
+               pTags.add(includedTag);
+            }
          }
 
          if (!excludedTags.isEmpty()) {
-            Subquery<Long> sq = criteria.subquery(Long.class);
-            Root<TestExecution> sqRoot = sq.from(TestExecution.class);
-            Join<TestExecution, Tag> sqTag = sqRoot.join("tags");
-            sq.select(sqRoot.<Long>get("id"));
-            sq.where(cb.lower(sqTag.<String>get("name")).in(cb.parameter(List.class, "excludedTagList")));
-
-            pExcludedTags = cb.not(rExec.get("id").in(sq));
+            for (int i = 0; i < excludedTags.size(); i++) {
+               Predicate excludedTag = cb.isNotMember(cb.parameter(Tag.class, "excludedTag" + i), rExec.<Collection<Tag>>get("tags"));
+               pTags.add(excludedTag);
+            }
          }
       }
       if (search.getTestName() != null && !"".equals(search.getTestName())) {
@@ -339,8 +343,13 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          }
       }
       // construct query
-      criteria.where(cb.and(pIds, pStartedFrom, pStartedTo, pTagNameInFixedList, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch));
-      criteria.having(pHavingAllTagsPresent);
+//      criteria.where(cb.and(pIds, pStartedFrom, pStartedTo, pTagNameInFixedList, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch));
+      Predicate whereClause = cb.and(pIds, pStartedFrom, pStartedTo, pExcludedTags, pTestName, pTestUID, pTestGroups, pParamsMatch);
+      for (Predicate predicate: pTags) {
+         whereClause = cb.and(whereClause, predicate);
+      }
+      criteria.where(whereClause);
+//      criteria.having(pHavingAllTagsPresent);
       // this isn't very elegant, but Postgres 8.4 doesn't allow GROUP BY only with id
       // this feature is allowed only since Postgres 9.1+
       criteria.groupBy(rExec.get("test"), rExec.get("id"), rExec.get("name"), rExec.get("started"), rExec.get("comment"));
@@ -441,11 +450,16 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          query.setParameter("startedTo", search.getStartedTo());
       }
       if (!includedTags.isEmpty()) {
-         query.setParameter("tagList", includedTags);
-         query.setParameter("tagListSize", new Long(includedTags.size()));
+         for (int i = 0; i < includedTags.size(); i++) {
+            Tag tag = tagDAO.findByName(includedTags.get(i));
+            query.setParameter("tag" + i, tag);
+         }
       }
       if (!excludedTags.isEmpty()) {
-         query.setParameter("excludedTagList", excludedTags);
+         for (int i = 0; i < excludedTags.size(); i++) {
+            Tag tag = tagDAO.findByName(excludedTags.get(i));
+            query.setParameter("excludedTag" + i, tag);
+         }
       }
       if (search.getTestName() != null && !"".equals(search.getTestName())) {
          if (search.getTestName().endsWith("*")) {
