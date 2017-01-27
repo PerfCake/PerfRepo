@@ -42,11 +42,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link org.perfrepo.web.dao.TestExecutionDAO}
@@ -200,69 +201,21 @@ public class TestExecutionDAOTest {
    }
 
    @org.junit.Test
-   public void testGetTestExecutionsByTags() {
-      List<String> tags = new ArrayList<>();
-      tags.add("tag1");
-      tags.add("tag2");
-      List<String> testUid = new ArrayList<>();
-      testUid.add(tests[0].getUid());
-
-      List<TestExecution> result = testExecutionDAO.getTestExecutions(tags, testUid);
-      assertEquals(2, result.size());
-
-      List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId());
-
-      assertTrue(expectedResultIds.stream().
-          allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
-   }
-
-   @org.junit.Test
-   public void testGetTestExecutionsByTagsWithLast1() {
-      List<String> tags = new ArrayList<>();
-      tags.add("tag1");
-      List<String> testUid = new ArrayList<>();
-      testUid.add(tests[0].getUid());
-
-      List<TestExecution> result = testExecutionDAO.getTestExecutions(tags, testUid, 3, 2);
-      assertEquals(2, result.size());
-
-      List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId());
-
-      assertTrue(expectedResultIds.stream().
-          allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
-   }
-
-   @org.junit.Test
-   public void testGetTestExecutionsByTagsWithLast2() {
-      List<String> tags = new ArrayList<>();
-      tags.add("tag1");
-      List<String> testUid = new ArrayList<>();
-      testUid.add(tests[0].getUid());
-
-      List<TestExecution> result = testExecutionDAO.getTestExecutions(tags, testUid, 1, 1);
-      assertEquals(1, result.size());
-      assertEquals(testExecutions[2].getId(), result.get(0).getId());
-   }
-
-   @org.junit.Test
-   public void testGetTestExecutionsByTagsWithLast3() {
-      List<String> tags = new ArrayList<>();
-      tags.add("tag1");
-      tags.add("tag4");
-      List<String> testUid = new ArrayList<>();
-      testUid.add(tests[0].getUid());
-
-      List<TestExecution> result = testExecutionDAO.getTestExecutions(tags, testUid, 5, 3);
-      assertTrue(result.isEmpty());
-   }
-
-   @org.junit.Test
    public void testSearchByTestUID() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setTestUIDs(Stream.of(tests[0].getUid()).collect(Collectors.toSet()));
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
 
       assertEquals("Search by test UID retrieved unexpected results.", 4, testExecutionDAO.searchTestExecutions(searchCriteria).getResult().size());
+   }
+
+   @org.junit.Test
+   public void testSearchByTestUID2() {
+      TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+      searchCriteria.setTestUIDs(Stream.of(tests[0].getUid(), tests[1].getUid()).collect(Collectors.toSet()));
+      searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
+
+      assertEquals("Search by multiple test UIDs retrieved unexpected results.", testExecutions.length, testExecutionDAO.searchTestExecutions(searchCriteria).getResult().size());
    }
 
    @org.junit.Test
@@ -335,7 +288,7 @@ public class TestExecutionDAOTest {
    @org.junit.Test
    public void testSearchWithDateAscendingOrdering() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setTestUIDs(Stream.of(tests[0].getUid()).collect(Collectors.toSet()));
       searchCriteria.setOrderBy(OrderBy.DATE_ASC);
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
 
@@ -354,7 +307,7 @@ public class TestExecutionDAOTest {
    @org.junit.Test
    public void testSearchWithDateDescendingOrdering() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setTestUIDs(Stream.of(tests[0].getUid()).collect(Collectors.toSet()));
       searchCriteria.setOrderBy(OrderBy.DATE_DESC);
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
 
@@ -373,7 +326,7 @@ public class TestExecutionDAOTest {
    @org.junit.Test
    public void testSearchWithParameterAscendingOrdering() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setTestUIDs(Stream.of(tests[0].getUid()).collect(Collectors.toSet()));
       searchCriteria.setOrderBy(OrderBy.PARAMETER_ASC);
       searchCriteria.setOrderByParameter("param");
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
@@ -393,7 +346,7 @@ public class TestExecutionDAOTest {
    @org.junit.Test
    public void testSearchWithParameterDescendingOrdering() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setTestUIDs(Stream.of(tests[0].getUid()).collect(Collectors.toSet()));
       searchCriteria.setOrderBy(OrderBy.PARAMETER_DESC);
       searchCriteria.setOrderByParameter("param");
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
@@ -412,7 +365,7 @@ public class TestExecutionDAOTest {
    @org.junit.Test
    public void testSearchByVersionAscendingOrdering() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setTestUIDs(Stream.of(tests[0].getUid()).collect(Collectors.toSet()));
       searchCriteria.setOrderBy(OrderBy.PARAMETER_ASC);
       searchCriteria.setOrderByParameter("param");
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
@@ -432,7 +385,7 @@ public class TestExecutionDAOTest {
    @org.junit.Test
    public void testSearchByVersionDescendingOrdering() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setTestUIDs(Stream.of(tests[0].getUid()).collect(Collectors.toSet()));
       searchCriteria.setOrderBy(OrderBy.PARAMETER_DESC);
       searchCriteria.setOrderByParameter("param");
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
@@ -468,7 +421,7 @@ public class TestExecutionDAOTest {
    @org.junit.Test
    public void testSearchValuesWithSomeCriteria() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      searchCriteria.setTestUID(tests[0].getUid());
+      searchCriteria.setTestUIDs(Stream.of(tests[0].getUid()).collect(Collectors.toSet()));
       searchCriteria.setStartedFrom(createStartDate(-7));
       searchCriteria.setStartedTo(createStartDate(-3));
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
@@ -523,7 +476,7 @@ public class TestExecutionDAOTest {
       }
 
       Test test = new Test();
-      test.setName("test1");
+      test.setName("test" + uid);
       test.setUid(uid);
       test.setDescription("This is a test test");
       test.setGroup(group);

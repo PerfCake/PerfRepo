@@ -37,7 +37,7 @@ public class TestExecutionSearchCriteria {
    private Date startedTo; //means "Test executed before"
    private Set<Tag> tags = new HashSet<>();
    private Set<Group> groups = new HashSet<>();
-   private String testUID;
+   private Set<String> testUIDs = new HashSet<>();
    private String testName;
    private Map<String, String> parameters = new HashMap<>();
    private Integer limitFrom;
@@ -151,11 +151,11 @@ public class TestExecutionSearchCriteria {
       this.testName = testName;
    }
 
-   public String getTestUID() {
-      return testUID;
+   public Set<String> getTestUIDs() {
+      return testUIDs;
    }
 
-   public void setTestUID(String testUID) {
-      this.testUID = testUID;
+   public void setTestUIDs(Set<String> testUIDs) {
+      this.testUIDs = testUIDs;
    }
 }

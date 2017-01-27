@@ -125,70 +125,6 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    }
 
    /**
-    * Shortcut for getTestExecutions(tags, testUIDs, null, null)
-    *
-    * @param tags
-    * @param testUIDs
-    * @return
-    */
-   public List<TestExecution> getTestExecutions(List<String> tags, List<String> testUIDs) {
-      return getTestExecutions(tags, testUIDs, null, null);
-   }
-
-   /**
-    * This method retrieves all test executions that belong to one of the specified tests and have
-    * ALL the tags. The 'lastFrom' and 'howMany' parameters works as a LIMIT in SQL, e.g. lastFrom = 5, howMany = 3
-    * will return 3 last test executions shifted by 2 (last 2 test executions will not be in the result)
-    *
-    * @deprecated Use searchTestExecutions instead
-    * @param tags ALL tags that test execution must have
-    * @param testUIDs ID's of the tests
-    * @param lastFrom see comment above. null = all test executions will be retrieved (both lastFrom and howMany must be set to take effect)
-    * @param howMany see comment above. null = all test executions will be retrieved (both lastFrom and howMany must be set to take effect)
-    * @return
-    */
-   @Deprecated
-   public List<TestExecution> getTestExecutions(List<String> tags, List<String> testUIDs, Integer lastFrom, Integer howMany) {
-      CriteriaBuilder cb = criteriaBuilder();
-
-      Long count = null;
-      //we want to use 'last' boundaries, we must compute the number of test executions that
-      //match the requirements - have selected tags and belong to selected tests
-      if (lastFrom != null && howMany != null) {
-         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-         Root<TestExecution> root = countQuery.from(TestExecution.class);
-         countQuery.select(cb.countDistinct(root));
-
-         Subquery<Long> subquery = (Subquery) createSubqueryByTags(countQuery.subquery(Long.class));
-         Root<TestExecution> subqueryRoot = (Root<TestExecution>) subquery.getRoots().toArray()[0];
-         subquery.select(subqueryRoot.<Long>get("id"));
-
-         countQuery.where(cb.in(root.get("id")).value(subquery));
-         TypedQuery<Long> typedCountQuery = createTypedQueryByTags(countQuery, testUIDs, tags);
-         count = typedCountQuery.getSingleResult();
-      }
-
-      //now we can retrieve the actual result
-      CriteriaQuery<TestExecution> criteriaQuery = (CriteriaQuery) createSubqueryByTags(cb.createQuery(TestExecution.class));
-      Root<TestExecution> root = (Root<TestExecution>) criteriaQuery.getRoots().toArray()[0];
-      criteriaQuery.select(root);
-      criteriaQuery.orderBy(cb.asc(root.get("started")));
-
-      TypedQuery<TestExecution> query = createTypedQueryByTags(criteriaQuery, testUIDs, tags);
-      //we're using 'last' parameters, set the paging
-      //TODO: this might be broken, use search test execution instead
-      if (count != null) {
-         int firstResult = count.intValue() - lastFrom;
-         query.setFirstResult(firstResult < 0 ? 0 : firstResult);
-         query.setMaxResults(howMany);
-      }
-
-      List<TestExecution> result = query.getResultList();
-
-      return result;
-   }
-
-   /**
     * Retrieves result values of the test executions assigned to specific metric.
     * Behaviour on multi-value test execution in undefined
     *
@@ -477,9 +413,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          Join<TestExecution, Test> rTest = rExec.join("test");
          pTestName = cb.like(cb.lower(rTest.<String>get("name")), cb.parameter(String.class, "testName"));
       }
-      if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
+      if (!search.getTestUIDs().isEmpty()) {
          Join<TestExecution, Test> rTest = rExec.join("test");
-         pTestUID = cb.like(cb.lower(rTest.<String>get("uid")), cb.parameter(String.class, "testUID"));
+         pTestUID = cb.lower(rTest.<String>get("uid")).in(cb.parameter(Set.class, "testUIDs"));
       }
       if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
          Join<TestExecution, Test> rTest = rExec.join("test");
@@ -641,13 +577,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
             query.setParameter("testName", search.getTestName().toLowerCase());
          }
       }
-      if (search.getTestUID() != null && !"".equals(search.getTestUID())) {
-         if (search.getTestUID().endsWith("*")) {
-            String pattern = search.getTestUID().substring(0, search.getTestUID().length() - 1).concat("%").toLowerCase();
-            query.setParameter("testUID", pattern);
-         } else {
-            query.setParameter("testUID", search.getTestUID().toLowerCase());
-         }
+      if (!search.getTestUIDs().isEmpty()) {
+         query.setParameter("testUIDs", search.getTestUIDs());
       }
       if (GroupFilter.MY_GROUPS.equals(search.getGroupFilter())) {
          query.setParameter("groupNames", search.getGroups().stream().map(group -> group.getName()).collect(Collectors.toList()));
