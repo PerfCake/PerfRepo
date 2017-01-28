@@ -30,7 +30,7 @@ import org.perfrepo.web.model.ValueParameter;
 import org.perfrepo.web.model.to.MultiValueResultWrapper;
 import org.perfrepo.web.model.to.SearchResultWrapper;
 import org.perfrepo.web.model.to.SingleValueResultWrapper;
-import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.model.user.Group;
 
 import javax.inject.Inject;
@@ -73,7 +73,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    @Inject
    private TagDAO tagDAO;
 
-   //TODO: document this
+   // field used for mapping tag parameter names to tag values between invocation of parsing the tag query
    private Map<String, String> tagsParametersNameToValueMapping = new HashMap<>();
 
    /**
@@ -300,10 +300,10 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       if (search.getIds() != null && !search.getIds().isEmpty()) {
          pIds = rExec.<Long>get("id").in(cb.parameter(Set.class, "ids"));
       }
-      if (search.getStartedFrom() != null) {
+      if (search.getStartedAfter() != null) {
          pStartedFrom = cb.greaterThanOrEqualTo(rExec.<Date>get("started"), cb.parameter(Date.class, "startedFrom"));
       }
-      if (search.getStartedTo() != null) {
+      if (search.getStartedBefore() != null) {
          pStartedTo = cb.lessThanOrEqualTo(rExec.<Date>get("started"), cb.parameter(Date.class, "startedTo"));
       }
       if (search.getTagsQuery() != null && !search.getTagsQuery().isEmpty()) {
@@ -421,11 +421,11 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       if (search.getIds() != null && !search.getIds().isEmpty()) {
          query.setParameter("ids", search.getIds());
       }
-      if (search.getStartedFrom() != null) {
-         query.setParameter("startedFrom", search.getStartedFrom());
+      if (search.getStartedAfter() != null) {
+         query.setParameter("startedFrom", search.getStartedAfter());
       }
-      if (search.getStartedTo() != null) {
-         query.setParameter("startedTo", search.getStartedTo());
+      if (search.getStartedBefore() != null) {
+         query.setParameter("startedTo", search.getStartedBefore());
       }
       if (search.getTagsQuery() != null && !search.getTagsQuery().isEmpty()) {
          for (String tagParamName: tagsParametersNameToValueMapping.keySet()) {
@@ -463,9 +463,10 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    }
 
    /**
-    * TODO: document this
+    * Creating Criteria API Predicates from string tag query.
     *
     * @param query
+    * @param tagsPath path to tags in Criteria API
     * @return
      */
    private Predicate createTagsPredicates(String query, Path<Collection<Tag>> tagsPath) {
@@ -477,7 +478,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    }
 
    /**
-    * TODO: document this
+    * Parses one expression of the tag query abstraction. When parsing the terms, it creates a new
+    * parameter in the query and stores its name and value into a property, so we don't have to parse
+    * the query twice.
     *
     * @param expression
     * @return

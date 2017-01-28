@@ -21,7 +21,8 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 
 /**
- * TODO: document this
+ * To handle authentication in testing, we provide mock object, so we can assign easily which user is currently
+ * logged.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

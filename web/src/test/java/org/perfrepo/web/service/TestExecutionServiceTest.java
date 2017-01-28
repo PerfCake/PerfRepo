@@ -15,7 +15,7 @@ import org.perfrepo.web.model.TestExecutionAttachment;
 import org.perfrepo.web.model.TestExecutionParameter;
 import org.perfrepo.web.model.Value;
 import org.perfrepo.web.model.to.SearchResultWrapper;
-import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.model.user.Group;
 import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.service.exceptions.UnauthorizedException;

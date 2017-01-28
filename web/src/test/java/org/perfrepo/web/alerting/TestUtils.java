@@ -4,7 +4,7 @@ import org.perfrepo.web.model.Metric;
 import org.perfrepo.web.model.TestExecution;
 import org.perfrepo.web.model.Value;
 import org.perfrepo.web.model.ValueParameter;
-import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.model.user.Group;
 
 import java.util.ArrayList;
@@ -83,8 +83,8 @@ public class TestUtils {
         searchCriteria.setTagsQuery(tags);
         searchCriteria.setLimitFrom(limitFrom);
         searchCriteria.setLimitHowMany(limitHowMany);
-        searchCriteria.setStartedFrom(dateFrom);
-        searchCriteria.setStartedTo(dateTo);
+        searchCriteria.setStartedAfter(dateFrom);
+        searchCriteria.setStartedBefore(dateTo);
 
         Group group = new Group();
         group.setName("testuser");

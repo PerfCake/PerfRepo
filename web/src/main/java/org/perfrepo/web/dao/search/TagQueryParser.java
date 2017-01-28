@@ -8,7 +8,7 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
 /**
- * TODO: document this
+ * Parser for tag query language into expression object.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

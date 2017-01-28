@@ -23,7 +23,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * TODO: document this
+ * Marker of the method that we should run authorization for.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

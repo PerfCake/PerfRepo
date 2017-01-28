@@ -378,8 +378,8 @@
 //   private TestExecutionSearchCriteria createSearchCriteria(List<Long> ids, Date startedFrom, Date startedTo, String tags, String testUid) {
 //      TestExecutionSearchCriteria criteria = new TestExecutionSearchCriteria();
 //      criteria.setIds(ids);
-//      criteria.setStartedFrom(startedFrom);
-//      criteria.setStartedTo(startedTo);
+//      criteria.setStartedAfter(startedFrom);
+//      criteria.setStartedBefore(startedTo);
 //      criteria.setTags(tags);
 //      criteria.setTestUID(testUid);
 //

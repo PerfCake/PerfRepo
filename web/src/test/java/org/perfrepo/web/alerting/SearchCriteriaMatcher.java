@@ -1,7 +1,7 @@
 package org.perfrepo.web.alerting;
 
 import org.mockito.ArgumentMatcher;
-import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -33,24 +33,24 @@ public class SearchCriteriaMatcher extends ArgumentMatcher<TestExecutionSearchCr
             return false;
         }
 
-        Date otherDateFrom = object.getStartedFrom();
-        Date otherDateTo = object.getStartedTo();
+        Date otherDateFrom = object.getStartedAfter();
+        Date otherDateTo = object.getStartedBefore();
 
-        if (!((searchCriteria.getStartedFrom() == null && otherDateFrom == null)
-            || (searchCriteria.getStartedFrom() != null && otherDateFrom != null))) {
+        if (!((searchCriteria.getStartedAfter() == null && otherDateFrom == null)
+            || (searchCriteria.getStartedAfter() != null && otherDateFrom != null))) {
             return false;
         }
 
-        if (!((searchCriteria.getStartedTo() == null && otherDateTo == null)
-            || (searchCriteria.getStartedTo() != null && otherDateTo != null))) {
+        if (!((searchCriteria.getStartedBefore() == null && otherDateTo == null)
+            || (searchCriteria.getStartedBefore() != null && otherDateTo != null))) {
             return false;
         }
 
         Calendar thisCalendar = Calendar.getInstance();
         Calendar otherCalendar = Calendar.getInstance();
 
-        if (searchCriteria.getStartedFrom() != null) {
-            thisCalendar.setTime(searchCriteria.getStartedFrom());
+        if (searchCriteria.getStartedAfter() != null) {
+            thisCalendar.setTime(searchCriteria.getStartedAfter());
             otherCalendar.setTime(otherDateFrom);
 
             if ((thisCalendar.get(Calendar.YEAR) != otherCalendar.get(Calendar.YEAR))
@@ -62,8 +62,8 @@ public class SearchCriteriaMatcher extends ArgumentMatcher<TestExecutionSearchCr
             }
         }
 
-        if (searchCriteria.getStartedTo() != null) {
-            thisCalendar.setTime(searchCriteria.getStartedTo());
+        if (searchCriteria.getStartedBefore() != null) {
+            thisCalendar.setTime(searchCriteria.getStartedBefore());
             otherCalendar.setTime(otherDateTo);
 
             if ((thisCalendar.get(Calendar.YEAR) != otherCalendar.get(Calendar.YEAR))

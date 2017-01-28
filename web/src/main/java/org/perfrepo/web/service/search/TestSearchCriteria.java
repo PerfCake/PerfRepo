@@ -17,30 +17,20 @@ package org.perfrepo.web.service.search;
 import org.perfrepo.enums.OrderBy;
 import org.perfrepo.web.model.user.Group;
 
-import java.io.Serializable;
 import java.util.Set;
 
 /**
- * Test search criteria. TODO: revisit the documentation
+ * Test search criteria.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
- * @author Pavel Drozd (pdrozd@redhat.com)
- * @author Michal Linhard (mlinhard@redhat.com)
  */
-public class TestSearchCriteria implements Serializable {
-
-   private static final long serialVersionUID = -2549234530526625783L;
+public class TestSearchCriteria {
 
    private String name;
-
    private String uid;
-
    private Set<Group> groups;
-
    private OrderBy orderBy = OrderBy.NAME_ASC;
-
    private Integer limitFrom;
-
    private Integer limitHowMany;
 
    public String getName() {

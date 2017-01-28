@@ -51,6 +51,11 @@ import static org.perfrepo.web.service.validation.ValidationType.DUPLICATE_CHECK
 import static org.perfrepo.web.service.validation.ValidationType.EXISTS;
 import static org.perfrepo.web.service.validation.ValidationType.SEMANTIC_CHECK;
 
+/**
+ * Implementation of {@link UserService}.
+ *
+ * @author Jiri Holusa (jholusa@redhat.com)
+ */
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @TransactionAttribute(TransactionAttributeType.REQUIRED)

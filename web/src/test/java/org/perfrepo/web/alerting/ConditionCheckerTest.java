@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.perfrepo.web.dao.TestExecutionDAO;
 import org.perfrepo.web.model.TestExecution;
 import org.perfrepo.web.model.to.SearchResultWrapper;
-import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.service.UserService;
 
 import java.util.ArrayList;

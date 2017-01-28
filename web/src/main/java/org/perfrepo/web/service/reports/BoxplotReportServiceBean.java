@@ -7,7 +7,7 @@
 //import org.perfrepo.web.model.report.ReportProperty;
 //import org.perfrepo.web.model.to.MultiValueResultWrapper;
 //import org.perfrepo.enums.OrderBy;
-//import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+//import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 //import org.perfrepo.web.model.user.User;
 //import org.perfrepo.web.controller.reports.boxplot.Chart;
 //import org.perfrepo.web.dao.MetricDAO;

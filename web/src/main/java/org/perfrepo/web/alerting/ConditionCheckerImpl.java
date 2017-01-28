@@ -11,7 +11,7 @@ import org.perfrepo.web.model.Metric;
 import org.perfrepo.web.model.TestExecution;
 import org.perfrepo.web.model.Value;
 import org.perfrepo.web.model.ValueParameter;
-import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.service.UserService;
 import org.perfrepo.web.util.MultiValue;
 
@@ -538,9 +538,9 @@ public class ConditionCheckerImpl implements ConditionChecker {
             }
 
             if (operator.equals(">=")) {
-                searchCriteria.setStartedFrom(parsedDate);
+                searchCriteria.setStartedAfter(parsedDate);
             } else if (operator.equals("<=")) {
-                searchCriteria.setStartedTo(parsedDate);
+                searchCriteria.setStartedBefore(parsedDate);
             }
         } else {
             throw new UnsupportedOperationException("Currently supported properties with operator '=' are 'id', 'tags', 'date'.");

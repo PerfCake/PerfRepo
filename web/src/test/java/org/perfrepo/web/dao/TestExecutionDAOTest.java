@@ -17,7 +17,7 @@ import org.perfrepo.web.model.Value;
 import org.perfrepo.web.model.ValueParameter;
 import org.perfrepo.web.model.to.MultiValueResultWrapper;
 import org.perfrepo.web.model.to.SingleValueResultWrapper;
-import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.model.user.Group;
 import org.perfrepo.web.util.TestUtils;
 
@@ -241,8 +241,8 @@ public class TestExecutionDAOTest {
       Date to = createStartDate(-3);
 
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      searchCriteria.setStartedFrom(from);
-      searchCriteria.setStartedTo(to);
+      searchCriteria.setStartedAfter(from);
+      searchCriteria.setStartedBefore(to);
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
 
       List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
@@ -521,8 +521,8 @@ public class TestExecutionDAOTest {
    public void testSearchValuesWithSomeCriteria() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
       searchCriteria.setTestUIDs(Stream.of(tests[0].getUid()).collect(Collectors.toSet()));
-      searchCriteria.setStartedFrom(createStartDate(-7));
-      searchCriteria.setStartedTo(createStartDate(-3));
+      searchCriteria.setStartedAfter(createStartDate(-7));
+      searchCriteria.setStartedBefore(createStartDate(-3));
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
 
       Metric metric = metricDAO.get(metrics[0].getId());

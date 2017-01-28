@@ -8,7 +8,7 @@ import org.perfrepo.web.model.TestExecutionAttachment;
 import org.perfrepo.web.model.TestExecutionParameter;
 import org.perfrepo.web.model.Value;
 import org.perfrepo.web.model.to.SearchResultWrapper;
-import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.dao.MetricDAO;
 import org.perfrepo.web.dao.TagDAO;
 import org.perfrepo.web.dao.TestDAO;
@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * TODO: document this
+ * Implementation of {@link TestExecutionService}.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

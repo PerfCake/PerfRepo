@@ -14,7 +14,7 @@ import static org.perfrepo.web.service.validation.ValidationType.ID_NULL;
 import static org.perfrepo.web.service.validation.ValidationType.SEMANTIC_CHECK;
 
 /**
- * TODO: document this
+ * Service for {@link Group} entity.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

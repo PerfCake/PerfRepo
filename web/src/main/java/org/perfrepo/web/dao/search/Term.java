@@ -1,7 +1,7 @@
 package org.perfrepo.web.dao.search;
 
 /**
- * TODO: document this
+ * Abstraction for atom, i.e. the tag text.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

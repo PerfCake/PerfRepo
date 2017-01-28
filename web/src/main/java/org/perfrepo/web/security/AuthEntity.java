@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO: document this
+ * Marker of the method parameter against which we should do authorization.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

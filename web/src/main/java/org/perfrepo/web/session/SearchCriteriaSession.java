@@ -15,7 +15,7 @@
 package org.perfrepo.web.session;
 
 import org.perfrepo.enums.OrderBy;
-import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.service.search.TestSearchCriteria;
 
 import javax.enterprise.context.SessionScoped;

@@ -12,9 +12,8 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.perfrepo.web.model.to;
+package org.perfrepo.web.service.search;
 
-import org.perfrepo.enums.GroupFilter;
 import org.perfrepo.enums.OrderBy;
 import org.perfrepo.web.model.user.Group;
 
@@ -32,8 +31,8 @@ import java.util.Set;
 public class TestExecutionSearchCriteria {
 
    private Set<Long> ids = new HashSet<>();
-   private Date startedFrom; //means "Test executed after"
-   private Date startedTo; //means "Test executed before"
+   private Date startedAfter; //means "Test executed after"
+   private Date startedBefore; //means "Test executed before"
    private String tagsQuery;
    private Set<Group> groups = new HashSet<>();
    private Set<String> testUIDs = new HashSet<>();
@@ -41,18 +40,9 @@ public class TestExecutionSearchCriteria {
    private Map<String, String> parameters = new HashMap<>();
    private Integer limitFrom;
    private Integer limitHowMany;
-   private GroupFilter groupFilter;
    private OrderBy orderBy = OrderBy.DATE_DESC;
    private String orderByParameter;
    private String labelParameter;
-
-   public GroupFilter getGroupFilter() {
-      return groupFilter;
-   }
-
-   public void setGroupFilter(GroupFilter groupFilter) {
-      this.groupFilter = groupFilter;
-   }
 
    public Set<Group> getGroups() {
       return groups;
@@ -118,20 +108,20 @@ public class TestExecutionSearchCriteria {
       this.parameters = parameters;
    }
 
-   public Date getStartedFrom() {
-      return startedFrom;
+   public Date getStartedAfter() {
+      return startedAfter;
    }
 
-   public void setStartedFrom(Date startedFrom) {
-      this.startedFrom = startedFrom;
+   public void setStartedAfter(Date startedAfter) {
+      this.startedAfter = startedAfter;
    }
 
-   public Date getStartedTo() {
-      return startedTo;
+   public Date getStartedBefore() {
+      return startedBefore;
    }
 
-   public void setStartedTo(Date startedTo) {
-      this.startedTo = startedTo;
+   public void setStartedBefore(Date startedBefore) {
+      this.startedBefore = startedBefore;
    }
 
    public String getTagsQuery() {

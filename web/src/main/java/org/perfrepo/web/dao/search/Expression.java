@@ -1,7 +1,7 @@
-package org.perfrepo.web.dao.search;
+ package org.perfrepo.web.dao.search;
 
 /**
- * TODO: document this
+ * Interface for all expressions.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

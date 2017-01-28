@@ -8,7 +8,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import java.io.File;
 
 /**
- * TODO: document this
+ * Utility class for testing.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

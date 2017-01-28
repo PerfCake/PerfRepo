@@ -1,7 +1,7 @@
 package org.perfrepo.web.dao.search;
 
 /**
- * TODO: document this
+ * Abstraction for AND expression.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

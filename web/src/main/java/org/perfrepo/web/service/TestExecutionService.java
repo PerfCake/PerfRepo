@@ -21,15 +21,14 @@ import org.perfrepo.web.model.TestExecutionAttachment;
 import org.perfrepo.web.model.TestExecutionParameter;
 import org.perfrepo.web.model.Value;
 import org.perfrepo.web.model.to.SearchResultWrapper;
-import org.perfrepo.web.model.to.TestExecutionSearchCriteria;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 /**
- * TODO: document this
- * TODO: review comments of all methods
+ * Service for {@link TestExecution} entity.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
@@ -48,6 +47,7 @@ public interface TestExecutionService {
    /**
     * Updates test execution.
     * Update only attributes name, comment, started and collection of tags.
+    * TODO: we should also update all the other entities
     *
     * @param updatedTestExecution
     * @return
@@ -72,7 +72,7 @@ public interface TestExecutionService {
    /**
     * Returns all test executions.
     *
-    * @return List of {@link TestExecution}
+    * @return List of all {@link TestExecution}
     */
    public List<TestExecution> getAllTestExecutions();
 
