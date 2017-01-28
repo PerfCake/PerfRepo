@@ -18,6 +18,8 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.perfrepo.enums.OrderBy;
 import org.perfrepo.web.dao.search.AndExpression;
 import org.perfrepo.web.dao.search.OrExpression;
+import org.perfrepo.web.dao.search.ParameterQueryParser;
+import org.perfrepo.web.dao.search.ParameterTerm;
 import org.perfrepo.web.dao.search.TagQueryParser;
 import org.perfrepo.web.dao.search.Term;
 import org.perfrepo.web.model.Metric;
@@ -30,8 +32,8 @@ import org.perfrepo.web.model.ValueParameter;
 import org.perfrepo.web.model.to.MultiValueResultWrapper;
 import org.perfrepo.web.model.to.SearchResultWrapper;
 import org.perfrepo.web.model.to.SingleValueResultWrapper;
-import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.model.user.Group;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 
 import javax.inject.Inject;
 import javax.persistence.Tuple;
@@ -41,6 +43,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -73,8 +76,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
    @Inject
    private TagDAO tagDAO;
 
-   // field used for mapping tag parameter names to tag values between invocation of parsing the tag query
+   // field used for mapping tag and test execution parameters Criteria API parameter names to values between invocation of parsing the query
    private Map<String, String> tagsParametersNameToValueMapping = new HashMap<>();
+   private Map<Integer, ParameterTerm> parametersNameToValueMapping = new HashMap<>();
 
    /**
     * Returns test executions with property value between selected boundaries. This can be applied only on
@@ -291,7 +295,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Predicate pTestName = cb.and();
       Predicate pTestUID = cb.and();
       Predicate pTestGroups = cb.and();
-      Predicate pParamsMatch = cb.and();
+      Predicate pParameters = cb.and();
       Predicate pTags = cb.and();
 
       Root<TestExecution> rExec = criteria.from(TestExecution.class);
@@ -308,9 +312,9 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       }
       if (search.getTagsQuery() != null && !search.getTagsQuery().isEmpty()) {
          Path<Collection<Tag>> tagsPath = rExec.<Collection<Tag>>get("tags");
-         pTags = createTagsPredicates(search.getTagsQuery(), tagsPath);
+         pTags = createTagsPredicate(search.getTagsQuery(), tagsPath);
       }
-      if (search.getTestName() != null && !"".equals(search.getTestName())) {
+      if (search.getTestName() != null && !search.getTestName().isEmpty()) {
          Join<TestExecution, Test> rTest = rExec.join("test");
          pTestName = cb.like(cb.lower(rTest.<String>get("name")), cb.parameter(String.class, "testName"));
       }
@@ -322,15 +326,11 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          Join<TestExecution, Group> rGroup = rExec.join("test").join("group");
          pTestGroups = cb.and(rGroup.get("name").in(cb.parameter(Set.class, "groupNames")));
       }
-      if (search.getParameters() != null && !search.getParameters().isEmpty()) {
-         for (int pCount = 1; pCount < search.getParameters().size() + 1; pCount++) {
-            Join<TestExecution, TestExecutionParameter> rParam = rExec.join("parameters");
-            pParamsMatch = cb.and(pParamsMatch, cb.equal(rParam.get("name"), cb.parameter(String.class, "paramName" + pCount)));
-            pParamsMatch = cb.and(pParamsMatch, cb.like(rParam.<String>get("value"), cb.parameter(String.class, "paramValue" + pCount)));
-         }
+      if (search.getParametersQuery() != null && !search.getParametersQuery().isEmpty()) {
+         pParameters = createParametersPredicate(search.getParametersQuery(), rExec);
       }
       // construct query
-      Predicate whereClause = cb.and(pIds, pStartedFrom, pStartedTo, pExcludedTags, pTags, pTestName, pTestUID, pTestGroups, pParamsMatch);
+      Predicate whereClause = cb.and(pIds, pStartedFrom, pStartedTo, pExcludedTags, pTags, pTestName, pTestUID, pTestGroups, pParameters);
       criteria.where(whereClause);
       // this isn't very elegant, but Postgres 8.4 doesn't allow GROUP BY only with id
       // this feature is allowed only since Postgres 9.1+
@@ -433,13 +433,8 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
             query.setParameter(tagParamName, tag);
          }
       }
-      if (search.getTestName() != null && !"".equals(search.getTestName())) {
-         if (search.getTestName().endsWith("*")) {
-            String pattern = search.getTestName().replace('*', '%');
-            query.setParameter("testName", pattern);
-         } else {
-            query.setParameter("testName", search.getTestName().toLowerCase());
-         }
+      if (search.getTestName() != null && !search.getTestName().isEmpty()) {
+         query.setParameter("testName", search.getTestName().replace("*", "%").toLowerCase());
       }
       if (!search.getTestUIDs().isEmpty()) {
          query.setParameter("testUIDs", search.getTestUIDs());
@@ -447,17 +442,11 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       if (!search.getGroups().isEmpty()) {
          query.setParameter("groupNames", search.getGroups().stream().map(Group::getName).collect(Collectors.toSet()));
       }
-      if (search.getParameters() != null && !search.getParameters().isEmpty()) {
-         int pCount = 1;
-         for (String key: search.getParameters().keySet()) {
-            query.setParameter("paramName" + pCount, key);
-            if (search.getParameters().get(key).endsWith("*")) {
-               String pattern = search.getParameters().get(key).replace('*', '%').toLowerCase();
-               query.setParameter("paramValue" + pCount, pattern);
-            } else {
-               query.setParameter("paramValue" + pCount, search.getParameters().get(key).toLowerCase());
-            }
-            pCount++;
+      if (search.getParametersQuery() != null && !search.getParametersQuery().isEmpty()) {
+         for (Integer paramParameterIndex: parametersNameToValueMapping.keySet()) {
+            ParameterTerm term = parametersNameToValueMapping.get(paramParameterIndex);
+            query.setParameter("paramName" + paramParameterIndex, term.getName().toLowerCase());
+            query.setParameter("paramValue" + paramParameterIndex, term.getValue().replace("*", "%").toLowerCase());
          }
       }
    }
@@ -469,12 +458,12 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param tagsPath path to tags in Criteria API
     * @return
      */
-   private Predicate createTagsPredicates(String query, Path<Collection<Tag>> tagsPath) {
+   private Predicate createTagsPredicate(String query, Path<Collection<Tag>> tagsPath) {
       TagQueryParser parser = new TagQueryParser();
       org.perfrepo.web.dao.search.Expression expression = parser.process(query);
       AtomicInteger counter = new AtomicInteger(0);
       tagsParametersNameToValueMapping = new HashMap<>();
-      return processExpression(expression, counter, tagsPath);
+      return processTagExpression(expression, counter, tagsPath);
    }
 
    /**
@@ -485,7 +474,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
     * @param expression
     * @return
      */
-   private Predicate processExpression(org.perfrepo.web.dao.search.Expression expression, AtomicInteger counter, Path<Collection<Tag>> tagsPath) {
+   private Predicate processTagExpression(org.perfrepo.web.dao.search.Expression expression, AtomicInteger counter, Path<Collection<Tag>> tagsPath) {
       CriteriaBuilder cb = criteriaBuilder();
       if (expression instanceof Term) {
          Term term = (Term) expression;
@@ -499,12 +488,66 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
          }
       } else if (expression instanceof AndExpression) {
          AndExpression andExpression = (AndExpression) expression;
-         return cb.and(processExpression(andExpression.getLeftOperand(), counter, tagsPath), processExpression(andExpression.getRightOperand(), counter, tagsPath));
+         return cb.and(processTagExpression(andExpression.getLeftOperand(), counter, tagsPath), processTagExpression(andExpression.getRightOperand(), counter, tagsPath));
       } else if (expression instanceof OrExpression) {
          OrExpression orExpression = (OrExpression) expression;
-         return cb.or(processExpression(orExpression.getLeftOperand(), counter, tagsPath), processExpression(orExpression.getRightOperand(), counter, tagsPath));
+         return cb.or(processTagExpression(orExpression.getLeftOperand(), counter, tagsPath), processTagExpression(orExpression.getRightOperand(), counter, tagsPath));
       }
 
+      // TODO: is this handled properly?
+      throw new IllegalArgumentException("Tags query is not valid.");
+   }
+
+   /**
+    * Creating Criteria API Predicates from string parameter query.
+    *
+    * @param query
+    * @param testExecutionRoot
+    * @return
+     */
+   private Predicate createParametersPredicate(String query, Root<TestExecution> testExecutionRoot) {
+      ParameterQueryParser parser = new ParameterQueryParser();
+      org.perfrepo.web.dao.search.Expression expression = parser.process(query);
+      AtomicInteger counter = new AtomicInteger(0);
+      parametersNameToValueMapping = new HashMap<>();
+      return processParameterExpression(expression, counter, testExecutionRoot);
+   }
+
+   /**
+    * Parses one expression of the parameter query abstraction. When parsing the terms, it creates a new
+    * parameter in the query and stores its name and value into a property, so we don't have to parse
+    * the query twice.
+    *
+    * @param expression
+    * @param counter
+    * @param testExecutionRoot
+     * @return
+     */
+   private Predicate processParameterExpression(org.perfrepo.web.dao.search.Expression expression, AtomicInteger counter, Root<TestExecution> testExecutionRoot) {
+      CriteriaBuilder cb = criteriaBuilder();
+      if (expression instanceof ParameterTerm) {
+         ParameterTerm term = (ParameterTerm) expression;
+         int paramIndex = counter.getAndIncrement();
+         String nameParameterName = "paramName" + paramIndex;
+         String valueParameterName = "paramValue" + paramIndex;
+         parametersNameToValueMapping.put(paramIndex, term);
+
+         MapJoin<TestExecution, String, TestExecutionParameter> parametersJoin = testExecutionRoot.joinMap("parameters");
+
+         Predicate predicate = cb.and(
+                 parametersJoin.key().in(cb.parameter(String.class, nameParameterName)),
+                 cb.like(parametersJoin.value().get("value"), cb.parameter(String.class, valueParameterName))
+         );
+         return predicate;
+      } else if (expression instanceof AndExpression) {
+         AndExpression andExpression = (AndExpression) expression;
+         return cb.and(processParameterExpression(andExpression.getLeftOperand(), counter, testExecutionRoot), processParameterExpression(andExpression.getRightOperand(), counter, testExecutionRoot));
+      } else if (expression instanceof OrExpression) {
+         OrExpression orExpression = (OrExpression) expression;
+         return cb.or(processParameterExpression(orExpression.getLeftOperand(), counter, testExecutionRoot), processParameterExpression(orExpression.getRightOperand(), counter, testExecutionRoot));
+      }
+
+      // TODO: is this handled properly?
       throw new IllegalArgumentException("Tags query is not valid.");
    }
 

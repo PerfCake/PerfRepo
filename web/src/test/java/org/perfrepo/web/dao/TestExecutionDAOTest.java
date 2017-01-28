@@ -17,8 +17,8 @@ import org.perfrepo.web.model.Value;
 import org.perfrepo.web.model.ValueParameter;
 import org.perfrepo.web.model.to.MultiValueResultWrapper;
 import org.perfrepo.web.model.to.SingleValueResultWrapper;
-import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.model.user.Group;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.util.TestUtils;
 
 import javax.inject.Inject;
@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -114,6 +113,7 @@ public class TestExecutionDAOTest {
       createTestExecutionParameter("param", "1", testExecutions[1]);
       createTestExecutionParameter("param", "4", testExecutions[2]);
       createTestExecutionParameter("param", "2", testExecutions[3]);
+      createTestExecutionParameter("param2", "55", testExecutions[3]);
       createTestExecutionParameter("labelParam", "label", testExecutions[5]);
 
       createTag("tag1", testExecutions[0]);
@@ -355,9 +355,7 @@ public class TestExecutionDAOTest {
    @org.junit.Test
    public void testSearchByParameters() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      Map<String, String> parameters = new HashMap<>();
-      parameters.put("param", "2");
-      searchCriteria.setParameters(parameters);
+      searchCriteria.setParametersQuery("\"param\":\"2\"");
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
 
       List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
@@ -371,13 +369,25 @@ public class TestExecutionDAOTest {
    @org.junit.Test
    public void testSearchByParametersWithWildcard() {
       TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
-      Map<String, String> parameters = new HashMap<>();
-      parameters.put("param", "*");
-      searchCriteria.setParameters(parameters);
+      searchCriteria.setParametersQuery("\"param\":\"*\"");
       searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
 
       List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
       List<Long> expectedResultIds = Arrays.asList(testExecutions[0].getId(), testExecutions[1].getId(), testExecutions[2].getId(), testExecutions[3].getId());
+
+      assertEquals(expectedResultIds.size(), result.size());
+      assertTrue(expectedResultIds.stream().
+              allMatch(expected -> result.stream().anyMatch(actual -> expected.equals(actual.getId()))));
+   }
+
+   @org.junit.Test
+   public void testSearchByComplexParametersQuery() {
+      TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+      searchCriteria.setParametersQuery("(\"param\":\"2\" AND \"param2\":\"5%\") OR \"param\":\"1\"");
+      searchCriteria.setGroups(new HashSet<>(Arrays.asList(tests[0].getGroup())));
+
+      List<TestExecution> result = testExecutionDAO.searchTestExecutions(searchCriteria).getResult();
+      List<Long> expectedResultIds = Arrays.asList(testExecutions[1].getId(), testExecutions[3].getId());
 
       assertEquals(expectedResultIds.size(), result.size());
       assertTrue(expectedResultIds.stream().

@@ -18,9 +18,7 @@ import org.perfrepo.enums.OrderBy;
 import org.perfrepo.web.model.user.Group;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -34,10 +32,10 @@ public class TestExecutionSearchCriteria {
    private Date startedAfter; //means "Test executed after"
    private Date startedBefore; //means "Test executed before"
    private String tagsQuery;
+   private String parametersQuery;
    private Set<Group> groups = new HashSet<>();
    private Set<String> testUIDs = new HashSet<>();
    private String testName;
-   private Map<String, String> parameters = new HashMap<>();
    private Integer limitFrom;
    private Integer limitHowMany;
    private OrderBy orderBy = OrderBy.DATE_DESC;
@@ -100,12 +98,12 @@ public class TestExecutionSearchCriteria {
       this.orderByParameter = orderByParameter;
    }
 
-   public Map<String, String> getParameters() {
-      return parameters;
+   public String getParametersQuery() {
+      return parametersQuery;
    }
 
-   public void setParameters(Map<String, String> parameters) {
-      this.parameters = parameters;
+   public void setParametersQuery(String parametersQuery) {
+      this.parametersQuery = parametersQuery;
    }
 
    public Date getStartedAfter() {
