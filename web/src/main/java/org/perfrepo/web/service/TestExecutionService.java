@@ -30,6 +30,9 @@ import java.util.Set;
 /**
  * Service for {@link TestExecution} entity.
  *
+ * TODO: add validation
+ * TODO: add authorization
+ *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
 public interface TestExecutionService {
@@ -42,7 +45,7 @@ public interface TestExecutionService {
     * @param testExecution New test execution.
     * @return
     */
-   public TestExecution createTestExecution(TestExecution testExecution);
+   TestExecution createTestExecution(TestExecution testExecution);
 
    /**
     * Updates test execution.
@@ -52,14 +55,14 @@ public interface TestExecutionService {
     * @param updatedTestExecution
     * @return
     */
-   public TestExecution updateTestExecution(TestExecution updatedTestExecution);
+   TestExecution updateTestExecution(TestExecution updatedTestExecution);
 
    /**
     * Delete a test execution with all it's subobjects.
     *
     * @param testExecution
     */
-   public void removeTestExecution(TestExecution testExecution);
+   void removeTestExecution(TestExecution testExecution);
 
    /**
     * Get {@link TestExecution}.
@@ -67,14 +70,14 @@ public interface TestExecutionService {
     * @param id
     * @return test execution
     */
-   public TestExecution getTestExecution(Long id);
+   TestExecution getTestExecution(Long id);
 
    /**
     * Returns all test executions.
     *
     * @return List of all {@link TestExecution}
     */
-   public List<TestExecution> getAllTestExecutions();
+   List<TestExecution> getAllTestExecutions();
 
    /**
     * Returns list of TestExecutions according to criteria defined by TestExecutionSearchCriteria
@@ -82,7 +85,7 @@ public interface TestExecutionService {
     * @param search
     * @return result
     */
-   public SearchResultWrapper<TestExecution> searchTestExecutions(TestExecutionSearchCriteria search);
+   SearchResultWrapper<TestExecution> searchTestExecutions(TestExecutionSearchCriteria search);
 
    /******** Methods related to test execution attachments ********/
 
@@ -92,14 +95,14 @@ public interface TestExecutionService {
     * @param attachment
     * @return newly created attachment
     */
-   public TestExecutionAttachment addAttachment(TestExecutionAttachment attachment);
+   TestExecutionAttachment addAttachment(TestExecutionAttachment attachment);
 
    /**
     * Delete attachment.
     *
     * @param attachment
     */
-   public void removeAttachment(TestExecutionAttachment attachment);
+   void removeAttachment(TestExecutionAttachment attachment);
 
    /**
     * Get test execution attachment by id.
@@ -107,7 +110,7 @@ public interface TestExecutionService {
     * @param id
     * @return attachment
     */
-   public TestExecutionAttachment getAttachment(Long id);
+   TestExecutionAttachment getAttachment(Long id);
 
     /**
      * Get all attachments for test execution.
@@ -115,7 +118,7 @@ public interface TestExecutionService {
      * @param testExecution
      * @return
      */
-   public List<TestExecutionAttachment> getAttachments(TestExecution testExecution);
+    List<TestExecutionAttachment> getAttachments(TestExecution testExecution);
 
    /******** Methods related to test execution parameters ********/
 
@@ -125,7 +128,7 @@ public interface TestExecutionService {
     * @param parameter
     * @return
     */
-   public TestExecutionParameter addParameter(TestExecutionParameter parameter);
+   TestExecutionParameter addParameter(TestExecutionParameter parameter);
 
    /**
     * Updates test execution parameter
@@ -133,14 +136,14 @@ public interface TestExecutionService {
     * @param parameter
     * @return test execution parameter
     */
-   public TestExecutionParameter updateParameter(TestExecutionParameter parameter);
+   TestExecutionParameter updateParameter(TestExecutionParameter parameter);
 
    /**
     * Removes TestExecutionParameter
     *
     * @param parameter
     */
-   public void removeParameter(TestExecutionParameter parameter);
+   void removeParameter(TestExecutionParameter parameter);
 
    /**
     * Get parameter and test execution.
@@ -148,7 +151,7 @@ public interface TestExecutionService {
     * @param id
     * @return test execution parameter
     */
-   public TestExecutionParameter getParameter(Long id);
+   TestExecutionParameter getParameter(Long id);
 
    /**
     * Returns test execution parameters matching prefix.
@@ -156,7 +159,7 @@ public interface TestExecutionService {
     * @param prefix
     * @return
     */
-   public List<TestExecutionParameter> getParametersByPrefix(String prefix);
+   List<TestExecutionParameter> getParametersByPrefix(String prefix);
 
     /**
      * Returns test executions parameters for test execution.
@@ -164,7 +167,7 @@ public interface TestExecutionService {
      * @param testExecution
      * @return
      */
-   public List<TestExecutionParameter> getParameters(TestExecution testExecution);
+    List<TestExecutionParameter> getParameters(TestExecution testExecution);
 
    /******** Methods related to values ********/
 
@@ -174,7 +177,7 @@ public interface TestExecutionService {
     * @param value
     * @return value
     */
-   public Value addValue(Value value);
+   Value addValue(Value value);
 
    /**
     * Updates Test Execution Value and the set of it's parameters.
@@ -182,21 +185,21 @@ public interface TestExecutionService {
     * @param value
     * @return value
     */
-   public Value updateValue(Value value);
+   Value updateValue(Value value);
 
    /**
     * Removes value from TestExecution
     *
     * @param value
     */
-   public void removeValue(Value value);
+   void removeValue(Value value);
 
     /**
      * Returns value.
      *
      * @param id
      */
-   public Value getValue(Long id);
+    Value getValue(Long id);
 
     /**
      * Retrieves values for test execution and given metric.
@@ -204,7 +207,7 @@ public interface TestExecutionService {
      * @param metric
      * @param testExecution
      */
-   public List<Value> getValues(Metric metric, TestExecution testExecution);
+    List<Value> getValues(Metric metric, TestExecution testExecution);
 
    /******** Methods related to tags ********/
 
@@ -215,7 +218,7 @@ public interface TestExecutionService {
     * @param testExecution
     * @return
     */
-   public Tag addTag(Tag tag, TestExecution testExecution);
+   Tag addTag(Tag tag, TestExecution testExecution);
 
    /**
     * Disassociate tag from the test execution. If there are no more test executions associated with the tag,
@@ -223,7 +226,7 @@ public interface TestExecutionService {
     *
     * @param tag
     */
-   public void removeTagFromTestExecution(Tag tag, TestExecution testExecution);
+   void removeTagFromTestExecution(Tag tag, TestExecution testExecution);
 
     /**
      * Retrieves all tags associated with provided test execution.
@@ -231,14 +234,14 @@ public interface TestExecutionService {
      * @param testExecution
      * @return
      */
-   public Set<Tag> getTags(TestExecution testExecution);
+    Set<Tag> getTags(TestExecution testExecution);
 
     /**
      * Probably not useful for real-world scenario, only for testing.
      *
      * @return
      */
-   public Set<Tag> getAllTags();
+    Set<Tag> getAllTags();
 
    /**
     * Returns tags matching prefix
@@ -246,7 +249,7 @@ public interface TestExecutionService {
     * @param prefix
     * @return tag prefixes
     */
-   public Set<Tag> getTagsByPrefix(String prefix);
+   Set<Tag> getTagsByPrefix(String prefix);
 
    /**
     * Perform mass operation. Adds tags to provided test executions.
@@ -254,7 +257,7 @@ public interface TestExecutionService {
     * @param tags
     * @param testExecutions
     */
-   public void addTagsToTestExecutions(Set<Tag> tags, Collection<TestExecution> testExecutions);
+   void addTagsToTestExecutions(Set<Tag> tags, Collection<TestExecution> testExecutions);
 
    /**
     * Perform mass operation. Deletes tags from provided test executions.
@@ -262,6 +265,6 @@ public interface TestExecutionService {
     * @param tags
     * @param testExecutions
     */
-   public void removeTagsFromTestExecutions(Set<Tag> tags, Collection<TestExecution> testExecutions);
+   void removeTagsFromTestExecutions(Set<Tag> tags, Collection<TestExecution> testExecutions);
 
 }

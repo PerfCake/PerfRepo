@@ -27,7 +27,7 @@ public interface GroupService {
      * @param group
      * @return group
      */
-    public Group createGroup(@ValidGroup(type = { ID_NULL, SEMANTIC_CHECK, DUPLICATE_CHECK}) Group group);
+    Group createGroup(@ValidGroup(type = {ID_NULL, SEMANTIC_CHECK, DUPLICATE_CHECK}) Group group);
 
     /**
      * Updates group
@@ -35,14 +35,14 @@ public interface GroupService {
      * @param group
      * @return group
      */
-    public Group updateGroup(@ValidGroup(type = { EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK}) Group group);
+    Group updateGroup(@ValidGroup(type = {EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK}) Group group);
 
     /**
      * Deletes group
      *
      * @param group
      */
-    public void removeGroup(@ValidGroup Group group);
+    void removeGroup(@ValidGroup Group group);
 
     /**
      * Retrieves group
@@ -50,7 +50,7 @@ public interface GroupService {
      * @param id
      * @return group
      */
-    public Group getGroup(Long id);
+    Group getGroup(Long id);
 
     /**
      * Retrieves group by name
@@ -58,14 +58,14 @@ public interface GroupService {
      * @param name
      * @return group
      */
-    public Group getGroup(String name);
+    Group getGroup(String name);
 
     /**
      * Retrieves all groups
      *
      * @return
      */
-    public List<Group> getAllGroups();
+    List<Group> getAllGroups();
 
     /**
      * Retrieves if user is assign in defined group
@@ -74,7 +74,7 @@ public interface GroupService {
      * @param group
      * @return boolean
      */
-    public boolean isUserInGroup(User user, Group group);
+    boolean isUserInGroup(User user, Group group);
 
     /**
      * Adds user to group as a regular user.
@@ -82,7 +82,7 @@ public interface GroupService {
      * @param user
      * @param group
      */
-    public void addUserToGroup(User user, Group group);
+    void addUserToGroup(User user, Group group);
 
     /**
      * Adds user to group.
@@ -90,7 +90,7 @@ public interface GroupService {
      * @param user
      * @param group
      */
-    public void addUserToGroup(@ValidUser User user, @ValidGroup Group group, MembershipType membershipType);
+    void addUserToGroup(@ValidUser User user, @ValidGroup Group group, MembershipType membershipType);
 
     /**
      * Removes user from group.
@@ -98,5 +98,5 @@ public interface GroupService {
      * @param user
      * @param group
      */
-    public void removeUserFromGroup(@ValidUser User user, @ValidGroup Group group);
+    void removeUserFromGroup(@ValidUser User user, @ValidGroup Group group);
 }

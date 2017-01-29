@@ -20,7 +20,7 @@ public interface AlertingService {
     * @param id
     * @return
     */
-   public Alert getAlert(Long id);
+   Alert getAlert(Long id);
 
    /**
     * Creates new alert.
@@ -28,7 +28,7 @@ public interface AlertingService {
     * @param alert
     * @return
     */
-   public Alert createAlert(Alert alert);
+   Alert createAlert(Alert alert);
 
    /**
     * Updates existing alert.
@@ -36,14 +36,14 @@ public interface AlertingService {
     * @param alert
     * @return
     */
-   public Alert updateAlert(Alert alert);
+   Alert updateAlert(Alert alert);
 
    /**
     * Removes existing alert.
     *
     * @param alert
     */
-   public void removeAlert(Alert alert);
+   void removeAlert(Alert alert);
 
    /**
     * Retrieves all alerts assigned to test provided.
@@ -51,7 +51,7 @@ public interface AlertingService {
     * @param test
     * @return
     */
-   public List<Alert> getAlertsList(Test test);
+   List<Alert> getAlertsList(Test test);
 
    /**
     * Goes through all alerts that are valid for this test execution and checks if they passed. Basically fulfills the
@@ -59,7 +59,7 @@ public interface AlertingService {
     *
     * @param testExecution
     */
-   public void processAlerts(TestExecution testExecution);
+   void processAlerts(TestExecution testExecution);
 
    /**
     * Parses the condition string and checks for all the syntax errors.
@@ -67,5 +67,5 @@ public interface AlertingService {
     * @param condition
     * @param metric
     */
-   public void checkConditionSyntax(String condition, Metric metric);
+   void checkConditionSyntax(String condition, Metric metric);
 }

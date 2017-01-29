@@ -45,7 +45,7 @@ public interface TestService {
     * @param test
     * @return
      */
-   public Test createTest(@ValidTest(type = { ID_NULL, SEMANTIC_CHECK, DUPLICATE_CHECK}) Test test);
+   Test createTest(@ValidTest(type = {ID_NULL, SEMANTIC_CHECK, DUPLICATE_CHECK}) Test test);
 
    /**
     * Updates the test.
@@ -53,7 +53,7 @@ public interface TestService {
     * @param test
     * @return
      */
-   public Test updateTest(@ValidTest(type = { EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK}) Test test);
+   Test updateTest(@ValidTest(type = {EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK}) Test test);
 
    /**
     * Delete a test with all it's sub-objects, but first it disassociates all the metrics from it.
@@ -61,7 +61,7 @@ public interface TestService {
     *
     * @param test
     */
-   public void removeTest(@ValidTest Test test);
+   void removeTest(@ValidTest Test test);
 
    /**
     * Get test.
@@ -69,7 +69,7 @@ public interface TestService {
     * @param id Test id
     * @return Test
     */
-   public Test getTest(Long id);
+   Test getTest(Long id);
 
    /**
     * Get test.
@@ -77,19 +77,19 @@ public interface TestService {
     * @param uid test uid
     * @return Test
     */
-   public Test getTest(String uid);
+   Test getTest(String uid);
 
    /**
     * Returns all tests.
     *
     * @return tests
     */
-   public List<Test> getAllTests();
+   List<Test> getAllTests();
 
    /**
     * @return list of all test belonging to one of the groups current logged user is in.
     */
-   public SearchResultWrapper<Test> getTestsForUser(User user);
+   SearchResultWrapper<Test> getTestsForUser(User user);
 
    /**
     * Returns list of Tests according to criteria defined by TestSearchCriteria
@@ -97,7 +97,7 @@ public interface TestService {
     * @param search
     * @return result
     */
-   public SearchResultWrapper<Test> searchTests(TestSearchCriteria search);
+   SearchResultWrapper<Test> searchTests(TestSearchCriteria search);
 
    /**
     * Returns test uids matching prefix
@@ -105,7 +105,7 @@ public interface TestService {
     * @param prefix
     * @return test prefixes
     */
-   public List<Test> getTestsByUidPrefix(String prefix);
+   List<Test> getTestsByUidPrefix(String prefix);
 
    /******** Methods related to metric ********/
 
@@ -117,7 +117,7 @@ public interface TestService {
     * @param test
     * @return metric
     */
-   public Metric addMetric(@ValidMetric(type = { SEMANTIC_CHECK }) Metric metric, @ValidTest Test test);
+   Metric addMetric(@ValidMetric(type = {SEMANTIC_CHECK}) Metric metric, @ValidTest Test test);
 
    /**
     * Update metric.
@@ -125,7 +125,7 @@ public interface TestService {
     * @param metric
     * @return Updated metric
     */
-   public Metric updateMetric(@ValidMetric(type = { EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK }) Metric metric);
+   Metric updateMetric(@ValidMetric(type = {EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK}) Metric metric);
 
    /**
     * Disassociate metric from the test. If there are no more tests associated with the metric,
@@ -134,7 +134,7 @@ public interface TestService {
     * @param metric
     * @param test
     */
-   public void removeMetricFromTest(@ValidMetric Metric metric, @ValidTest Test test);
+   void removeMetricFromTest(@ValidMetric Metric metric, @ValidTest Test test);
 
    /**
     * Retrieves metric.
@@ -142,14 +142,14 @@ public interface TestService {
     * @param id
     * @return metric
     */
-   public Metric getMetric(Long id);
+   Metric getMetric(Long id);
 
    /**
     * Returns all metrics, which are defined on the Test
     *
     * @return metrics
     */
-   public Set<Metric> getMetricsForTest(Test test);
+   Set<Metric> getMetricsForTest(Test test);
 
    /******** Methods related to subscribers ********/
 
@@ -158,14 +158,14 @@ public interface TestService {
     *
     * @param test
     */
-   public void addSubscriber(@ValidTest Test test);
+   void addSubscriber(@ValidTest Test test);
 
    /**
     * Removes current user from the subscriber list of the given test
     *
     * @param test
     */
-   public void removeSubscriber(@ValidTest Test test);
+   void removeSubscriber(@ValidTest Test test);
 
    /**
     * Returns true if the given user is subscribed to given test
@@ -174,6 +174,6 @@ public interface TestService {
     * @param test
     * @return boolean
     */
-   public boolean isUserSubscribed(User user, @ValidTest Test test);
+   boolean isUserSubscribed(User user, @ValidTest Test test);
 
 }

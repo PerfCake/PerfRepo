@@ -20,7 +20,7 @@ public interface AlertingReporterService {
     * @param alerts
     * @param testExecution
     */
-   public void reportAlert(List<Alert> alerts, TestExecution testExecution);
+   void reportAlert(List<Alert> alerts, TestExecution testExecution);
 
    /**
     * Allows to pass the values of variables used in the condition that failed (for every alert). This can be used for
@@ -28,6 +28,6 @@ public interface AlertingReporterService {
     *
     * @param variables
     */
-   public void setConditionVariables(Map<Alert, Map<String, Object>> variables);
+   void setConditionVariables(Map<Alert, Map<String, Object>> variables);
 
 }

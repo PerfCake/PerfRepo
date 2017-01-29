@@ -36,7 +36,7 @@ public interface ConditionChecker {
     * @param metric metric that the condition is linked to
     * @return true if condition still hold | false if condition is broken
     */
-   public boolean checkCondition(String condition, TestExecution currentResult, Metric metric);
+   boolean checkCondition(String condition, TestExecution currentResult, Metric metric);
 
    /**
     * Check the condition syntax only. Invokes a grammar tree parser which detects errors.
@@ -44,12 +44,12 @@ public interface ConditionChecker {
     * @param condition String version of condition in our custom DSL that should hold true
     * @param metric Metric linked to the condition
     */
-   public void checkConditionSyntax(String condition, Metric metric);
+   void checkConditionSyntax(String condition, Metric metric);
    
    /**
     * Retrieves a map of variables used in the condition (as a key) with the values assigned to them (as a value).
     *
     * @return
     */
-   public Map<String, Object> getEvaluatedVariables();
+   Map<String, Object> getEvaluatedVariables();
 }

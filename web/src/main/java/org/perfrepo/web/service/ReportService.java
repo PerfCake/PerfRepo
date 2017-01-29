@@ -34,19 +34,19 @@ public interface ReportService {
     *
     * @return List of {@link Report}
     */
-   public List<Report> getAllUsersReports();
+   List<Report> getAllUsersReports();
 
    /**
     * Get all reports for which exists any (READ, WRITE or PUBLIC) permission to logged user or user group.
     * @return List of {@link Report}
     */
-   public List<Report> getAllReports();
+   List<Report> getAllReports();
 
    /**
     * Get all reports for which exists WRITE permission to any user group.
     * @return List of {@link Report}
     */
-   public List<Report> getAllGroupReports();
+   List<Report> getAllGroupReports();
 
    /**
     * Removes report
@@ -54,7 +54,7 @@ public interface ReportService {
     * @param report
     * @throws org.perfrepo.web.service.exceptions.ServiceException
     */
-   public void removeReport(Report report);
+   void removeReport(Report report);
 
    /**
     * Create new report
@@ -62,7 +62,7 @@ public interface ReportService {
     * @param report
     * @return created {@link Report}
     */
-   public Report createReport(Report report);
+   Report createReport(Report report);
 
    /**
     * Update existing report
@@ -70,7 +70,7 @@ public interface ReportService {
     * @param report
     * @return updated {@link Report}
     */
-   public Report updateReport(Report report);
+   Report updateReport(Report report);
 
    /**
     * Computes metric report.
@@ -78,7 +78,7 @@ public interface ReportService {
     * @param request
     * @return response TO
     */
-   public MetricReportTO.Response computeMetricReport(MetricReportTO.Request request);
+   MetricReportTO.Response computeMetricReport(MetricReportTO.Request request);
 
    /**
     * Get report with all properties
@@ -86,7 +86,7 @@ public interface ReportService {
     * @param report
     * @return {@link Report} with all attributes fetched
     */
-   public Report getFullReport(Report report);
+   Report getFullReport(Report report);
 
 
    /**
@@ -95,26 +95,26 @@ public interface ReportService {
     * @param report
     * @return
     */
-   public Collection<Permission> getReportPermissions(Report report);
+   Collection<Permission> getReportPermissions(Report report);
 
     /**
      * Adds permission to provided report.
      *
      * @param permission
      */
-   public void addPermission(Permission permission) throws ServiceException;
+    void addPermission(Permission permission) throws ServiceException;
 
    /**
     * Updates permission to provided report.
     *
     * @param permission
     */
-   public void updatePermission(Permission permission) throws ServiceException;
+   void updatePermission(Permission permission) throws ServiceException;
 
    /**
     * Deletes permission from provided report.
     *
     * @param permission
     */
-   public void deletePermission(Permission permission) throws ServiceException;
+   void deletePermission(Permission permission) throws ServiceException;
 }

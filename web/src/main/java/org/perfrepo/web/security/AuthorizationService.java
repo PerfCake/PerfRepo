@@ -33,7 +33,7 @@ public interface AuthorizationService {
     * @param entity
     * @return boolean
     */
-   public boolean isUserAuthorizedFor(User user, AccessType accessType, Entity<?> entity);
+   boolean isUserAuthorizedFor(User user, AccessType accessType, Entity<?> entity);
 
    /**
     * Verifies if the logged user is authorized to entity
@@ -42,5 +42,5 @@ public interface AuthorizationService {
     * @param entity
     * @return boolean
     */
-   public boolean isUserAuthorizedFor(AccessType accessType, Entity<?> entity);
+   boolean isUserAuthorizedFor(AccessType accessType, Entity<?> entity);
 }

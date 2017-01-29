@@ -9,5 +9,5 @@ import org.perfrepo.web.model.user.User;
  */
 public interface UserSession {
 
-    public User getLoggedUser();
+    User getLoggedUser();
 }

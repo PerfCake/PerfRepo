@@ -41,7 +41,7 @@ public interface UserService {
     * @param user
     * @return user
     */
-   public User createUser(@ValidUser(type = { ID_NULL, SEMANTIC_CHECK, DUPLICATE_CHECK}) User user);
+   User createUser(@ValidUser(type = {ID_NULL, SEMANTIC_CHECK, DUPLICATE_CHECK}) User user);
 
    /**
     * Updates user. THE USER'S PASSWORD MUST BE IN PLAIN TEXT!
@@ -49,14 +49,14 @@ public interface UserService {
     * @param user
     * @return user
     */
-   public User updateUser(@ValidUser(type = { EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK}) User user);
+   User updateUser(@ValidUser(type = {EXISTS, SEMANTIC_CHECK, DUPLICATE_CHECK}) User user);
 
    /**
     * Deletes user
     *
     * @param user
     */
-   public void removeUser(@ValidUser User user);
+   void removeUser(@ValidUser User user);
 
    /**
     * Retrieves managed entity of user
@@ -64,7 +64,7 @@ public interface UserService {
     * @param id
     * @return user
     */
-   public User getUser(Long id);
+   User getUser(Long id);
 
    /**
     * Return all information about user as detached entity (e.g. cloned)
@@ -72,14 +72,14 @@ public interface UserService {
     * @param username
     * @return user
     */
-   public User getUser(String username);
+   User getUser(String username);
 
    /**
     * Retrieves all users
     *
     * @return
     */
-   public List<User> getAllUsers();
+   List<User> getAllUsers();
 
    /**
     * Retrieves all user groups
@@ -87,7 +87,7 @@ public interface UserService {
     * @param user
     * @return
     */
-   public Set<Group> getUserGroups(User user);
+   Set<Group> getUserGroups(User user);
 
    /**
     * Changes user password. Provides check if old password is equal to "current" password
@@ -96,7 +96,7 @@ public interface UserService {
     * @param oldPassword
     * @param newPassword
     */
-   public void changePassword(String oldPassword, String newPassword) throws IncorrectPasswordException;
+   void changePassword(String oldPassword, String newPassword) throws IncorrectPasswordException;
 
    /**
     * Detects if user is group admin of any group.
@@ -104,7 +104,7 @@ public interface UserService {
     * @param user
     * @return
     */
-   public boolean isUserGroupAdmin(User user);
+   boolean isUserGroupAdmin(User user);
 
    /**
     * Detects if user is group admin of provided group.
@@ -113,7 +113,7 @@ public interface UserService {
     * @param group
     * @return
     */
-   public boolean isUserGroupAdmin(User user, Group group);
+   boolean isUserGroupAdmin(User user, Group group);
 
    /**
     * Returns all user properties
@@ -121,35 +121,35 @@ public interface UserService {
     * @param user
     * @return user properties
     */
-   public Map<String, String> getUserProperties(User user);
+   Map<String, String> getUserProperties(User user);
 
    /**
     * Updates user properties.
     *
     * @param properties
     */
-   public void updateUserProperties(Map<String, String> properties);
+   void updateUserProperties(Map<String, String> properties);
 
    /**
     * Adds favorite parameter of user to the test
     *
     * @param parameter
     */
-   public void createFavoriteParameter(FavoriteParameter parameter);
+   void createFavoriteParameter(FavoriteParameter parameter);
 
    /**
     * Updates favorite parameter of user to the test
     *
     * @param parameter
     */
-   public void updateFavoriteParameter(FavoriteParameter parameter);
+   void updateFavoriteParameter(FavoriteParameter parameter);
 
    /**
     * Removes favorite parameter of the test from user
     *
     * @param parameter
     */
-   public void removeFavoriteParameter(FavoriteParameter parameter);
+   void removeFavoriteParameter(FavoriteParameter parameter);
 
    /**
     * Returns list of favorite parameters that has user selected to specific test
@@ -157,7 +157,7 @@ public interface UserService {
     * @param test
     * @return list of favorite parameters
     */
-   public List<FavoriteParameter> getFavoriteParametersForTest(Test test);
+   List<FavoriteParameter> getFavoriteParametersForTest(Test test);
 
 
 }
