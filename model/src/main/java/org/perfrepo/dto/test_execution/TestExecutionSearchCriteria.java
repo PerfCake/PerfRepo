@@ -1,6 +1,6 @@
 package org.perfrepo.dto.test_execution;
 
-import org.perfrepo.model.to.OrderBy;
+import org.perfrepo.enums.OrderBy;
 
 import java.util.Set;
 
