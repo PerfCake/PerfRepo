@@ -103,3 +103,10 @@ UPDATE user_group SET type = 'REGULAR_USER';
 ALTER TABLE user_group ALTER COLUMN type SET NOT NULL;
 
 COMMIT;
+
+BEGIN;
+
+UPDATE metric SET comparator = 'HIGHER_BETTER' WHERE comparator = 'HB' OR comparator = '';
+UPDATE metric SET comparator = 'LOWER_BETTER' WHERE comparator = 'LB';
+
+COMMIT;

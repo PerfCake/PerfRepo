@@ -4,11 +4,11 @@ package org.perfrepo.dto.metric;
 import org.perfrepo.enums.MetricComparator;
 
 /**
- * Data transfer object that represents a test metric.
+ * Data transfer object for Metric that represents a test metric.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class MetricDto {
+public class MetricDto implements Comparable<MetricDto> {
 
     private Long id;
 
@@ -63,5 +63,10 @@ public class MetricDto {
     @Override
     public int hashCode() {
         return getName() != null ? getName().hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(MetricDto o) {
+        return this.getName().compareTo(o.getName());
     }
 }

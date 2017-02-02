@@ -6,7 +6,7 @@ import javax.ejb.ApplicationException;
 
 /**
  * Exception signalizing that user is not authorized for particular action.
- * Throwing of this exception is done withing {@link org.perfrepo.web.security.SecurityInterceptor}.
+ * Throwing of this exception is done withing {@link org.perfrepo.web.security.authorization.SecurityInterceptor}.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

@@ -2,6 +2,7 @@ package org.perfrepo.dto.test;
 
 import org.perfrepo.enums.OrderBy;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -11,14 +12,13 @@ import java.util.Set;
  */
 public class TestSearchCriteria {
 
-    /** Used in reports to search test in select component */
     private String generalSearch;
 
-    private Set<String> namesFilter;
+    private Set<String> namesFilter = new HashSet<>();
 
-    private Set<String> uniqueIdsFilter;
+    private Set<String> uniqueIdsFilter = new HashSet<>();
 
-    private Set<String> groupsFilter;
+    private Set<String> groupsFilter = new HashSet<>();
 
     private int limit = 5;
 

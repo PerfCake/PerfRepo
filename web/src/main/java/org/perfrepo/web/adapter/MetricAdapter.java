@@ -34,8 +34,7 @@ public interface MetricAdapter {
      *  <li><strong>comparator</strong> - Metric comparator</li>
      * <ul/>
      *
-     * @param metric Parameters of the metric that will be updated.
-     *
+     * @param dto Parameters of the metric that will be updated.
      * @return Updated {@link MetricDto} object.
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
@@ -43,7 +42,7 @@ public interface MetricAdapter {
      * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
      * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
-    MetricDto updateMetric(MetricDto metric);
+    MetricDto updateMetric(MetricDto dto);
 
     /**
      * Add the metric to the test. If the metric does not exist, it will be created.
@@ -56,15 +55,13 @@ public interface MetricAdapter {
      *  <li><strong>comparator</strong> - Metric comparator</li>
      * <ul/>
      *
-     * @param metric The metric {@link MetricDto} that will be added to the test.
-     * @param testId The test {@link org.perfrepo.dto.test.TestDto} identifier.
-     *
-     * @return The metric {@link MetricDto} that was added to the test.
-     *
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
+     * @param dto Metric {@link org.perfrepo.dto.metric.MetricDto} that will be added to the test.
+     * @param testId Test {@link org.perfrepo.dto.test.TestDto} identifier.
+     * @return Metric {@link MetricDto} that was added to test.
+     * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the test does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
-    MetricDto addMetric(MetricDto metric, Long testId);
+    MetricDto addMetric(MetricDto dto, Long testId);
 
     /**
      * Remove the metric from the test. If the metric is not assigned to any test, it will be deleted.

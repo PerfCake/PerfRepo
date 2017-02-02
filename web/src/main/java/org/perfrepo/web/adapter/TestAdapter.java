@@ -48,15 +48,12 @@ public interface TestAdapter {
      *  <li><strong>group</strong> - Group of test</li>
      * <ul/>
      *
-     * @param test Parameters of the test that will be created.
-     *
-     * @return The created {@link TestDto} object.
-     *
-     * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
+     * @param testDto Parameters of the test that will be created.
+     * @return Created {@link TestDto} object.
      * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
      * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
-    TestDto createTest(TestDto test);
+    TestDto createTest(TestDto testDto);
 
     /**
      * Update the {@link TestDto} object.
@@ -70,16 +67,14 @@ public interface TestAdapter {
      *  <li><strong>group</strong> - Group of test</li>
      * <ul/>
      *
-     * @param test Parameters of the test that will be updated.
-     *
-     * @return The updated {@link TestDto} object.
-     *
+     * @param testDto Parameters of the test that will be updated.
+     * @return Updated {@link TestDto} object.
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
      * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
      * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
-    TestDto updateTest(TestDto test);
+    TestDto updateTest(TestDto testDto);
 
     /**
      * Remove the {@link TestDto} object.

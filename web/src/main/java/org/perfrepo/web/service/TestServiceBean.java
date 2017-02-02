@@ -14,6 +14,7 @@
  */
 package org.perfrepo.web.service;
 
+import org.perfrepo.web.dao.GroupDAO;
 import org.perfrepo.web.model.Metric;
 import org.perfrepo.web.model.Test;
 import org.perfrepo.web.model.to.SearchResultWrapper;
@@ -22,8 +23,8 @@ import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.dao.MetricDAO;
 import org.perfrepo.web.dao.TestDAO;
 import org.perfrepo.web.dao.UserDAO;
-import org.perfrepo.web.security.AuthEntity;
-import org.perfrepo.web.security.Secured;
+import org.perfrepo.web.security.authorization.AuthEntity;
+import org.perfrepo.web.security.authorization.Secured;
 import org.perfrepo.web.service.search.TestSearchCriteria;
 import org.perfrepo.web.service.validation.annotation.ValidMetric;
 import org.perfrepo.web.service.validation.annotation.ValidTest;
@@ -68,6 +69,9 @@ public class TestServiceBean implements TestService {
 
    @Inject
    private UserDAO userDAO;
+
+   @Inject
+   private GroupDAO groupDAO;
 
    @Inject
    private UserSession userSession;
@@ -139,6 +143,8 @@ public class TestServiceBean implements TestService {
 
    @Override
    public SearchResultWrapper<Test> searchTests(TestSearchCriteria search) {
+      Set<Group> managedGroups = search.getGroups().stream().map(detachedGroup -> groupDAO.findByName(detachedGroup.getName())).collect(Collectors.toSet());
+      search.setGroups(managedGroups);
       return testDAO.searchTests(search);
    }
 
@@ -194,6 +200,11 @@ public class TestServiceBean implements TestService {
    }
 
    @Override
+   public List<Metric> getAllMetrics() {
+      return metricDAO.getAll();
+   }
+
+   @Override
    public Set<Metric> getMetricsForTest(Test test) {
       Test managedTest = testDAO.get(test.getId());
       return metricDAO.getMetricsByTest(managedTest);
@@ -227,4 +238,8 @@ public class TestServiceBean implements TestService {
       return managedTest.getSubscribers().contains(managedUser);
    }
 
+   @Override
+   public boolean isUserSubscribed(@ValidTest Test test) {
+      return isUserSubscribed(userSession.getLoggedUser(), test);
+   }
 }

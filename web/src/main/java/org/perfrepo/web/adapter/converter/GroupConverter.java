@@ -1,0 +1,43 @@
+package org.perfrepo.web.adapter.converter;
+
+import org.perfrepo.dto.group.GroupDto;
+import org.perfrepo.web.model.user.Group;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * TODO: document this
+ *
+ * @author Jiri Holusa (jholusa@redhat.com)
+ */
+public class GroupConverter {
+
+    public GroupDto convertFromEntityToDto(Group group) {
+        if (group == null) {
+            return null;
+        }
+
+        GroupDto dto = new GroupDto();
+        dto.setId(group.getId());
+        dto.setName(group.getName());
+        return dto;
+    }
+
+    public List<GroupDto> convertFromEntityToDto(List<Group> groups) {
+        return groups.stream().map(group -> convertFromEntityToDto(group)).collect(Collectors.toList());
+    }
+
+    public Group convertFromDtoToEntity(GroupDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        Group group = new Group();
+        group.setId(dto.getId());
+        group.setName(dto.getName());
+
+        return group;
+    }
+
+}

@@ -248,7 +248,7 @@ public class UserServiceBean implements UserService {
     * @param string
     * @return
      */
-   static String computeMd5(String string) {
+   public static String computeMd5(String string) {
       MessageDigest md = null;
 
       try {

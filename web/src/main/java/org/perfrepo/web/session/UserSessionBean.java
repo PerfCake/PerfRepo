@@ -15,53 +15,26 @@
 package org.perfrepo.web.session;
 
 import org.perfrepo.web.model.user.User;
-import org.perfrepo.web.service.UserService;
+import org.perfrepo.web.security.authentication.AuthenticatedUser;
+import org.perfrepo.web.security.authentication.AuthenticatedUserInfo;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
-import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
-import java.io.Serializable;
-import java.security.Principal;
-import java.util.Map;
 
 /**
- * Holds information about user.
+ * TODO: document this
  *
- * @author Michal Linhard (mlinhard@redhat.com)
+ * @author Jiri Holusa (jholusa@redhat.com)
  */
-@SessionScoped
-public class UserSessionBean implements UserSession, Serializable {
-
-   private static final long serialVersionUID = 1487959021438612784L;
+public class UserSessionBean implements UserSession {
 
    @Inject
-   private UserService userService;
-
-   @Resource
-   private SessionContext sessionContext;
-
-   private User user;
-   private Map<String, String> userProperties;
-
-   @PostConstruct
-   public void init() {
-      refresh();
-   }
-
-   public void refresh() {
-      if (getLoggedUser() != null) {
-         user = userService.getUser(getLoggedUser().getId());
-         userProperties = userService.getUserProperties(user);
-      }
-   }
+   @AuthenticatedUser
+   private AuthenticatedUserInfo userInfo;
 
    public User getLoggedUser() {
-      Principal principal = sessionContext.getCallerPrincipal();
       User user = null;
-      if (principal != null) {
-         user = userService.getUser(principal.getName());
+      if (userInfo != null) {
+         user = userInfo.getUser();
       }
       return user;
    }

@@ -144,6 +144,13 @@ public interface TestService {
     */
    Metric getMetric(Long id);
 
+    /**
+     * Retrieves all metrics.
+     *
+     * @return
+     */
+   List<Metric> getAllMetrics();
+
    /**
     * Returns all metrics, which are defined on the Test
     *
@@ -175,5 +182,13 @@ public interface TestService {
     * @return boolean
     */
    boolean isUserSubscribed(User user, @ValidTest Test test);
+
+   /**
+    * Returns true if the current user is subscribed to given test
+    *
+    * @param test
+    * @return boolean
+    */
+   boolean isUserSubscribed(@ValidTest Test test);
 
 }

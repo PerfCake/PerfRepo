@@ -1,4 +1,4 @@
-package org.perfrepo.web.security;
+package org.perfrepo.web.security.authorization;
 
 import org.perfrepo.enums.AccessType;
 

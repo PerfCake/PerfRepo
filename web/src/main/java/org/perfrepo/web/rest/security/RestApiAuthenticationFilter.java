@@ -1,9 +1,16 @@
 package org.perfrepo.web.rest.security;
 
-import org.perfrepo.web.adapter.dummy_impl.storage.Storage;
+import org.perfrepo.web.security.authentication.AuthenticatedUser;
+import org.perfrepo.web.security.authentication.AuthenticationService;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +23,11 @@ import java.io.IOException;
 public class RestApiAuthenticationFilter implements Filter {
 
    @Inject
-   private Storage storage;
+   private AuthenticationService authenticationService;
+
+   @Inject
+   @AuthenticatedUser
+   private Event<String> userAuthenticatedEvent;
 
    @Override
    public void init(FilterConfig filterConfig) throws ServletException {
@@ -38,7 +49,8 @@ public class RestApiAuthenticationFilter implements Filter {
       if (authorization != null && authorization.contains("Bearer ")) {
          String token = authorization.substring("Bearer ".length()).trim();
 
-         if (storage.token().tokenExists(token)) {
+         if (authenticationService.isAuthenticated(token)) {
+            userAuthenticatedEvent.fire(token);
             chain.doFilter(request, response);
          } else {
             unauthorized((HttpServletResponse) response, "Invalid credentials.");

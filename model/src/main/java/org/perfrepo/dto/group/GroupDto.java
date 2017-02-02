@@ -1,11 +1,11 @@
 package org.perfrepo.dto.group;
 
 /**
- * Data transfer object that represents a user group.
+ * Data transfer object for Group entity that represents a user group.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class GroupDto {
+public class GroupDto implements Comparable<GroupDto> {
 
     private Long id;
 
@@ -41,5 +41,10 @@ public class GroupDto {
     @Override
     public int hashCode() {
         return getName() != null ? getName().hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(GroupDto o) {
+        return this.getName().compareTo(o.getName());
     }
 }

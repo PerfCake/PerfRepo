@@ -14,6 +14,7 @@
  */
 package org.perfrepo.web.util;
 
+import org.perfrepo.web.security.authorization.SecurityException;
 import org.perfrepo.web.service.exceptions.ServiceException;
 
 import java.text.MessageFormat;
@@ -62,12 +63,12 @@ public class MessageUtils {
    }
 
    /**
-    * Returns localized message for {@link org.perfrepo.web.security.SecurityException}
+    * Returns localized message for {@link SecurityException}
     *
     * @param e
     * @return String
     */
-   public static String getMessage(org.perfrepo.web.security.SecurityException e) {
+   public static String getMessage(SecurityException e) {
       return MessageFormat.format(bundle.getString(e.getKeyToResourceBundle()), e.getParams());
    }
 }
