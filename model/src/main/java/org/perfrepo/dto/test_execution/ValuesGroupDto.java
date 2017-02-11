@@ -1,15 +1,18 @@
 package org.perfrepo.dto.test_execution;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents group of test execution values. The value group is for each test metric.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class ValueGroupDto {
+public class ValuesGroupDto {
 
     private Long metricId;
+
+    private Set<String> parameterNames;
 
     private List<ValueDto> values;
 
@@ -19,6 +22,14 @@ public class ValueGroupDto {
 
     public void setMetricId(Long metricId) {
         this.metricId = metricId;
+    }
+
+    public Set<String> getParameterNames() {
+        return parameterNames;
+    }
+
+    public void setParameterNames(Set<String> parameterNames) {
+        this.parameterNames = parameterNames;
     }
 
     public List<ValueDto> getValues() {
