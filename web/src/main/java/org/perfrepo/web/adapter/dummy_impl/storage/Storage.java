@@ -31,6 +31,8 @@ public class Storage {
 
     private final TestExecutionStorage testExecutionStorage;
 
+    private final AttachmentStorage attachmentStorage;
+
     public Storage() {
         testStorage = new TestStorage();
         metricStorage = new MetricStorage();
@@ -40,6 +42,7 @@ public class Storage {
         alertStorage = new AlertStorage();
         testToAlertStorage = new TestToAlertStorage();
         testExecutionStorage = new TestExecutionStorage();
+        attachmentStorage = new AttachmentStorage();
         initialize();
     }
 
@@ -73,6 +76,10 @@ public class Storage {
 
     public TestExecutionStorage testExecution() {
         return testExecutionStorage;
+    }
+
+    public AttachmentStorage attachment() {
+        return attachmentStorage;
     }
 
     private void initialize() {
@@ -199,7 +206,7 @@ public class Storage {
                     .tag(i + ".0")
                     .started(DateUtils.addDays(new Date(), -(9 - i)))
                     .executionParameter("environment", "test")
-                    .executionValue(new ValueGroupDtoBuilder()
+                    .executionValuesGroup(new ValuesGroupDtoBuilder()
                             .metric(metricStorage.getById(2L))
                             .value(new ValueDtoBuilder()
                                     .value(10.0 + i)
@@ -219,13 +226,13 @@ public class Storage {
                     .tag(i + ".0")
                     .started(DateUtils.addDays(new Date(), -(9 - i)))
                     .executionParameter("environment", "test")
-                    .executionValue(new ValueGroupDtoBuilder()
+                    .executionValuesGroup(new ValuesGroupDtoBuilder()
                             .metric(metricStorage.getById(1L))
                             .value(new ValueDtoBuilder()
                                     .value(10.0 + i)
                                     .build())
                             .build())
-                    .executionValue(new ValueGroupDtoBuilder()
+                    .executionValuesGroup(new ValuesGroupDtoBuilder()
                             .metric(metricStorage.getById(2L))
                             .value(new ValueDtoBuilder()
                                     .value(600.0 - i)
@@ -247,23 +254,26 @@ public class Storage {
                     .tag(i + ".0")
                     .started(DateUtils.addDays(new Date(), -(9 - i)))
                     .executionParameter("environment", "test")
-                    .executionValue(new ValueGroupDtoBuilder()
+                    .executionParameter("server", "technecium")
+                    .executionParameter("lib-version", "1.0.3")
+                    .executionValuesGroup(new ValuesGroupDtoBuilder()
                             .metric(metricStorage.getById(1L))
                             .value(new ValueDtoBuilder()
                                     .value(10.0 + i)
-                                    .parameter("time", "10")
-                                    .parameter("percent", "30")
+                                    .parameter("time", 10)
+                                    .parameter("percent", 30)
                                     .build())
                             .value(new ValueDtoBuilder()
                                     .value(15.0 + i)
-                                    .parameter("time", "20")
-                                    .parameter("percent", "60")
+                                    .parameter("time", 20)
+                                    .parameter("percent", 60)
                                     .build())
                             .value(new ValueDtoBuilder()
                                     .value(17.0 + i)
-                                    .parameter("time", "30")
-                                    .parameter("percent", "90")
+                                    .parameter("time", 30)
+                                    .parameter("percent", 90)
                                     .build())
+                            .parameterNames("time", "percent")
                             .build())
                     .comment("Nightly build of Echo socket test, version: " + i + ".0")
                     .build());
