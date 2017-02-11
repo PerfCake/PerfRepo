@@ -1,3 +1,7 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
 .navbar-pf-vertical {
     border-top: 2px solid #1d1d1d;
 }
@@ -161,20 +165,20 @@ span.ui-select-placeholder {
 }
 
 /* test detail */
-div.panel-metrics div.panel-body, div.panel-alerts div.panel-body {
+div.panel-detail div.panel-body {
     padding: 0;
 }
 
-div.panel-metrics div.panel-body .list-group, div.panel-alerts div.panel-body .list-group {
+div.panel-detail div.panel-body .list-group {
     border-top: none;
     margin-bottom: 0;
 }
 
-div.panel-metrics h3, div.panel-alerts h3 {
+div.panel-detail h3 {
     display: inline;
 }
 
-div.panel-metrics .panel-btn-action, div.panel-alerts .panel-btn-action {
+div.panel-detail .panel-btn-action {
     float: right;
     margin-top: -3px;
 }
@@ -245,10 +249,18 @@ div.extended-content h5 {
     div.test-list div.list-view-pf-description {
         width: 75%;
     }
+
+    div.test-execution-list div.list-view-pf-description {
+        width: 75%;
+    }
 }
 
 @media (min-width: 992px) {
     div.test-list div.list-view-pf-additional-info {
+        width: 25%;
+    }
+
+    div.test-execution-list div.list-view-pf-additional-info {
         width: 25%;
     }
 }
@@ -257,10 +269,18 @@ div.extended-content h5 {
     div.test-list div.list-view-pf .list-group-item-heading {
         width: calc(65% - 20px);
     }
+
+    div.test-execution-list div.list-view-pf .list-group-item-heading {
+        width: calc(65% - 20px);
+    }
 }
 
 @media (min-width: 992px) {
     div.test-list div.list-view-pf .list-group-item-text {
+        width: calc(35% - 20px);
+    }
+
+    div.test-execution-list div.list-view-pf .list-group-item-text {
         width: calc(35% - 20px);
     }
 }
@@ -270,4 +290,16 @@ div.extended-content h5 {
         margin-bottom: 24px;
         margin-top: 16px;
     }
+}
+
+.tag-label+.tag-label {
+    margin-left: 5px;
+}
+
+div.value-parameters-header {
+    margin-top: 50px;
+}
+
+div.value-parameters-header h4 {
+    display: inline;
 }

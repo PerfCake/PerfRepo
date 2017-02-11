@@ -5,9 +5,13 @@
         .module('org.perfrepo.testExecution.create')
         .controller('CreateTestExecutionController', CreateTestExecutionController);
 
-    function CreateTestExecutionController(testExecutionService, validationHelper, $modalInstance) {
+    function CreateTestExecutionController(_testId, testExecutionService, validationHelper, $modalInstance) {
         var vm = this;
-        vm.testExecution = {};
+        vm.testExecution = {
+            test: {
+                id: _testId
+            }
+        };
         vm.save = save;
         vm.cancel = cancel;
 

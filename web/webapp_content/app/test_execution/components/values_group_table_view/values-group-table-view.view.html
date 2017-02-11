@@ -1,0 +1,30 @@
+<table class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <th rowspan="2">Value</th>
+            <th ng-if="vm.executionValuesGroup.parameterNames.length > 0" colspan="{{vm.executionValuesGroup.parameterNames.length}}">Parameters</th>
+            <th rowspan="2">Actions</th>
+        </tr>
+        <tr ng-if="vm.executionValuesGroup.parameterNames.length > 0">
+            <th ng-repeat="parameterName in vm.executionValuesGroup.parameterNames">{{parameterName}}
+                <a ng-click="vm.showChart(parameterName)" class="cursor-pointer">[Show chart]</a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="valueObject in vm.executionValuesGroup.values track by $index">
+            <td>{{valueObject.value}}</td>
+            <td ng-repeat="parameterName in vm.executionValuesGroup.parameterNames">
+                {{vm.getValueObjectParameter(parameterName, valueObject.parameters).value}}
+            </td>
+            <td>
+                <button ng-click="vm.editValueObject($index)" class="btn btn-default">
+                        <span class="pficon-edit" aria-hidden="true"></span> Edit
+                </button>
+                <button ng-click="vm.deleteValueObject($index)" class="btn btn-default">
+                        <span class="pficon-delete" aria-hidden="true"></span> Delete
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>

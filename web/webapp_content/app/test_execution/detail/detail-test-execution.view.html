@@ -13,14 +13,77 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <h3>{{vm.testExecution.name}}</h3>
+        <dl class="dl-horizontal dl-detail">
+            <dt>Name</dt>
+            <dd>{{vm.testExecution.name}}</dd>
 
-        <dl class="dl-horizontal">
-            <dt>UID</dt>
-            <dd>{{vm.testExecution.created}}</dd>
+            <dt>Test</dt>
+            <dd><a ui-sref="app.testDetail({id: vm.testExecution.test.id})">{{vm.testExecution.test.name}}</a></dd>
 
-            <dt>Description</dt>
-            <dd ng-bind-html="vm.testExecution.description"></dd>
+            <dt>Started</dt>
+            <dd>{{vm.testExecution.started | date}}</dd>
+
+            <dt>Tags</dt>
+            <dd><span ng-repeat="tag in vm.testExecution.tags" class="label label-info tag-label">{{tag}}</span></dd>
+
+            <dt>Comment</dt>
+            <dd ng-bind-html="vm.testExecution.comment"></dd>
         </dl>
+    </div>
+</div>
+
+<div class="row" ng-repeat="executionValuesGroup in vm.executionValuesGroups">
+    <div class="col-sm-12">
+        <div class="panel panel-default panel-detail">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{vm.getMetricName(executionValuesGroup.metricId)}} values</h3>
+                <a ng-click="vm.addValue(executionValuesGroup)" class="btn btn-primary panel-btn-action">
+                    <span class="pficon-add-circle-o" aria-hidden="true"></span> New value
+                </a>
+            </div>
+            <div class="panel-body">
+                <test-execution-values-group-table-view
+                        execution-values-group="executionValuesGroup"
+                        test-execution-id="vm.testExecution.id"
+                        on-update-table="vm.updateDetail()">
+                </test-execution-values-group-table-view>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-default panel-detail">
+            <div class="panel-heading">
+                <h3 class="panel-title">Parameters</h3>
+                <a ng-click="vm.addParameter()" class="btn btn-primary panel-btn-action">
+                    <span class="pficon-add-circle-o" aria-hidden="true"></span> New parameter
+                </a>
+            </div>
+            <div class="panel-body">
+                <test-execution-parameter-list-view
+                        parameters="vm.testExecution.executionParameters"
+                        test-execution-id="vm.testExecution.id"
+                        on-update-list="vm.updateDetail()">
+                </test-execution-parameter-list-view>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-default panel-detail">
+            <div class="panel-heading">
+                <h3 class="panel-title">Attachments</h3>
+                <a ng-click="vm.addAttachment()" class="btn btn-primary panel-btn-action">
+                    <span class="pficon-add-circle-o" aria-hidden="true"></span> New attachment
+                </a>
+            </div>
+            <div class="panel-body">
+                <test-execution-attachment-list-view on-update-list="vm.updateDetail()"></test-execution-attachment-list-view>
+            </div>
+        </div>
     </div>
 </div>

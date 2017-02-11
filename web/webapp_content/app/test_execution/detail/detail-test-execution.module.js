@@ -7,6 +7,8 @@
 
     angular
         .module('org.perfrepo.testExecution.detail', [
-
+            'org.perfrepo.testExecution.detail.value',
+            'org.perfrepo.testExecution.detail.parameter',
+            'org.perfrepo.testExecution.detail.attachment'
         ]);
 })();

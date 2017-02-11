@@ -6,9 +6,7 @@
     'use strict';
 
     angular
-        .module('org.perfrepo.test.detail', [
-
-        ])
+        .module('org.perfrepo.test.detail')
         .controller('DetailTestController', DetailTestController);
 
     function DetailTestController(_test, _isUserAlertsSubscriber, testService, testModalService,
