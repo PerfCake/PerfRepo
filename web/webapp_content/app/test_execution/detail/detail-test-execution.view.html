@@ -68,18 +68,18 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="panel panel-default panel-detail">
-            <div class="panel-heading">
-                <h3 class="panel-title">Attachments</h3>
-                <a ng-click="vm.addAttachment()" class="btn btn-primary panel-btn-action">
-                    <span class="pficon-add-circle-o" aria-hidden="true"></span> New attachment
-                </a>
-            </div>
-            <div class="panel-body">
-                <test-execution-attachment-list-view on-update-list="vm.updateDetail()"></test-execution-attachment-list-view>
-            </div>
-        </div>
+<div class="row pr-table">
+    <div class="col-sm-12 pr-table-title">
+        <h3>Attachments</h3>
+        <a ng-click="vm.addAttachment()" class="btn btn-primary btn-action">
+            <span class="pficon-add-circle-o" aria-hidden="true"></span> New attachment
+        </a>
+    </div>
+    <div class="col-sm-12 pr-table-content">
+        <test-execution-attachments-table-view
+                attachments="vm.testExecution.executionAttachments"
+                test-execution-id="vm.testExecution.id"
+                on-update="vm.updateDetail()">
+        </test-execution-attachments-table-view>
     </div>
 </div>

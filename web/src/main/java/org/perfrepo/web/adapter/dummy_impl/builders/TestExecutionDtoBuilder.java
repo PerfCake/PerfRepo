@@ -1,12 +1,14 @@
 package org.perfrepo.web.adapter.dummy_impl.builders;
 
 import org.perfrepo.dto.test.TestDto;
+import org.perfrepo.dto.test_execution.AttachmentDto;
 import org.perfrepo.dto.test_execution.ParameterDto;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
 import org.perfrepo.dto.test_execution.ValuesGroupDto;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 
 /**
@@ -18,9 +20,10 @@ public class TestExecutionDtoBuilder {
 
     public TestExecutionDtoBuilder() {
         testExecutionDto = new TestExecutionDto();
-        testExecutionDto.setTags(new HashSet<>());
-        testExecutionDto.setExecutionParameters(new HashSet<>());
-        testExecutionDto.setExecutionValuesGroups(new HashSet<>());
+        testExecutionDto.setTags(new LinkedHashSet<>());
+        testExecutionDto.setExecutionParameters(new LinkedHashSet<>());
+        testExecutionDto.setExecutionValuesGroups(new LinkedHashSet<>());
+        testExecutionDto.setExecutionAttachments(new ArrayList<>());
     }
 
     public TestExecutionDtoBuilder name(String name) {
@@ -53,6 +56,11 @@ public class TestExecutionDtoBuilder {
         parameterDto.setName(name);
         parameterDto.setValue(value);
         testExecutionDto.getExecutionParameters().add(parameterDto);
+        return this;
+    }
+
+    public TestExecutionDtoBuilder executionAttachment(AttachmentDto attachment) {
+        testExecutionDto.getExecutionAttachments().add(attachment);
         return this;
     }
 

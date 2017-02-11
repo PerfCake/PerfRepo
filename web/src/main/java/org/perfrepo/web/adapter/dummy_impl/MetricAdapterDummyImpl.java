@@ -123,7 +123,7 @@ public class MetricAdapterDummyImpl implements MetricAdapter {
             validation.addFieldError("name", "Metric name is a required field");
         } else if (metric.getName().trim().length() < 3) {
             validation.addFieldError("name", "Metric name must be at least three characters.");
-        } else if(edit) {
+        } else if (edit) {
             MetricDto existing = storage.metric().getByName(metric.getName());
             if (existing != null && !existing.getId().equals(metric.getId())) {
                 validation.addFieldError("name", "Metric with this name already exists.");

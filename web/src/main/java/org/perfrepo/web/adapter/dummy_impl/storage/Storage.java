@@ -1,6 +1,7 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.perfrepo.dto.test_execution.AttachmentDto;
 import org.perfrepo.enums.MetricComparator;
 import org.perfrepo.web.adapter.dummy_impl.builders.*;
 
@@ -244,6 +245,12 @@ public class Storage {
     }
 
     private void initializeTestExecutionsMultiValue() {
+        AttachmentDto attachment = new AttachmentDto();
+        attachment.setFilename("log.txt");
+        attachment.setContent("Hello!".getBytes());
+        attachment.setSize(attachment.getContent().length);
+        attachment.setMimeType("plain/text");
+        attachmentStorage.create(attachment);
         // multi-value test execution for test id 1
         for (int i = 0; i < 10; i++) {
             testExecutionStorage.create(new TestExecutionDtoBuilder()
@@ -276,6 +283,7 @@ public class Storage {
                             .parameterNames("time", "percent")
                             .build())
                     .comment("Nightly build of Echo socket test, version: " + i + ".0")
+                    .executionAttachment(attachment)
                     .build());
         }
     }
