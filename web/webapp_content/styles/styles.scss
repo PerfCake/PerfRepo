@@ -35,3 +35,41 @@ div.value-parameters-header {
         display: inline;
     }
 }
+
+// ########################################################################################################## data table
+div.pr-table {
+    margin-top: 20px;
+
+    div.pr-table-title {
+
+        h3 {
+            display: inline-block;
+            margin-bottom: 5px;
+            margin-top: 0;
+        }
+
+        .btn-action {
+            position: absolute;
+            right: 20px;
+            bottom: 5px;
+        }
+    }
+
+    div.pr-table-content {
+
+        tbody {
+
+            td {
+                vertical-align: bottom;
+            }
+
+            td button{
+                font-size: smaller;
+
+                span {
+                    font-size:smaller;
+                }
+            }
+        }
+    }
+}
