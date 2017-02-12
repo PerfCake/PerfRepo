@@ -9,45 +9,17 @@
         .module('org.perfrepo.testExecution.detail')
         .controller('DetailTestExecutionController', DetailTestExecutionController);
 
-    function DetailTestExecutionController(_testExecution, testExecutionService, testExecutionModalService,
-                                           testExecutionParameterModalService, testExecutionAttachmentModalService,
-                                           testExecutionValueModalService) {
+    function DetailTestExecutionController(_testExecution, testExecutionService, testExecutionModalService) {
         var vm = this;
         vm.testExecution = _testExecution;
         vm.editTestExecution = editTestExecution;
-        vm.addParameter = addParameter;
         vm.updateDetail = updateDetail;
-        vm.addAttachment = addAttachment;
-        vm.addValue = addValue;
         vm.getMetricName = getMetricName;
         setExecutionValuesGroups();
 
         function editTestExecution() {
             var modalInstance = testExecutionModalService.editTestExecution(vm.testExecution.id);
 
-            modalInstance.result.then(function () {
-                updateDetail();
-            });
-        }
-
-        function addValue(executionValuesGroup) {
-            var modalInstance = testExecutionValueModalService.createValue(executionValuesGroup, vm.testExecution.id);
-
-            modalInstance.result.then(function () {
-                updateDetail();
-            });
-        }
-
-        function addParameter() {
-            var modalInstance = testExecutionParameterModalService.createParameter(vm.testExecution.executionParameters,
-                vm.testExecution.id);
-            modalInstance.result.then(function () {
-                updateDetail();
-            });
-        }
-
-        function addAttachment() {
-            var modalInstance = testExecutionAttachmentModalService.createAttachment(vm.testExecution.id);
             modalInstance.result.then(function () {
                 updateDetail();
             });

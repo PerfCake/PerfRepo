@@ -1,18 +1,28 @@
 // ################################################################################# test and test execution detail list
-dl.dl-detail {
+div.detail-list {
     margin-top: 20px;
-    margin-bottom: 35px;
 
-    dt{
-        text-align: left;
-        margin-left: 15px;
-        width: 100px;
-        line-height: 2.4em;
-    }
+    div.detail-item {
+        font-size: 13px;
 
-    dd{
-        margin-left: 120px;
-        line-height: 2.4em;
+        div.item-property {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        div.item-table-property {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        div.item-value {
+            margin-bottom: 10px;
+        }
+
+        table.pr-table {
+            margin-bottom: 30px;
+        }
     }
 }
 
@@ -37,38 +47,36 @@ div.value-parameters-header {
 }
 
 // ########################################################################################################## data table
-div.pr-table {
-    margin-top: 20px;
+table.pr-table {
 
-    div.pr-table-title {
+    thead {
 
-        h3 {
-            display: inline-block;
-            margin-bottom: 5px;
-            margin-top: 0;
-        }
+        button.btn-new-item {
+            float: right;
+            font-size: smaller;
 
-        .btn-action {
-            position: absolute;
-            right: 20px;
-            bottom: 5px;
+            span {
+                font-size:smaller;
+            }
         }
     }
 
-    div.pr-table-content {
+    tbody {
 
-        tbody {
+        td button{
+            font-size: smaller;
 
-            td {
-                vertical-align: bottom;
+            span {
+                font-size:smaller;
             }
+        }
 
-            td button{
-                font-size: smaller;
+        tr.table-no-data {
+            color: lightgrey;
 
-                span {
-                    font-size:smaller;
-                }
+            td:hover {
+                background-color: white;
+                border-bottom: none;
             }
         }
     }

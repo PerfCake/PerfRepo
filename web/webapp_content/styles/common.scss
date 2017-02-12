@@ -2,8 +2,13 @@
   cursor: pointer;
 }
 
-span.tag-label + span.tag-label {
-  margin-left: 5px;
+span.tag-label {
+  margin-right: 4px;
+  margin-bottom: 3px;
+  display: inline-block;
+  padding-bottom: 4px;
+  padding-top: 4px;
+  font-size: 12px;
 }
 
 // ##################################################################################################### ng-progress bar

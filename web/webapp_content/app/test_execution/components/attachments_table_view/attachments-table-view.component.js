@@ -6,6 +6,7 @@
         .component('testExecutionAttachmentsTableView', {
             bindings: {
                 attachments: '<',
+                testExecutionId: '<',
                 onUpdate: '&'
             },
             controller: TestExecutionAttachmentsTableViewController,
@@ -17,6 +18,14 @@
         var vm = this;
         vm.removeAttachmentAction = removeAttachmentAction;
         vm.downloadAttachmentAction = downloadAttachmentAction;
+        vm.addAttachmentAction = addAttachmentAction;
+
+        function addAttachmentAction() {
+            var modalInstance = testExecutionAttachmentModalService.createAttachment(vm.testExecutionId);
+            modalInstance.result.then(function () {
+                updateDetail();
+            });
+        }
 
         function removeAttachmentAction(attachment) {
             var modalInstance = testExecutionAttachmentModalService.removeAttachment(attachment.filename, attachment.id);

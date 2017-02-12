@@ -17,7 +17,7 @@
     function TestExecutionValuesGroupTableViewController(testExecutionValueModalService, $templateCache, $scope, $filter) {
         var vm = this;
 
-
+        vm.addValue = addValue;
         vm.showChart = showChart;
         vm.editValueObject = editValueObject;
         vm.deleteValueObject = deleteValueObject;
@@ -25,6 +25,14 @@
 
         function showChart(parameterName) {
             testExecutionValueModalService.showChart();
+        }
+
+        function addValue() {
+            var modalInstance = testExecutionValueModalService.createValue(vm.executionValuesGroup, vm.testExecutionId);
+
+            modalInstance.result.then(function () {
+                vm.onUpdateTable();
+            });
         }
 
         function editValueObject(index) {

@@ -11,75 +11,69 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-sm-12">
-        <dl class="dl-horizontal dl-detail">
-            <dt>Name</dt>
-            <dd>{{vm.testExecution.name}}</dd>
-
-            <dt>Test</dt>
-            <dd><a ui-sref="app.testDetail({id: vm.testExecution.test.id})">{{vm.testExecution.test.name}}</a></dd>
-
-            <dt>Started</dt>
-            <dd>{{vm.testExecution.started | date}}</dd>
-
-            <dt>Tags</dt>
-            <dd><span ng-repeat="tag in vm.testExecution.tags" class="label label-info tag-label">{{tag}}</span></dd>
-
-            <dt>Comment</dt>
-            <dd ng-bind-html="vm.testExecution.comment"></dd>
-        </dl>
+<div class="row detail-list">
+    <div class="detail-item">
+        <div class="col-xs-2 col-lg-1 item-property">Name</div>
+        <div class="col-xs-10 col-lg-11 item-value">{{vm.testExecution.name}}</div>
     </div>
-</div>
 
-<div class="row" ng-repeat="executionValuesGroup in vm.executionValuesGroups">
-    <div class="col-sm-12">
-        <div class="panel panel-default panel-detail">
-            <div class="panel-heading">
-                <h3 class="panel-title">{{vm.getMetricName(executionValuesGroup.metricId)}} values</h3>
-                <a ng-click="vm.addValue(executionValuesGroup)" class="btn btn-primary panel-btn-action">
-                    <span class="pficon-add-circle-o" aria-hidden="true"></span> New value
-                </a>
-            </div>
-            <div class="panel-body">
-                <test-execution-values-group-table-view
-                        execution-values-group="executionValuesGroup"
-                        test-execution-id="vm.testExecution.id"
-                        on-update-table="vm.updateDetail()">
-                </test-execution-values-group-table-view>
-            </div>
+    <div class="detail-item">
+        <div class="col-xs-2 col-lg-1 item-property">Test</div>
+        <div class="col-xs-10 col-lg-11 item-value">
+            <a class="cursor-pointer" ui-sref="app.testDetail({id: vm.testExecution.test.id})">{{vm.testExecution.test.name}}</a>
         </div>
     </div>
-</div>
 
-<div class="row pr-table">
-    <div class="col-sm-12 pr-table-title">
-        <h3>Parameters</h3>
-        <a ng-click="vm.addParameter()" class="btn btn-primary btn-action">
-            <span class="pficon-add-circle-o" aria-hidden="true"></span> New parameter
-        </a>
+    <div class="detail-item">
+        <div class="col-xs-2 col-lg-1 item-property">Started</div>
+        <div class="col-xs-10 col-lg-11 item-value">{{vm.testExecution.started | date}}</div>
     </div>
-    <div class="col-sm-12 pr-table-content">
-        <test-execution-parameters-table-view
-                parameters="vm.testExecution.executionParameters"
-                test-execution-id="vm.testExecution.id"
-                on-update="vm.updateDetail()">
-        </test-execution-parameters-table-view>
-    </div>
-</div>
 
-<div class="row pr-table">
-    <div class="col-sm-12 pr-table-title">
-        <h3>Attachments</h3>
-        <a ng-click="vm.addAttachment()" class="btn btn-primary btn-action">
-            <span class="pficon-add-circle-o" aria-hidden="true"></span> New attachment
-        </a>
+    <div class="detail-item">
+        <div class="col-xs-2 col-lg-1 item-property">Tags</div>
+        <div class="col-xs-10 col-lg-11 item-value">
+            <span ng-repeat="tag in vm.testExecution.tags" class="label label-info tag-label">{{tag}}</span>
+        </div>
     </div>
-    <div class="col-sm-12 pr-table-content">
-        <test-execution-attachments-table-view
-                attachments="vm.testExecution.executionAttachments"
-                test-execution-id="vm.testExecution.id"
-                on-update="vm.updateDetail()">
-        </test-execution-attachments-table-view>
+
+    <div class="detail-item">
+        <div class="col-xs-2 col-lg-1 item-property">Comment</div>
+        <div class="col-xs-10 col-lg-11 item-value">
+            <p ng-bind-html="vm.testExecution.comment"></p>
+        </div>
+    </div>
+
+    <div class="detail-item">
+        <div class="col-xs-12 item-table-property">Values</div>
+        <div class="col-xs-12" ng-repeat="executionValuesGroup in vm.executionValuesGroups">
+            <test-execution-values-group-table-view
+                    execution-values-group="executionValuesGroup"
+                    metric-name="{{vm.getMetricName(executionValuesGroup.metricId)}}"
+                    test-execution-id="vm.testExecution.id"
+                    on-update-table="vm.updateDetail()">
+            </test-execution-values-group-table-view>
+        </div>
+    </div>
+
+    <div class="detail-item">
+        <div class="col-xs-12 item-table-property">Parameters</div>
+        <div class="col-xs-12">
+            <test-execution-parameters-table-view
+                    parameters="vm.testExecution.executionParameters"
+                    test-execution-id="vm.testExecution.id"
+                    on-update="vm.updateDetail()">
+            </test-execution-parameters-table-view>
+        </div>
+    </div>
+
+    <div class="detail-item">
+        <div class="col-xs-12 item-table-property">Attachments</div>
+        <div class="col-xs-12">
+            <test-execution-attachments-table-view
+                    attachments="vm.testExecution.executionAttachments"
+                    test-execution-id="vm.testExecution.id"
+                    on-update="vm.updateDetail()">
+            </test-execution-attachments-table-view>
+        </div>
     </div>
 </div>

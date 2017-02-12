@@ -16,8 +16,16 @@
 
     function TestExecutionParametersTableViewController(testExecutionParameterModalService) {
         var vm = this;
+        vm.addParameterAction = addParameterAction;
         vm.editParameterAction = editParameterAction;
         vm.removeParameterAction = removeParameterAction;
+
+        function addParameterAction() {
+            var modalInstance = testExecutionParameterModalService.createParameter(vm.parameters, vm.testExecutionId);
+            modalInstance.result.then(function () {
+                vm.onUpdate();
+            });
+        }
 
         function editParameterAction(parameter) {
             var modalInstance = testExecutionParameterModalService.editParameter(parameter, vm.parameters, vm.testExecutionId);

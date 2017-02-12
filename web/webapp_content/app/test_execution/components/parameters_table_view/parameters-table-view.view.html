@@ -1,9 +1,13 @@
-<table class="table table-hover table-bordered">
+<table class="table table-hover table-bordered pr-table">
     <thead>
         <tr>
             <th>Name</th>
             <th>Value</th>
-            <th>Actions</th>
+            <th>Actions
+                <button ng-click="vm.addParameterAction()" class="btn btn-primary btn-new-item">
+                    <span class="pficon-add-circle-o" aria-hidden="true"></span> New parameter
+                </button>
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -18,6 +22,9 @@
                     <span class="pficon-delete" aria-hidden="true"></span> Delete
                 </button>
             </td>
+        </tr>
+        <tr class="table-no-data" ng-show="!vm.parameters || vm.parameters.length == 0">
+            <td colspan="3">No parameters</td>
         </tr>
     </tbody>
 </table>
