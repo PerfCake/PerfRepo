@@ -61,6 +61,12 @@ tags-input {
 }
 
 // #################################################################### test and text execution search listing component
+div.toolbar-pf {
+  div.toolbar-pf-results ul.list-inline {
+    margin-left: 0;
+  }
+}
+
 @media (min-width: 992px) {
   div.test-list, div.test-execution-list {
 
