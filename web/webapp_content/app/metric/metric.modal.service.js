@@ -8,7 +8,7 @@
     function MetricModalService($modal) {
 
         return {
-            addOrCreateMetric: addOrCreateMetric,
+            createMetric: createMetric,
             editMetric: editMetric,
             removeMetric: removeMetric
         };
@@ -33,7 +33,7 @@
             });
         }
 
-        function addOrCreateMetric(testId) {
+        function createMetric(testId) {
             return $modal.open({
                 animation: true,
                 backdrop: 'static',

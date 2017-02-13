@@ -84,12 +84,15 @@ table.pr-table {
           background-color: #f5f5f5;
         }
 
-        button.btn-new-item {
-            float: right;
-            font-size: smaller;
+        th.btn-new-item {
+            padding-right: 2px;
 
-            span {
-                font-size:smaller;
+            button {
+                float: right;
+
+                span {
+                    font-size:smaller;
+                }
             }
         }
     }

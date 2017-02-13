@@ -3,8 +3,8 @@
         <tr>
             <th rowspan="2">Value</th>
             <th ng-if="vm.executionValuesGroup.parameterNames.length > 0" colspan="{{vm.executionValuesGroup.parameterNames.length}}">X-axis value</th>
-            <th rowspan="2">Actions
-                <button ng-click="vm.addValue()" class="btn btn-primary btn-new-item">
+            <th rowspan="2" class="btn-new-item">Actions
+                <button ng-click="vm.addValue()" class="btn btn-primary">
                     <span class="pficon-add-circle-o" aria-hidden="true"></span> New value
                 </button>
             </th>
@@ -16,17 +16,17 @@
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="valueObject in vm.executionValuesGroup.values track by $index">
+        <tr ng-repeat="valueObject in vm.executionValuesGroup.values | limitTo:vm.pageSize:((vm.currentPage - 1) * vm.pageSize)">
             <td>{{valueObject.value}}</td>
             <td ng-repeat="parameterName in vm.executionValuesGroup.parameterNames">
                 {{vm.getValueObjectParameter(parameterName, valueObject.parameters).value}}
             </td>
             <td>
                 <a ng-click="vm.editValueObject($index)" class="cursor-pointer action-link">
-                        <span class="pficon-edit" aria-hidden="true"></span>Edit
+                    <span class="pficon-edit" aria-hidden="true"></span>Edit
                 </a>
                 <a ng-click="vm.deleteValueObject($index)" class="cursor-pointer action-link">
-                        <span class="pficon-delete" aria-hidden="true"></span>Delete
+                    <span class="pficon-delete" aria-hidden="true"></span>Delete
                 </a>
             </td>
         </tr>
@@ -35,3 +35,10 @@
         </tr>
     </tbody>
 </table>
+<pagination total-items="vm.executionValuesGroup.values.length"
+            ng-model="vm.currentPage"
+            items-per-page="vm.pageSize"
+            previous-text="&lsaquo;"
+            next-text="&rsaquo;"
+            max-size="7">
+</pagination>

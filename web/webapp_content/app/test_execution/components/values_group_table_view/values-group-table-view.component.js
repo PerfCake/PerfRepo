@@ -23,6 +23,8 @@
         vm.editValueObject = editValueObject;
         vm.deleteValueObject = deleteValueObject;
         vm.getValueObjectParameter = getValueObjectParameter;
+        vm.currentPage = 1;
+        vm.pageSize = 10;
 
         function showChart(parameterName) {
             testExecutionValueModalService.showChart(vm.executionValuesGroup.values, parameterName, vm.metricName);
