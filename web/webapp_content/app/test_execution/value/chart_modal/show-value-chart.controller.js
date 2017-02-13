@@ -5,19 +5,52 @@
         .module('org.perfrepo.testExecution.detail.value')
         .controller('ShowValueChartController', ShowValueChartController);
 
-    function ShowValueChartController(_values, _parameter, _metric, $modalInstance) {
+    function ShowValueChartController(_values, _parameter, _metric, $modalInstance, $filter) {
         var vm = this;
-
+        vm.groupValues = _values;
+        vm.parameter = _parameter;
+        vm.metric = _metric;
         vm.cancel = cancel;
 
+        $modalInstance.rendered.then(function () {
+            // TODO very bad - but on-ready doesn't work me
+            setTimeout(function() {
+                window.dispatchEvent(new Event('resize'));
+                vm.showChart = true;
+            }, 100);
+        });
+
+        function getChartValues() {
+            var values = [];
+            angular.forEach(vm.groupValues, function (valueObject) {
+                var parameterObject = $filter('getByProperty')('name', vm.parameter, valueObject.parameters);
+
+                // put value only if the x-axis value exists
+                if (parameterObject != null) {
+                    values.push({
+                        x: parameterObject.value,
+                        y: valueObject.value
+                    });
+                }
+            });
+
+            // sort values by x-axis
+            values.sort(function(valueA, valueB) {
+                if (valueA.x < valueB.x) {
+                    return -1;
+                } else if (valueA.x > valueB.x) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+
+            return values;
+        }
+
         vm.data = [{
-            key: "Cumulative Return",
-            values: [
-                { x: 10, y: 10},
-                { x: 12, y: 16},
-                { x: 14, y: 26},
-                { x: 20, y: 12}
-            ]
+            key: vm.metric,
+            values: getChartValues()
         }];
 
         vm.options = {
@@ -37,10 +70,10 @@
                 },
                 useInteractiveGuideline: true,
                 xAxis: {
-                    axisLabel: 'Time (ms)'
+                    axisLabel: vm.parameter
                 },
                 yAxis: {
-                    axisLabel: 'Voltage (v)',
+                    axisLabel: vm.metric,
                     tickFormat: function(d){
                         return d3.format('.02f')(d);
                     },
