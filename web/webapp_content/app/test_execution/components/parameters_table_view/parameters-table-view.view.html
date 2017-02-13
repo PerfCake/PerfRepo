@@ -15,12 +15,12 @@
             <td>{{parameter.name}}</td>
             <td>{{parameter.value}}</td>
             <td>
-                <button ng-click="vm.editParameterAction(parameter)" class="btn btn-default" title="Edit parameter">
-                    <span class="pficon-edit" aria-hidden="true"></span> Edit
-                </button>
-                <button ng-click="vm.removeParameterAction(parameter)" class="btn btn-default" title="Remove parameter">
-                    <span class="pficon-delete" aria-hidden="true"></span> Delete
-                </button>
+                <a ng-click="vm.editParameterAction(parameter)" class="cursor-pointer action-link" title="Edit parameter">
+                    <span class="pficon-edit" aria-hidden="true"></span>Edit
+                </a>
+                <a ng-click="vm.removeParameterAction(parameter)" class="cursor-pointer action-link" title="Remove parameter">
+                    <span class="pficon-delete" aria-hidden="true"></span>Delete
+                </a>
             </td>
         </tr>
         <tr class="table-no-data" ng-show="!vm.parameters || vm.parameters.length == 0">

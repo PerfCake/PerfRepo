@@ -7,6 +7,7 @@
             bindings: {
                 executionValuesGroup: '<',
                 testExecutionId: '<',
+                metricName: '@',
                 onUpdateTable: '&'
             },
             controller: TestExecutionValuesGroupTableViewController,
@@ -14,7 +15,7 @@
             templateUrl: 'app/test_execution/components/values_group_table_view/values-group-table-view.view.html'
         });
 
-    function TestExecutionValuesGroupTableViewController(testExecutionValueModalService, $templateCache, $scope, $filter) {
+    function TestExecutionValuesGroupTableViewController(testExecutionValueModalService, $filter) {
         var vm = this;
 
         vm.addValue = addValue;
@@ -24,7 +25,7 @@
         vm.getValueObjectParameter = getValueObjectParameter;
 
         function showChart(parameterName) {
-            testExecutionValueModalService.showChart();
+            testExecutionValueModalService.showChart(vm.executionValuesGroup.values, parameterName, vm.metricName);
         }
 
         function addValue() {

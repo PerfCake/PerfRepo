@@ -24,6 +24,20 @@ div.detail-list {
             margin-bottom: 30px;
         }
     }
+
+    div.detail-item-metric-value {
+
+        table.pr-table {
+            margin-bottom: 10px;
+        }
+
+        h3 {
+            margin-bottom: 5px;
+            margin-top: 5px;
+            font-size: 14px;
+            color: gray;
+        }
+    }
 }
 
 // ########################################################################################### form modal bottom buttons
@@ -38,11 +52,25 @@ div.form-group.form-bottom {
 }
 
 // ##################################################################################### test execution value parameters
-div.value-parameters-header {
-    margin-top: 50px;
+div.parameter-value {
 
-    h4 {
-        display: inline;
+    label.control-label {
+        padding-right: 0;
+    }
+
+    div.remove-btn {
+        margin-top: 10px;
+        padding-left: 0;
+
+        a {
+            float: right;
+        }
+    }
+
+    @media (min-width: 768px) {
+        div.remove-btn {
+            margin-top: 0;
+        }
     }
 }
 
@@ -50,6 +78,11 @@ div.value-parameters-header {
 table.pr-table {
 
     thead {
+
+        th {
+          vertical-align: middle;
+          background-color: #f5f5f5;
+        }
 
         button.btn-new-item {
             float: right;

@@ -1,8 +1,8 @@
 <table class="table table-hover table-bordered pr-table">
     <thead>
         <tr>
-            <th rowspan="2">{{vm.metricName}} metric value</th>
-            <th ng-if="vm.executionValuesGroup.parameterNames.length > 0" colspan="{{vm.executionValuesGroup.parameterNames.length}}">Parameters</th>
+            <th rowspan="2">Value</th>
+            <th ng-if="vm.executionValuesGroup.parameterNames.length > 0" colspan="{{vm.executionValuesGroup.parameterNames.length}}">X-axis value</th>
             <th rowspan="2">Actions
                 <button ng-click="vm.addValue()" class="btn btn-primary btn-new-item">
                     <span class="pficon-add-circle-o" aria-hidden="true"></span> New value
@@ -22,12 +22,12 @@
                 {{vm.getValueObjectParameter(parameterName, valueObject.parameters).value}}
             </td>
             <td>
-                <button ng-click="vm.editValueObject($index)" class="btn btn-default">
-                        <span class="pficon-edit" aria-hidden="true"></span> Edit
-                </button>
-                <button ng-click="vm.deleteValueObject($index)" class="btn btn-default">
-                        <span class="pficon-delete" aria-hidden="true"></span> Delete
-                </button>
+                <a ng-click="vm.editValueObject($index)" class="cursor-pointer action-link">
+                        <span class="pficon-edit" aria-hidden="true"></span>Edit
+                </a>
+                <a ng-click="vm.deleteValueObject($index)" class="cursor-pointer action-link">
+                        <span class="pficon-delete" aria-hidden="true"></span>Delete
+                </a>
             </td>
         </tr>
         <tr class="table-no-data" ng-show="!vm.executionValuesGroup.values || vm.executionValuesGroup.values.length == 0">
