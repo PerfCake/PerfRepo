@@ -97,8 +97,8 @@
             return testExecutionResource.update(testExecution).$promise;
         }
 
-        function remove(testExecution) {
-            return testExecutionResource.delete(testExecution).$promise;
+        function remove(id) {
+            return testExecutionResource.delete({id: id}).$promise;
         }
 
         function updateParameters(id, parameters) {

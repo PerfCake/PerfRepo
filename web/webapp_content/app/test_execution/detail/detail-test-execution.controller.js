@@ -9,11 +9,12 @@
         .module('org.perfrepo.testExecution.detail')
         .controller('DetailTestExecutionController', DetailTestExecutionController);
 
-    function DetailTestExecutionController(_testExecution, testExecutionService, testExecutionModalService) {
+    function DetailTestExecutionController(_testExecution, testExecutionService, testExecutionModalService, $state) {
         var vm = this;
         vm.testExecution = _testExecution;
         vm.editTestExecution = editTestExecution;
         vm.updateDetail = updateDetail;
+        vm.removeTestExecution = removeTestExecution;
         vm.getMetricName = getMetricName;
         setExecutionValuesGroups();
 
@@ -22,6 +23,14 @@
 
             modalInstance.result.then(function () {
                 updateDetail();
+            });
+        }
+
+        function removeTestExecution() {
+            var modalInstance = testExecutionModalService.removeTestExecution(vm.testExecution);
+
+            modalInstance.result.then(function () {
+                $state.go('app.testExecutionOverview');
             });
         }
 

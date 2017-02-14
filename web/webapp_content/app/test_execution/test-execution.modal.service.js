@@ -47,8 +47,19 @@
             });
         }
 
-        function removeTestExecution(id) {
-
+        function removeTestExecution(testExecution) {
+            return $modal.open({
+                animation: true,
+                backdrop: 'static',
+                keyboard: false,
+                templateUrl: 'app/test_execution/remove/remove-test-execution.view.html',
+                controller: 'RemoveTestExecutionController',
+                controllerAs: 'vm',
+                size: 'sm',
+                resolve : {
+                    _testExecution: testExecution
+                }
+            });
         }
     }
 })();
