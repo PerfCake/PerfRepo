@@ -1,6 +1,12 @@
 // ########################################################################### remove blue 2px line from the top of page
 nav.navbar-pf-vertical {
   border-top: 2px solid #1d1d1d;
+
+  span.user-name {
+    font-size: smaller;
+    letter-spacing: 0.05em;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  }
 }
 
 // ######################################################################################################## page content
