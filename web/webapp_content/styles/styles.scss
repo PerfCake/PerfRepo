@@ -27,8 +27,10 @@ div.detail-list {
 
     div.detail-item-metric-value {
 
-        table.pr-table {
-            margin-bottom: 10px;
+        ul.pagination {
+            margin-top: 0;
+            margin-bottom: 5px;
+            float: right;
         }
 
         h3 {
@@ -36,6 +38,7 @@ div.detail-list {
             margin-top: 5px;
             font-size: 14px;
             color: gray;
+            display: inline-block;
         }
     }
 }

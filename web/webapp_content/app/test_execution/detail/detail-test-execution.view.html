@@ -46,7 +46,6 @@
     <div class="detail-item detail-item-metric-value">
         <div class="col-xs-12 item-table-property">Values</div>
         <div class="col-xs-12" ng-repeat="executionValuesGroup in vm.executionValuesGroups">
-            <h3>{{vm.getMetricName(executionValuesGroup.metricId)}} &#8211; metric</h3>
             <test-execution-values-group-table-view
                     execution-values-group="executionValuesGroup"
                     metric-name="{{vm.getMetricName(executionValuesGroup.metricId)}}"
