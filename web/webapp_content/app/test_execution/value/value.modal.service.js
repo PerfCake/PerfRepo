@@ -5,7 +5,7 @@
         .module('org.perfrepo.testExecution.detail.value')
         .service('testExecutionValueModalService', TestExecutionValueModalService);
 
-    function TestExecutionValueModalService($modal) {
+    function TestExecutionValueModalService($uibModal) {
 
         return {
             showChart: showChart,
@@ -15,7 +15,7 @@
         };
 
         function removeValue(executionValuesGroup, testExecutionId, index) {
-            return $modal.open({
+            return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,
@@ -41,7 +41,7 @@
         }
 
         function createValue(executionValuesGroup, testExecutionId) {
-            return $modal.open({
+            return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,
@@ -64,7 +64,7 @@
         }
 
         function editValue(executionValuesGroup, testExecutionId, index) {
-            return $modal.open({
+            return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,
@@ -90,7 +90,7 @@
         }
 
         function showChart(values, parameter, metric) {
-            return $modal.open({
+            return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,

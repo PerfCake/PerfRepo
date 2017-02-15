@@ -5,14 +5,14 @@
         .module('org.perfrepo.testExecution.detail.value')
         .controller('ShowValueChartController', ShowValueChartController);
 
-    function ShowValueChartController(_values, _parameter, _metric, $modalInstance, $filter) {
+    function ShowValueChartController(_values, _parameter, _metric, $uibModalInstance, $filter) {
         var vm = this;
         vm.groupValues = _values;
         vm.parameter = _parameter;
         vm.metric = _metric;
         vm.cancel = cancel;
 
-        $modalInstance.rendered.then(function () {
+        $uibModalInstance.rendered.then(function () {
             // TODO very bad - but on-ready doesn't work me
             setTimeout(function() {
                 window.dispatchEvent(new Event('resize'));
@@ -83,7 +83,7 @@
         };
 
         function cancel() {
-            $modalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
         }
     }
 })();

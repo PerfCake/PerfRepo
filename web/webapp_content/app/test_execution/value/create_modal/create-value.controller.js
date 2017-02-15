@@ -6,7 +6,7 @@
         .controller('CreateTestExecutionValueController', CreateTestExecutionValueController);
 
     function CreateTestExecutionValueController(_executionValuesGroup, _metric, _testExecutionId, testExecutionService,
-                                                    validationHelper, $modalInstance) {
+                                                    validationHelper, $uibModalInstance) {
         var vm = this;
         vm.valueObject = {};
         vm.executionValuesGroup = _executionValuesGroup;
@@ -18,14 +18,14 @@
 
         function save(valueObject, form) {
             testExecutionService.addExecutionValues(vm.testExecutionId, vm.metric.id, [valueObject]).then(function () {
-                $modalInstance.close(valueObject);
+                $uibModalInstance.close(valueObject);
             }, function(errorResponse) {
                 validationHelper.setFormErrors(errorResponse, form);
             });
         }
 
         function cancel() {
-            $modalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
         }
     }
 })();

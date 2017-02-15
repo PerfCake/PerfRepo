@@ -6,7 +6,7 @@
         .controller('EditTestExecutionParameterController', EditTestExecutionParameterController);
 
     function EditTestExecutionParameterController(_parameters, _testExecutionId, _parameter,
-                                                  testExecutionService, validationHelper, $modalInstance) {
+                                                  testExecutionService, validationHelper, $uibModalInstance) {
         var vm = this;
         vm.parameters = _parameters;
         vm.testExecutionId = _testExecutionId;
@@ -24,14 +24,14 @@
             params.push(parameter);
 
             testExecutionService.updateParameters(vm.testExecutionId, params).then(function () {
-                $modalInstance.close(parameter);
+                $uibModalInstance.close(parameter);
             }, function(errorResponse) {
                 validationHelper.setFormErrors(errorResponse, form);
             });
         }
 
         function cancel() {
-            $modalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
         }
     }
 })();

@@ -5,7 +5,7 @@
         .module('org.perfrepo.testExecution.detail.parameter')
         .controller('RemoveTestExecutionParameterController', RemoveTestExecutionParameterController);
 
-    function RemoveTestExecutionParameterController(_parameter, _parameters, _testExecutionId, testExecutionService, $modalInstance) {
+    function RemoveTestExecutionParameterController(_parameter, _parameters, _testExecutionId, testExecutionService, $uibModalInstance) {
         var vm = this;
         vm.parameter = _parameter;
         vm.testExecutionId = _testExecutionId;
@@ -21,12 +21,12 @@
             });
 
             testExecutionService.updateParameters(vm.testExecutionId, params).then(function () {
-                $modalInstance.close(vm.parameter);
+                $uibModalInstance.close(vm.parameter);
             });
         }
 
         function cancel() {
-            $modalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
         }
     }
 })();

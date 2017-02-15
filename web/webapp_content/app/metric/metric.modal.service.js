@@ -5,7 +5,7 @@
         .module('org.perfrepo.metric')
         .service('metricModalService', MetricModalService);
 
-    function MetricModalService($modal) {
+    function MetricModalService($uibModal) {
 
         return {
             createMetric: createMetric,
@@ -14,7 +14,7 @@
         };
 
         function removeMetric(metric, testId) {
-            return $modal.open({
+            return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,
@@ -34,7 +34,7 @@
         }
 
         function createMetric(testId) {
-            return $modal.open({
+            return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,
@@ -57,7 +57,7 @@
         }
 
         function editMetric(metricId) {
-            return $modal.open({
+            return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,

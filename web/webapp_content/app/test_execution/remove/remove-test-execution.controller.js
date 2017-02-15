@@ -5,7 +5,7 @@
         .module('org.perfrepo.testExecution.remove')
         .controller('RemoveTestExecutionController', RemoveTestExecutionController);
 
-    function RemoveTestExecutionController(_testExecution, testExecutionService, $modalInstance) {
+    function RemoveTestExecutionController(_testExecution, testExecutionService, $uibModalInstance) {
         var vm = this;
         vm.testExecution = _testExecution;
         vm.remove = remove;
@@ -13,12 +13,12 @@
 
         function remove() {
             testExecutionService.remove(vm.testExecution.id).then(function () {
-                $modalInstance.close(vm.testExecution);
+                $uibModalInstance.close(vm.testExecution);
             });
         }
 
         function cancel() {
-            $modalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
         }
     }
 })();

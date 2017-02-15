@@ -17,6 +17,11 @@
     function FormTestExecutionController($scope) {
         var vm = this;
         vm.save = save;
+        vm.options = {
+            autoclose: true,
+            todayBtn: 'linked',
+            todayHighlight: true
+        };
 
         if (vm.testExecution.tags != undefined) {
             vm.tagsObject = [];

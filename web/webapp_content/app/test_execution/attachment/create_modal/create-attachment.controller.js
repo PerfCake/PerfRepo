@@ -6,7 +6,7 @@
         .controller('CreateTestExecutionAttachmentController', CreateTestExecutionAttachmentController);
 
     function CreateTestExecutionAttachmentController(_testExecutionId, testExecutionService,
-                                                    validationHelper, $modalInstance) {
+                                                    validationHelper, $uibModalInstance) {
         var vm = this;
         vm.attachment = {};
         vm.testExecutionId = _testExecutionId;
@@ -16,14 +16,14 @@
         function save(form) {
             console.log(form);
             testExecutionService.uploadAttachment(vm.formData).then(function () {
-                $modalInstance.close(parameter);
+                $uibModalInstance.close(parameter);
             }, function(errorResponse) {
                 //validationHelper.setFormErrors(errorResponse, form);
             });
         }
 
         function cancel() {
-            $modalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
         }
     }
 })();

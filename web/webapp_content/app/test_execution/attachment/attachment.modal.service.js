@@ -5,7 +5,7 @@
         .module('org.perfrepo.testExecution.detail.attachment')
         .service('testExecutionAttachmentModalService', TestExecutionAttachmentModalService);
 
-    function TestExecutionAttachmentModalService($modal) {
+    function TestExecutionAttachmentModalService($uibModal) {
 
         return {
             createAttachment: createAttachment,
@@ -13,7 +13,7 @@
         };
 
         function removeAttachment(filename, attachmentId) {
-            return $modal.open({
+            return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,
@@ -33,7 +33,7 @@
         }
 
         function createAttachment(testExecutionId) {
-            return $modal.open({
+            return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,

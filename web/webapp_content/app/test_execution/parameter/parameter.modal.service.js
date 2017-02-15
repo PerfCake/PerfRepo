@@ -5,7 +5,7 @@
         .module('org.perfrepo.testExecution.detail.parameter')
         .service('testExecutionParameterModalService', TestExecutionParameterModalService);
 
-    function TestExecutionParameterModalService($modal) {
+    function TestExecutionParameterModalService($uibModal) {
 
         return {
             createParameter: createParameter,
@@ -14,7 +14,7 @@
         };
 
         function removeParameter(parameter, parameters, testExecutionId) {
-            return $modal.open({
+            return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,
@@ -37,7 +37,7 @@
         }
 
         function createParameter(parameters, testExecutionId) {
-            return $modal.open({
+            return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,
@@ -57,7 +57,7 @@
         }
 
         function editParameter(parameter, parameters, testExecutionId) {
-            return $modal.open({
+            return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,

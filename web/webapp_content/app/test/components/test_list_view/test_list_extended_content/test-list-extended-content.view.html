@@ -7,13 +7,13 @@
                 <li ng-repeat="testExecution in vm.testExecutions.data">
                     <div class="row">
                         <div class="col-sm-3">
-                            <a ui-sref="app.testExecutionDetail({id: testExecution.id})">{{testExecution.name}}</a>
+                            <a uib-tooltip="Name" ui-sref="app.testExecutionDetail({id: testExecution.id})">{{testExecution.name}}</a>
                         </div>
                         <div class="col-sm-2">
-                            <span tooltip="Started">{{testExecution.started | date}}</span>
+                            <span uib-tooltip="Started">{{testExecution.started | date}}</span>
                         </div>
                         <div class="col-sm-6">
-                            <span tooltip="Tags">
+                            <span uib-tooltip="Tags">
                                 <span ng-repeat="tag in testExecution.tags" class="label label-info tag-label">{{tag}}</span>
                             </span>
                         </div>

@@ -6,7 +6,7 @@
         .controller('EditTestExecutionValueController', EditTestExecutionValueController);
 
     function EditTestExecutionValueController(_executionValuesGroup, _metric, _testExecutionId, _index,
-                                                  testExecutionService, validationHelper, $modalInstance) {
+                                                  testExecutionService, validationHelper, $uibModalInstance) {
         var vm = this;
         vm.executionValuesGroup = _executionValuesGroup;
         vm.parameterNames = _executionValuesGroup.parameterNames;
@@ -23,14 +23,14 @@
             var valueObjects =  angular.copy(vm.executionValuesGroup.values);
             valueObjects[vm.index] = valueObject;
             testExecutionService.setExecutionValues(vm.testExecutionId, vm.metric.id, valueObjects).then(function () {
-                $modalInstance.close(valueObject);
+                $uibModalInstance.close(valueObject);
             }, function(errorResponse) {
                 validationHelper.setFormErrors(errorResponse, form);
             });
         }
 
         function cancel() {
-            $modalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
         }
     }
 })();
