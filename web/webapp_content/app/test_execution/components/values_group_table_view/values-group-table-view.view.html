@@ -1,11 +1,11 @@
 <h3>{{vm.metricName}} &#8211; metric</h3>
-<pagination total-items="vm.executionValuesGroup.values.length"
+<uib-pagination total-items="vm.executionValuesGroup.values.length"
             ng-model="vm.currentPage"
             items-per-page="vm.pageSize"
             previous-text="&lsaquo;"
             next-text="&rsaquo;"
             max-size="7">
-</pagination>
+</uib-pagination>
 <table class="table table-hover table-bordered pr-table">
     <thead>
         <tr>

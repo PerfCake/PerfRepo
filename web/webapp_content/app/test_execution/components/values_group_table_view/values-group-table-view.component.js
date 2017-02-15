@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('org.perfrepo.testExecution.search')
+        .module('org.perfrepo.testExecution.detail.value')
         .component('testExecutionValuesGroupTableView', {
             bindings: {
                 executionValuesGroup: '<',

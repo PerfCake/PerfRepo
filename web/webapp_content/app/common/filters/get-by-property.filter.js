@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('org.perfrepo.common')
+        .module('org.perfrepo.base')
         .filter('getByProperty', GetByProperty);
 
     function GetByProperty() {
