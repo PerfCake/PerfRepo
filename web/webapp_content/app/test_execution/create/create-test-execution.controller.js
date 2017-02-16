@@ -10,7 +10,8 @@
         vm.testExecution = {
             test: {
                 id: _testId
-            }
+            },
+            started: new Date()
         };
         vm.save = save;
         vm.cancel = cancel;

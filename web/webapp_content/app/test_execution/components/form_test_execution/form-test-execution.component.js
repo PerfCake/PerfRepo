@@ -17,10 +17,12 @@
     function FormTestExecutionController($scope) {
         var vm = this;
         vm.save = save;
-        vm.options = {
-            autoclose: true,
-            todayBtn: 'linked',
-            todayHighlight: true
+        vm.dateOptions = {
+            extraFormats: [moment.ISO_8601],
+            format: 'MMM DD, YYYY HH:mm',
+            sideBySide: true,
+            showClose: true,
+            allowInputToggle: true
         };
 
         if (vm.testExecution.tags != undefined) {
