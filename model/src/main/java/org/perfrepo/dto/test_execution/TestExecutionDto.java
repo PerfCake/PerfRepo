@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Data transfer object for {@link org.perfrepo.model.TestExecution} entity that represents a execution of the test.
+ * Data transfer object for {@link org.perfrepo.web.model.TestExecution} entity that represents a execution of the test.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
