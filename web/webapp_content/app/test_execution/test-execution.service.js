@@ -60,7 +60,7 @@
                  limit: 3,
                  offset: 0,
                  orderBy: 'DATE_DESC',
-                 testUidFilters: [testUID]
+                 testUIDsFilter: [testUID]
              };
 
              return search(searchParams);

@@ -7,7 +7,7 @@
 
     <div class="list-view-pf-description">
         <div class="list-group-item-heading">
-            <a uib-tooltip="Name" ui-sref="app.testDetail({id: item.id})">{{item.name}}</a>
+            <a uib-tooltip="Name" ng-click="$event.stopPropagation()" ui-sref="app.testDetail({id: item.id})">{{item.name}}</a>
         </div>
         <div class="list-group-item-text">
             <span uib-tooltip="UID">{{item.uid}}</span>
