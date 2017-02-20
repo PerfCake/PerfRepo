@@ -19,10 +19,6 @@ div.detail-list {
         div.item-value {
             margin-bottom: 10px;
         }
-
-        table.pr-table {
-            margin-bottom: 30px;
-        }
     }
 
     div.detail-item-metric-value {
@@ -79,7 +75,6 @@ div.parameter-value {
 
 // ########################################################################################################## data table
 table.pr-table {
-
     thead {
 
         th {
@@ -87,26 +82,25 @@ table.pr-table {
           background-color: #f5f5f5;
         }
 
-        th.btn-new-item {
-            padding-right: 2px;
-
-            button {
-                float: right;
-
-                span {
-                    font-size:smaller;
-                }
-            }
+        th.table-actions {
+            width:1%;
+            white-space:nowrap;
+            text-align: center;
         }
     }
 
     tbody {
 
-        td button{
-            font-size: smaller;
+        td.table-actions {
+            width:1%;
+            white-space:nowrap;
 
-            span {
-                font-size:smaller;
+            button{
+                font-size: smaller;
+
+                span {
+                    font-size:smaller;
+                }
             }
         }
 
@@ -118,5 +112,14 @@ table.pr-table {
                 border-bottom: none;
             }
         }
+    }
+}
+
+// #################################################################################################### detail tab panel
+div.detail-tabs {
+    margin-top: 10px;
+
+    div.tab-content {
+        margin-top: 15px;
     }
 }

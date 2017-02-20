@@ -2,6 +2,7 @@ package org.perfrepo.web.adapter.dummy_impl.storage;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.perfrepo.dto.test_execution.AttachmentDto;
+import org.perfrepo.enums.MeasuredValueType;
 import org.perfrepo.enums.MetricComparator;
 import org.perfrepo.web.adapter.dummy_impl.builders.*;
 
@@ -212,6 +213,7 @@ public class Storage {
                             .value(new ValueDtoBuilder()
                                     .value(10.0 + i)
                                     .build())
+                            .valueType(MeasuredValueType.SINGLE_VALUE)
                             .build())
                     .comment("Execution comment...")
                     .build());
@@ -232,12 +234,14 @@ public class Storage {
                             .value(new ValueDtoBuilder()
                                     .value(10.0 + i)
                                     .build())
+                            .valueType(MeasuredValueType.SINGLE_VALUE)
                             .build())
                     .executionValuesGroup(new ValuesGroupDtoBuilder()
                             .metric(metricStorage.getById(2L))
                             .value(new ValueDtoBuilder()
                                     .value(600.0 - i)
                                     .build())
+                            .valueType(MeasuredValueType.SINGLE_VALUE)
                             .build())
                     .comment("Execution comment...")
                     .build());
@@ -280,6 +284,7 @@ public class Storage {
                                     .parameter("time", 30)
                                     .parameter("percent", 90)
                                     .build())
+                            .valueType(MeasuredValueType.MULTI_VALUE)
                             .parameterNames("time", "percent")
                             .build())
                     .comment("Nightly build of Echo socket test, version: " + i + ".0")

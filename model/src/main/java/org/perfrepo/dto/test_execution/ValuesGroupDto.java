@@ -1,5 +1,7 @@
 package org.perfrepo.dto.test_execution;
 
+import org.perfrepo.enums.MeasuredValueType;
+
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +17,8 @@ public class ValuesGroupDto {
     private Set<String> parameterNames;
 
     private List<ValueDto> values;
+
+    private MeasuredValueType valueType;
 
     public Long getMetricId() {
         return metricId;
@@ -38,5 +42,13 @@ public class ValuesGroupDto {
 
     public void setValues(List<ValueDto> values) {
         this.values = values;
+    }
+
+    public MeasuredValueType getValueType() {
+        return valueType;
+    }
+
+    public void setValueType(MeasuredValueType valueType) {
+        this.valueType = valueType;
     }
 }

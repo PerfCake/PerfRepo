@@ -3,10 +3,10 @@
         <tr>
             <th>Name</th>
             <th>Value</th>
-            <th class="btn-new-item">Actions
-                <button ng-click="vm.addParameterAction()" class="btn btn-primary">
+            <th class="table-actions">
+                <a ng-click="vm.addParameterAction()" class="cursor-pointer">
                     <span class="pficon-add-circle-o" aria-hidden="true"></span> New parameter
-                </button>
+                </a>
             </th>
         </tr>
     </thead>
@@ -14,7 +14,7 @@
         <tr ng-repeat="parameter in vm.parameters">
             <td>{{parameter.name}}</td>
             <td>{{parameter.value}}</td>
-            <td>
+            <td class="table-actions">
                 <a ng-click="vm.editParameterAction(parameter)" class="cursor-pointer action-link" title="Edit parameter">
                     <span class="pficon-edit" aria-hidden="true"></span>Edit
                 </a>

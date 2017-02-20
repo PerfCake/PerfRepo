@@ -6,7 +6,10 @@
         .component('testExecutionValueForm', {
             bindings: {
                 valueObject: '<',
-                executionValuesGroup: '<',
+                valuesGroups: '<',
+                metrics: '<',
+                selectedMetricId: '<',
+                disableMetric: '<',
                 onSave: '&',
                 onCancel: '&'
             },
@@ -17,43 +20,59 @@
 
     function FormTestExecutionValueController($filter) {
         var vm = this;
+        vm.getValuesGroupByMetricId = getValuesGroupByMetricId;
         vm.removeParameter = removeParameter;
         vm.addParameter = addParameter;
         vm.save = save;
-        init();
+        vm.groupsParameters = getGroupsParameters();
 
         function save(form) {
+            vm.valueObject.parameters = vm.groupsParameters[vm.selectedMetricId];
+
             if (form.$invalid) {
                 return;
             }
 
-            this.onSave({valueObject: vm.valueObject, form: form});
+            this.onSave({valueObject: vm.valueObject, metricId: vm.selectedMetricId, form: form});
         }
 
         function removeParameter(index) {
-            vm.valueObject.parameters.splice(index, 1);
+            vm.groupsParameters[vm.selectedMetricId].splice(index, 1);
         }
 
         function addParameter() {
-            vm.valueObject.parameters.push({});
+            // values group parameters are missing for this metric
+            if (vm.groupsParameters[vm.selectedMetricId] == undefined) {
+                vm.groupsParameters[vm.selectedMetricId] = [];
+            }
+            vm.groupsParameters[vm.selectedMetricId].push({});
         }
 
-        function init() {
-            var parameterNames = vm.executionValuesGroup.parameterNames;
-            var missingParameterNames = [];
+        function getGroupsParameters() {
+            var parameters = {};
 
-            if (!vm.valueObject.parameters) {
-                vm.valueObject.parameters = [];
-            }
-
-            angular.forEach(parameterNames, function(parameterName) {
-                var parameterObject = $filter('getByProperty')('name', parameterName, vm.valueObject.parameters);
-                if (!parameterObject) {
-                    missingParameterNames.push({name: parameterName});
-                }
+            // get parameters for every values group
+            angular.forEach(vm.valuesGroups, function(valuesGroup) {
+                var groupParameters = [];
+                // iterate over all group parameters
+                // each value object have to contains all parameters
+                angular.forEach(valuesGroup.parameterNames, function(parameterName) {
+                    var parameterObject = $filter('getByProperty')('name', parameterName, vm.valueObject.parameters);
+                    if (!parameterObject) {
+                        // value object does not contain parameter - create it
+                        groupParameters.push({name: parameterName});
+                    } else {
+                        // value object contains parameter - add it
+                        groupParameters.push({name: parameterName, value: parameterObject.value});
+                    }
+                });
+                parameters[valuesGroup.metricId] = groupParameters;
             });
+            return parameters;
+        }
 
-            vm.valueObject.parameters = vm.valueObject.parameters.concat(missingParameterNames);
+        function getValuesGroupByMetricId(metricId) {
+            return $filter('getByProperty')('metricId', metricId, vm.valuesGroups);
         }
     }
 })();

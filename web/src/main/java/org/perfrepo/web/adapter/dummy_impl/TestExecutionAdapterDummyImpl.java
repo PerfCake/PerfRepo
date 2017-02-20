@@ -1,10 +1,10 @@
 
 package org.perfrepo.web.adapter.dummy_impl;
 
-import org.perfrepo.dto.metric.MetricDto;
 import org.perfrepo.dto.test_execution.*;
 import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.dto.util.validation.ValidationErrors;
+import org.perfrepo.enums.MeasuredValueType;
 import org.perfrepo.web.adapter.TestExecutionAdapter;
 import org.perfrepo.web.adapter.dummy_impl.storage.Storage;
 import org.perfrepo.web.adapter.exceptions.AdapterException;
@@ -199,11 +199,11 @@ public class TestExecutionAdapterDummyImpl implements TestExecutionAdapter {
         }
     }
 
-    private TestExecutionDto updateExecutionValues(Long testExecutionId, Long metricId, List<ValueDto> executionValues, boolean appendValues) {
+    private TestExecutionDto updateExecutionValues(Long testExecutionId, Long metricId, List<ValueDto> executionValues,
+                                                   boolean appendValues) {
         validateValues(testExecutionId, metricId, executionValues);
 
         TestExecutionDto testExecution = storage.testExecution().getById(testExecutionId);
-        MetricDto metric = storage.metric().getById(metricId);
 
         ValuesGroupDto valueGroupDto = null;
 
@@ -238,9 +238,43 @@ public class TestExecutionAdapterDummyImpl implements TestExecutionAdapter {
         // update parameter names
         Set<String> parameterNames = valueGroupDto.getValues()
                 .stream().filter(valueObject -> valueObject != null && valueObject.getParameters() != null)
-                .flatMap(valueObject -> valueObject.getParameters().stream().map(parameterDto -> parameterDto.getName()))
+                .flatMap(valueObject -> valueObject.getParameters().stream().map(ValueParameterDto::getName))
                 .collect(Collectors.toSet());
         valueGroupDto.setParameterNames(parameterNames);
+
+        // set value type
+        if (valueGroupDto.getValues() == null || valueGroupDto.getValues().size() == 0) {
+            // undefined value
+            valueGroupDto.setValueType(null);
+        } else if (valueGroupDto.getValues().size() == 1) {
+            // single value
+            valueGroupDto.setValueType(MeasuredValueType.SINGLE_VALUE);
+        } else {
+            // multi value
+            if (parameterNames == null || parameterNames.size() == 0) {
+                // no parameter
+                valueGroupDto.setValueType(MeasuredValueType.INVALID_VALUE);
+            } else {
+                // each value must have all parameters
+                boolean allRight = valueGroupDto.getValues()
+                        .stream()
+                        .allMatch(value -> value.getParameters() != null &&
+                                value.getParameters().size() == parameterNames.size());
+                if (allRight) {
+                    valueGroupDto.setValueType(MeasuredValueType.MULTI_VALUE);
+                } else {
+                    valueGroupDto.setValueType(MeasuredValueType.INVALID_VALUE);
+                }
+            }
+        }
+
+
+        if(!appendValues && (executionValues == null || executionValues.size() == 0)) {
+            // remove empty values group
+            if (testExecution.getExecutionValuesGroups() != null) {
+                testExecution.getExecutionValuesGroups().removeIf(group -> group.getMetricId().equals(metricId));
+            }
+        }
 
         return storage.testExecution().getById(testExecutionId);
     }

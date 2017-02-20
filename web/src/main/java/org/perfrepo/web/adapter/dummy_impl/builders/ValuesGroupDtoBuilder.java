@@ -3,6 +3,7 @@ package org.perfrepo.web.adapter.dummy_impl.builders;
 import org.perfrepo.dto.metric.MetricDto;
 import org.perfrepo.dto.test_execution.ValueDto;
 import org.perfrepo.dto.test_execution.ValuesGroupDto;
+import org.perfrepo.enums.MeasuredValueType;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -22,6 +23,11 @@ public class ValuesGroupDtoBuilder {
 
     public ValuesGroupDtoBuilder metric(MetricDto metric) {
         valuesGroupDto.setMetricId(metric.getId());
+        return this;
+    }
+
+    public ValuesGroupDtoBuilder valueType(MeasuredValueType valueType) {
+        valuesGroupDto.setValueType(valueType);
         return this;
     }
 

@@ -26,6 +26,26 @@ a.action-link {
   }
 }
 
+a.action-link {
+  &.multi-value-data, &.invalid-data {
+    padding-left: 0;
+    padding-right: 0;
+
+    span {
+      font-size: small;
+    }
+  }
+
+  &.invalid-data {
+    color: #ec7a08;
+
+    &:hover {
+      color: #cb6907;
+    }
+  }
+
+}
+
 // ##################################################################################################### ng-progress bar
 #ngProgress {
   box-shadow: none;

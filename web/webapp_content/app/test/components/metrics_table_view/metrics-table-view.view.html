@@ -3,10 +3,10 @@
         <tr>
             <th>Name</th>
             <th>Description</th>
-            <th class="btn-new-item">Actions
-                <button ng-click="vm.addMetricAction()" class="btn btn-primary">
+            <th class="table-actions">
+                <a ng-click="vm.addMetricAction()" class="cursor-pointer">
                     <span class="pficon-add-circle-o" aria-hidden="true"></span> New metric
-                </button>
+                </a>
             </th>
         </tr>
     </thead>
@@ -14,7 +14,7 @@
         <tr ng-repeat="metric in vm.metrics">
             <td>{{metric.name}}</td>
             <td ng-bind-html="metric.description"></td>
-            <td>
+            <td class="table-actions">
                 <a ng-click="vm.editMetricAction(metric)" class="cursor-pointer action-link" title="Edit metric">
                     <span class="pficon-edit" aria-hidden="true"></span>Edit
                 </a>

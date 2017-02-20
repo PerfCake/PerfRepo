@@ -45,38 +45,45 @@
             <p ng-bind-html="vm.testExecution.comment"></p>
         </div>
     </div>
+</div>
 
-    <div class="detail-item detail-item-metric-value">
-        <div class="col-xs-12 item-table-property">Values</div>
-        <div class="col-xs-12" ng-repeat="executionValuesGroup in vm.executionValuesGroups">
-            <test-execution-values-group-table-view
-                    execution-values-group="executionValuesGroup"
-                    metric-name="{{vm.getMetricName(executionValuesGroup.metricId)}}"
-                    test-execution-id="vm.testExecution.id"
-                    on-update-table="vm.updateDetail()">
-            </test-execution-values-group-table-view>
-        </div>
-    </div>
-
-    <div class="detail-item">
-        <div class="col-xs-12 item-table-property">Parameters</div>
-        <div class="col-xs-12">
-            <test-execution-parameters-table-view
-                    parameters="vm.testExecution.executionParameters"
-                    test-execution-id="vm.testExecution.id"
-                    on-update="vm.updateDetail()">
-            </test-execution-parameters-table-view>
-        </div>
-    </div>
-
-    <div class="detail-item">
-        <div class="col-xs-12 item-table-property">Attachments</div>
-        <div class="col-xs-12">
-            <test-execution-attachments-table-view
-                    attachments="vm.testExecution.executionAttachments"
-                    test-execution-id="vm.testExecution.id"
-                    on-update="vm.updateDetail()">
-            </test-execution-attachments-table-view>
-        </div>
+<div class="row">
+    <div class="col-sm-12 detail-tabs">
+        <uib-tabset>
+            <!-- values -->
+            <uib-tab>
+                <uib-tab-heading>
+                    <i class="fa fa-th"></i> Values
+                </uib-tab-heading>
+                <test-execution-values-group-table-view
+                        execution-values-groups="vm.testExecution.executionValuesGroups"
+                        test-execution-metrics="vm.testExecution.test.metrics"
+                        test-execution-id="vm.testExecution.id"
+                        on-update-table="vm.updateDetail()">
+                </test-execution-values-group-table-view>
+            </uib-tab>
+            <!-- parameters-->
+            <uib-tab>
+                <uib-tab-heading>
+                    <i class="fa fa-th-list"></i> Parameters
+                </uib-tab-heading>
+                <test-execution-parameters-table-view
+                        parameters="vm.testExecution.executionParameters"
+                        test-execution-id="vm.testExecution.id"
+                        on-update="vm.updateDetail()">
+                </test-execution-parameters-table-view>
+            </uib-tab>
+            <!-- attachments-->
+            <uib-tab>
+                <uib-tab-heading>
+                    <i class="fa fa-file"></i> Attachments
+                </uib-tab-heading>
+                <test-execution-attachments-table-view
+                        attachments="vm.testExecution.executionAttachments"
+                        test-execution-id="vm.testExecution.id"
+                        on-update="vm.updateDetail()">
+                </test-execution-attachments-table-view>
+            </uib-tab>
+        </uib-tabset>
     </div>
 </div>

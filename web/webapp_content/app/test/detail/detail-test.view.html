@@ -48,27 +48,34 @@
             <p ng-bind-html="vm.test.description"></p>
         </div>
     </div>
+</div>
 
-    <div class="detail-item">
-        <div class="col-xs-12 item-table-property">Metrics</div>
-        <div class="col-xs-12">
-            <metrics-table-view
-                    metrics="vm.test.metrics"
-                    test-id="vm.test.id"
-                    on-update="vm.updateDetail()">
-            </metrics-table-view>
-        </div>
-    </div>
-
-    <div class="detail-item">
-        <div class="col-xs-12 item-table-property">Alerts</div>
-        <div class="col-xs-12">
-            <alerts-table-view
-                    alerts="vm.test.alerts"
-                    test-metrics="vm.test.metrics"
-                    test-id="vm.test.id"
-                    on-update="vm.updateDetail()">
-            </alerts-table-view>
-        </div>
+<div class="row">
+    <div class="col-sm-12 detail-tabs">
+        <uib-tabset>
+            <!-- metrics -->
+            <uib-tab>
+                <uib-tab-heading>
+                    <i class="fa fa-bar-chart"></i> Metrics
+                </uib-tab-heading>
+                <metrics-table-view
+                        metrics="vm.test.metrics"
+                        test-id="vm.test.id"
+                        on-update="vm.updateDetail()">
+                </metrics-table-view>
+            </uib-tab>
+            <!-- alerts-->
+            <uib-tab>
+                <uib-tab-heading>
+                    <i class="fa fa-bullhorn"></i> Alerts
+                </uib-tab-heading>
+                <alerts-table-view
+                        alerts="vm.test.alerts"
+                        test-metrics="vm.test.metrics"
+                        test-id="vm.test.id"
+                        on-update="vm.updateDetail()">
+                </alerts-table-view>
+            </uib-tab>
+        </uib-tabset>
     </div>
 </div>

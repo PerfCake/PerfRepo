@@ -1,45 +1,43 @@
-<h3>{{vm.metricName}} &#8211; metric</h3>
-<uib-pagination total-items="vm.executionValuesGroup.values.length"
-            ng-model="vm.currentPage"
-            items-per-page="vm.pageSize"
-            previous-text="&lsaquo;"
-            next-text="&rsaquo;"
-            max-size="7">
-</uib-pagination>
 <table class="table table-hover table-bordered pr-table">
     <thead>
         <tr>
-            <th rowspan="2">Value</th>
-            <th ng-if="vm.executionValuesGroup.parameterNames.length > 0" colspan="{{vm.executionValuesGroup.parameterNames.length}}">X-axis value</th>
-            <th rowspan="2" class="btn-new-item">Actions
-                <button ng-click="vm.addValue()" class="btn btn-primary">
+            <th>Metric name</th>
+            <th>Metric value</th>
+            <th class="table-actions">
+                <a ng-click="vm.addValueObject()" class="cursor-pointer">
                     <span class="pficon-add-circle-o" aria-hidden="true"></span> New value
-                </button>
-            </th>
-        </tr>
-        <tr ng-if="vm.executionValuesGroup.parameterNames.length > 0">
-            <th ng-repeat="parameterName in vm.executionValuesGroup.parameterNames">{{parameterName}}
-                <a ng-click="vm.showChart(parameterName)" class="cursor-pointer">[Show chart]</a>
+                </a>
             </th>
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="valueObject in vm.executionValuesGroup.values | limitTo:vm.pageSize:((vm.currentPage - 1) * vm.pageSize)">
-            <td>{{valueObject.value}}</td>
-            <td ng-repeat="parameterName in vm.executionValuesGroup.parameterNames">
-                {{vm.getValueObjectParameter(parameterName, valueObject.parameters).value}}
-            </td>
+        <tr ng-repeat="valuesGroup in vm.executionValuesGroups">
+            {{valuesGroup}}
+            <td>{{vm.getMetricById(valuesGroup.metricId).name}}</td>
             <td>
-                <a ng-click="vm.editValueObject($index)" class="cursor-pointer action-link">
+                <span ng-if="valuesGroup.valueType == 'SINGLE_VALUE'">{{valuesGroup.values[0].value}}</span>
+                <span ng-if="valuesGroup.valueType == 'MULTI_VALUE'">
+                    <a ng-click="vm.showMultiValueData(valuesGroup)" class="cursor-pointer action-link multi-value-data">
+                        <span class="fa fa-table" aria-hidden="true"></span>Multi value data
+                    </a>
+                </span>
+                <span ng-if="valuesGroup.valueType == 'INVALID_VALUE'">
+                    <a ng-click="vm.showMultiValueData(valuesGroup)" class="cursor-pointer action-link invalid-data">
+                        <span class="pficon-warning-triangle-o" aria-hidden="true"></span>Invalid value data
+                    </a>
+                </span>
+            </td>
+            <td class="table-actions">
+                <a ng-show="valuesGroup.valueType == 'SINGLE_VALUE'" ng-click="vm.editValuesGroup(valuesGroup)" class="cursor-pointer action-link">
                     <span class="pficon-edit" aria-hidden="true"></span>Edit
                 </a>
-                <a ng-click="vm.deleteValueObject($index)" class="cursor-pointer action-link">
+                <a ng-click="vm.deleteValuesGroup(valuesGroup)" class="cursor-pointer action-link">
                     <span class="pficon-delete" aria-hidden="true"></span>Delete
                 </a>
             </td>
         </tr>
-        <tr class="table-no-data" ng-show="!vm.executionValuesGroup.values || vm.executionValuesGroup.values.length == 0">
-            <td colspan="{{2 + vm.executionValuesGroup.parameterNames.length}}">No values</td>
+        <tr class="table-no-data" ng-show="!vm.executionValuesGroups.length > 0">
+            <td colspan="3">No values</td>
         </tr>
     </tbody>
 </table>

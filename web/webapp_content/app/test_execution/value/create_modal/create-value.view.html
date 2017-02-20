@@ -4,9 +4,12 @@
 </div>
 <div class="modal-body">
     <test-execution-value-form
-            execution-values-group="vm.executionValuesGroup"
+            values-groups="vm.valuesGroups"
+            metrics="vm.metrics"
             value-object="vm.valueObject"
-            on-save="vm.save(valueObject, form)"
+            selected-metric-id="vm.selectedMetricId"
+            disable-metric=vm.multiValue
+            on-save="vm.save(valueObject, metricId, form)"
             on-cancel="vm.cancel()">
     </test-execution-value-form>
 </div>

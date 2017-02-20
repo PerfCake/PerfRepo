@@ -2,8 +2,20 @@
     <div class="col-md-12">
         <form role="form" name="valueForm" ng-submit="vm.save(valueForm)" class="form-horizontal" novalidate>
             <div class="form-group">
-                <label class="col-xs-3 control-label" for="valueObjectValue">Metric value</label>
-                <div class="col-xs-9">
+                <label class="col-sm-3 control-label" for="valueMetric">Metric</label>
+                <div class="col-sm-9" id="valueMetric">
+                    <ui-select ng-disabled="vm.disableMetric" ng-model="vm.selectedMetricId" name="metricId" title="Choose a metric">
+                        <ui-select-match placeholder="Select or search a metric...">{{$select.selected.name}}</ui-select-match>
+                        <ui-select-choices repeat="metric.id as metric in vm.metrics | filter: $select.search">
+                            <span ng-bind-html="metric.name | highlight: $select.search"></span>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="valueObjectValue">Measured value</label>
+                <div class="col-sm-9">
                     <input type="number" id="valueObjectValue" name="value" ng-model="vm.valueObject.value" class="form-control" pr-server-validation>
                 </div>
             </div>
@@ -16,18 +28,18 @@
                 </div>
             </div>
 
-            <div ng-show="vm.valueObject.parameters.length > 0" class="form-group">
+            <div ng-show="vm.groupsParameters[vm.selectedMetricId].length > 0" class="form-group">
                 <div class="col-xs-12">
                     <h4>X-axes</h4>
                 </div>
             </div>
 
-            <div class="form-group parameter-value" ng-repeat="parameter in vm.valueObject.parameters track by $index">
-                <label class="col-sm-2 control-label">X-axis name</label>
+            <div class="form-group parameter-value" ng-repeat="parameter in vm.groupsParameters[vm.selectedMetricId]">
+                <label class="col-sm-2 control-label">Name</label>
                 <div class="col-sm-3">
                     <input type="text" ng-model="parameter.name" class="form-control">
                 </div>
-                <label class="col-sm-2 control-label">X-axis value</label>
+                <label class="col-sm-2 control-label">Value</label>
                 <div class="col-sm-3">
                     <input type="number" ng-model="parameter.value" class="form-control">
                 </div>
