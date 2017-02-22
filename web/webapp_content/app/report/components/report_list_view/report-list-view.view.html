@@ -1,0 +1,19 @@
+<div pf-list-view
+     config="vm.config"
+     items="vm.items"
+     action-buttons="vm.actionButtons"
+     menu-actions="vm.menuActions"
+     class="report-list">
+
+    <div class="list-view-pf-description">
+        <div class="list-group-item-heading">
+            <a uib-tooltip="Name" ui-sref="app.reportDetail({id: item.id})">{{item.name}}</a>
+        </div>
+        <div class="list-group-item-text">
+            <span uib-tooltip="Type">{{item.type}}</span>
+        </div>
+    </div>
+    <div class="list-view-pf-additional-info">
+        <span uib-tooltip="Description" ng-bind-html="item.description"></span>
+    </div>
+</div>

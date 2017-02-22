@@ -1,0 +1,37 @@
+<div class="row header">
+    <div class="col-sm-12 col-md-4">
+        <h1>Report detail</h1>
+    </div>
+    <div class="col-sm-12 col-md-8">
+        <div class="header-controls">
+            <button class="btn btn-default" ng-click="vm.editReport()">
+                <span class="pficon pficon-edit" aria-hidden="true"></span> Edit
+            </button>
+            <button class="btn btn-default" ng-click="vm.removeReport()">
+                <span class="pficon pficon-delete" aria-hidden="true"></span> Remove
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row detail-list">
+    <div class="detail-item">
+        <div class="col-xs-2 col-lg-1 item-property">Name</div>
+        <div class="col-xs-10 col-lg-11 item-value">{{vm.report.name}}</div>
+    </div>
+
+    <div class="detail-item">
+        <div class="col-xs-2 col-lg-1 item-property">Type</div>
+        <div class="col-xs-10 col-lg-11 item-value">{{vm.report.type}}</div>
+    </div>
+
+    <div class="detail-item">
+        <div class="col-xs-2 col-lg-1 item-property">Description</div>
+        <div class="col-xs-10 col-lg-11 item-value">
+            <p ng-bind-html="vm.report.description"></p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+</div>
