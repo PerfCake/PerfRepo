@@ -1,9 +1,12 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.perfrepo.dto.report.MetricHistoryReportDto;
+import org.perfrepo.dto.report.TableComparisonReportDto;
 import org.perfrepo.dto.test_execution.AttachmentDto;
 import org.perfrepo.enums.MeasuredValueType;
 import org.perfrepo.enums.MetricComparator;
+import org.perfrepo.enums.ReportType;
 import org.perfrepo.web.adapter.dummy_impl.builders.*;
 
 import javax.inject.Singleton;
@@ -29,6 +32,8 @@ public class Storage {
 
     private final AlertStorage alertStorage;
 
+    private final ReportStorage reportStorage;
+
     private final TestToAlertStorage testToAlertStorage;
 
     private final TestExecutionStorage testExecutionStorage;
@@ -45,7 +50,11 @@ public class Storage {
         testToAlertStorage = new TestToAlertStorage();
         testExecutionStorage = new TestExecutionStorage();
         attachmentStorage = new AttachmentStorage();
+        reportStorage = new ReportStorage();
         initialize();
+        initializeTests();
+        initializeTestExecutions();
+        initializeReports();
     }
 
     public TestStorage test() {
@@ -84,6 +93,10 @@ public class Storage {
         return attachmentStorage;
     }
 
+    public ReportStorage report() {
+        return reportStorage;
+    }
+
     private void initialize() {
         // ***** USERS *****
         // user 1
@@ -116,9 +129,6 @@ public class Storage {
                 .comparator(MetricComparator.LOWER_BETTER)
                 .name("Response time")
                 .build());
-
-        initializeTests();
-        initializeTestExecutions();
     }
 
     private void initializeTests() {
@@ -291,6 +301,26 @@ public class Storage {
                     .executionAttachment(attachment)
                     .build());
         }
+    }
+
+    private void initializeReports() {
+        MetricHistoryReportDto metricReport1 = new MetricHistoryReportDto();
+        metricReport1.setName("Metric history report 1");
+        metricReport1.setDescription("Description of <strong>metric history</strong> report.");
+        metricReport1.setType(ReportType.METRIC_HISTORY);
+        reportStorage.create(metricReport1);
+
+        MetricHistoryReportDto metricReport2 = new MetricHistoryReportDto();
+        metricReport2.setName("Metric history report 2");
+        metricReport2.setDescription("Description of <strong>metric history</strong> report.");
+        metricReport2.setType(ReportType.METRIC_HISTORY);
+        reportStorage.create(metricReport2);
+
+        TableComparisonReportDto tableReport3 = new TableComparisonReportDto();
+        tableReport3.setName("Table comparison report 3");
+        tableReport3.setDescription("Description of <strong>table comparison</strong> report.");
+        tableReport3.setType(ReportType.TABLE_COMPARISON);
+        reportStorage.create(tableReport3);
     }
 }
 
