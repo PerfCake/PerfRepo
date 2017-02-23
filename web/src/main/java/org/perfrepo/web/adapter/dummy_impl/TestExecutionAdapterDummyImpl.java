@@ -269,7 +269,7 @@ public class TestExecutionAdapterDummyImpl implements TestExecutionAdapter {
         }
 
 
-        if(!appendValues && (executionValues == null || executionValues.size() == 0)) {
+        if (!appendValues && (executionValues == null || executionValues.size() == 0)) {
             // remove empty values group
             if (testExecution.getExecutionValuesGroups() != null) {
                 testExecution.getExecutionValuesGroups().removeIf(group -> group.getMetricId().equals(metricId));

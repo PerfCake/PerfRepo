@@ -1,19 +1,25 @@
 package org.perfrepo.dto.report;
 
-import org.perfrepo.enums.ReportType;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class ReportDto {
+@JsonTypeInfo (
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = TableComparisonReportDto.class, name = "TABLE_COMPARISON"),
+        @JsonSubTypes.Type(value = MetricHistoryReportDto.class, name = "METRIC_HISTORY") })
+public abstract class ReportDto {
 
     private Long id;
 
     private String name;
 
     private String description;
-
-    private ReportType type;
 
     public Long getId() {
         return id;
@@ -37,13 +43,5 @@ public class ReportDto {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public ReportType getType() {
-        return type;
-    }
-
-    public void setType(ReportType type) {
-        this.type = type;
     }
 }

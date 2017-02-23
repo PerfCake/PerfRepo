@@ -68,14 +68,16 @@ public class ReportStorage {
                         || searchParams.getNamesFilter()
                                 .stream().allMatch(nameFilter -> StringUtils.containsIgnoreCase(report.getName(), nameFilter));
 
+        /*
         Predicate<ReportDto> typeFilterPredicate =
                 report -> searchParams.getTypesFilter() == null
                         || searchParams.getTypesFilter()
                                 .stream().allMatch(typeFilter -> report.getType().equals(typeFilter));
+        */
 
         Supplier<Stream<ReportDto>> reportStream = () ->  data.stream()
                 .filter(nameFilterPredicate)
-                .filter(typeFilterPredicate)
+                //.filter(typeFilterPredicate)
                 .sorted(sortComparator);
 
         int total = (int) reportStream.get().count();

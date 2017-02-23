@@ -1,10 +1,8 @@
 package org.perfrepo.dto.report;
 
-import org.perfrepo.dto.test_execution.TestExecutionDto;
 import org.perfrepo.enums.OrderBy;
 import org.perfrepo.enums.ReportType;
 
-import java.util.Date;
 import java.util.Set;
 
 public class ReportSearchCriteria {

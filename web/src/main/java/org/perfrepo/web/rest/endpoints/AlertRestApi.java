@@ -54,5 +54,4 @@ public class AlertRestApi {
 
         return Response.noContent().build();
     }
-
 }

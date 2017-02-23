@@ -6,7 +6,6 @@ import org.perfrepo.dto.report.TableComparisonReportDto;
 import org.perfrepo.dto.test_execution.AttachmentDto;
 import org.perfrepo.enums.MeasuredValueType;
 import org.perfrepo.enums.MetricComparator;
-import org.perfrepo.enums.ReportType;
 import org.perfrepo.web.adapter.dummy_impl.builders.*;
 
 import javax.inject.Singleton;
@@ -307,19 +306,16 @@ public class Storage {
         MetricHistoryReportDto metricReport1 = new MetricHistoryReportDto();
         metricReport1.setName("Metric history report 1");
         metricReport1.setDescription("Description of <strong>metric history</strong> report.");
-        metricReport1.setType(ReportType.METRIC_HISTORY);
         reportStorage.create(metricReport1);
 
         MetricHistoryReportDto metricReport2 = new MetricHistoryReportDto();
         metricReport2.setName("Metric history report 2");
         metricReport2.setDescription("Description of <strong>metric history</strong> report.");
-        metricReport2.setType(ReportType.METRIC_HISTORY);
         reportStorage.create(metricReport2);
 
         TableComparisonReportDto tableReport3 = new TableComparisonReportDto();
         tableReport3.setName("Table comparison report 3");
         tableReport3.setDescription("Description of <strong>table comparison</strong> report.");
-        tableReport3.setType(ReportType.TABLE_COMPARISON);
         reportStorage.create(tableReport3);
     }
 }
