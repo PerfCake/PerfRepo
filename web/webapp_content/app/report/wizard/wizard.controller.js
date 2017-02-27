@@ -5,26 +5,42 @@
         .module('org.perfrepo.report.wizard')
         .controller('WizardReportController', WizardReportController);
 
-    function WizardReportController($scope, $uibModalInstance) {
+    function WizardReportController(_data, _state, $scope, reportService) {
         var vm = this;
-        vm.wizardTitle = "New report";
-        vm.nextButtonTitle = "Next >";
+        vm.newReport = (_data.id == undefined);
         vm.backCallback = backCallback;
         vm.nextCallback = nextCallback;
-        vm.onFinish = onFinish;
         vm.onCancel = onCancel;
         vm.wizardReady = true;
         vm.wizardDone = false;
 
-        vm.data = {type: 'TABLE_COMPARISON'};
+        vm.data = _data;
+        vm.state = _state;
 
-        $scope.$on("wizard:stepChanged", function (e, parameters) {
-            if (parameters.step.stepId === 'permissions') {
-                vm.nextButtonTitle = "Save";
+        initialize();
+
+        function initialize() {
+            if (vm.newReport) {
+                vm.pageTitle = 'New report wizard';
+                vm.data = {
+                    type: 'TABLE_COMPARISON',
+                    groups: [{
+                        name: 'New group'
+                    }]
+                };
             } else {
-                vm.nextButtonTitle = "Next >";
+                vm.pageTitle = 'Edit report wizard';
             }
-        });
+
+            $scope.$on("wizard:stepChanged", function (e, parameters) {
+                console.log("changed");
+                if (parameters.step.stepId === 'permissions') {
+                    vm.nextButtonTitle = "Save";
+                } else {
+                    vm.nextButtonTitle = "Next >";
+                }
+            });
+        }
 
         function backCallback(step) {
             console.log("back callback");
@@ -42,16 +58,40 @@
                 }
             }
 
-            return true;
-        }
+            if (step.stepId === 'permissions') {
+                save();
+                return false
+            }
 
-        function onFinish() {
-            console.log("on finish");
             return true;
         }
 
         function onCancel() {
             $uibModalInstance.dismiss('cancel');
+        }
+
+        function save() {
+            if (vm.data.id == undefined) {
+                createReport();
+            } else {
+                updateReport();
+            }
+        }
+
+        function createReport() {
+            reportService.create(vm.data).then(function (id) {
+                $uibModalInstance.close(id);
+            }, function(errorResponse) {
+                //validationHelper.setFormErrors(errorResponse, form);
+            });
+        }
+
+        function updateReport() {
+            reportService.update(vm.data).then(function (id) {
+                $uibModalInstance.close(id);
+            }, function(errorResponse) {
+                //validationHelper.setFormErrors(errorResponse, form);
+            });
         }
     }
 })();

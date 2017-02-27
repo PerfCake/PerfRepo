@@ -18,6 +18,40 @@
                 }
             })
 
+            .state('app.editReportWizard', {
+                url: 'report/wizard/:id',
+                templateUrl: 'app/report/wizard/wizard.view.html',
+                controller: 'WizardReportController',
+                controllerAs: 'vm',
+                resolve: {
+                    _data: function(reportService, $stateParams) {
+                        return reportService.getById($stateParams.id);
+                    },
+                    _state: function () {
+                        return {
+                            changeTypeEnabled: false
+                        }
+                    }
+                }
+            })
+
+            .state('app.newReportWizard', {
+                url: 'report/wizard',
+                templateUrl: 'app/report/wizard/wizard.view.html',
+                controller: 'WizardReportController',
+                controllerAs: 'vm',
+                resolve: {
+                    _data: function() {
+                        return {};
+                    },
+                    _state: function () {
+                        return {
+                            changeTypeEnabled: true
+                        }
+                    }
+                }
+            })
+
             .state('app.reportOverview', {
                 url: 'report/search',
                 templateUrl: 'app/report/overview/report-overview.view.html',

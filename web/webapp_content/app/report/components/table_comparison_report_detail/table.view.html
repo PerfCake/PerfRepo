@@ -1,0 +1,17 @@
+<table class="table table-hover table-bordered pr-table comparison-table">
+    <thead>
+        <tr>
+            <th>Metric/Test execution</th>
+            <th ng-repeat="cell in vm.table.tableHeaderCells"><a ui-sref="app.testExecutionDetail({id: cell.testExecutionId})">{{cell.name}}</a></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="row in vm.table.tableRows">
+            <td>{{row.metricName}}</td>
+            <td ng-repeat="cell in row.cells" ng-class="[cell.style, {'baseline': cell.baseline}]">
+                <span ng-if="cell.baseline">{{cell.value}}</span>
+                <span ng-if="!cell.baseline" uib-tooltip="{{cell.value}}">{{(cell.valueByBaseline | number:2)*1}}%</span>
+            </td>
+        </tr>
+    </tbody>
+</table>

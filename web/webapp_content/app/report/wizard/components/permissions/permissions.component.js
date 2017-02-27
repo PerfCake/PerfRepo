@@ -14,6 +14,5 @@
 
     function ReportPermissionsWizardStep() {
         var vm = this;
-
     }
 })();

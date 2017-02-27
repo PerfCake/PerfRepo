@@ -7,10 +7,10 @@
     function ReportOverviewController(_initialSearchResult, reportModalService, $state) {
         var vm = this;
         vm.initialSearchResult = _initialSearchResult;
-        vm.createReport = createReport;
+        vm.newReport = newReport;
 
-        function createReport() {
-            var modalInstance = reportModalService.createReport();
+        function newReport() {
+            var modalInstance = reportModalService.newReport();
 
             modalInstance.result.then(function (id) {
                 $state.go('app.reportDetail', {id: id});

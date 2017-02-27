@@ -34,4 +34,12 @@
 </div>
 
 <div class="row">
+    <div class="col-sm-12">
+        <!-- table comparison report -->
+        <table-comparison-report-detail ng-if="vm.report.type == 'TABLE_COMPARISON'" groups="vm.report.groups"></table-comparison-report-detail>
+        <!-- metric history report -->
+        <metric-history-report-detail ng-if="vm.report.type == 'METRIC_HISTORY'"></metric-history-report-detail>
+        <!-- box plot report -->
+        <box-plot-report-detail ng-if="vm.report.type == 'BOX_PLOT'"></box-plot-report-detail>
+    </div>
 </div>

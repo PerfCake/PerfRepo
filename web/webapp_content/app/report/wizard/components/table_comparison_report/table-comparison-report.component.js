@@ -5,7 +5,7 @@
         .module('org.perfrepo.report.wizard')
         .component('prTableComparisonReportConfiguration', {
             bindings: {
-                configuration: '='
+                data: '='
             },
             controller: TableComparisonReportConfiguration,
             controllerAs: 'vm',
@@ -14,6 +14,20 @@
 
     function TableComparisonReportConfiguration() {
         var vm = this;
+        vm.activeGroups = [];
+        vm.addGroup = addGroup;
+        vm.clickGroupAccordion = clickGroupAccordion;
 
+        function addGroup() {
+            vm.data.groups.push({name: 'New group'});
+            for (var i = 0; i <  vm.activeGroups.length; i++) {
+                vm.activeGroups[i] = false;
+            }
+            vm.activeGroups[vm.data.groups.length - 1] = true;
+        }
+
+        function clickGroupAccordion(index) {
+            vm.activeGroups[index] = true;
+        }
     }
 })();

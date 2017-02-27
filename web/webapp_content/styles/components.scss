@@ -205,3 +205,72 @@ div.ui-select-container {
     font-weight: normal;
   }
 }
+
+// ############################################################################################# table comparison report
+table.comparison-table {
+  border: 1px solid #8c8c8c;
+
+  th, td {
+    border: 1px solid #8c8c8c !important;
+  }
+
+  td.BAD {
+    background-color: #fcd9d9;
+  }
+
+  td.GOOD {
+    background-color: #D8EBD6;
+  }
+
+  td.NEUTRAL {
+    background-color: #ebebeb;
+  }
+
+  td.baseline {
+    background-color: #fff;
+  }
+
+  tr:hover {
+
+    td.NEUTRAL {
+      background-color: #ddd !important;
+    }
+
+    td.GOOD {
+      background-color: #cbe4c8 !important;
+    }
+
+    td.BAD {
+      background-color: #fac6c6 !important;
+    }
+
+    td.baseline {
+      background-color: #def3ff !important;
+    }
+  }
+
+}
+
+// ####################################################################################################### wizard report
+
+div.report-wizard {
+
+  div.wizard-pf-main.wizard-pf-singlestep {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 300px;
+  }
+
+  div.modal-header {
+    display: none;
+  }
+
+  div.wizard-pf-steps ul.wizard-pf-steps-indicator {
+    height: 85px;
+    padding: 20px 0 0;
+  }
+
+  div.modal-footer button.wizard-pf-cancel {
+    display: none;
+  }
+}

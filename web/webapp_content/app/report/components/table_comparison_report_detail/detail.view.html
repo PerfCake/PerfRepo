@@ -1,0 +1,10 @@
+<div ng-repeat="group in vm.groups">
+    <h2>Name: {{group.name}}</h2>
+    <p>Description: <span ng-bind-html="group.description"></span></p>
+    <p>Threshold: {{group.threshold}}</p>
+    <div ng-repeat="table in group.tables">
+        <h4>Name: {{table.name}}</h4>
+        <p>Description: <span ng-bind-html="table.description"></span></p>
+        <table-comparison-report-table table="table"></table-comparison-report-table>
+    </div>
+</div>

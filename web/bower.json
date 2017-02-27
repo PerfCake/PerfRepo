@@ -27,7 +27,8 @@
     "ng-tags-input": "^3.1.1",
     "ngprogress": "^1.1.3",
     "angular-ui-select": "^0.19.6",
-    "angular-nvd3": "^1.0.9"
+    "angular-nvd3": "^1.0.9",
+    "v-accordion": "^1.6.0"
   },
   "resolutions": {
     "angular": "1.5.11"

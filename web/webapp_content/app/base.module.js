@@ -11,6 +11,8 @@
             'ngTagsInput',
             'ui.select',
             'nvd3',
+            'vAccordion',
+            'ngAnimate',
 
             'org.perfrepo.utils'
         ])
