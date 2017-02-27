@@ -113,6 +113,13 @@ public class Storage {
                 .firstName("Jiri")
                 .lastName("Grunwald")
                 .password("123456").build());
+        // user 2
+        userStorage.create(new UserDtoBuilder()
+                .username("repouser")
+                .email("repouser@gmail.com")
+                .firstName("Repo")
+                .lastName("PerfUser")
+                .password("123456").build());
 
         // ***** GROUPS *****
         // group 1
