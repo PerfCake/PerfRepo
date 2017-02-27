@@ -15,6 +15,8 @@ public interface ReportAdapter {
 
     ReportDto createReport(ReportDto report);
 
+    ReportDto updateReport(ReportDto report);
+
     void removeReport(Long id);
 
     List<ReportDto> getAllReports();

@@ -25,6 +25,11 @@ public class ReportAdapterDummyImpl implements ReportAdapter {
     }
 
     @Override
+    public ReportDto updateReport(ReportDto report) {
+        return storage.report().update(report);
+    }
+
+    @Override
     public void removeReport(Long id) {
         storage.report().delete(id);
     }

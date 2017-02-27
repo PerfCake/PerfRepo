@@ -35,6 +35,18 @@ public class ReportStorage {
         return dto;
     }
 
+    public ReportDto update(ReportDto dto) {
+        ReportDto report = getById(dto.getId());
+
+        if (report != null) {
+            report.setName(dto.getName());
+            report.setDescription(dto.getDescription());
+            return report;
+        } else {
+            return null;
+        }
+    }
+
     public boolean delete(Long id) {
         return data.removeIf(report -> report.getId().equals(id));
     }

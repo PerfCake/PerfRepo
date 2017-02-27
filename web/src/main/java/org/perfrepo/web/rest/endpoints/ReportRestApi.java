@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -31,6 +32,22 @@ public class ReportRestApi {
       ReportDto report = reportAdapter.getReport(reportId);
 
       return Response.ok(report).build();
+   }
+
+   @POST
+   public Response create(ReportDto reportDto) {
+      ReportDto createdReport = reportAdapter.createReport(reportDto);
+
+      URI uri = URI.create("/alerts/" + createdReport.getId());
+
+      return Response.created(uri).build();
+   }
+
+   @PUT
+   public Response update(ReportDto reportDto) {
+      reportAdapter.updateReport(reportDto);
+
+      return Response.noContent().build();
    }
 
    @POST
