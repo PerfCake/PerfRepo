@@ -1,4 +1,4 @@
-package org.perfrepo.enums;
+package org.perfrepo.enums.report;
 
 /**
  * @author Jiri Grunwald (grunwjir@gmail.com)

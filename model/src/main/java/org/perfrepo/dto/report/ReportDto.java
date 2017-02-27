@@ -2,6 +2,9 @@ package org.perfrepo.dto.report;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.perfrepo.dto.report.table_comparison.TableComparisonReportDto;
+
+import java.util.List;
 
 /**
  * @author Jiri Grunwald (grunwjir@gmail.com)
@@ -20,6 +23,8 @@ public abstract class ReportDto {
     private String name;
 
     private String description;
+
+    private List<PermissionDto> permissions;
 
     public Long getId() {
         return id;
@@ -43,5 +48,13 @@ public abstract class ReportDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<PermissionDto> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<PermissionDto> permissions) {
+        this.permissions = permissions;
     }
 }

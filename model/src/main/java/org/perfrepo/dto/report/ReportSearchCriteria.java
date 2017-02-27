@@ -1,7 +1,7 @@
 package org.perfrepo.dto.report;
 
 import org.perfrepo.enums.OrderBy;
-import org.perfrepo.enums.ReportType;
+import org.perfrepo.enums.report.ReportType;
 
 import java.util.Set;
 
