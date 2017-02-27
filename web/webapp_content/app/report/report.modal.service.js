@@ -8,72 +8,21 @@
     function ReportModalService($uibModal) {
 
         return {
-            newReport: newReport,
-            editReport: editReport,
-            newPreparedReport: newPreparedReport
+            removeReport: removeReport
         };
 
-        function newReport() {
+        function removeReport(report) {
             return $uibModal.open({
                 animation: true,
                 backdrop: 'static',
                 keyboard: false,
-                templateUrl: 'app/report/wizard/wizard.view.html',
-                controller: 'WizardReportController',
+                templateUrl: 'app/report/remove/remove-report.view.html',
+                controller: 'RemoveReportController',
                 controllerAs: 'vm',
-                size: 'lg',
-                resolve: {
-                    _data: function() {
-                        return {};
-                    },
-                    _state: function () {
-                        return {
-                            changeTypeEnabled: true
-                        }
-                    }
-                }
-            });
-        }
-
-        function editReport(id) {
-            return $uibModal.open({
-                animation: true,
-                backdrop: 'static',
-                keyboard: false,
-                templateUrl: 'app/report/wizard/wizard.view.html',
-                controller: 'WizardReportController',
-                controllerAs: 'vm',
-                size: 'lg',
-                resolve: {
-                    _data: function(reportService) {
-                        return reportService.getById(id);
-                    },
-                    _state: function () {
-                        return {
-                            changeTypeEnabled: false
-                        }
-                    }
-                }
-            });
-        }
-        
-        function newPreparedReport(data) {
-            return $uibModal.open({
-                animation: true,
-                backdrop: 'static',
-                keyboard: false,
-                templateUrl: 'app/report/wizard/wizard.view.html',
-                controller: 'WizardReportController',
-                controllerAs: 'vm',
-                size: 'lg',
-                resolve: {
-                    _data: function() {
-                        return data;
-                    },
-                    _state: function () {
-                        return {
-                            changeTypeEnabled: false
-                        }
+                size: 'sm',
+                resolve : {
+                    _report: function () {
+                        return report;
                     }
                 }
             });

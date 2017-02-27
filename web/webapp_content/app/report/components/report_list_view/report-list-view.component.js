@@ -65,11 +65,7 @@
         }
 
         function editReportAction(action, item) {
-            var modalInstance = reportModalService.editReport(item.id);
-
-            modalInstance.result.then(function () {
-                vm.onUpdateList();
-            });
+            $state.go('app.editReportWizard', {id: item.id});
         }
 
         function deleteReportAction(action, item) {

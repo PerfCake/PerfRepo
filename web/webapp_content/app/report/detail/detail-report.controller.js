@@ -13,11 +13,7 @@
         vm.updateDetail = updateDetail;
 
         function editReport() {
-            var modalInstance = reportModalService.editReport(vm.report.id);
-
-            modalInstance.result.then(function () {
-                updateDetail();
-            });
+            $state.go('app.editReportWizard', {id: vm.report.id});
         }
 
         function removeReport() {
