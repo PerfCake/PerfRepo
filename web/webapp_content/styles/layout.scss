@@ -36,3 +36,20 @@ div.pr-notification-list {
   top: 10px;
   right: 10px;
 }
+
+// ################################################################################################################ menu
+div.nav-pf-vertical.nav-pf-vertical-with-badges {
+  width: 200px;
+
+  &.collapsed {
+    width: 75px;
+  }
+}
+
+div.layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical.nav-pf-vertical-with-badges {
+  margin-left: 200px;
+
+  &.collapsed-nav {
+    margin-left: 75px;
+  }
+}
