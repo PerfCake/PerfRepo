@@ -1,0 +1,58 @@
+<div class="row">
+    <div class="col-md-12">
+        <form role="form" name="permissionForm" ng-submit="vm.save(permissionForm)" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="levelPermission">Access level</label>
+                <div class="col-sm-9">
+                    <select pf-select ng-model="vm.permission.level" id="levelPermission" name="level" class="form-control"
+                            ng-options="option.level as option.level for option in vm.options" pr-server-validation>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="typePermission">Access type</label>
+                <div class="col-sm-9">
+                    <select pf-select ng-disabled="vm.permission.level == undefined" ng-model="vm.permission.type" id="typePermission" name="type" class="form-control"
+                            ng-options="type for type in vm.permissionTypes()" pr-server-validation>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" ng-if="vm.permission.level == 'USER'">
+                <label class="col-sm-3 control-label" for="selectedUserPermission">Associated user</label>
+                <div class="col-sm-9">
+                    <ui-select name="metric" ng-model="vm.permission.userId" id="selectedUserPermission" name="userId" title="Choose a user" pr-server-validation>
+                        <ui-select-match placeholder="Select or search a user...">
+                            {{$select.selected.firstName + ' ' + $select.selected.lastName + ' (' + $select.selected.username + ')'}}
+                        </ui-select-match>
+                        <ui-select-choices repeat="user.id as user in vm.users | filter: $select.search">
+                            <span ng-bind-html="user.firstName + ' ' + user.lastName + ' (' + user.username + ')'| highlight: $select.search"></span>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+
+            <div class="form-group" ng-if="vm.permission.level == 'GROUP'">
+                <label class="col-sm-3 control-label" for="selectedGroupPermission">Associated group</label>
+                <div class="col-sm-9">
+                    <ui-select name="metric" ng-model="vm.permission.groupId" id="selectedGroupPermission" name="groupId" title="Choose a group" pr-server-validation>
+                        <ui-select-match placeholder="Select or search a group...">
+                            {{$select.selected.name}}
+                        </ui-select-match>
+                        <ui-select-choices repeat="group.id as group in vm.groups | filter: $select.search">
+                            <span ng-bind-html="group.name | highlight: $select.search"></span>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+
+            <div class="form-group form-bottom">
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button type="button" ng-click="vm.onCancel()" class="btn btn-default">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

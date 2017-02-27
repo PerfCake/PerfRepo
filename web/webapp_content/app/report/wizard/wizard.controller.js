@@ -5,7 +5,7 @@
         .module('org.perfrepo.report.wizard')
         .controller('WizardReportController', WizardReportController);
 
-    function WizardReportController(_data, _state, $scope, reportService) {
+    function WizardReportController(_data, _state, reportService, $scope, $state) {
         var vm = this;
         vm.newReport = (_data.id == undefined);
         vm.backCallback = backCallback;
@@ -80,15 +80,15 @@
 
         function createReport() {
             reportService.create(vm.data).then(function (id) {
-                $uibModalInstance.close(id);
+                $state.go('app.reportDetail', {id: id});
             }, function(errorResponse) {
                 //validationHelper.setFormErrors(errorResponse, form);
             });
         }
 
         function updateReport() {
-            reportService.update(vm.data).then(function (id) {
-                $uibModalInstance.close(id);
+            reportService.update(vm.data).then(function (report) {
+                $state.go('app.reportDetail', {id: report.id});
             }, function(errorResponse) {
                 //validationHelper.setFormErrors(errorResponse, form);
             });

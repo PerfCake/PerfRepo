@@ -1,0 +1,13 @@
+<div class="modal-header">
+    <button ng-click="vm.cancel()" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title">New permission</h3>
+</div>
+<div class="modal-body">
+    <permission-form
+            groups="vm.groups"
+            users="vm.users"
+            permission="vm.permission"
+            on-save="vm.save(permission, form)"
+            on-cancel="vm.cancel()">
+    </permission-form>
+</div>

@@ -381,7 +381,7 @@ public class Storage {
         permissions.add(preparePermission(AccessLevel.GROUP, AccessType.WRITE, 1L, null,
                 "super users", null));
         permissions.add(preparePermission(AccessLevel.USER, AccessType.READ, null, 2L,
-                null, "Jiri Grunwald"));
+                null, "Jiri Grunwald (grunwjir)"));
         tableReport3.setPermissions(permissions);
     }
 
