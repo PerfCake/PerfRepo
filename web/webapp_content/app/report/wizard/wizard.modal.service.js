@@ -35,9 +35,8 @@
                 controllerAs: 'vm',
                 size: 'md',
                 resolve : {
-                    _users: function() {
-                        // TODO
-                        return [{id: 2, username: 'grunwjir', firstName: 'Jiri', lastName: 'Grunwald'}]
+                    _users: function(userService) {
+                        return userService.getAll();
                     },
                     _groups: function(groupService) {
                         return groupService.getUserGroups();
@@ -56,9 +55,8 @@
                 controllerAs: 'vm',
                 size: 'md',
                 resolve : {
-                    _users: function() {
-                        // TODO
-                        return [{id: 2, username: 'grunwjir', firstName: 'Jiri', lastName: 'Grunwald'}]
+                    _users: function(userService) {
+                        return userService.getAll();
                     },
                     _groups: function(groupService) {
                         return groupService.getUserGroups();

@@ -10,6 +10,7 @@
             'org.perfrepo.authentication',
             'org.perfrepo.dashboard',
             'org.perfrepo.group',
+            'org.perfrepo.user',
             'org.perfrepo.login',
             'org.perfrepo.test',
             'org.perfrepo.testExecution',
@@ -20,5 +21,7 @@
         .constant('API_METRIC_URL', 'rest/json/metrics')
         .constant('API_ALERT_URL', 'rest/json/alerts')
         .constant('API_TEST_EXECUTION_URL', 'rest/json/test-executions')
-        .constant('API_REPORT_URL', 'rest/json/reports');
+        .constant('API_REPORT_URL', 'rest/json/reports')
+        .constant('API_USER_URL', 'rest/json/users')
+        .constant('API_GROUP_URL', 'rest/json/groups');
 })();
