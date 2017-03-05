@@ -98,11 +98,6 @@ public class AlertAdapterDummyImpl implements AlertAdapter {
         return new ArrayList<>(alerts);
     }
 
-    @Override
-    public List<UserDto> getAlertSubscribers(Long testId) {
-        throw new UnsupportedOperationException();
-    }
-
     private void validate(AlertDto alert) {
         ValidationErrors validation = new ValidationErrors();
 

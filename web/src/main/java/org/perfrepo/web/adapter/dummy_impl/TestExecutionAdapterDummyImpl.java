@@ -75,7 +75,7 @@ public class TestExecutionAdapterDummyImpl implements TestExecutionAdapter {
     }
 
     @Override
-    public TestExecutionDto updateTestExecutionParameters(Long testExecutionId, Set<ParameterDto> testExecutionParameters) {
+    public TestExecutionDto setTestExecutionParameters(Long testExecutionId, Set<ParameterDto> testExecutionParameters) {
         TestExecutionDto testExecution = storage.testExecution().getById(testExecutionId);
 
         if (testExecution == null) {

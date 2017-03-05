@@ -6,18 +6,19 @@ import org.perfrepo.dto.user.UserDto;
 import java.util.List;
 
 /**
- * Service adapter for {@link AlertDto} object. Adapter supports CRUD and another
- * operations over this object.
+ * Service adapter for test alerts. Adapter provides operations for {@link AlertDto} object.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public interface AlertAdapter {
 
     /**
-     * Return {@link AlertDto} test alert by its id.
+     * Return the {@link AlertDto} test alert by its id.
      *
      * @param id The alert identifier.
-     * @return Found {@link AlertDto} test alert.
+     *
+     * @return The found {@link AlertDto} test alert.
+     *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the test alert does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
@@ -27,7 +28,10 @@ public interface AlertAdapter {
      * Create new {@link AlertDto} test alert.
      *
      * @param alert Parameters of the test alert that will be created.
-     * @return Created {@link AlertDto} test alert.
+     *
+     * @return The created {@link AlertDto} test alert.
+     *
+     * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
      * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
      * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
@@ -37,8 +41,11 @@ public interface AlertAdapter {
      * Update the {@link AlertDto} test alert.
      *
      * @param alert Parameters of the test alert that will be updated.
-     * @return Updated {@link AlertDto} test alert.
-     * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the test alert does not exist.
+     *
+     * @return Updated test alert.
+     *
+     * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
+     * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
      * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
      * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
@@ -48,25 +55,22 @@ public interface AlertAdapter {
      * Remove the {@link AlertDto} test alert.
      *
      * @param id The test alert identifier.
-     * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the test alert does not exist.
+     *
+     * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
+     * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
      * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     void removeAlert(Long id);
 
     /**
-     * Return subscribed users to test alerts.
-     *
-     * @param testId Test {@link org.perfrepo.dto.test.TestDto} identifier.
-     * @return List of subscribed users to the test.
-     * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the test does not exist.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
-     */
-    List<UserDto> getAlertSubscribers(Long testId);
-
-    /**
      * Return all test alerts for specific test.
      *
+     * @param testId The test identifier.
+     *
      * @return List of test alerts.
+     *
+     * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
+     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     List<AlertDto> getAllAlertsForTest(Long testId);
 }
