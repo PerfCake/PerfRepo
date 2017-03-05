@@ -259,6 +259,7 @@ div.report-wizard {
     height: auto !important;
     max-height: none !important;
     min-height: 300px;
+    padding: 10px 20px;
   }
 
   div.modal-header {
@@ -273,4 +274,119 @@ div.report-wizard {
   div.modal-footer button.wizard-pf-cancel {
     display: none;
   }
+
+  span.label-accordion {
+    padding: .15em 0.6em .15em;
+    margin-left: 5px;
+  }
+
+  p.form-label {
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  div.wizard-container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+
+    h1 {
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    p.no-data {
+      font-size: 13px;
+      color: lightgray;
+      margin-bottom: 5px
+    }
+
+    div.add-link {
+
+      border-top: 2px solid #2196f3;
+
+      &.group-link {
+        font-size: 15px;
+      }
+
+      &.comparison-link {
+        font-size: 14px;
+      }
+
+      &.item-link {
+        font-size: 13px;
+      }
+    }
+
+    a.action-link {
+      display: block;
+    }
+  }
+
+  v-pane-header {
+    background-color: #ededed;
+    margin-bottom: 10px;
+  }
+
+  v-pane-header::after, .vAccordion--default v-pane-header::before {
+    display: none;
+  }
+
+  v-pane-content {
+    padding-left: 10px;
+    border-left: 2px solid #ededed;
+    margin-bottom: 10px;
+  }
+
+  div.report-type {
+
+    label {
+      border: 1px solid #ddd;
+
+      &:hover {
+        border: 1px solid #bbb;
+
+        span {
+          border-bottom: 1px solid #bbb;
+        }
+      }
+    }
+
+    span {
+      padding: 5px;
+      display: block;
+      background: #f5f5f2;
+      border-bottom: 1px solid #ddd;
+    }
+
+    p {
+      padding: 5px 10px 0 10px;
+      font-weight: normal;
+    }
+
+    img {
+      padding: 5px;
+    }
+  }
+
+  div.table-comparison-report-step {
+    div.comparison-item-row {
+      margin-left: -5px;
+      margin-right: -5px;
+
+      div.form-group {
+        padding-left: 5px;
+        padding-right: 5px;
+
+        input[type="checkbox"] {
+          display: block;
+        }
+      }
+    }
+
+    h3.comparison-item-title {
+      font-weight: lighter;
+    }
+  }
+
 }

@@ -39,17 +39,17 @@ div.pr-notification-list {
 
 // ################################################################################################################ menu
 div.nav-pf-vertical.nav-pf-vertical-with-badges {
-  width: 200px;
+ // width: 200px;
 
   &.collapsed {
-    width: 75px;
+  //  width: 75px;
   }
 }
 
 div.layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical.nav-pf-vertical-with-badges {
-  margin-left: 200px;
+ // margin-left: 200px;
 
   &.collapsed-nav {
-    margin-left: 75px;
+   // margin-left: 75px;
   }
 }

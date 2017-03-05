@@ -1,21 +1,18 @@
-<div class="row">
-    <div class="col-md-12">
-        <form role="form" name="reportInformationForm" class="form-horizontal" novalidate>
-            <div class="form-group">
-                <label class="col-sm-2 control-label" for="reportName">Name</label>
-                <div class="col-sm-10">
-                    <input type="text" id="reportName" name="name" ng-model="vm.data.name" class="form-control">
-                </div>
-            </div>
+<div class="wizard-container">
+    <h1>Set up report info...</h1>
+    <ng-form name="vm.wizardInfoStep">
+        <div class="form-group">
+            <label for="reportName">Name</label>
+            <input type="text" id="reportName" name="name" ng-model="vm.data.name" class="form-control" pr-server-validation>
+        </div>
 
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Description</label>
-                <div class="col-sm-10">
-                    <div class="wysiwyg-editor-wrap form-control-border">
-                        <trix-editor ng-if="true" angular-trix name="description" ng-model="vm.data.description" class="trix-content"></trix-editor>
-                    </div>
-                </div>
+        <div class="form-group">
+            <label>Description</label>
+            <div class="wysiwyg-editor-wrap form-control-border">
+                <trix-editor ng-if="true" angular-trix name="description" ng-model="vm.data.description"
+                             class="trix-content" pr-server-validation></trix-editor>
             </div>
-        </form>
-    </div>
+        </div>
+    </ng-form>
+    <button ng-click="vm.validate()">Validate</button>
 </div>

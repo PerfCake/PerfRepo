@@ -14,34 +14,30 @@
     </div>
 </div>
 
-<div class="row detail-list">
-    <div class="detail-item">
-        <div class="col-xs-2 col-lg-1 item-property">Name</div>
-        <div class="col-xs-10 col-lg-11 item-value">{{vm.report.name}}</div>
+<div class="detail-list">
+    <div class="detail-item row">
+        <div class="col-xs-3 col-lg-2 item-property">Name</div>
+        <div class="col-xs-7 col-lg-10 item-value">{{vm.report.name}}</div>
     </div>
 
-    <div class="detail-item">
-        <div class="col-xs-2 col-lg-1 item-property">Type</div>
-        <div class="col-xs-10 col-lg-11 item-value">{{vm.report.type}}</div>
+    <div class="detail-item row">
+        <div class="col-xs-3 col-lg-2 item-property">Type</div>
+        <div class="col-xs-7 col-lg-10 item-value">{{vm.report.typeName}}</div>
     </div>
 
-    <div class="detail-item">
-        <div class="col-xs-2 col-lg-1 item-property">Description</div>
-        <div class="col-xs-10 col-lg-11 item-value">
+    <div class="detail-item row">
+        <div class="col-xs-3 col-lg-2 item-property">Description</div>
+        <div class="col-xs-7 col-lg-10 item-value">
             <p ng-bind-html="vm.report.description"></p>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-sm-12">
-        <!-- table comparison report -->
-        <table-comparison-report-detail ng-if="vm.report.type == 'TABLE_COMPARISON'" groups="vm.report.groups"></table-comparison-report-detail>
-        <!-- metric history report -->
-        <metric-history-report-detail ng-if="vm.report.type == 'METRIC_HISTORY'"></metric-history-report-detail>
-        <!-- box plot report -->
-        <box-plot-report-detail ng-if="vm.report.type == 'BOX_PLOT'"></box-plot-report-detail>
-    </div>
+    <!-- table comparison report -->
+    <table-comparison-report-detail ng-if="vm.report.type == 'TABLE_COMPARISON'" groups="vm.report.groups"></table-comparison-report-detail>
+    <!-- metric history report -->
+    <metric-history-report-detail ng-if="vm.report.type == 'METRIC_HISTORY'"></metric-history-report-detail>
+    <!-- box plot report -->
+    <box-plot-report-detail ng-if="vm.report.type == 'BOX_PLOT'"></box-plot-report-detail>
 </div>
 
 <div class="row">

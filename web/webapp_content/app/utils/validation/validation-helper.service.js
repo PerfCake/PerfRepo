@@ -12,13 +12,15 @@
         };
 
         function setFormErrors(response, form){
-            // TODO only 422 status
+            // better solution? reset whole form
+            angular.forEach(form.$error.server, function (ctrl) {
+                ctrl.$setValidity('server', true);
+            });
+
             angular.forEach(response.data.fieldErrors, function (error) {
                 form[error.field].$setValidity('server', false);
                 form[error.field].$serverValidationMessage = error.message;
             });
         }
-
-
     }
 })();

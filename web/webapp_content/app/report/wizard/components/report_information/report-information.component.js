@@ -12,7 +12,17 @@
             templateUrl: 'app/report/wizard/components/report_information/report-information.view.html'
         });
 
-    function ReportInformationWizardStep() {
+    function ReportInformationWizardStep(wizardService, validationHelper) {
         var vm = this;
+        vm.validate = validate;
+
+        function validate() {
+            wizardService.validateReportInfoStep(vm.data).then(function() {
+                // ok
+            }, function(errorResponse) {
+                validationHelper.setFormErrors(errorResponse, vm.wizardInfoStep);
+                return false;
+            });
+        }
     }
 })();

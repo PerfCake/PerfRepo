@@ -31,6 +31,7 @@
         return {
             search: search,
             defaultSearch: defaultSearch,
+            asyncSelectSearch: asyncSelectSearch,
             getById: getById,
             save: save,
             update: update,
@@ -62,6 +63,12 @@
                 offset: 0,
                 orderBy: 'NAME_ASC'
             };
+        }
+
+        function asyncSelectSearch(generalSearch) {
+            var params = getDefaultSearchParams();
+            params.generalSearch = generalSearch;
+            return search(params);
         }
 
         function getById(id) {

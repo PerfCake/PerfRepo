@@ -31,6 +31,12 @@
                         return {
                             changeTypeEnabled: false
                         }
+                    },
+                    _users: function(userService) {
+                        return userService.getAll();
+                    },
+                    _groups: function(groupService) {
+                        return groupService.getUserGroups();
                     }
                 }
             })
@@ -48,6 +54,12 @@
                         return {
                             changeTypeEnabled: true
                         }
+                    },
+                    _users: function(userService) {
+                        return userService.getAll();
+                    },
+                    _groups: function(groupService) {
+                        return groupService.getUserGroups();
                     }
                 }
             })

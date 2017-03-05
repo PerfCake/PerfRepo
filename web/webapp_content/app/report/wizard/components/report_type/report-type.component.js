@@ -12,8 +12,8 @@
             templateUrl: 'app/report/wizard/components/report_type/report-type.view.html'
         });
 
-    function ReportTypeWizardStep() {
+    function ReportTypeWizardStep(wizardService) {
         var vm = this;
-
+        vm.reportTypes = wizardService.getReportTypes();
     }
 })();

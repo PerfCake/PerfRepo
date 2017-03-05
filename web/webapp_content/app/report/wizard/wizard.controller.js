@@ -5,7 +5,8 @@
         .module('org.perfrepo.report.wizard')
         .controller('WizardReportController', WizardReportController);
 
-    function WizardReportController(_data, _state, reportService, $scope, $state) {
+    function WizardReportController(_data, _state, _groups, _users, reportService, wizardService, validationHelper,
+                                    $scope, $state) {
         var vm = this;
         vm.newReport = (_data.id == undefined);
         vm.backCallback = backCallback;
@@ -16,6 +17,8 @@
 
         vm.data = _data;
         vm.state = _state;
+        vm.users = _users;
+        vm.groups = _groups;
 
         initialize();
 
@@ -23,10 +26,7 @@
             if (vm.newReport) {
                 vm.pageTitle = 'New report wizard';
                 vm.data = {
-                    type: 'TABLE_COMPARISON',
-                    groups: [{
-                        name: 'New group'
-                    }]
+                    type: 'TABLE_COMPARISON'
                 };
             } else {
                 vm.pageTitle = 'Edit report wizard';
@@ -51,6 +51,10 @@
         function nextCallback(step) {
             console.log("next callback");
             console.log(step);
+
+            if(!validate(step)) {
+                return false;
+            }
 
             if (step.stepId === 'type') {
                 if (vm.data.type == undefined) {
@@ -92,6 +96,10 @@
             }, function(errorResponse) {
                 //validationHelper.setFormErrors(errorResponse, form);
             });
+        }
+
+        function validate(step) {
+            return true;
         }
     }
 })();

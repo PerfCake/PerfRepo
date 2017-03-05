@@ -20,30 +20,34 @@
          loading-wizard-title="'loading...'"
          embed-in-page="true">
 
-        <!-- select type of report -->
-        <div pf-wizard-step step-title="Type" step-id="type" step-priority="0">
-            <pr-report-type-step report-type="vm.data.type"></pr-report-type-step>
-        </div>
+        <form role="form" name="vm.wizardForm" novalidate>
+            <!-- select type of report -->
+            <div pf-wizard-step step-title="Type" step-id="type" step-priority="0">
+                <pr-report-type-step report-type="vm.data.type"></pr-report-type-step>
+            </div>
 
-        <!-- select name and description of report -->
-        <div pf-wizard-step step-title="Name" substeps="false" step-id="information" step-priority="1">
-            <pr-report-information-step data="vm.data"></pr-report-information-step>
-        </div>
+            <!-- select name and description of report -->
+            <div pf-wizard-step step-title="Info" substeps="false" step-id="information" step-priority="1">
+                <pr-report-information-step data="vm.data"></pr-report-information-step>
+            </div>
 
-        <!-- set configuration of report -->
-        <div pf-wizard-step step-title="Configuration" step-id="configuration" step-priority="2">
-            <!-- table comparison report-->
-            <pr-table-comparison-report-configuration ng-if="vm.data.type == 'TABLE_COMPARISON'" data="vm.data">
-            </pr-table-comparison-report-configuration>
-            <!-- metric history report-->
-            <pr-metric-history-report-configuration  ng-if="vm.data.type =='METRIC_HISTORY'" data="vm.data">
-            </pr-metric-history-report-configuration>
-        </div>
+            <!-- set configuration of report -->
+            <div pf-wizard-step step-title="Configuration" step-id="configuration" step-priority="2">
+                <!-- table comparison report-->
+                <pr-table-comparison-report-configuration ng-if="vm.data.type == 'TABLE_COMPARISON'" data="vm.data">
+                </pr-table-comparison-report-configuration>
+                <!-- metric history report-->
+                <pr-metric-history-report-configuration  ng-if="vm.data.type =='METRIC_HISTORY'" data="vm.data">
+                </pr-metric-history-report-configuration>
+            </div>
 
-        <!-- set permissions of report -->
-        <div pf-wizard-step step-title="Permissions" step-id="permissions" step-priority="3">
-            <pr-report-permissions-step permissions="vm.data.permissions"></pr-report-permissions-step>
-        </div>
+            <!-- set permissions of report -->
+            <div pf-wizard-step step-title="Permissions" step-id="permissions" step-priority="3">
+                <pr-report-permissions-step data="vm.data"
+                                            groups="vm.groups" users="vm.users">
+                </pr-report-permissions-step>
+            </div>
+        </form>
 
     </div>
 </div>

@@ -22,11 +22,11 @@
                     setFieldValid();
                 });
 
-                scope.$watch(ctrl.$$parentForm.$name + '.' + ctrl.$name + '.$valid', function(valid) {
-                    if (valid) {
-                        setFieldValid();
-                    } else {
+                scope.$watch(ctrl.$$parentForm.$name + '["' + ctrl.$name + '"].$valid', function(valid) {
+                    if (valid === false) {
                         setFieldInvalid();
+                    } else {
+                        setFieldValid();
                     }
                 });
 
