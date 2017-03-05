@@ -9,6 +9,8 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
 /**
+ * Jackson configuration, serialize date to ISO 8601.
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 @Provider

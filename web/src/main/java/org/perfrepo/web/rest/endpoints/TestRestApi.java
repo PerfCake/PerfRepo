@@ -18,6 +18,7 @@ import java.net.URI;
 import java.util.List;
 
 /**
+ * Service endpoint for test definitions.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
@@ -105,6 +106,13 @@ public class TestRestApi {
       return Response.noContent().build();
    }
 
+   /**
+    * Return true if logged user is alert subscriber of the test.
+    *
+    * @param testId The test identifier.
+    *
+    * @return Return true if logged user is alert subscriber.
+    */
    @GET
    @Path("/{id}/subscriber")
    public Response isUserSubscriber(@PathParam("id") Long testId) {
@@ -112,6 +120,13 @@ public class TestRestApi {
       return Response.ok().entity(isSubscriber).build();
    }
 
+   /**
+    * Subscribe logged user to the test alerts.
+    *
+    * @param testId The test identifier.
+    *
+    * @return No content if the request is successful.
+    */
    @POST
    @Path("/{id}/subscriber-addition")
    public Response addSubscriber(@PathParam("id") Long testId) {
@@ -120,6 +135,13 @@ public class TestRestApi {
       return Response.noContent().build();
    }
 
+   /**
+    * Unsubscribe logged user to the test alerts.
+    *
+    * @param testId The test identifier.
+    *
+    * @return No content if the request is successful.
+    */
    @POST
    @Path("/{id}/subscriber-removal")
    public Response removeSubscriber(@PathParam("id") Long testId) {
@@ -128,6 +150,12 @@ public class TestRestApi {
       return Response.noContent().build();
    }
 
+   /**
+    * Return all defined alerts of the specified test.
+    *
+    * @param testId The test identifier.
+    * @return List of alerts.
+    */
    @GET
    @Path("/{id}/alerts")
    public Response getAllAlertsForTest(@PathParam("id") Long testId) {

@@ -52,7 +52,7 @@ public interface TestExecutionAdapter {
     TestExecutionDto updateTestExecution(TestExecutionDto testExecution);
 
     /**
-     * Set test execution parameters of the {@link TestExecutionDto} object. The old parameters are removed.
+     * Set execution parameters to the test execution. The old parameters are removed.
      *
      * @param testExecutionId The test execution identifier.
      * @param testExecutionParameters The sets of new execution parameters.
@@ -66,7 +66,7 @@ public interface TestExecutionAdapter {
     TestExecutionDto setTestExecutionParameters(Long testExecutionId, Set<ParameterDto> testExecutionParameters);
 
     /**
-     * Add test execution measured values of the {@link TestExecutionDto} object. The old values are permitted.
+     * Add measured values to the test execution. The old values are preserved.
      *
      * @param testExecutionId The test execution identifier.
      * @param metricId The associated metric to the measured values.
@@ -81,7 +81,7 @@ public interface TestExecutionAdapter {
     TestExecutionDto addExecutionValues(Long testExecutionId, Long metricId, List<ValueDto> executionValues);
 
     /**
-     * Set test execution measured values of the {@link TestExecutionDto} object. The old values are removed.
+     * Set measured values to the test execution. The old values are removed.
      *
      * @param testExecutionId The test execution identifier.
      * @param metricId The associated metric to the measured values.

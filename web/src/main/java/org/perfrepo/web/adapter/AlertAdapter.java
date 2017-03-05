@@ -1,7 +1,6 @@
 package org.perfrepo.web.adapter;
 
 import org.perfrepo.dto.alert.AlertDto;
-import org.perfrepo.dto.user.UserDto;
 
 import java.util.List;
 

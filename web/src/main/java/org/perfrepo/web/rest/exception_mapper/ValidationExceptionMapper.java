@@ -11,7 +11,7 @@ import javax.ws.rs.ext.Provider;
 import java.util.List;
 
 /**
- *
+ * Maps {@link ValidationException} exception to HTTP response. Sets 422 status code.
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 @Provider
@@ -35,7 +35,7 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
 
         private List<FieldError> fieldErrors;
 
-        public ValidationExceptionResponse(String message, List<FieldError> fieldErrors) {
+        ValidationExceptionResponse(String message, List<FieldError> fieldErrors) {
             this.message = message;
             this.fieldErrors = fieldErrors;
         }

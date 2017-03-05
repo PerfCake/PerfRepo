@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Service endpoint for test executions.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
@@ -71,14 +72,6 @@ public class TestExecutionRestApi {
       return Response.noContent().build();
    }
 
-   @PUT
-   @Path("/{id}/parameters")
-   public Response updateParameters(@PathParam("id") Long testExecutionId, Set<ParameterDto> testExecutionParameters) {
-      testExecutionAdapter.setTestExecutionParameters(testExecutionId, testExecutionParameters);
-
-      return Response.noContent().build();
-   }
-
    @DELETE
    @Path("/{id}")
    public Response delete(@PathParam("id") Long testExecutionId) {
@@ -94,43 +87,28 @@ public class TestExecutionRestApi {
       return Response.ok().entity(allTestExecutions).build();
    }
 
-   @GET
-   @Path("/attachments/download/{attachmentId}")
-   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-   public Response downloadAttachment(@PathParam("attachmentId") Long attachmentId) {
+   /**
+    * Set test execution parameters. The old parameters are removed.
+    * @param testExecutionId The test execution identifier.
+    * @param testExecutionParameters Execution parameters.
+    * @return No content if the request is successful.
+    */
+   @PUT
+   @Path("/{id}/parameters")
+   public Response setParameters(@PathParam("id") Long testExecutionId, Set<ParameterDto> testExecutionParameters) {
+       testExecutionAdapter.setTestExecutionParameters(testExecutionId, testExecutionParameters);
 
-      AttachmentDto attachment = testExecutionAdapter.getTestExecutionAttachment(attachmentId);
 
-
-      return Response
-              .ok(attachment.getContent())
-              .header("Content-Disposition", "attachment; filename=" + attachment.getFilename())
-              .build();
+       return Response.noContent().build();
    }
-
-   @POST
-   @Path("/attachments/upload")
-  // @Consumes(MediaType.WILDCARD_TYPE)
-   public Response uploadAttachment(MultipartFormDataInput formDataInput) {
-      Map<String, List<InputPart>> formDataParts = formDataInput.getFormDataMap();
-      List<InputPart> inputParts = formDataParts.get("file");
-
-      InputPart inputPart = inputParts.get(0);
-
-         try {
-            MultivaluedMap<String, String> headers = inputPart.getHeaders();
-            InputStream inputStream = inputPart.getBody(InputStream.class, null);
-
-            byte [] bytes = IOUtils.toByteArray(inputStream);
-
-         } catch (IOException e) {
-            e.printStackTrace();
-         }
-
-      return Response.status(200)
-              .entity("uploadFile is called, Uploaded file name : ").build();
-   }
-
+   /**
+    * Add measured values to the test execution. The old values of the metric are preserved.
+    *
+    * @param testExecutionId The test execution identifier.
+    * @param metricId The metric identifier.
+    * @param executionValues The sets of new execution measured values.
+    * @return No content if the request is successful.
+    */
    @POST
    @Path("/{id}/values/{metricId}")
    public Response addExecutionValues(@PathParam("id") Long testExecutionId, @PathParam("metricId") Long metricId,
@@ -140,6 +118,14 @@ public class TestExecutionRestApi {
       return Response.noContent().build();
    }
 
+   /**
+    * Set measured values to the test execution. The old values of the metric are removed.
+    *
+    * @param testExecutionId The test execution identifier.
+    * @param metricId The metric identifier.
+    * @param executionValues The sets of new execution measured values.
+    * @return No content if the request is successful.
+    */
    @PUT
    @Path("/{id}/values/{metricId}")
    public Response setExecutionValues(@PathParam("id") Long testExecutionId, @PathParam("metricId") Long metricId,
@@ -148,4 +134,45 @@ public class TestExecutionRestApi {
 
       return Response.noContent().build();
    }
+
+   /**
+    * TODO this method will be changed
+    */
+   @GET
+   @Path("/attachments/download/{attachmentId}/{token}")
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
+   public Response downloadAttachment(@PathParam("attachmentId") Long attachmentId, @PathParam("token") String token) {
+
+       AttachmentDto attachment = testExecutionAdapter.getTestExecutionAttachment(attachmentId);
+
+       return Response
+               .ok(attachment.getContent())
+               .header("Content-Disposition", "attachment; filename=" + attachment.getFilename())
+               .build();
+   }
+
+    /**
+     * TODO this method will be changed
+     */
+    @POST
+    @Path("/attachments/upload")
+    public Response uploadAttachment(MultipartFormDataInput formDataInput) {
+        Map<String, List<InputPart>> formDataParts = formDataInput.getFormDataMap();
+        List<InputPart> inputParts = formDataParts.get("file");
+
+        InputPart inputPart = inputParts.get(0);
+
+        try {
+            MultivaluedMap<String, String> headers = inputPart.getHeaders();
+            InputStream inputStream = inputPart.getBody(InputStream.class, null);
+
+            byte [] bytes = IOUtils.toByteArray(inputStream);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return Response.status(200)
+                .entity("uploadFile is called, Uploaded file name : ").build();
+    }
 }

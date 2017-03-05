@@ -115,7 +115,7 @@ public class ReportAdapterDummyImpl implements ReportAdapter {
         // test name
         ValidationErrors validation = new ValidationErrors();
 
-        if(report.getGroups() == null) {
+        if (report.getGroups() == null) {
             return;
         }
 

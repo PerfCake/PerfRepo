@@ -50,7 +50,7 @@ public class ReportStorage {
             report.setDescription(dto.getDescription());
             report.setPermissions(dto.getPermissions());
             if (report instanceof TableComparisonReportDto) {
-                ((TableComparisonReportDto) report).setGroups(((TableComparisonReportDto)dto).getGroups());
+                ((TableComparisonReportDto) report).setGroups(((TableComparisonReportDto) dto).getGroups());
             }
             return report;
         } else {

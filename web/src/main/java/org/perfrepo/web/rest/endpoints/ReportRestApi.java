@@ -14,6 +14,7 @@ import java.net.URI;
 import java.util.List;
 
 /**
+ * Service endpoint for reports.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */

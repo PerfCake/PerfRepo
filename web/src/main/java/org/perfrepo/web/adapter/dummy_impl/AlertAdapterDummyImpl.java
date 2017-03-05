@@ -2,7 +2,6 @@ package org.perfrepo.web.adapter.dummy_impl;
 
 import org.perfrepo.dto.alert.AlertDto;
 import org.perfrepo.dto.test.TestDto;
-import org.perfrepo.dto.user.UserDto;
 import org.perfrepo.dto.util.validation.ValidationErrors;
 import org.perfrepo.web.adapter.AlertAdapter;
 import org.perfrepo.web.adapter.dummy_impl.storage.Storage;

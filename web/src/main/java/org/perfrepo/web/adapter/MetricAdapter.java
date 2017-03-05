@@ -38,7 +38,7 @@ public interface MetricAdapter {
     MetricDto updateMetric(MetricDto metric);
 
     /**
-     * Add the metric to the existing test. If the metric does not exist, it will be created.
+     * Add the metric to the test. If the metric does not exist, it will be created.
      *
      * @param metric The metric {@link MetricDto} that will be added to the test.
      * @param testId The test {@link org.perfrepo.dto.test.TestDto} identifier.
@@ -51,7 +51,7 @@ public interface MetricAdapter {
     MetricDto addMetric(MetricDto metric, Long testId);
 
     /**
-     * Remove the metric from the existing test.
+     * Remove the metric from the test. If the metric is not assigned to any test, it will be deleted.
      *
      * @param metricId The identifier of {@link MetricDto} the metric that will be removed.
      * @param testId Test {@link org.perfrepo.dto.test.TestDto} identifier.

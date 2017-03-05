@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Rest api endpoints, configuration registration.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
