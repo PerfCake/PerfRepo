@@ -2,6 +2,7 @@ package org.perfrepo.dto.report;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.perfrepo.dto.report.metric_history.MetricHistoryReportDto;
 import org.perfrepo.dto.report.table_comparison.TableComparisonReportDto;
 
 import java.util.List;

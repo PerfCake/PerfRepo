@@ -74,7 +74,7 @@ public class TestExecutionRestApi {
    @PUT
    @Path("/{id}/parameters")
    public Response updateParameters(@PathParam("id") Long testExecutionId, Set<ParameterDto> testExecutionParameters) {
-      testExecutionAdapter.updateTestExecutionParameters(testExecutionId, testExecutionParameters);
+      testExecutionAdapter.setTestExecutionParameters(testExecutionId, testExecutionParameters);
 
       return Response.noContent().build();
    }

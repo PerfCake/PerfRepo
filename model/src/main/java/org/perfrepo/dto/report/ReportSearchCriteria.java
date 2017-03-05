@@ -5,6 +5,11 @@ import org.perfrepo.enums.report.ReportType;
 
 import java.util.Set;
 
+/**
+ * Data transfer object that contains filter parameters for {@link ReportDto} searching query.
+ *
+ * @author Jiri Grunwald (grunwjir@gmail.com)
+ */
 public class ReportSearchCriteria {
 
     private Set<String> namesFilter;

@@ -11,6 +11,7 @@ import java.util.Set;
  */
 public class TestSearchCriteria {
 
+    /** Used in reports to search test in select component */
     private String generalSearch;
 
     private Set<String> nameFilters;

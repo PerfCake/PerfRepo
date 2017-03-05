@@ -1,6 +1,9 @@
 package org.perfrepo.dto.test_execution;
 
 /**
+ * Represents parameter of a measured value. It is used for multi-value measured values, it represents "x-axis".
+ * (for example: time, percent...)
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public class ValueParameterDto {

@@ -3,6 +3,9 @@ package org.perfrepo.dto.report.table_comparison;
 import java.util.List;
 
 /**
+ * Data transfer object for the report. Represents one comparison table.
+ * This object is used for view and configuration of the report.
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public class TableDto {
@@ -11,10 +14,13 @@ public class TableDto {
 
     private String description;
 
+    /** Property is used for configuration of report. */
     private List<ComparisonItemDto> items;
 
+    /** Property is used for view of report. */
     private List<HeaderCellDto> tableHeaderCells;
 
+    /** Property is used for view of report. */
     private List<RowDto> tableRows;
 
     public String getName() {

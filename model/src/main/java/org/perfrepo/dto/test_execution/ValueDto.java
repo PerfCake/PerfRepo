@@ -3,7 +3,7 @@ package org.perfrepo.dto.test_execution;
 import java.util.Set;
 
 /**
- * Represents one value of test execution {@link TestExecutionDto}.
+ * Represents one measured value of a test execution {@link TestExecutionDto}.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */

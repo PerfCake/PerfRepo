@@ -1,6 +1,9 @@
 package org.perfrepo.dto.test_execution;
 
 /**
+ * Represents a execution parameter of a test execution.
+ * (for example: environment info, commit hash, version info...)
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public class ParameterDto {

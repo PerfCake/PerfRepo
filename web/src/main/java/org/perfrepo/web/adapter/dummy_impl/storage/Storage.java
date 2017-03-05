@@ -1,7 +1,7 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
 import org.apache.commons.lang.time.DateUtils;
-import org.perfrepo.dto.report.MetricHistoryReportDto;
+import org.perfrepo.dto.report.metric_history.MetricHistoryReportDto;
 import org.perfrepo.dto.report.PermissionDto;
 import org.perfrepo.dto.report.table_comparison.*;
 import org.perfrepo.dto.test_execution.AttachmentDto;

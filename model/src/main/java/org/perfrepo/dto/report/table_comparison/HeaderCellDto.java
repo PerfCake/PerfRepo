@@ -1,6 +1,9 @@
 package org.perfrepo.dto.report.table_comparison;
 
 /**
+ * Data transfer object for the table comparison report. Represents one header cell in the comparison table.
+ * This object is used for view of the report.
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public class HeaderCellDto {

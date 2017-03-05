@@ -4,6 +4,8 @@ import org.perfrepo.enums.AccessLevel;
 import org.perfrepo.enums.AccessType;
 
 /**
+ * Data transfer object for report access permission.
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public class PermissionDto {
@@ -12,12 +14,16 @@ public class PermissionDto {
 
     private AccessType type;
 
+    /** Property is used for access level {@link AccessLevel#GROUP} */
     private Long groupId;
 
+    /** Property is used for access level {@link AccessLevel#USER} */
     private Long userId;
 
+    /** Only for view. */
     private String groupName;
 
+    /** Only for view. */
     private String userFullName;
 
     public AccessLevel getLevel() {

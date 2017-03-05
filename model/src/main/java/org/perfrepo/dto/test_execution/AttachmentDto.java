@@ -1,6 +1,8 @@
 package org.perfrepo.dto.test_execution;
 
 /**
+ * Represents a attachment of a test execution.
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public class AttachmentDto {

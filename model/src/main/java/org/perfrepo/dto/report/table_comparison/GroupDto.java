@@ -3,6 +3,8 @@ package org.perfrepo.dto.report.table_comparison;
 import java.util.List;
 
 /**
+ * Data transfer object for the table comparison report. The report can contains a few groups of comparison tables.
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public class GroupDto {

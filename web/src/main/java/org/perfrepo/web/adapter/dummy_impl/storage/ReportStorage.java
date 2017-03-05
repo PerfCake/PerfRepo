@@ -1,7 +1,7 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
 import org.apache.commons.lang.StringUtils;
-import org.perfrepo.dto.report.MetricHistoryReportDto;
+import org.perfrepo.dto.report.metric_history.MetricHistoryReportDto;
 import org.perfrepo.dto.report.ReportDto;
 import org.perfrepo.dto.report.ReportSearchCriteria;
 import org.perfrepo.dto.report.table_comparison.TableComparisonReportDto;

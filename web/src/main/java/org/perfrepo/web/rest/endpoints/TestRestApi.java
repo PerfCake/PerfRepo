@@ -69,7 +69,6 @@ public class TestRestApi {
    @POST
    public Response create(TestDto testDto) {
       TestDto createdTest = testAdapter.createTest(testDto);
-
       URI uri = URI.create("/tests/" + createdTest.getId());
 
       return Response.created(uri).build();
