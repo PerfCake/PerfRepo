@@ -320,11 +320,13 @@ public class Storage {
     private void initializeReports() {
         MetricHistoryReportDto metricReport1 = new MetricHistoryReportDto();
         metricReport1.setName("Metric history report 1");
+        metricReport1.setTypeName("Metric history report");
         metricReport1.setDescription("Description of <strong>metric history</strong> report.");
         reportStorage.create(metricReport1);
 
         MetricHistoryReportDto metricReport2 = new MetricHistoryReportDto();
         metricReport2.setName("Metric history report 2");
+        metricReport1.setTypeName("Metric history report");
         metricReport2.setDescription("Description of <strong>metric history</strong> report.");
         reportStorage.create(metricReport2);
 
@@ -335,6 +337,7 @@ public class Storage {
         TableComparisonReportDto tableReport3 = new TableComparisonReportDto();
         reportStorage.create(tableReport3);
         tableReport3.setName("Table comparison report 3");
+        tableReport3.setTypeName("Table comparison report");
         tableReport3.setDescription("Description of <strong>table comparison</strong> report.");
         // group 1
         GroupDto group1 = new GroupDto();

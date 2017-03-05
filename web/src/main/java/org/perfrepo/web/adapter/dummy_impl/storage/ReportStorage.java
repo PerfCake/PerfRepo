@@ -1,8 +1,10 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
 import org.apache.commons.lang.StringUtils;
+import org.perfrepo.dto.report.MetricHistoryReportDto;
 import org.perfrepo.dto.report.ReportDto;
 import org.perfrepo.dto.report.ReportSearchCriteria;
+import org.perfrepo.dto.report.table_comparison.TableComparisonReportDto;
 import org.perfrepo.dto.util.SearchResult;
 
 import java.util.ArrayList;
@@ -31,6 +33,11 @@ public class ReportStorage {
 
     public ReportDto create(ReportDto dto) {
         dto.setId(getNextId());
+        if (dto instanceof TableComparisonReportDto) {
+            dto.setTypeName("Table comparison report");
+        } else if (dto instanceof MetricHistoryReportDto) {
+            dto.setTypeName("Metric history report");
+        }
         data.add(dto);
         return dto;
     }
@@ -41,6 +48,10 @@ public class ReportStorage {
         if (report != null) {
             report.setName(dto.getName());
             report.setDescription(dto.getDescription());
+            report.setPermissions(dto.getPermissions());
+            if (report instanceof TableComparisonReportDto) {
+                ((TableComparisonReportDto) report).setGroups(((TableComparisonReportDto)dto).getGroups());
+            }
             return report;
         } else {
             return null;

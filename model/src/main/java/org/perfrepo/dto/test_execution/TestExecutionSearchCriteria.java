@@ -34,7 +34,7 @@ public class TestExecutionSearchCriteria {
 
     private int offset = 0;
 
-    private OrderBy orderBy;
+    private OrderBy orderBy = OrderBy.NAME_ASC;
 
     public Set<Long> getIdsFilter() {
         return idsFilter;

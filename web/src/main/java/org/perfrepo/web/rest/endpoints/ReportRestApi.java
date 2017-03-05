@@ -78,4 +78,25 @@ public class ReportRestApi {
 
       return Response.ok().entity(allReports).build();
    }
+
+   @POST
+   @Path("/wizard/validate/info-step")
+   public Response validateReportInfoStep(ReportDto reportDto) {
+      reportAdapter.validateWizardReportInfoStep(reportDto);
+      return Response.ok().build();
+   }
+
+   @POST
+   @Path("/wizard/validate/configuration-step")
+   public Response validateReportConfigurationStep(ReportDto reportDto) {
+      reportAdapter.validateWizardReportConfigurationStep(reportDto);
+      return Response.ok().build();
+   }
+
+   @POST
+   @Path("/wizard/validate/permission-step")
+   public Response validateReportPermissionStep(ReportDto reportDto) {
+      reportAdapter.validateWizardReportPermissionStep(reportDto);
+      return Response.ok().build();
+   }
 }

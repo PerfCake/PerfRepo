@@ -24,6 +24,8 @@ public abstract class ReportDto {
 
     private String description;
 
+    private String typeName;
+
     private List<PermissionDto> permissions;
 
     public Long getId() {
@@ -48,6 +50,14 @@ public abstract class ReportDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     public List<PermissionDto> getPermissions() {

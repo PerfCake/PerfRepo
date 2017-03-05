@@ -22,4 +22,10 @@ public interface ReportAdapter {
     List<ReportDto> getAllReports();
 
     SearchResult<ReportDto> searchReports(ReportSearchCriteria searchParams);
+
+    void validateWizardReportInfoStep(ReportDto report);
+
+    void validateWizardReportConfigurationStep(ReportDto report);
+
+    void validateWizardReportPermissionStep(ReportDto report);
 }
