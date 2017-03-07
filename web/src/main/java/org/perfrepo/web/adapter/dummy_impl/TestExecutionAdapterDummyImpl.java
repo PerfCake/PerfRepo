@@ -163,7 +163,7 @@ public class TestExecutionAdapterDummyImpl implements TestExecutionAdapter {
             validation.addFieldError("comment", "Test execution description must not be more than 500 characters.");
         }
 
-        if (validation.hasFieldErrors()) {
+        if (validation.hasErrors()) {
             throw new ValidationException("Test execution contains validation errors, please fix it.", validation);
         }
     }
@@ -184,7 +184,7 @@ public class TestExecutionAdapterDummyImpl implements TestExecutionAdapter {
             });
         }
 
-        if (validation.hasFieldErrors()) {
+        if (validation.hasErrors()) {
             throw new ValidationException("Test execution contains validation errors, please fix it.", validation);
         }
     }

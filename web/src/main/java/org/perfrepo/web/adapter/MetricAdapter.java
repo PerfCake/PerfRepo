@@ -26,6 +26,14 @@ public interface MetricAdapter {
     /**
      * Update the {@link MetricDto} object.
      *
+     * <br>
+     * <strong>Validation fields:</strong>
+     * <ul>
+     *  <li><strong>name</strong> - Metric name</li>
+     *  <li><strong>description</strong> - Metric description</li>
+     *  <li><strong>comparator</strong> - Metric comparator</li>
+     * <ul/>
+     *
      * @param metric Parameters of the metric that will be updated.
      *
      * @return Updated {@link MetricDto} object.
@@ -39,6 +47,14 @@ public interface MetricAdapter {
 
     /**
      * Add the metric to the test. If the metric does not exist, it will be created.
+     *
+     * <br>
+     * <strong>Validation fields:</strong>
+     * <ul>
+     *  <li><strong>name</strong> - Metric name</li>
+     *  <li><strong>description</strong> - Metric description</li>
+     *  <li><strong>comparator</strong> - Metric comparator</li>
+     * <ul/>
      *
      * @param metric The metric {@link MetricDto} that will be added to the test.
      * @param testId The test {@link org.perfrepo.dto.test.TestDto} identifier.

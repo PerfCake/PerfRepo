@@ -27,6 +27,15 @@ public interface TestExecutionAdapter {
     /**
      * Create new {@link TestExecutionDto} object.
      *
+     * <br>
+     * <strong>Validation fields:</strong>
+     * <ul>
+     *  <li><strong>name</strong> - Execution name</li>
+     *  <li><strong>tags</strong> - Tags</li>
+     *  <li><strong>started</strong> - Started date</li>
+     *  <li><strong>comment</strong> - Execution description</li>
+     * <ul/>
+     *
      * @param testExecution Parameters of the test execution that will be created.
      *
      * @return The created {@link TestExecutionDto} object.
@@ -39,6 +48,15 @@ public interface TestExecutionAdapter {
 
     /**
      * Update the {@link TestExecutionDto} object.
+     *
+     * <br>
+     * <strong>Validation fields:</strong>
+     * <ul>
+     *  <li><strong>name</strong> - Execution name</li>
+     *  <li><strong>tags</strong> - Tags</li>
+     *  <li><strong>started</strong> - Started date</li>
+     *  <li><strong>comment</strong> - Execution description</li>
+     * <ul/>
      *
      * @param testExecution Parameters of the test execution that will be updated.
      *
@@ -53,6 +71,13 @@ public interface TestExecutionAdapter {
 
     /**
      * Set execution parameters to the test execution. The old parameters are removed.
+     *
+     * <br>
+     * <strong>Validation fields:</strong>
+     * <ul>
+     *  <li><strong>name</strong> - Execution parameter name - one validation error for all parameters</li>
+     *  <li><strong>value</strong> - Execution parameter value - one validation error for all parameters</li>
+     * <ul/>
      *
      * @param testExecutionId The test execution identifier.
      * @param testExecutionParameters The sets of new execution parameters.

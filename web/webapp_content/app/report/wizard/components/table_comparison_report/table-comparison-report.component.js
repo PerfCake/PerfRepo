@@ -22,6 +22,7 @@
         vm.addItem = addItem;
         vm.removeItem = removeItem;
         vm.onBaselineChecked = onBaselineChecked;
+        vm.hasBaselineChecked = hasBaselineChecked;
         vm.refreshTestsList = refreshTestsList;
         vm.itemSelectors = wizardService.getItemSelectors();
         vm.validate = validate;
@@ -36,6 +37,7 @@
             wizardService.validateReportConfigurationStep(vm.data).then(function() {
                 vm.currentStep = 'Permissions';
             }, function(errorResponse) {
+                vm.formErrors = validationHelper.prepareGlobalFormErrors(errorResponse);
                 validationHelper.setFormErrors(errorResponse, vm.wizardTableComparisonStep);
                 return false;
             });
@@ -45,7 +47,7 @@
             if (vm.data.groups == undefined) {
                 vm.data.groups = [];
             }
-            vm.data.groups.push({name: 'New group', tables:[]}); // add new pane
+            vm.data.groups.push({name: 'New group', tables:[], threshold: 5}); // add new pane
         }
 
         function addComparison(groupIndex) {
@@ -83,6 +85,16 @@
                     item.baseline = false;
                 }
             });
+        }
+
+        function hasBaselineChecked(groupIndex, comparisonIndex) {
+            var checked = false;
+            angular.forEach(vm.data.groups[groupIndex].tables[comparisonIndex].items, function(item) {
+                if (item.baseline) {
+                    checked = true;
+                }
+            });
+            return checked;
         }
 
         function refreshTestsList(search) {

@@ -26,6 +26,17 @@ public interface AlertAdapter {
     /**
      * Create new {@link AlertDto} test alert.
      *
+     * <br>
+     * <strong>Validation fields:</strong>
+     * <ul>
+     *  <li><strong>name</strong> - Alert name</li>
+     *  <li><strong>description</strong> - Alert description</li>
+     *  <li><strong>condition</strong> - Alert condition</li>
+     *  <li><strong>links</strong> - Links</li>
+     *  <li><strong>metric</strong> - Selected metric</li>
+     *  <li><strong>tags</strong> - Tags</li>
+     * <ul/>
+     *
      * @param alert Parameters of the test alert that will be created.
      *
      * @return The created {@link AlertDto} test alert.
@@ -38,6 +49,17 @@ public interface AlertAdapter {
 
     /**
      * Update the {@link AlertDto} test alert.
+     *
+     * <br>
+     * <strong>Validation fields:</strong>
+     * <ul>
+     *  <li><strong>name</strong> - Alert name</li>
+     *  <li><strong>description</strong> - Alert description</li>
+     *  <li><strong>condition</strong> - Alert condition</li>
+     *  <li><strong>links</strong> - Links</li>
+     *  <li><strong>metric</strong> - Selected metric</li>
+     *  <li><strong>tags</strong> - Tags</li>
+     * <ul/>
      *
      * @param alert Parameters of the test alert that will be updated.
      *

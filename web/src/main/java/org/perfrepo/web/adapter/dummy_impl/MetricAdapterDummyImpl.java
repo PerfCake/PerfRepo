@@ -140,7 +140,7 @@ public class MetricAdapterDummyImpl implements MetricAdapter {
             validation.addFieldError("description", "Metric description must not be more than 500 characters.");
         }
 
-        if (validation.hasFieldErrors()) {
+        if (validation.hasErrors()) {
             throw new ValidationException("Metric contains validation errors, please fix it.", validation);
         }
     }

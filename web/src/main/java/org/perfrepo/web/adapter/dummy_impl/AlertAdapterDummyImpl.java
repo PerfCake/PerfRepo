@@ -122,7 +122,7 @@ public class AlertAdapterDummyImpl implements AlertAdapter {
             validation.addFieldError("description", "Alert description must not be more than 500 characters.");
         }
 
-        if (validation.hasFieldErrors()) {
+        if (validation.hasErrors()) {
             throw new ValidationException("Test contains validation errors, please fix it.", validation);
         }
     }

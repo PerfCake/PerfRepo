@@ -32,6 +32,7 @@
             wizardService.validateReportPermissionStep(vm.data).then(function() {
                saveReport();
             }, function(errorResponse) {
+                vm.formErrors = validationHelper.prepareGlobalFormErrors(errorResponse);
                 validationHelper.setFormErrors(errorResponse, vm.wizardPermissionStep);
                 return false;
             });

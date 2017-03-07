@@ -54,7 +54,12 @@
             </div>
         </div>
     </ng-form>
+
+    <div ng-show="vm.formErrors.permissions && (vm.data.permissions == undefined || vm.data.permissions.length == 0)"
+         class="alert alert-danger form-validation-error"><span class="pficon pficon-error-circle-o"></span>{{vm.formErrors.permissions}}</div>
+
     <p class="no-data" ng-show="vm.data.permissions == undefined || vm.data.permissions.length == 0">No permissions</p>
+
     <div class="add-link item-link">
         <a class="cursor-pointer" ng-click="vm.addPermission()">
             <span class="pficon pficon-add-circle-o" aria-hidden="true"></span> Add permission

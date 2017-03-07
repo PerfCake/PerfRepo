@@ -39,6 +39,15 @@ public interface TestAdapter {
     /**
      * Create new {@link TestDto} object.
      *
+     * <br>
+     * <strong>Validation fields:</strong>
+     * <ul>
+     *  <li><strong>name</strong> - Name of test</li>
+     *  <li><strong>uid</strong> - Uid of test</li>
+     *  <li><strong>description</strong> - Description of test</li>
+     *  <li><strong>group</strong> - Group of test</li>
+     * <ul/>
+     *
      * @param test Parameters of the test that will be created.
      *
      * @return The created {@link TestDto} object.
@@ -51,6 +60,15 @@ public interface TestAdapter {
 
     /**
      * Update the {@link TestDto} object.
+     *
+     * <br>
+     * <strong>Validation fields:</strong>
+     * <ul>
+     *  <li><strong>name</strong> - Name of test</li>
+     *  <li><strong>uid</strong> - Uid of test</li>
+     *  <li><strong>description</strong> - Description of test</li>
+     *  <li><strong>group</strong> - Group of test</li>
+     * <ul/>
      *
      * @param test Parameters of the test that will be updated.
      *

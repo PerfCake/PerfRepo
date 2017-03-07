@@ -46,6 +46,19 @@ a.action-link {
 
 }
 
+div.form-validation-error {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 5px 10px 5px 30px;
+
+  span.pficon {
+    font-size: 16px;
+    left: 10px;
+    top: 7px;
+  }
+
+}
+
 // ##################################################################################################### ng-progress bar
 #ngProgress {
   box-shadow: none;

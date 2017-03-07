@@ -19,12 +19,7 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
 
     @Override
     public Response toResponse(ValidationException exception) {
-        List<FieldError> fieldErrors = null;
-        if (exception.getValidationErrors() != null) {
-            fieldErrors = exception.getValidationErrors().getFieldErrors();
-        }
-        ValidationExceptionResponse responseEntity =
-                new ValidationExceptionResponse(exception.getMessage(), fieldErrors);
+        ValidationExceptionResponse responseEntity = new ValidationExceptionResponse(exception);
 
         return Response.status(HttpStatus.SC_UNPROCESSABLE_ENTITY).entity(responseEntity).build();
     }
@@ -32,12 +27,13 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
     private class ValidationExceptionResponse {
 
         private String message;
-
         private List<FieldError> fieldErrors;
+        private List<FieldError> formErrors;
 
-        ValidationExceptionResponse(String message, List<FieldError> fieldErrors) {
-            this.message = message;
-            this.fieldErrors = fieldErrors;
+        ValidationExceptionResponse(ValidationException exception) {
+            this.message = exception.getMessage();
+            this.fieldErrors = exception.getValidationErrors().getFieldErrors();
+            this.formErrors = exception.getValidationErrors().getFormErrors();
         }
 
         public String getMessage() {
@@ -46,6 +42,10 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
 
         public List<FieldError> getFieldErrors() {
             return fieldErrors;
+        }
+
+        public List<FieldError> getFormErrors() {
+            return formErrors;
         }
     }
 }

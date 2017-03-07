@@ -206,7 +206,7 @@ public class TestAdapterDummyImpl implements TestAdapter {
             validation.addFieldError("description", "Test description must not be more than 500 characters.");
         }
 
-        if (validation.hasFieldErrors()) {
+        if (validation.hasErrors()) {
             throw new ValidationException("Test contains validation errors, please fix it.", validation);
         }
     }
