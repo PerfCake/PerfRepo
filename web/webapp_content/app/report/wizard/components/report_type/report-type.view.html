@@ -5,7 +5,9 @@
             <div class="col-sm-4 report-type" ng-repeat="type in vm.reportTypes">
                 <label class="cursor-pointer">
                     <span>
-                        <input type="radio" name="type" value="{{type.type}}" ng-model="vm.reportType" pr-server-validation>
+                        <input type="radio" name="type" value="{{type.type}}"
+                               ng-disabled="!vm.newReport"
+                               ng-model="vm.data.type" pr-server-validation>
                         {{type.name}}
                     </span>
                     <p>{{type.description}}</p>

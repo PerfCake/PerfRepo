@@ -5,14 +5,15 @@
         .module('org.perfrepo.report.wizard')
         .component('prTableComparisonReportConfiguration', {
             bindings: {
-                data: '='
+                data: '=',
+                currentStep: '='
             },
             controller: TableComparisonReportConfiguration,
             controllerAs: 'vm',
             templateUrl: 'app/report/wizard/components/table_comparison_report/table-comparison-report.view.html'
         });
 
-    function TableComparisonReportConfiguration(wizardService, testService, validationHelper) {
+    function TableComparisonReportConfiguration(wizardService, testService, validationHelper, $scope) {
         var vm = this;
         vm.addGroup = addGroup;
         vm.removeGroup = removeGroup;
@@ -24,6 +25,21 @@
         vm.refreshTestsList = refreshTestsList;
         vm.itemSelectors = wizardService.getItemSelectors();
         vm.validate = validate;
+
+        $scope.$on('next-step', function(event, step) {
+            if (step.stepId === 'configuration') {
+                validate();
+            }
+        });
+
+        function validate() {
+            wizardService.validateReportConfigurationStep(vm.data).then(function() {
+                vm.currentStep = 'Permissions';
+            }, function(errorResponse) {
+                validationHelper.setFormErrors(errorResponse, vm.wizardTableComparisonStep);
+                return false;
+            });
+        }
 
         function addGroup() {
             if (vm.data.groups == undefined) {
@@ -72,15 +88,6 @@
         function refreshTestsList(search) {
             testService.asyncSelectSearch(search).then(function(result) {
                 vm.testsList = result.data;
-            });
-        }
-
-        function validate() {
-            wizardService.validateReportConfigurationStep(vm.data).then(function() {
-                // ok
-            }, function(errorResponse) {
-                validationHelper.setFormErrors(errorResponse, vm.wizardTableComparisonStep);
-                return false;
             });
         }
     }

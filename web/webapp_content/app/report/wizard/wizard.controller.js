@@ -5,13 +5,11 @@
         .module('org.perfrepo.report.wizard')
         .controller('WizardReportController', WizardReportController);
 
-    function WizardReportController(_data, _state, _groups, _users, reportService, wizardService, validationHelper,
-                                    $scope, $state) {
+    function WizardReportController(_data, _state, _groups, _users, $scope) {
         var vm = this;
         vm.newReport = (_data.id == undefined);
         vm.backCallback = backCallback;
         vm.nextCallback = nextCallback;
-        vm.onCancel = onCancel;
         vm.wizardReady = true;
         vm.wizardDone = false;
 
@@ -33,7 +31,6 @@
             }
 
             $scope.$on("wizard:stepChanged", function (e, parameters) {
-                console.log("changed");
                 if (parameters.step.stepId === 'permissions') {
                     vm.nextButtonTitle = "Save";
                 } else {
@@ -42,64 +39,13 @@
             });
         }
 
-        function backCallback(step) {
-            console.log("back callback");
-            console.log(step);
+        function backCallback() {
             return true;
         }
 
         function nextCallback(step) {
-            console.log("next callback");
-            console.log(step);
-
-            if(!validate(step)) {
-                return false;
-            }
-
-            if (step.stepId === 'type') {
-                if (vm.data.type == undefined) {
-                    return false;
-                }
-            }
-
-            if (step.stepId === 'permissions') {
-                save();
-                return false
-            }
-
-            return true;
-        }
-
-        function onCancel() {
-            $uibModalInstance.dismiss('cancel');
-        }
-
-        function save() {
-            if (vm.data.id == undefined) {
-                createReport();
-            } else {
-                updateReport();
-            }
-        }
-
-        function createReport() {
-            reportService.create(vm.data).then(function (id) {
-                $state.go('app.reportDetail', {id: id});
-            }, function(errorResponse) {
-                //validationHelper.setFormErrors(errorResponse, form);
-            });
-        }
-
-        function updateReport() {
-            reportService.update(vm.data).then(function (report) {
-                $state.go('app.reportDetail', {id: report.id});
-            }, function(errorResponse) {
-                //validationHelper.setFormErrors(errorResponse, form);
-            });
-        }
-
-        function validate(step) {
-            return true;
+            $scope.$broadcast('next-step', step);
+            return false;
         }
     }
 })();

@@ -8,20 +8,34 @@
                 data: '=',
                 users: '<',
                 groups: '<',
-                validate: '='
+                currentStep: '='
             },
             controller: ReportPermissionsWizardStep,
             controllerAs: 'vm',
             templateUrl: 'app/report/wizard/components/permissions/permissions.view.html'
         });
 
-    function ReportPermissionsWizardStep(wizardService, validationHelper, $filter) {
+    function ReportPermissionsWizardStep($scope, wizardService, reportService, validationHelper, $filter, $state) {
         var vm = this;
         vm.options = wizardService.getPermissionOptions();
         vm.permissionTypes = permissionTypes;
         vm.addPermission = addPermission;
         vm.removePermission = removePermission;
-        vm.validate = validate;
+
+        $scope.$on('next-step', function(event, step) {
+            if (step.stepId === 'permissions') {
+                validate();
+            }
+        });
+
+        function validate() {
+            wizardService.validateReportPermissionStep(vm.data).then(function() {
+               saveReport();
+            }, function(errorResponse) {
+                validationHelper.setFormErrors(errorResponse, vm.wizardPermissionStep);
+                return false;
+            });
+        }
 
         function permissionTypes(permissionLevel) {
             var option = $filter('getByProperty')('level', permissionLevel, vm.options);
@@ -43,12 +57,27 @@
             vm.data.permissions.splice(index, 1);
         }
 
-        function validate() {
-            wizardService.validateReportPermissionStep(vm.data).then(function() {
-                return true;
+        function saveReport() {
+            if (vm.data.id == undefined) {
+                createReport();
+            } else {
+                updateReport();
+            }
+        }
+
+        function createReport() {
+            reportService.create(vm.data).then(function (id) {
+                $state.go('app.reportDetail', {id: id});
             }, function(errorResponse) {
-                validationHelper.setFormErrors(errorResponse, vm.wizardPermissionStep);
-                return false;
+                //validationHelper.setFormErrors(errorResponse, form);
+            });
+        }
+
+        function updateReport() {
+            reportService.update(vm.data).then(function (report) {
+                $state.go('app.reportDetail', {id: report.id});
+            }, function(errorResponse) {
+                //validationHelper.setFormErrors(errorResponse, form);
             });
         }
     }
