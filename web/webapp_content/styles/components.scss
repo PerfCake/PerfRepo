@@ -389,4 +389,19 @@ div.report-wizard {
     }
   }
 
+  div.metric-history-report-step {
+    div.series-item-row, div.baseline-item-row {
+      margin-left: -5px;
+      margin-right: -5px;
+
+      div.form-group {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+    }
+
+    h3.item-title {
+      font-weight: lighter;
+    }
+  }
 }

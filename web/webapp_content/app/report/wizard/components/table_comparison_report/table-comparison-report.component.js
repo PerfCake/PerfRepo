@@ -73,9 +73,6 @@
         }
 
         function removeItem(groupIndex, comparisonIndex, itemIndex) {
-            if (vm.data.groups[groupIndex].tables[comparisonIndex].items == undefined) {
-                vm.data.groups[groupIndex].tables[comparisonIndex].items = [];
-            }
             vm.data.groups[groupIndex].tables[comparisonIndex].items.splice(itemIndex, 1);
         }
 

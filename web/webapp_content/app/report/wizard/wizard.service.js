@@ -10,6 +10,7 @@
         return {
             getPermissionOptions: getPermissionOptions,
             getItemSelectors: getItemSelectors,
+            getExecutionFilterOptions: getExecutionFilterOptions,
             getReportTypes: getReportTypes,
             validateReportInfoStep: validateReportInfoStep,
             validateReportConfigurationStep: validateReportConfigurationStep,
@@ -24,6 +25,13 @@
             ];
         }
 
+
+        function getExecutionFilterOptions() {
+            return [
+                {name: 'TAG_QUERY', text: 'Tag query'},
+                {name: 'PARAMETER_QUERY', text: 'Parameter query'}
+            ];
+        }
 
         function getItemSelectors() {
             return [

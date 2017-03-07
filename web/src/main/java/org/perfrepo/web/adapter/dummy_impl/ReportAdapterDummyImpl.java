@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import org.perfrepo.dto.report.PermissionDto;
 import org.perfrepo.dto.report.ReportDto;
 import org.perfrepo.dto.report.ReportSearchCriteria;
+import org.perfrepo.dto.report.metric_history.MetricHistoryReportDto;
 import org.perfrepo.dto.report.table_comparison.ComparisonItemDto;
 import org.perfrepo.dto.report.table_comparison.GroupDto;
 import org.perfrepo.dto.report.table_comparison.TableComparisonReportDto;
@@ -82,6 +83,10 @@ public class ReportAdapterDummyImpl implements ReportAdapter {
             validateTableComparisonConfiguration((TableComparisonReportDto) report);
         }
 
+        if (report instanceof MetricHistoryReportDto) {
+            validateMetricHistoryReportConfiguration((MetricHistoryReportDto) report);
+        }
+
     }
 
     @Override
@@ -108,6 +113,10 @@ public class ReportAdapterDummyImpl implements ReportAdapter {
         if (validation.hasErrors()) {
             throw new ValidationException("Permissions contain validation errors, please fix it.", validation);
         }
+    }
+
+    private void validateMetricHistoryReportConfiguration(MetricHistoryReportDto report) {
+
     }
 
     private void validateTableComparisonConfiguration(TableComparisonReportDto report) {

@@ -64,6 +64,29 @@
                 }
             })
 
+            .state('app.newPreparedReportWizard', {
+                url: 'report/wizard',
+                templateUrl: 'app/report/wizard/wizard.view.html',
+                controller: 'WizardReportController',
+                controllerAs: 'vm',
+                resolve: {
+                    _data: function($stateParams) {
+                        return $stateParams.data;
+                    },
+                    _state: function () {
+                        return {
+                            changeTypeEnabled: false
+                        }
+                    },
+                    _users: function(userService) {
+                        return userService.getAll();
+                    },
+                    _groups: function(groupService) {
+                        return groupService.getUserGroups();
+                    }
+                }
+            })
+
             .state('app.reportOverview', {
                 url: 'report/search',
                 templateUrl: 'app/report/overview/report-overview.view.html',
