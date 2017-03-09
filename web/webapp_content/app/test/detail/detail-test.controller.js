@@ -32,7 +32,7 @@
         }
 
         function showTestExecutions() {
-            $state.go('app.testExecutionOverview', {initialFilters: [{id: 'uid', value: vm.test.uid, title: 'Test UID'}]});
+            $state.go('app.testExecutionOverview', {initialFilters: [{id: 'testUID', value: vm.test.uid, title: 'Test UID'}]});
         }
 
         function subscribeAlerts() {
