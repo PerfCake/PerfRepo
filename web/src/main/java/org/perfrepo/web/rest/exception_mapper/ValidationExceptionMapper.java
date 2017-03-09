@@ -27,6 +27,7 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
     private class ValidationExceptionResponse {
 
         private String message;
+        private String source = "VALIDATION EXCEPTION";
         private List<FieldError> fieldErrors;
         private List<FieldError> formErrors;
 
@@ -38,6 +39,10 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
 
         public String getMessage() {
             return message;
+        }
+
+        public String getSource() {
+            return source;
         }
 
         public List<FieldError> getFieldErrors() {

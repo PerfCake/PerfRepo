@@ -22,6 +22,7 @@ import org.perfrepo.enums.AccessLevel;
 import org.perfrepo.enums.report.ComparisonItemSelector;
 import org.perfrepo.web.adapter.ReportAdapter;
 import org.perfrepo.web.adapter.dummy_impl.storage.Storage;
+import org.perfrepo.web.adapter.exceptions.NotFoundException;
 import org.perfrepo.web.adapter.exceptions.ValidationException;
 
 
@@ -35,7 +36,12 @@ public class ReportAdapterDummyImpl implements ReportAdapter {
 
     @Override
     public ReportDto getReport(Long id) {
-        return storage.report().getById(id);
+        ReportDto report = storage.report().getById(id);
+        if (report == null) {
+            throw new NotFoundException("Report does not exist.");
+        }
+
+        return report;
     }
 
     @Override
