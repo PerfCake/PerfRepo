@@ -65,6 +65,10 @@ div.toolbar-pf {
   div.toolbar-pf-results ul.list-inline {
     margin-left: 0;
   }
+
+  div.filter-pf.filter-fields .form-group {
+    width: 500px;
+  }
 }
 
 @media (min-width: 992px) {
