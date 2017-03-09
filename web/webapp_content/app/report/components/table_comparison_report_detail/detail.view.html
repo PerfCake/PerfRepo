@@ -1,28 +1,12 @@
 <div ng-repeat="group in vm.groups">
-    <div class="detail-item row">
-        <div class="col-xs-3 col-lg-2 item-property">Group name</div>
-        <div class="col-xs-9 col-lg-10 item-value">{{group.name}}</div>
-    </div>
 
-    <div class="detail-item row">
-        <div class="col-xs-3 col-lg-2 item-property">Group description</div>
-        <div class="col-xs-9 col-lg-10 item-value">
-            <p ng-bind-html="group.description"></p>
-        </div>
-    </div>
+    <h2 class="report-title" title="Group name">{{group.name}}</h2>
+    <p class="report-description" ng-bind-html="group.description"></p>
 
     <div ng-repeat="table in group.tables">
-        <div class="detail-item row">
-            <div class="col-xs-3 col-lg-2 item-property">Comparison name</div>
-            <div class="col-xs-9 col-lg-10 item-value">{{table.name}}</div>
-        </div>
 
-        <div class="detail-item row">
-            <div class="col-xs-3 col-lg-2 item-property">Comparison description</div>
-            <div class="col-xs-9 col-lg-10 item-value">
-                <p ng-bind-html="table.description"></p>
-            </div>
-        </div>
+        <h3 class="report-title" title="Comparison name">{{table.name}}</h3>
+        <p class="report-description" ng-bind-html="table.description"></p>
 
         <table-comparison-report-table table="table"></table-comparison-report-table>
     </div>

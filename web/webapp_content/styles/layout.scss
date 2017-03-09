@@ -17,8 +17,15 @@ div.content-container {
     background-color: rgb(245, 245, 245);
     border-bottom: 1px #ddd solid;
 
+    span.header-title {
+      font-size: 19px;
+      margin: 10px 0 5px -10px;
+      display: block;
+      font-weight: 300;
+    }
+
     div.header-controls {
-      margin-top: 20px;
+      margin-top: 12px;
       text-align: right;
 
       button {

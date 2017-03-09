@@ -1,7 +1,5 @@
 package org.perfrepo.dto.report.metric_history;
 
-import org.perfrepo.enums.report.ComparisonItemSelector;
-
 /**
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
@@ -12,6 +10,8 @@ public class BaselineDto {
     private Long metricId;
 
     private Long executionId;
+
+    private BaselineValueDto value;
 
     public String getName() {
         return name;
@@ -35,5 +35,13 @@ public class BaselineDto {
 
     public void setExecutionId(Long executionId) {
         this.executionId = executionId;
+    }
+
+    public BaselineValueDto getValue() {
+        return value;
+    }
+
+    public void setValue(BaselineValueDto value) {
+        this.value = value;
     }
 }

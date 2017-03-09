@@ -1,11 +1,13 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
 import org.apache.commons.lang.StringUtils;
+import org.perfrepo.dto.report.box_plot.BoxPlotReportDto;
 import org.perfrepo.dto.report.metric_history.MetricHistoryReportDto;
 import org.perfrepo.dto.report.ReportDto;
 import org.perfrepo.dto.report.ReportSearchCriteria;
 import org.perfrepo.dto.report.table_comparison.TableComparisonReportDto;
 import org.perfrepo.dto.util.SearchResult;
+import org.perfrepo.enums.report.ReportType;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -91,16 +93,14 @@ public class ReportStorage {
                         || searchParams.getNamesFilter()
                                 .stream().allMatch(nameFilter -> StringUtils.containsIgnoreCase(report.getName(), nameFilter));
 
-        /*
+
         Predicate<ReportDto> typeFilterPredicate =
-                report -> searchParams.getTypesFilter() == null
-                        || searchParams.getTypesFilter()
-                                .stream().allMatch(typeFilter -> report.getType().equals(typeFilter));
-        */
+                report -> searchParams.getTypesFilter() == null || searchParams.getTypesFilter().size() == 0
+                        || (searchParams.getTypesFilter().size() == 1 && (reportTypeCheck(searchParams.getTypesFilter().iterator().next(), report)));
 
         Supplier<Stream<ReportDto>> reportStream = () ->  data.stream()
                 .filter(nameFilterPredicate)
-                //.filter(typeFilterPredicate)
+                .filter(typeFilterPredicate)
                 .sorted(sortComparator);
 
         int total = (int) reportStream.get().count();
@@ -113,6 +113,22 @@ public class ReportStorage {
                 new SearchResult<>(reports, total, searchParams.getLimit(), searchParams.getOffset());
 
         return result;
+    }
+
+    private boolean reportTypeCheck(ReportType reportType, ReportDto report) {
+        if (reportType.equals(ReportType.METRIC_HISTORY)) {
+            return report instanceof MetricHistoryReportDto;
+        }
+
+        if (reportType.equals(ReportType.BOX_PLOT)) {
+           return report instanceof BoxPlotReportDto;
+        }
+
+        if (reportType.equals(ReportType.TABLE_COMPARISON)) {
+            return report instanceof TableComparisonReportDto;
+        }
+
+        return false;
     }
 
     private Long getNextId() {

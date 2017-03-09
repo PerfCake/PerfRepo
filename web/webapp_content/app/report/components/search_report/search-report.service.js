@@ -5,7 +5,7 @@
         .module('org.perfrepo.report.search')
         .service('reportSearchService', ReportSearchService);
 
-    function ReportSearchService() {
+    function ReportSearchService(wizardService, $filter) {
         var vm = this;
         vm.filterParamsMapping = getFilterParamsMapping();
 
@@ -51,13 +51,8 @@
                     id: 'type',
                     title:  'Type',
                     placeholder: 'Filter by Type...',
-                    filterType: 'text'
-                },
-                {
-                    id: 'id',
-                    title:  'ID',
-                    placeholder: 'Filter by ID...',
-                    filterType: 'number'
+                    filterType: 'select',
+                    filterValues: wizardService.getReportTypes().map(function(type) {return type.name;})
                 }
             ];
 
@@ -83,7 +78,12 @@
 
             angular.forEach(filters, function(filter) {
                 var filterName = vm.filterParamsMapping[filter.id];
-                searchParams[filterName].push(filter.value);
+                if (filter.id == 'type') {
+                    var type = $filter('getByProperty')('name', filter.value,  wizardService.getReportTypes());
+                    searchParams[filterName].push(type.type);
+                } else {
+                    searchParams[filterName].push(filter.value);
+                }
             });
 
             return searchParams;

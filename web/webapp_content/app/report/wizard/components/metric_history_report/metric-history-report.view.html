@@ -48,7 +48,7 @@
                                        ng-change="vm.refreshTestMetricList(series.testId)"
                                        name="charts[{{chartIndex}}].series[{{seriesIndex}}].testId"
                                        pr-server-validation>
-                                <ui-select-match placeholder="Select or search a test...">{{$select.selected.name}}</ui-select-match>
+                                <ui-select-match placeholder="Select a test...">{{$select.selected.name}}</ui-select-match>
                                 <ui-select-choices repeat="test.id as test in vm.testsList"
                                                    refresh="vm.refreshTestsList($select.search)"
                                                    refresh-delay="0">
@@ -60,8 +60,8 @@
                         <div class="col-md-2 form-group">
                             <label>Metric</label>
                             <ui-select ng-model="series.metricId" title="Choose a metric"
-                                       name="charts[{{chartIndex}}].series[{{seriesIndex}}].metricId">
-                                <ui-select-match placeholder="Select or search a metric...">{{$select.selected.name}}</ui-select-match>
+                                       name="charts[{{chartIndex}}].series[{{seriesIndex}}].metricId" pr-server-validation>
+                                <ui-select-match placeholder="Select a metric...">{{$select.selected.name}}</ui-select-match>
                                 <ui-select-choices repeat="metric.id as metric in vm.testMetrics | filter: $select.search">
                                     <span ng-bind-html="metric.name | highlight: $select.search"></span>
                                 </ui-select-choices>
@@ -133,8 +133,8 @@
                         <div class="col-md-3 form-group">
                             <label>Metric</label>
                             <ui-select ng-model="baseline.metricId" title="Choose a metric"
-                                       name="charts[{{chartIndex}}].baselines[{{baselineIndex}}].metricId">
-                                <ui-select-match placeholder="Select or search a metric...">{{$select.selected.name}}</ui-select-match>
+                                       name="charts[{{chartIndex}}].baselines[{{baselineIndex}}].metricId" pr-server-validation>
+                                <ui-select-match placeholder="Select a metric...">{{$select.selected.name}}</ui-select-match>
                                 <ui-select-choices repeat="metric.id as metric in vm.testMetrics | filter: $select.search">
                                     <span ng-bind-html="metric.name | highlight: $select.search"></span>
                                 </ui-select-choices>

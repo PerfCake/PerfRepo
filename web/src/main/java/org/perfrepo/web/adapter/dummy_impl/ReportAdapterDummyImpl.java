@@ -1,18 +1,25 @@
 package org.perfrepo.web.adapter.dummy_impl;
 
 import com.google.common.collect.Sets;
+import org.perfrepo.dto.metric.MetricDto;
 import org.perfrepo.dto.report.PermissionDto;
 import org.perfrepo.dto.report.ReportDto;
 import org.perfrepo.dto.report.ReportSearchCriteria;
+import org.perfrepo.dto.report.metric_history.BaselineDto;
+import org.perfrepo.dto.report.metric_history.ChartDto;
 import org.perfrepo.dto.report.metric_history.MetricHistoryReportDto;
+import org.perfrepo.dto.report.metric_history.SeriesDto;
 import org.perfrepo.dto.report.table_comparison.ComparisonItemDto;
 import org.perfrepo.dto.report.table_comparison.GroupDto;
 import org.perfrepo.dto.report.table_comparison.TableComparisonReportDto;
 import org.perfrepo.dto.report.table_comparison.TableDto;
+import org.perfrepo.dto.test.TestDto;
+import org.perfrepo.dto.test_execution.TestExecutionDto;
 import org.perfrepo.dto.test_execution.TestExecutionSearchCriteria;
 import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.dto.util.validation.ValidationErrors;
 import org.perfrepo.enums.AccessLevel;
+import org.perfrepo.enums.report.ComparisonItemSelector;
 import org.perfrepo.web.adapter.ReportAdapter;
 import org.perfrepo.web.adapter.dummy_impl.storage.Storage;
 import org.perfrepo.web.adapter.exceptions.ValidationException;
@@ -116,11 +123,45 @@ public class ReportAdapterDummyImpl implements ReportAdapter {
     }
 
     private void validateMetricHistoryReportConfiguration(MetricHistoryReportDto report) {
+        ValidationErrors validation = new ValidationErrors();
+
+        if (report.getCharts() == null || report.getCharts().isEmpty()) {
+            validation.addFormError("charts", "No chart!");
+        } else {
+            for (int chartIndex = 0; chartIndex < report.getCharts().size(); chartIndex++) {
+                ChartDto chart = report.getCharts().get(chartIndex);
+                // chart name
+                if (chart.getName() == null) {
+                    validation.addFieldError("charts[" + chartIndex + "].name", "Chart name is a required field.");
+                } else if (chart.getName().trim().length() < 3) {
+                    validation.addFieldError("charts[" + chartIndex + "].name", "Chart name must be at least three characters.");
+                }
+                // chart description
+                if (chart.getDescription() != null && chart.getDescription().length() > 500) {
+                    validation.addFieldError("charts[" + chartIndex + "].description", "Chart description must not be more than 500 characters.");
+                }
+                // series
+                if (chart.getSeries() == null || chart.getSeries().isEmpty()) {
+                    validation.addFormError("charts[" + chartIndex + "].series", "No series!");
+                } else {
+                    validateSeries(validation, chart, chartIndex);
+                }
+                // baselines
+                if (chart.getBaselines() == null || chart.getBaselines().isEmpty()) {
+                    validation.addFormError("charts[" + chartIndex + "].baselines", "No baseline!");
+                } else {
+                    validateBaselines(validation, chart, chartIndex);
+                }
+            }
+        }
+
+        if (validation.hasErrors()) {
+            throw new ValidationException("Report contains validation errors, please fix it.", validation);
+        }
 
     }
 
     private void validateTableComparisonConfiguration(TableComparisonReportDto report) {
-        // test name
         ValidationErrors validation = new ValidationErrors();
 
         if (report.getGroups() == null || report.getGroups().isEmpty()) {
@@ -154,6 +195,73 @@ public class ReportAdapterDummyImpl implements ReportAdapter {
 
         if (validation.hasErrors()) {
             throw new ValidationException("Report contains validation errors, please fix it.", validation);
+        }
+    }
+
+    private void validateSeries(ValidationErrors validation, ChartDto chart, int chartIndex) {
+        for (int seriesIndex = 0; seriesIndex < chart.getSeries().size(); seriesIndex++) {
+            SeriesDto series = chart.getSeries().get(seriesIndex);
+            // series name
+            if (series.getName() == null) {
+                validation.addFieldError("charts[" + chartIndex + "].series[" + seriesIndex + "].name", "Series name is a required field");
+            } else if (series.getName().trim().length() < 3) {
+                validation.addFieldError("charts[" + chartIndex + "].series[" + seriesIndex + "].name", "Series name must be at least three characters.");
+            }
+            // series test
+            TestDto test;
+            if (series.getTestId() == null || (test = storage.test().getById(series.getTestId())) == null) {
+                validation.addFieldError("charts[" + chartIndex + "].series[" + seriesIndex + "].testId", "Test not found.");
+            } else {
+                // series metric
+                MetricDto metric;
+                if (series.getMetricId() == null || (metric = storage.metric().getById(series.getMetricId())) == null) {
+                    validation.addFieldError("charts[" + chartIndex + "].series[" + seriesIndex + "].metricId", "Metric not found.");
+                } else {
+                    if (!test.getMetrics().contains(metric)) {
+                        validation.addFieldError("charts[" + chartIndex + "].series[" + seriesIndex + "].metricId", "Metric not found.");
+                    }
+                }
+            }
+            // series filter
+            if (series.getFilter() == null) {
+                validation.addFieldError("charts[" + chartIndex + "].series[" + seriesIndex + "].filter", "Not selected.");
+            } else {
+                // series tag query
+                if (series.getFilter().equals(ComparisonItemSelector.TAG_QUERY) && (series.getTagQuery() == null || series.getTagQuery().isEmpty())) {
+                    validation.addFieldError("charts[" + chartIndex + "].series[" + seriesIndex + "].tagQuery", "Bad tag query.");
+                }
+                // series parameter query
+                if (series.getFilter().equals(ComparisonItemSelector.PARAMETER_QUERY) && (series.getParameterQuery() == null || series.getParameterQuery().isEmpty())) {
+                    validation.addFieldError("charts[" + chartIndex + "].series[" + seriesIndex + "].parameterQuery", "Bad parameter query.");
+                }
+            }
+        }
+    }
+
+    private void validateBaselines(ValidationErrors validation, ChartDto chart, int chartIndex) {
+        for (int baselineIndex = 0; baselineIndex < chart.getBaselines().size(); baselineIndex++) {
+            BaselineDto baseline = chart.getBaselines().get(baselineIndex);
+            // baseline name
+            if (baseline.getName() == null) {
+                validation.addFieldError("charts[" + chartIndex + "].baselines[" + baselineIndex + "].name", "Baseline name is a required field");
+            } else if (baseline.getName().trim().length() < 3) {
+                validation.addFieldError("charts[" + chartIndex + "].baselines[" + baselineIndex + "].name", "Baseline name must be at least three characters.");
+            }
+            // baseline test execution
+            TestExecutionDto testExecution;
+            if (baseline.getExecutionId() == null || (testExecution = storage.testExecution().getById(baseline.getExecutionId())) == null) {
+                validation.addFieldError("charts[" + chartIndex + "].baselines[" + baselineIndex + "].executionId", "Test execution not found.");
+            } else {
+                // baseline metric
+                MetricDto metric;
+                if (baseline.getMetricId() == null || (metric = storage.metric().getById(baseline.getMetricId())) == null) {
+                    validation.addFieldError("charts[" + chartIndex + "].baselines[" + baselineIndex + "].metricId", "Metric not found.");
+                } else {
+                    if (!testExecution.getTest().getMetrics().contains(metric)) {
+                        validation.addFieldError("charts[" + chartIndex + "].baselines[" + baselineIndex + "].metricId", "Metric not found.");
+                    }
+                }
+            }
         }
     }
 

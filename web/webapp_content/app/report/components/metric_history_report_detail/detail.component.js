@@ -5,6 +5,7 @@
         .module('org.perfrepo.report.detail')
         .component('metricHistoryReportDetail', {
             bindings: {
+                charts: '<'
             },
             controller: MetricHistoryReportController,
             controllerAs: 'vm',

@@ -5,7 +5,7 @@
         .module('org.perfrepo.report')
         .service('reportService', ReportService);
 
-    function ReportService($http, $resource, API_REPORT_URL) {
+    function ReportService(wizardService, $http, $resource, API_REPORT_URL) {
         var reportResource = $resource(API_REPORT_URL + '/:id',
             {
                 id: '@id'
@@ -65,7 +65,7 @@
         }
 
         function create(report) {
-            return reportResource.save(report).$promise;
+            return reportResource.save(wizardService.getPreparedReportRequestData(report)).$promise;
         }
 
         function remove(id) {
@@ -73,7 +73,7 @@
         }
 
         function update(report) {
-            return reportResource.update(report).$promise;
+            return reportResource.update(wizardService.getPreparedReportRequestData(report)).$promise;
         }
     }
 })();

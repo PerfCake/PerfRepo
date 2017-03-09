@@ -2,6 +2,8 @@ package org.perfrepo.dto.report.metric_history;
 
 import org.perfrepo.enums.report.ComparisonItemSelector;
 
+import java.util.List;
+
 /**
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
@@ -18,6 +20,8 @@ public class SeriesDto {
     private String parameterQuery;
 
     private ComparisonItemSelector filter;
+
+    private List<SeriesValueDto> values;
 
     public String getName() {
         return name;
@@ -65,5 +69,13 @@ public class SeriesDto {
 
     public void setFilter(ComparisonItemSelector selector) {
         this.filter = selector;
+    }
+
+    public List<SeriesValueDto> getValues() {
+        return values;
+    }
+
+    public void setValues(List<SeriesValueDto> values) {
+        this.values = values;
     }
 }

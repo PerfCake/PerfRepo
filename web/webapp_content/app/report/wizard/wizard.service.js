@@ -12,6 +12,7 @@
             getItemSelectors: getItemSelectors,
             getExecutionFilterOptions: getExecutionFilterOptions,
             getReportTypes: getReportTypes,
+            getPreparedReportRequestData: getPreparedReportRequestData,
             validateReportInfoStep: validateReportInfoStep,
             validateReportConfigurationStep: validateReportConfigurationStep,
             validateReportPermissionStep: validateReportPermissionStep
@@ -65,21 +66,39 @@
         }
 
         function validateReportInfoStep(report) {
-            return $http.post(API_REPORT_URL + '/wizard/validate/info-step', report).then(function(response) {
+            return $http.post(API_REPORT_URL + '/wizard/validate/info-step', getPreparedReportRequestData(report)).then(function(response) {
                 return response.data;
             });
         }
 
         function validateReportConfigurationStep(report) {
-            return $http.post(API_REPORT_URL + '/wizard/validate/configuration-step', report).then(function(response) {
+            return $http.post(API_REPORT_URL + '/wizard/validate/configuration-step', getPreparedReportRequestData(report)).then(function(response) {
                 return response.data;
             });
         }
 
         function validateReportPermissionStep(report) {
-            return $http.post(API_REPORT_URL + '/wizard/validate/permission-step', report).then(function(response) {
+            return $http.post(API_REPORT_URL + '/wizard/validate/permission-step', getPreparedReportRequestData(report)).then(function(response) {
                 return response.data;
             });
+        }
+
+        function getPreparedReportRequestData(report) {
+            var data = {
+                id: report.id,
+                name: report.name,
+                type: report.type,
+                description: report.description,
+                permissions: report.permissions
+            };
+
+            if (report.type == 'TABLE_COMPARISON') {
+                data.groups = report.groups;
+            } else if (report.type == 'METRIC_HISTORY') {
+                data.charts = report.charts;
+            }
+
+            return data;
         }
     }
 })();

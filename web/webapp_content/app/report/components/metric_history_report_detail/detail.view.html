@@ -1,1 +1,6 @@
-METRIC HISTORY DETAIL
+<div ng-repeat="chart in vm.charts">
+    <h2 class="report-title" title="Chart name">{{chart.name}}</h2>
+    <p class="report-description" ng-bind-html="chart.description"></p>
+
+    <metric-history-line-chart chart-data="chart"></metric-history-line-chart>
+</div>

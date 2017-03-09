@@ -38,6 +38,7 @@
             wizardService.validateReportConfigurationStep(vm.data).then(function() {
                 vm.currentStep = 'Permissions';
             }, function(errorResponse) {
+                vm.formErrors = validationHelper.prepareGlobalFormErrors(errorResponse);
                 validationHelper.setFormErrors(errorResponse, vm.wizardMetricHistoryStep);
                 return false;
             });
