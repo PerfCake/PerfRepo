@@ -5,12 +5,13 @@
         .module('org.perfrepo.report.detail')
         .controller('DetailReportController', DetailReportController);
 
-    function DetailReportController(_report, reportService, reportModalService, $state) {
+    function DetailReportController(_report, reportService, reportModalService, $state, Page) {
         var vm = this;
         vm.report = _report;
         vm.editReport = editReport;
         vm.removeReport = removeReport;
         vm.updateDetail = updateDetail;
+        Page.setTitle(vm.report.name + " | Report detail");
 
         function editReport() {
             $state.go('app.editReportWizard', {id: vm.report.id});

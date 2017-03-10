@@ -5,7 +5,7 @@
         .module('org.perfrepo.report.wizard')
         .controller('WizardReportController', WizardReportController);
 
-    function WizardReportController(_data, _state, _groups, _users, $scope) {
+    function WizardReportController(_data, _state, _groups, _users, $scope, Page) {
         var vm = this;
         vm.newReport = (_data.id == undefined);
         vm.backCallback = backCallback;
@@ -26,8 +26,10 @@
                 vm.data = {
                     type: 'TABLE_COMPARISON'
                 };
+                Page.setTitle('New report');
             } else {
                 vm.pageTitle = 'Edit report wizard';
+                Page.setTitle(vm.data.name + ' | Edit report wizard');
             }
 
             $scope.$on("wizard:stepChanged", function (e, parameters) {

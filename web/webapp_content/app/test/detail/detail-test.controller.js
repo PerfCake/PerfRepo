@@ -10,7 +10,7 @@
         .controller('DetailTestController', DetailTestController);
 
     function DetailTestController(_test, _isUserAlertsSubscriber, testService, testModalService,
-                                  testExecutionModalService, $state) {
+                                  testExecutionModalService, Page, $state) {
         var vm = this;
         vm.test = _test;
         vm.isUserAlertsSubscriber = _isUserAlertsSubscriber;
@@ -22,6 +22,7 @@
         vm.subscribeAlerts = subscribeAlerts;
         vm.unsubscribeAlerts = unsubscribeAlerts;
         vm.updateDetail = updateDetail;
+        Page.setTitle(vm.test.name + " | Test detail");
 
         function createTestExecution() {
             var modalInstance = testExecutionModalService.createTestExecution(vm.test.id);

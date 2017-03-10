@@ -9,12 +9,13 @@
         .module('org.perfrepo.testExecution.detail')
         .controller('DetailTestExecutionController', DetailTestExecutionController);
 
-    function DetailTestExecutionController(_testExecution, testExecutionService, testExecutionModalService, $state) {
+    function DetailTestExecutionController(_testExecution, testExecutionService, testExecutionModalService, $state, Page) {
         var vm = this;
         vm.testExecution = _testExecution;
         vm.editTestExecution = editTestExecution;
         vm.updateDetail = updateDetail;
         vm.removeTestExecution = removeTestExecution;
+        Page.setTitle(vm.testExecution.name + " | Test execution detail");
 
         function editTestExecution() {
             var modalInstance = testExecutionModalService.editTestExecution(vm.testExecution.id);
