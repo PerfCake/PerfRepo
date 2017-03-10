@@ -45,18 +45,25 @@ div.pr-notification-list {
 }
 
 // ################################################################################################################ menu
-div.nav-pf-vertical.nav-pf-vertical-with-badges {
- // width: 200px;
 
-  &.collapsed {
-  //  width: 75px;
-  }
+.nav-pf-vertical.nav-pf-vertical-with-badges, .nav-pf-vertical.nav-pf-vertical-with-badges .list-group-item>a {
+  width: 200px;
 }
 
-div.layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical.nav-pf-vertical-with-badges {
- // margin-left: 200px;
+.nav-pf-vertical.collapsed, .nav-pf-vertical.collapsed .list-group-item.secondary-nav-item-pf.active>a,
+.nav-pf-vertical.collapsed .list-group-item.secondary-nav-item-pf>a, .nav-pf-vertical.collapsed .list-group-item>a {
+  width: 75px;
+}
 
-  &.collapsed-nav {
-   // margin-left: 75px;
-  }
+.layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical.nav-pf-vertical-with-badges {
+  margin-left: 200px;
+}
+
+.layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical.collapsed-nav {
+  margin-left: 75px;
+}
+
+.layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical.collapsed-nav.hidden-icons-pf,
+.layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical.hidden-nav {
+  margin-left: 0;
 }
