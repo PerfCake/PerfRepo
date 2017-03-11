@@ -13,7 +13,7 @@
             templateUrl: 'app/report/wizard/components/metric_history_report/metric-history-report.view.html'
         });
 
-    function MetricHistoryReportConfiguration(wizardService, testService, validationHelper, $scope) {
+    function MetricHistoryReportConfiguration(wizardService, testService, testExecutionService, validationHelper, $scope) {
         var vm = this;
         vm.addChart = addChart;
         vm.removeChart = removeChart;
@@ -22,17 +22,36 @@
         vm.addBaseline = addBaseline;
         vm.removeBaseline = removeBaseline;
         vm.refreshTestsList = refreshTestsList;
-        vm.refreshTestMetricList = refreshTestMetricList;
-        vm.refreshExecutionMetricList = refreshExecutionMetricList;
-
-        vm.executionFilterOptions = wizardService.getExecutionFilterOptions();
+        vm.seriesTestSelected = seriesTestSelected;
+        vm.baselineTestExecutionChanged = baselineTestExecutionChanged;
         vm.validate = validate;
+        initialize();
 
-        $scope.$on('next-step', function(event, step) {
-            if (step.stepId === 'configuration') {
-                validate();
-            }
-        });
+        function initialize() {
+            vm.executionFilterOptions = wizardService.getExecutionFilterOptions();
+
+            $scope.$on('next-step', function(event, step) {
+                if (step.stepId === 'configuration') {
+                    validate();
+                }
+            });
+
+            vm.testExecutionMetrics = {};
+            vm.testMetrics = {};
+            angular.forEach(vm.data.charts, function(chart) {
+                angular.forEach(chart.series, function(series) {
+                    testService.getById(series.testId).then(function(test) {
+                        vm.testMetrics[test.id] = test.metrics;
+                    });
+                });
+                angular.forEach(chart.baselines, function(baseline) {
+                    testExecutionService.getById(baseline.executionId).then(function(testExecution) {
+                        vm.testExecutionMetrics[testExecution.id] = testExecution.test.metrics;
+                    });
+                });
+
+            });
+        }
 
         function validate() {
             wizardService.validateReportConfigurationStep(vm.data).then(function() {
@@ -83,12 +102,16 @@
             });
         }
 
-        function refreshTestMetricList(testId) {
-            vm.testMetrics = [];
+        function seriesTestSelected(test, chartIndex, seriesIndex) {
+            vm.data.charts[chartIndex].series[seriesIndex].metricId = undefined;
+            vm.testMetrics[test.id] = test.metrics;
         }
 
-        function refreshExecutionMetricList(executionId) {
-            vm.testMetrics = [];
+        function baselineTestExecutionChanged(testExecutionId, chartIndex, baselineIndex) {
+            vm.data.charts[chartIndex].baselines[baselineIndex].metricId = undefined;
+            testExecutionService.getById(testExecutionId).then(function(testExecution) {
+                vm.testExecutionMetrics[testExecution.id] = testExecution.test.metrics;
+            });
         }
     }
 })();
