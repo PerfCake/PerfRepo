@@ -1,4 +1,4 @@
-package org.perfrepo.dto.report.table_comparison;
+package org.perfrepo.dto.report.table_comparison.view;
 
 /**
  * Data transfer object for the table comparison report. Represents one header cell in the comparison table.

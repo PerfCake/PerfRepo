@@ -15,8 +15,6 @@ public class ChartDto {
 
     private List<BaselineDto> baselines;
 
-    // TODO chart data
-
     public String getName() {
         return name;
     }

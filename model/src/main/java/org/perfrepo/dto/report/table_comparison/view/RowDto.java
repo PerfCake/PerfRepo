@@ -1,4 +1,6 @@
-package org.perfrepo.dto.report.table_comparison;
+package org.perfrepo.dto.report.table_comparison.view;
+
+import org.perfrepo.enums.MeasuredValueType;
 
 import java.util.List;
 
@@ -12,6 +14,8 @@ public class RowDto {
 
     private String metricName;
 
+    private MeasuredValueType valueType;
+
     private List<ContentCellDto> cells;
 
     public String getMetricName() {
@@ -20,6 +24,14 @@ public class RowDto {
 
     public void setMetricName(String metricName) {
         this.metricName = metricName;
+    }
+
+    public MeasuredValueType getValueType() {
+        return valueType;
+    }
+
+    public void setValueType(MeasuredValueType valueType) {
+        this.valueType = valueType;
     }
 
     public List<ContentCellDto> getCells() {

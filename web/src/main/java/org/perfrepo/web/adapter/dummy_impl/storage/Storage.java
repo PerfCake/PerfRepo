@@ -1,6 +1,8 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.perfrepo.dto.report.ReportDto;
+import org.perfrepo.dto.report.metric_history.SeriesValueDto;
 import org.perfrepo.dto.report.metric_history.*;
 import org.perfrepo.dto.report.PermissionDto;
 import org.perfrepo.dto.report.table_comparison.*;
@@ -12,6 +14,8 @@ import org.perfrepo.enums.MetricComparator;
 import org.perfrepo.enums.report.CellStyle;
 import org.perfrepo.enums.report.ComparisonItemSelector;
 import org.perfrepo.web.adapter.dummy_impl.builders.*;
+import org.perfrepo.web.adapter.dummy_impl.storage.initialize.InstanceCreator;
+import org.perfrepo.web.adapter.dummy_impl.storage.initialize.TableComparisonReportCreator;
 
 import javax.inject.Singleton;
 import java.util.*;
@@ -275,6 +279,7 @@ public class Storage {
         attachment.setContent("Hello!".getBytes());
         attachment.setSize(attachment.getContent().length);
         attachment.setMimeType("plain/text");
+        attachment.setHash("f4FfRv3d086JN7D5kD7Dds6");
         attachmentStorage.create(attachment);
         // multi-value test execution for test id 1
         for (int i = 0; i < 10; i++) {
@@ -327,7 +332,9 @@ public class Storage {
         metricReport2.setDescription("Description of <strong>metric history</strong> report.");
         reportStorage.create(metricReport2);
 
-        initializeTableComparisonReport();
+        ReportDto tableComparisonReport1 = TableComparisonReportCreator.createReport();
+        reportStorage.create(tableComparisonReport1);
+
         initializeMetricHistoryReport();
     }
 
@@ -379,9 +386,9 @@ public class Storage {
         chart2.getBaselines().add(baseline2);
         // permissions
         List<PermissionDto> permissions = new ArrayList<>();
-        permissions.add(preparePermission(AccessLevel.PUBLIC, AccessType.READ, null, null, null, null));
-        permissions.add(preparePermission(AccessLevel.GROUP, AccessType.WRITE, 1L, null, "super users", null));
-        permissions.add(preparePermission(AccessLevel.USER, AccessType.READ, null, 1L, null, "Jiri Grunwald (grunwjir)"));
+        permissions.add(InstanceCreator.createPermission(AccessLevel.PUBLIC, AccessType.READ, null, null, null, null));
+        permissions.add(InstanceCreator.createPermission(AccessLevel.GROUP, AccessType.WRITE, 1L, null, "super users", null));
+        permissions.add(InstanceCreator.createPermission(AccessLevel.USER, AccessType.READ, null, 1L, null, "Jiri Grunwald (grunwjir)"));
         metricReport2.setPermissions(permissions);
     }
 
@@ -443,118 +450,6 @@ public class Storage {
         value.setX(x);
         value.setY(y);
         return value;
-    }
-
-    private void initializeTableComparisonReport() {
-        TableComparisonReportDto tableReport3 = new TableComparisonReportDto();
-        reportStorage.create(tableReport3);
-        tableReport3.setName("Table comparison report WITH DATA");
-        tableReport3.setTypeName("Table comparison report");
-        tableReport3.setDescription("Description of <strong>table comparison</strong> report.");
-        // group 1
-        GroupDto group1 = new GroupDto();
-        group1.setName("First group");
-        group1.setDescription("This is first group of <strong>table comparison table</strong>");
-        group1.setThreshold(5);
-        tableReport3.setGroups(new ArrayList<>());
-        tableReport3.getGroups().add(group1);
-        // table 1
-        TableDto table1 = new TableDto();
-        group1.setTables(new ArrayList<>());
-        // add table to group twice
-        group1.getTables().add(table1);
-        group1.getTables().add(table1);
-        table1.setName("First comparison table");
-        table1.setDescription("Description of first table...");
-        // table 1 - comparison items
-        List<ComparisonItemDto> items1 = new ArrayList<>();
-        table1.setItems(items1);
-        items1.add(prepareComparisonItem("Test execution 1", 1L, null, false, null, null, ComparisonItemSelector.TEST_EXECUTION_ID));
-        items1.add(prepareComparisonItem("Test execution 2", 2L, 1L, true, "echo AND test", null, ComparisonItemSelector.TAG_QUERY));
-        items1.add(prepareComparisonItem("Test execution 3", 3L, 1L, false, "socket OR test", "version=1.2", ComparisonItemSelector.PARAMETER_QUERY));
-        items1.add(prepareComparisonItem("Test execution 3", 4L, 2L, false, null, "version=1.2", ComparisonItemSelector.TEST_EXECUTION_ID));
-        // table 1 - header cells
-        List<HeaderCellDto> headerCells1 = new ArrayList<>();
-        table1.setTableHeaderCells(headerCells1);
-        headerCells1.add(prepareHeaderCell("Test execution 1", false, 1L));
-        headerCells1.add(prepareHeaderCell("Test execution 2", true, 2L));
-        headerCells1.add(prepareHeaderCell("Test execution 3", false, 3L));
-        headerCells1.add(prepareHeaderCell("Test execution 4", false, 4L));
-        // table 1 - rows
-        List<RowDto> rows = new ArrayList<>();
-        table1.setTableRows(rows);
-        rows.add(prepareRow("Response time",
-                prepareContentCell(false, CellStyle.BAD, 22.0, 10.0),
-                prepareContentCell(true, CellStyle.NEUTRAL, 20.0, 0.0),
-                prepareContentCell(false, CellStyle.BAD, 26.0, 30.55555),
-                prepareContentCell(false, CellStyle.GOOD, 18.0, -10.1)));
-        rows.add(prepareRow("Throughput",
-                prepareContentCell(false, CellStyle.NEUTRAL, 15.45, 3.0),
-                prepareContentCell(true, CellStyle.NEUTRAL, 15.0, 0.0),
-                prepareContentCell(false, CellStyle.BAD, 14.25, -5.0),
-                prepareContentCell(false, CellStyle.GOOD, 16.5, 10.0)));
-        // add group to report twice
-        tableReport3.setGroups(new ArrayList<>());
-        tableReport3.getGroups().add(group1);
-        tableReport3.getGroups().add(group1);
-        // permissions
-        List<PermissionDto> permissions = new ArrayList<>();
-        permissions.add(preparePermission(AccessLevel.PUBLIC, AccessType.READ, null, null, null, null));
-        permissions.add(preparePermission(AccessLevel.GROUP, AccessType.WRITE, 1L, null,
-                "super users", null));
-        permissions.add(preparePermission(AccessLevel.USER, AccessType.READ, null, 1L,
-                null, "Jiri Grunwald (grunwjir)"));
-        tableReport3.setPermissions(permissions);
-    }
-
-    private ComparisonItemDto prepareComparisonItem(String alias, Long executionId, Long testId, boolean baseline,
-                                                    String tagQuery, String parameterQuery,
-                                                    ComparisonItemSelector selector) {
-        ComparisonItemDto item = new ComparisonItemDto();
-        item.setAlias(alias);
-        item.setExecutionId(executionId);
-        item.setTestId(testId);
-        item.setBaseline(baseline);
-        item.setTagQuery(tagQuery);
-        item.setParameterQuery(parameterQuery);
-        item.setSelector(selector);
-        return item;
-    }
-
-    private HeaderCellDto prepareHeaderCell(String name, boolean baseline, Long testExecutionId) {
-        HeaderCellDto headerCell = new HeaderCellDto();
-        headerCell.setName(name);
-        headerCell.setBaseline(baseline);
-        headerCell.setTestExecutionId(testExecutionId);
-        return  headerCell;
-    }
-
-    private ContentCellDto prepareContentCell(boolean baseline, CellStyle style, double value, double valueByBaseline) {
-        ContentCellDto contentCell = new ContentCellDto();
-        contentCell.setBaseline(baseline);
-        contentCell.setStyle(style);
-        contentCell.setValue(value);
-        contentCell.setValueByBaseline(valueByBaseline);
-        return contentCell;
-    }
-
-    private RowDto prepareRow(String metricName, ContentCellDto... cells) {
-        RowDto row = new RowDto();
-        row.setMetricName(metricName);
-        row.setCells(Arrays.asList(cells));
-        return row;
-    }
-
-    private PermissionDto preparePermission(AccessLevel level, AccessType type, Long groupId, Long userId,
-                                            String groupName, String userFullName) {
-        PermissionDto permission = new PermissionDto();
-        permission.setLevel(level);
-        permission.setType(type);
-        permission.setGroupId(groupId);
-        permission.setUserId(userId);
-        permission.setGroupName(groupName);
-        permission.setUserFullName(userFullName);
-        return permission;
     }
 }
 

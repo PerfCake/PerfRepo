@@ -1,5 +1,8 @@
 package org.perfrepo.dto.report.table_comparison;
 
+import org.perfrepo.dto.report.table_comparison.view.HeaderCellDto;
+import org.perfrepo.dto.report.table_comparison.view.RowDto;
+
 import java.util.List;
 
 /**

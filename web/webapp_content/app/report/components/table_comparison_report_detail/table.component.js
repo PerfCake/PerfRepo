@@ -12,7 +12,13 @@
             templateUrl: 'app/report/components/table_comparison_report_detail/table.view.html'
         });
 
-    function TableComparisonReportTableController() {
+    function TableComparisonReportTableController(reportModalService) {
         var vm = this;
+        vm.showChartComparison = showChartComparison;
+
+        function showChartComparison(contentCells, selectedExecutionIndex, metricName) {
+            reportModalService.showChartForMultiValueTableComparison(contentCells, vm.table.tableHeaderCells,
+                selectedExecutionIndex, metricName);
+        }
     }
 })();

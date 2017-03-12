@@ -214,13 +214,13 @@ public class ReportAdapterDummyImpl implements ReportAdapter {
                 validation.addFieldError("charts[" + chartIndex + "].series[" + seriesIndex + "].name", "Series name must be at least three characters.");
             }
             // series test
-            TestDto test;
-            if (series.getTestId() == null || (test = storage.test().getById(series.getTestId())) == null) {
+            TestDto test = storage.test().getById(series.getTestId());
+            if (test == null) {
                 validation.addFieldError("charts[" + chartIndex + "].series[" + seriesIndex + "].testId", "Test not found.");
             } else {
                 // series metric
-                MetricDto metric;
-                if (series.getMetricId() == null || (metric = storage.metric().getById(series.getMetricId())) == null) {
+                MetricDto metric = storage.metric().getById(series.getMetricId());
+                if (metric == null) {
                     validation.addFieldError("charts[" + chartIndex + "].series[" + seriesIndex + "].metricId", "Metric not found.");
                 } else {
                     if (!test.getMetrics().contains(metric)) {
@@ -254,13 +254,13 @@ public class ReportAdapterDummyImpl implements ReportAdapter {
                 validation.addFieldError("charts[" + chartIndex + "].baselines[" + baselineIndex + "].name", "Baseline name must be at least three characters.");
             }
             // baseline test execution
-            TestExecutionDto testExecution;
-            if (baseline.getExecutionId() == null || (testExecution = storage.testExecution().getById(baseline.getExecutionId())) == null) {
+            TestExecutionDto testExecution = storage.testExecution().getById(baseline.getExecutionId());
+            if (testExecution == null) {
                 validation.addFieldError("charts[" + chartIndex + "].baselines[" + baselineIndex + "].executionId", "Test execution not found.");
             } else {
                 // baseline metric
-                MetricDto metric;
-                if (baseline.getMetricId() == null || (metric = storage.metric().getById(baseline.getMetricId())) == null) {
+                MetricDto metric = storage.metric().getById(baseline.getMetricId());
+                if (metric == null) {
                     validation.addFieldError("charts[" + chartIndex + "].baselines[" + baselineIndex + "].metricId", "Metric not found.");
                 } else {
                     if (!testExecution.getTest().getMetrics().contains(metric)) {
