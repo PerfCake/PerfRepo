@@ -6,8 +6,8 @@
             <v-pane ng-repeat="(groupIndex, group) in vm.data.groups" expanded="true">
                 <!-- group header -->
                 <v-pane-header>
-                    <span class="label label-primary label-accordion">{{groupIndex + 1}}</span> {{group.name}}
-                    <a class="cursor-pointer action-link pull-right" ng-click="vm.removeGroup(groupIndex)">
+                    <h3 class="item-title-pane">{{group.name}}</h3>
+                    <a class="cursor-pointer pull-right" ng-click="vm.removeGroup(groupIndex)">
                         <span class="pficon-delete" aria-hidden="true"></span> Remove group
                     </a>
                 </v-pane-header>
@@ -38,8 +38,8 @@
                         <v-pane ng-repeat="(tableIndex, table) in group.tables" expanded="true">
                             <!-- table header-->
                             <v-pane-header>
-                                <span class="label label-primary label-accordion">{{groupIndex + 1}}.{{tableIndex + 1}}</span> {{table.name}}
-                                <a class="cursor-pointer action-link pull-right" ng-click="vm.removeComparison(groupIndex, tableIndex)">
+                                <h3 class="item-title-pane">{{table.name}}</h3>
+                                <a class="cursor-pointer pull-right" ng-click="vm.removeComparison(groupIndex, tableIndex)">
                                     <span class="pficon-delete" aria-hidden="true"></span> Remove comparison
                                 </a>
                             </v-pane-header>
@@ -145,7 +145,7 @@
 
                                 <div class="add-link item-link">
                                     <a class="cursor-pointer" ng-click="vm.addItem(groupIndex, tableIndex)">
-                                        <span class="pficon pficon-add-circle-o" aria-hidden="true"></span> Add item
+                                        <span class="pficon pficon-add-circle-o" aria-hidden="true"></span>Add item
                                     </a>
                                 </div>
                             </v-pane-content>
@@ -158,7 +158,7 @@
 
                         <div class="add-link comparison-link">
                             <a class="cursor-pointer" ng-click="vm.addComparison(groupIndex)">
-                                <span class="pficon pficon-add-circle-o" aria-hidden="true"> </span>Add comparison
+                                <span class="pficon pficon-add-circle-o" aria-hidden="true"></span>Add comparison
                             </a>
                         </div>
                     </v-accordion>
@@ -172,7 +172,7 @@
 
             <div class="add-link group-link">
                 <a class="cursor-pointer" ng-click="vm.addGroup()">
-                    <span class="pficon pficon-add-circle-o" aria-hidden="true"> </span>Add group
+                    <span class="pficon pficon-add-circle-o" aria-hidden="true"></span>Add group
                 </a>
             </div>
         </v-accordion>

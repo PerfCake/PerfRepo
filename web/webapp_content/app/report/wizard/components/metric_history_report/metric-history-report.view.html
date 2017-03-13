@@ -6,8 +6,8 @@
             <v-pane ng-repeat="(chartIndex, chart) in vm.data.charts" expanded="true">
                 <!-- table header-->
                 <v-pane-header>
-                    <span class="label label-primary label-accordion">{{chartIndex + 1}}</span> {{chart.name}}
-                    <a class="cursor-pointer action-link pull-right" ng-click="vm.removeChart(chartIndex)">
+                    <h3 class="item-title-pane">{{chart.name}}</h3>
+                    <a class="cursor-pointer pull-right" ng-click="vm.removeChart(chartIndex)">
                         <span class="pficon-delete" aria-hidden="true"></span> Remove chart
                     </a>
                 </v-pane-header>
