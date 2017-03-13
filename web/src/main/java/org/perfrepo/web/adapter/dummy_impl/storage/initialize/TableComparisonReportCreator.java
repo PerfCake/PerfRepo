@@ -9,6 +9,7 @@ import org.perfrepo.enums.AccessType;
 import org.perfrepo.enums.MeasuredValueType;
 import org.perfrepo.enums.report.CellStyle;
 import org.perfrepo.enums.report.ComparisonItemSelector;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,6 +19,10 @@ import java.util.List;
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 public class TableComparisonReportCreator {
+
+    private TableComparisonReportCreator() {
+
+    }
 
     public static ReportDto createReport() {
         TableComparisonReportDto tableReport = new TableComparisonReportDto();

@@ -160,5 +160,5 @@ public interface TestExecutionAdapter {
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
-    AttachmentDto getTestExecutionAttachment(Long attachmentId);
+    AttachmentDto getTestExecutionAttachment(Long attachmentId, String hash);
 }

@@ -121,13 +121,8 @@ public class TestExecutionAdapterDummyImpl implements TestExecutionAdapter {
     }
 
     @Override
-    public AttachmentDto getTestExecutionAttachment(Long attachmentId) {
-
-        AttachmentDto a = new AttachmentDto();
-
-        String x = "ahoj jak se mas";
-        a.setFilename("hello.txt");
-        a.setContent(x.getBytes());
+    public AttachmentDto getTestExecutionAttachment(Long attachmentId, String hash) {
+        AttachmentDto a = storage.attachment().getById(attachmentId);
 
         return a;
     }

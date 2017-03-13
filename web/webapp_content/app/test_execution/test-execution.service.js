@@ -105,17 +105,18 @@
             return $http.put(API_TEST_EXECUTION_URL + '/' + id + '/parameters', parameters);
         }
 
-        function downloadAttachmentLink(id) {
-            return API_TEST_EXECUTION_URL + '/attachments/download/' + id;
+        function downloadAttachmentLink(id, hash) {
+            return API_TEST_EXECUTION_URL + '/attachments/download/' + id + '/' + hash;
         }
 
         function uploadAttachment(formData) {
             return $http({
                 url: API_TEST_EXECUTION_URL + '/attachments/upload',
                 method: 'POST',
+                transformRequest: angular.identity,
                 data: formData,
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': undefined
                 }
             });
         }

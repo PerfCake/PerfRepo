@@ -3,9 +3,12 @@ package org.perfrepo.dto.report.table_comparison.view;
 import org.perfrepo.enums.report.CellStyle;
 
 /**
+ * Represents cell in the comparison table for single-value data.
+ * This object is used for view of the report.
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class SingleContentCellDto extends ContentCellDto{
+public class SingleContentCellDto extends ContentCellDto {
 
     private double value;
 

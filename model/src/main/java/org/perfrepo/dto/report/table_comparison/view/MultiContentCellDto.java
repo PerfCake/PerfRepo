@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Represents cell in the comparison table for multi-value data.
+ * This object is used for view of the report.
+ *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class MultiContentCellDto extends ContentCellDto{
+public class MultiContentCellDto extends ContentCellDto {
 
     private Map<String, List<ChartPointDto>> values;
 

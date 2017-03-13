@@ -17,6 +17,8 @@ public class AttachmentDto {
 
     private byte [] content;
 
+    private String hash;
+
     public Long getId() {
         return id;
     }
@@ -55,5 +57,13 @@ public class AttachmentDto {
 
     public void setContent(byte[] content) {
         this.content = content;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 }

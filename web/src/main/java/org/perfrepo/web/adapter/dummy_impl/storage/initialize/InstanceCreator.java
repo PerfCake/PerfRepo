@@ -9,6 +9,10 @@ import org.perfrepo.enums.AccessType;
  */
 public class InstanceCreator {
 
+    private InstanceCreator() {
+
+    }
+
     public static PermissionDto createPermission(AccessLevel level, AccessType type, Long groupId, Long userId,
                                             String groupName, String userFullName) {
         PermissionDto permission = new PermissionDto();

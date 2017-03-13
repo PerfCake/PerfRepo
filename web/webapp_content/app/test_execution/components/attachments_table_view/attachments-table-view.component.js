@@ -17,7 +17,7 @@
     function TestExecutionAttachmentsTableViewController(testExecutionAttachmentModalService, testExecutionService) {
         var vm = this;
         vm.removeAttachmentAction = removeAttachmentAction;
-        vm.downloadAttachmentAction = downloadAttachmentAction;
+        vm.downloadAttachmentLink = downloadAttachmentLink;
         vm.addAttachmentAction = addAttachmentAction;
 
         function addAttachmentAction() {
@@ -34,12 +34,8 @@
             });
         }
 
-        function downloadAttachmentAction(attachment) {
-
-        }
-
         function downloadAttachmentLink(attachment) {
-            return testExecutionService.downloadAttachmentLink(attachment.id);
+            return testExecutionService.downloadAttachmentLink(attachment.id, attachment.hash);
         }
     }
 })();

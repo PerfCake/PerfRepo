@@ -135,15 +135,18 @@ public class TestExecutionRestApi {
       return Response.noContent().build();
    }
 
-   /**
-    * TODO this method will be changed
-    */
+    /**
+     * File attachment download.
+     * @param attachmentId Attachment ID.
+     * @param hash Access hash token.
+     * @return File response.
+     */
    @GET
-   @Path("/attachments/download/{attachmentId}/{token}")
+   @Path("/attachments/download/{attachmentId}/{hash}")
    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-   public Response downloadAttachment(@PathParam("attachmentId") Long attachmentId, @PathParam("token") String token) {
+   public Response downloadAttachment(@PathParam("attachmentId") Long attachmentId, @PathParam("hash") String hash) {
 
-       AttachmentDto attachment = testExecutionAdapter.getTestExecutionAttachment(attachmentId);
+       AttachmentDto attachment = testExecutionAdapter.getTestExecutionAttachment(attachmentId, hash);
 
        return Response
                .ok(attachment.getContent())
@@ -156,6 +159,7 @@ public class TestExecutionRestApi {
      */
     @POST
     @Path("/attachments/upload")
+    @Consumes("*/*")
     public Response uploadAttachment(MultipartFormDataInput formDataInput) {
         Map<String, List<InputPart>> formDataParts = formDataInput.getFormDataMap();
         List<InputPart> inputParts = formDataParts.get("file");
