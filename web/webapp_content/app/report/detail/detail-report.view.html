@@ -4,11 +4,14 @@
     </div>
     <div class="col-sm-12 col-md-8">
         <div class="header-controls">
+            <button class="btn btn-default" ng-click="vm.showPermissions()">
+                <span class="fa fa-lock" aria-hidden="true"></span> Show permissions
+            </button>
             <button class="btn btn-default" ng-click="vm.editReport()">
-                <span class="pficon pficon-edit" aria-hidden="true"></span> Edit
+                <span class="pficon-edit" aria-hidden="true"></span> Edit
             </button>
             <button class="btn btn-default" ng-click="vm.removeReport()">
-                <span class="pficon pficon-delete" aria-hidden="true"></span> Remove
+                <span class="pficon-delete" aria-hidden="true"></span> Remove
             </button>
         </div>
     </div>
@@ -17,18 +20,9 @@
 <h1 class="report-title" title="Report name">{{vm.report.name}}</h1>
 <p class="report-description" ng-bind-html="vm.report.description"></p>
 
-
-
 <!-- table comparison report -->
 <table-comparison-report-detail ng-if="vm.report.type == 'TABLE_COMPARISON'" groups="vm.report.groups"></table-comparison-report-detail>
 <!-- metric history report -->
 <metric-history-report-detail ng-if="vm.report.type == 'METRIC_HISTORY'" charts="vm.report.charts"></metric-history-report-detail>
 <!-- box plot report -->
 <box-plot-report-detail ng-if="vm.report.type == 'BOX_PLOT'"></box-plot-report-detail>
-
-<h2 class="report-title">Access permissions</h2>
-<div class="row">
-    <div class="col-sm-12">
-        <permissions-table permissions="vm.report.permissions"></permissions-table>
-    </div>
-</div>

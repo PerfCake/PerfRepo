@@ -4,11 +4,6 @@
         <th>Access level</th>
         <th>Access type</th>
         <th>Associated user/group</th>
-        <th ng-if="vm.editMode" class="table-actions">
-            <a ng-click="vm.addPermission()" class="cursor-pointer action-link">
-                <span class="pficon-add-circle-o" aria-hidden="true"></span>New permission
-            </a>
-        </th>
     </tr>
     </thead>
     <tbody>
@@ -18,14 +13,6 @@
             <td>
                 <span ng-if="permission.level == 'GROUP'">{{permission.groupName}}</span>
                 <span ng-if="permission.level == 'USER'">{{permission.userFullName}}</span>
-            </td>
-            <td ng-if="vm.editMode" class="table-actions">
-                <a ng-click="vm.editPermission($index)" class="cursor-pointer action-link">
-                    <span class="pficon-edit" aria-hidden="true"></span>Edit
-                </a>
-                <a ng-click="vm.removePermission($index)" class="cursor-pointer action-link">
-                    <span class="pficon-delete" aria-hidden="true"></span>Delete
-                </a>
             </td>
         </tr>
         <tr class="table-no-data" ng-show="!vm.permissions || vm.permissions.length == 0">

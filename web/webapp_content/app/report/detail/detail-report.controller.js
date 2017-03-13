@@ -11,6 +11,7 @@
         vm.editReport = editReport;
         vm.removeReport = removeReport;
         vm.updateDetail = updateDetail;
+        vm.showPermissions = showPermissions;
         Page.setTitle(vm.report.name + " | Report detail");
 
         function editReport() {
@@ -29,6 +30,10 @@
             reportService.getById(vm.report.id).then(function(response) {
                 vm.report = response;
             });
+        }
+
+        function showPermissions() {
+            reportModalService.showPermissions(vm.report.permissions);
         }
     }
 })();

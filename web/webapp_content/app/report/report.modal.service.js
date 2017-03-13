@@ -9,8 +9,26 @@
 
         return {
             removeReport: removeReport,
-            showChartForMultiValueTableComparison: showChartForMultiValueTableComparison
+            showChartForMultiValueTableComparison: showChartForMultiValueTableComparison,
+            showPermissions: showPermissions
         };
+
+        function showPermissions(permissions) {
+            return $uibModal.open({
+                animation: true,
+                backdrop: 'static',
+                keyboard: false,
+                templateUrl: 'app/report/permissions/permissions-modal.view.html',
+                controller: 'ShowPermissionsReportController',
+                controllerAs: 'vm',
+                size: 'md',
+                resolve : {
+                    _permissions: function () {
+                        return permissions;
+                    }
+                }
+            });
+        }
 
         function removeReport(report) {
             return $uibModal.open({
