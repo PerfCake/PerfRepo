@@ -2,21 +2,23 @@ package org.perfrepo.dto.test_execution;
 
 import org.perfrepo.enums.MeasuredValueType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Represents group of test execution values. The value group is for each test metric.
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class ValuesGroupDto {
+public class ValuesGroupDto implements Comparable<ValuesGroupDto> {
 
     private String metricName;
 
-    private Set<String> parameterNames;
+    private Set<String> parameterNames = new TreeSet<>();
 
-    private List<ValueDto> values;
+    private List<ValueDto> values = new ArrayList<>();
 
     private MeasuredValueType valueType;
 
@@ -50,5 +52,10 @@ public class ValuesGroupDto {
 
     public void setValueType(MeasuredValueType valueType) {
         this.valueType = valueType;
+    }
+
+    @Override
+    public int compareTo(ValuesGroupDto o) {
+        return metricId.compareTo(o.getMetricId());
     }
 }

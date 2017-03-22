@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
  */
 public class GroupConverter {
 
-    public GroupDto convertFromEntityToDto(Group group) {
+    private GroupConverter() { }
+
+    public static GroupDto convertFromEntityToDto(Group group) {
         if (group == null) {
             return null;
         }
@@ -24,11 +26,11 @@ public class GroupConverter {
         return dto;
     }
 
-    public List<GroupDto> convertFromEntityToDto(List<Group> groups) {
+    public static List<GroupDto> convertFromEntityToDto(List<Group> groups) {
         return groups.stream().map(group -> convertFromEntityToDto(group)).collect(Collectors.toList());
     }
 
-    public Group convertFromDtoToEntity(GroupDto dto) {
+    public static Group convertFromDtoToEntity(GroupDto dto) {
         if (dto == null) {
             return null;
         }

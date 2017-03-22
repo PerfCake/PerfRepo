@@ -3,7 +3,6 @@ package org.perfrepo.web.adapter.converter;
 import org.perfrepo.dto.test.TestDto;
 import org.perfrepo.web.model.Test;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,16 +13,9 @@ import java.util.stream.Collectors;
  */
 public class TestConverter {
 
-    @Inject
-    private GroupConverter groupConverter;
+    private TestConverter() { }
 
-    @Inject
-    private MetricConverter metricConverter;
-
-    @Inject
-    private AlertConverter alertConverter;
-
-    public TestDto convertFromEntityToDto(Test test) {
+    public static TestDto convertFromEntityToDto(Test test) {
         if (test == null) {
             return null;
         }
@@ -33,16 +25,16 @@ public class TestConverter {
         dto.setName(test.getName());
         dto.setDescription(test.getDescription());
         dto.setUid(test.getUid());
-        dto.setGroup(groupConverter.convertFromEntityToDto(test.getGroup()));
+        dto.setGroup(GroupConverter.convertFromEntityToDto(test.getGroup()));
 
         return dto;
     }
 
-    public List<TestDto> convertFromEntityToDto(List<Test> tests) {
+    public static List<TestDto> convertFromEntityToDto(List<Test> tests) {
         return tests.stream().map(test -> convertFromEntityToDto(test)).collect(Collectors.toList());
     }
 
-    public Test convertFromDtoToEntity(TestDto dto) {
+    public static Test convertFromDtoToEntity(TestDto dto) {
         if (dto == null) {
             return null;
         }
@@ -52,7 +44,7 @@ public class TestConverter {
         test.setName(dto.getName());
         test.setDescription(dto.getDescription());
         test.setUid(dto.getUid());
-        test.setGroup(groupConverter.convertFromDtoToEntity(dto.getGroup()));
+        test.setGroup(GroupConverter.convertFromDtoToEntity(dto.getGroup()));
 
         return test;
     }

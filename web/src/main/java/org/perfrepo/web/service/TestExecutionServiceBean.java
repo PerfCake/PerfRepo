@@ -250,6 +250,11 @@ public class TestExecutionServiceBean implements TestExecutionService {
     }
 
     @Override
+    public List<Value> getValues(TestExecution testExecution) {
+        return valueDAO.findByExecution(testExecution.getId());
+    }
+
+    @Override
     public List<Value> getValues(Metric metric, TestExecution testExecution) {
         return valueDAO.findByMetricAndExecution(metric.getId(), testExecution.getId());
     }

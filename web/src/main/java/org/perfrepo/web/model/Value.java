@@ -17,6 +17,7 @@ package org.perfrepo.web.model;
 import org.perfrepo.enums.MetricComparator;
 
 import javax.persistence.Column;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -40,13 +41,15 @@ import java.util.Map;
 @javax.persistence.Entity
 @Table(name = "value")
 @NamedQueries({
-        @NamedQuery(name = Value.FIND_BY_METRIC_AND_EXECUTION, query = "SELECT value FROM Value value WHERE value.metric.id = :metricId AND value.testExecution.id = :executionId")
+        @NamedQuery(name = Value.FIND_BY_METRIC_AND_EXECUTION, query = "SELECT value FROM Value value WHERE value.metric.id = :metricId AND value.testExecution.id = :executionId"),
+        @NamedQuery(name = Value.FIND_BY_EXECUTION, query = "SELECT value FROM Value value WHERE value.testExecution.id = :executionId")
 })
 public class Value implements Entity<Value> {
 
    private static final long serialVersionUID = 1227873698917395252L;
 
    public static final String FIND_BY_METRIC_AND_EXECUTION = "Value.findByMetricAndExecution";
+   public static final String FIND_BY_EXECUTION = "Value.findByExecution";
 
    @Id
    @SequenceGenerator(name = "VALUE_ID_GENERATOR", sequenceName = "VALUE_SEQUENCE", allocationSize = 1)
@@ -64,7 +67,7 @@ public class Value implements Entity<Value> {
    @JoinColumn(name = "test_execution_id", referencedColumnName = "id")
    private TestExecution testExecution;
 
-   @OneToMany(mappedBy = "value")
+   @OneToMany(mappedBy = "value", fetch = FetchType.EAGER)
    @MapKey(name = "name")
    private Map<String, ValueParameter> parameters = new HashMap<>();
 

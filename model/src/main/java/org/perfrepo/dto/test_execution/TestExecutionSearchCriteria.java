@@ -3,6 +3,7 @@ package org.perfrepo.dto.test_execution;
 import org.perfrepo.enums.OrderBy;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -12,23 +13,23 @@ import java.util.Set;
  */
 public class TestExecutionSearchCriteria {
 
-    private Set<Long> idsFilter;
+    private Set<Long> idsFilter = new HashSet<>();
 
-    private Set<String> namesFilter;
+    private Set<String> namesFilter = new HashSet<>();
 
-    private Set<String> testNamesFilter;
+    private Set<String> testNamesFilter = new HashSet<>();
 
-    private Set<String> testUniqueIdsFilter;
+    private Set<String> testUniqueIdsFilter= new HashSet<>();
 
-    private Set<String> groupsFilter;
+    private Set<String> groupsFilter = new HashSet<>();
 
-    private Set<String> tagQueriesFilter;
+    private Set<String> tagQueriesFilter = new HashSet<>();
 
-    private Set<String> parameterQueriesFilter;
+    private Set<String> parameterQueriesFilter = new HashSet<>();
 
-    private Set<Date> startedAfterFilter;
+    private Set<Date> startedAfterFilter = new HashSet<>();
 
-    private Set<Date> startedBeforeFilter;
+    private Set<Date> startedBeforeFilter = new HashSet<>();
 
     private int limit = 10;
 

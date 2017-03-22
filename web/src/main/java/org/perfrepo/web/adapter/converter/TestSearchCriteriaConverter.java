@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
  */
 public class TestSearchCriteriaConverter {
 
+    private TestSearchCriteriaConverter() { }
+
     public org.perfrepo.web.service.search.TestSearchCriteria convertFromDtoToEntity(org.perfrepo.dto.test.TestSearchCriteria criteria) {
         org.perfrepo.web.service.search.TestSearchCriteria criteriaEntity = new org.perfrepo.web.service.search.TestSearchCriteria();
 

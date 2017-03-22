@@ -28,6 +28,12 @@ import java.util.Map;
  */
 public class ValueDAO extends DAO<Value, Long> {
 
+   public List<Value> findByExecution(Long testExecutionId) {
+      Map<String, Object> params = new HashMap<>();
+      params.put("executionId", testExecutionId);
+      return findByNamedQuery(Value.FIND_BY_EXECUTION, params);
+   }
+
    public List<Value> findByMetricAndExecution(Long metricId, Long testExecutionId) {
       Map<String, Object> params = new HashMap<>();
       params.put("metricId", metricId);

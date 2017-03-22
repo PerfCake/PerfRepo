@@ -15,7 +15,9 @@ import java.util.stream.Collectors;
  */
 public class MetricConverter {
 
-    public MetricDto convertFromEntityToDto(Metric metric) {
+    private MetricConverter() { }
+
+    public static MetricDto convertFromEntityToDto(Metric metric) {
         if (metric == null) {
             return null;
         }
@@ -29,17 +31,17 @@ public class MetricConverter {
         return dto;
     }
 
-    public Set<MetricDto> convertFromEntityToDto(Set<Metric> metrics) {
+    public static Set<MetricDto> convertFromEntityToDto(Set<Metric> metrics) {
         Set<MetricDto> dtos = new TreeSet<>();
         metrics.stream().forEach(metric -> dtos.add(convertFromEntityToDto(metric)));
         return dtos;
     }
 
-    public List<MetricDto> convertFromEntityToDto(List<Metric> metrics) {
+    public static List<MetricDto> convertFromEntityToDto(List<Metric> metrics) {
         return metrics.stream().map(test -> convertFromEntityToDto(test)).collect(Collectors.toList());
     }
 
-    public Metric convertFromDtoToEntity(MetricDto dto) {
+    public static Metric convertFromDtoToEntity(MetricDto dto) {
         if (dto == null) {
             return null;
         }

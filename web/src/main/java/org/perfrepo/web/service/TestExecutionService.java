@@ -210,6 +210,14 @@ public interface TestExecutionService {
     Value getValue(Long id);
 
     /**
+     * Retrieves all values for test execution.
+     *
+     * @param testExecution
+     * @return
+     */
+    List<Value> getValues(TestExecution testExecution);
+
+    /**
      * Retrieves values for test execution and given metric.
      *
      * @param metric

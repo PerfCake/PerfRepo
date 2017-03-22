@@ -6,7 +6,7 @@ package org.perfrepo.dto.test_execution;
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class ParameterDto {
+public class ParameterDto implements Comparable<ParameterDto> {
 
     private String name;
 
@@ -51,5 +51,15 @@ public class ParameterDto {
     @Override
     public int hashCode() {
         return getName() != null ? getName().hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(ParameterDto o) {
+        int nameCompare = name.compareTo(o.getName());
+        if (nameCompare == 0) {
+            return value.compareTo(o.getValue());
+        }
+
+        return nameCompare;
     }
 }

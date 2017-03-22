@@ -4,7 +4,6 @@ import org.perfrepo.dto.alert.AlertDto;
 import org.perfrepo.web.model.Alert;
 import org.perfrepo.web.model.Tag;
 
-import javax.inject.Inject;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -17,10 +16,9 @@ import java.util.stream.Stream;
  */
 public class AlertConverter {
 
-    @Inject
-    private MetricConverter metricConverter;
+    private AlertConverter() { }
 
-    public AlertDto convertFromEntityToDto(Alert alert) {
+    public static AlertDto convertFromEntityToDto(Alert alert) {
         if (alert == null) {
             return null;
         }
@@ -37,7 +35,7 @@ public class AlertConverter {
         return dto;
     }
 
-    public Set<AlertDto> convertFromEntityToDto(Set<Alert> alerts) {
+    public static Set<AlertDto> convertFromEntityToDto(Set<Alert> alerts) {
         Set<AlertDto> dtos = new TreeSet<>();
         alerts.stream().forEach(alert -> dtos.add(convertFromEntityToDto(alert)));
         return dtos;
