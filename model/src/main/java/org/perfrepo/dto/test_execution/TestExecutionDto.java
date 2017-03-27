@@ -2,7 +2,9 @@ package org.perfrepo.dto.test_execution;
 
 import org.perfrepo.dto.test.TestDto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,17 +21,17 @@ public class TestExecutionDto {
 
     private TestDto test;
 
-    private Set<String> tags;
+    private Set<String> tags = new HashSet<>();
 
     private String comment;
 
     private Date started;
 
-    private Set<ParameterDto> executionParameters;
+    private Set<ParameterDto> executionParameters = new HashSet<>();
 
-    private Set<ValuesGroupDto> executionValuesGroups;
+    private Set<ValuesGroupDto> executionValuesGroups = new HashSet<>();
 
-    private List<AttachmentDto> executionAttachments;
+    private List<AttachmentDto> executionAttachments = new ArrayList<>();
 
     public Long getId() {
         return id;

@@ -273,6 +273,7 @@ public class TestExecutionServiceBean implements TestExecutionService {
         managedExecution.getTags().add(managedTag);
         managedTag.getTestExecutions().add(managedExecution);
 
+        tag = managedTag;
         return managedTag;
     }
 

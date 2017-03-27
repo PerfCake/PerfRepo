@@ -61,7 +61,6 @@ public class TestExecutionAdapterImpl implements TestExecutionAdapter {
 
         dto.setExecutionAttachments(attachmentConverter.convertFromEntityToDto(testExecutionService.getAttachments(testExecution)));
         dto.setExecutionParameters(parameterConverter.convertFromEntityToDto(testExecutionService.getParameters(testExecution)));
-        dto.setTags(tagConverter.convertFromEntityToDto(testExecutionService.getTags(testExecution)));
         dto.setExecutionValuesGroups(valueConverter.convertFromEntityToDto(testExecutionService.getValues(testExecution)));
 
         return dto;

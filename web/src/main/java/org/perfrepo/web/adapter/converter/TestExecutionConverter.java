@@ -26,6 +26,7 @@ public class TestExecutionConverter {
         dto.setComment(testExecution.getComment());
         dto.setStarted(testExecution.getStarted());
         dto.setTest(TestConverter.convertFromEntityToDto(testExecution.getTest()));
+        dto.setTags(TagConverter.convertFromEntityToDto(testExecution.getTags()));
 
         return dto;
     }

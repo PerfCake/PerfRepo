@@ -68,7 +68,7 @@ public class TestExecution implements Entity<TestExecution> {
    @JoinColumn(name = "test_id", referencedColumnName = "id")
    private Test test;
 
-   @ManyToMany(fetch = FetchType.LAZY)
+   @ManyToMany(fetch = FetchType.EAGER)
    @JoinTable(
            name = "test_execution_tag",
            joinColumns = {@JoinColumn(name = "test_execution_id", nullable = false, updatable = false)},
