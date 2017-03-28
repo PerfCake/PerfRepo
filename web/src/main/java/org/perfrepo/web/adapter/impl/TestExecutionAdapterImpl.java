@@ -88,8 +88,7 @@ public class TestExecutionAdapterImpl implements TestExecutionAdapter {
         Map<String, TestExecutionParameter> parameters = parameterConverter.convertFromDtoToEntity(testExecutionParameters);
         parameters.values().stream().forEach(parameter -> parameter.setTestExecution(testExecution));
 
-        // TODO this should be done with some replacement, temporal implementation
-        parameters.values().stream().forEach(parameter -> testExecutionService.addParameter(parameter));
+        testExecutionService.updateParameters(parameters, testExecution);
         TestExecution updatedTestExecution = testExecutionService.getTestExecution(testExecutionId);
         return testExecutionConverter.convertFromEntityToDto(updatedTestExecution);
     }
