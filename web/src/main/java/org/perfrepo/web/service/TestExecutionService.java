@@ -25,6 +25,7 @@ import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -137,6 +138,13 @@ public interface TestExecutionService {
     * @return test execution parameter
     */
    TestExecutionParameter updateParameter(TestExecutionParameter parameter);
+
+    /**
+     * Updates parameters all together. Adds new ones, modifies existing, deletes non-existing.
+     * @param newParameters
+     * @param testExecution
+     */
+   void updateParameters(Map<String, TestExecutionParameter> newParameters, TestExecution testExecution);
 
    /**
     * Removes TestExecutionParameter

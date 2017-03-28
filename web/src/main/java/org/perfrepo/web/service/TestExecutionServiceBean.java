@@ -177,6 +177,29 @@ public class TestExecutionServiceBean implements TestExecutionService {
     }
 
     @Override
+    public void updateParameters(Map<String, TestExecutionParameter> newParameters, TestExecution testExecution) {
+        TestExecution managedExecution = testExecutionDAO.get(testExecution.getId());
+        Map<String, TestExecutionParameter> oldParameters = managedExecution.getParameters();
+
+        // delete newly removed parameters
+        for (Map.Entry<String, TestExecutionParameter> oldParameterEntry: oldParameters.entrySet()) {
+            if (!newParameters.containsKey(oldParameterEntry.getKey())) {
+                removeParameter(oldParameterEntry.getValue());
+            }
+        }
+
+        // add and modify parameters
+        for (Map.Entry<String, TestExecutionParameter> newParameterEntry: newParameters.entrySet()) {
+            if (!oldParameters.containsKey(newParameterEntry.getKey())) { // add new
+                addParameter(newParameterEntry.getValue());
+            } else if (oldParameters.containsKey(newParameterEntry.getKey()) && !oldParameters.get(newParameterEntry.getKey()).equals(newParameterEntry.getValue())) {
+                newParameterEntry.getValue().setId(oldParameters.get(newParameterEntry.getKey()).getId());
+                updateParameter(newParameterEntry.getValue());
+            }
+        }
+    }
+
+    @Override
     public void removeParameter(TestExecutionParameter parameter) {
         TestExecutionParameter managedParameter = testExecutionParameterDAO.get(parameter.getId());
         testExecutionParameterDAO.remove(managedParameter);

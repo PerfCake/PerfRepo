@@ -25,6 +25,7 @@ import org.perfrepo.web.util.UserSessionMock;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -205,6 +206,59 @@ public class TestExecutionServiceTest {
         assertNull(testExecutionService.getParameter(createdParameter.getId()));
         assertTrue(testExecutionService.getParameters(testExecution).isEmpty());
     }
+
+    @org.junit.Test
+    public void testUpdateParameters() {
+        TestExecution testExecution = new TestExecution();
+        fillTestExecution("exec1", tests.get(0), testExecution);
+
+        TestExecution createdTestExecution = testExecutionService.createTestExecution(testExecution);
+
+        TestExecutionParameter parameter1 = new TestExecutionParameter();
+        fillParameter("parameter1", createdTestExecution, parameter1);
+
+        Map<String, TestExecutionParameter> completelyNewParameters = new HashMap<>();
+        completelyNewParameters.put(parameter1.getName(), parameter1);
+        testExecutionService.updateParameters(completelyNewParameters, createdTestExecution);
+
+        List<TestExecutionParameter> retrievedParameters = testExecutionService.getParameters(createdTestExecution);
+        Collection<TestExecutionParameter> expectedParameters = completelyNewParameters.values();
+        assertEquals(expectedParameters.size(), retrievedParameters.size());
+        assertTrue(expectedParameters.stream().allMatch(expected -> retrievedParameters.stream()
+                .anyMatch(actual -> expected.getName().equals(actual.getName()) && expected.getValue().equals(actual.getValue()))));
+
+        Map<String, TestExecutionParameter> addNewAndEditExisting = new HashMap<>();
+        TestExecutionParameter parameterUpdatedExisting = new TestExecutionParameter();
+        fillParameter("parameter1", createdTestExecution, parameterUpdatedExisting);
+        parameterUpdatedExisting.setValue("updated_value");
+
+        TestExecutionParameter newParameter = new TestExecutionParameter();
+        fillParameter("parameter2", createdTestExecution, newParameter);
+
+        addNewAndEditExisting.put(parameterUpdatedExisting.getName(), parameterUpdatedExisting);
+        addNewAndEditExisting.put(newParameter.getName(), newParameter);
+        testExecutionService.updateParameters(addNewAndEditExisting, createdTestExecution);
+
+        List<TestExecutionParameter> retrievedParameters2 = testExecutionService.getParameters(createdTestExecution);
+        Collection<TestExecutionParameter> expectedParameters2 = addNewAndEditExisting.values();
+        assertEquals(expectedParameters2.size(), retrievedParameters2.size());
+        assertTrue(expectedParameters2.stream().allMatch(expected -> retrievedParameters2.stream()
+                .anyMatch(actual -> expected.getName().equals(actual.getName()) && expected.getValue().equals(actual.getValue()))));
+
+
+        Map<String, TestExecutionParameter> addNewAndDeleteExisting = new HashMap<>();
+        TestExecutionParameter newParameter3 = new TestExecutionParameter();
+        fillParameter("parameter3", createdTestExecution, newParameter3);
+
+        addNewAndEditExisting.put(newParameter3.getName(), newParameter3);
+        testExecutionService.updateParameters(addNewAndDeleteExisting, createdTestExecution);
+
+        List<TestExecutionParameter> retrievedParameters3 = testExecutionService.getParameters(createdTestExecution);
+        Collection<TestExecutionParameter> expectedParameters3 = addNewAndDeleteExisting.values();
+        assertEquals(expectedParameters3.size(), retrievedParameters3.size());
+        assertTrue(expectedParameters3.stream().allMatch(expected -> retrievedParameters3.stream()
+                .anyMatch(actual -> expected.getName().equals(actual.getName()) && expected.getValue().equals(actual.getValue()))));
+    }
     
     @org.junit.Test
     public void testValuesCRUDOperations() {
@@ -259,12 +313,12 @@ public class TestExecutionServiceTest {
 
         Set<Tag> expectedForExec1 = new HashSet<>(Arrays.asList(tag1, tag2));
         assertEquals(expectedForExec1.size(), tagsForExec1.size());
-        assertTrue(expectedForExec1.stream().allMatch(expected -> expectedForExec1.stream()
+        assertTrue(expectedForExec1.stream().allMatch(expected -> tagsForExec1.stream()
                 .anyMatch(actual -> expected.getName().equals(actual.getName()))));
 
         Set<Tag> expectedForExec2 = new HashSet<>(Arrays.asList(tag2));
         assertEquals(expectedForExec2.size(), tagsForExec2.size());
-        assertTrue(expectedForExec2.stream().allMatch(expected -> expectedForExec2.stream()
+        assertTrue(expectedForExec2.stream().allMatch(expected -> tagsForExec2.stream()
                 .anyMatch(actual -> expected.getName().equals(actual.getName()))));
 
         // test disassociation
