@@ -225,7 +225,7 @@ public class TestExecutionServiceBean implements TestExecutionService {
     @Override
     public Value addValue(Value value) {
         TestExecution managedExecution = testExecutionDAO.get(value.getTestExecution().getId());
-        Metric managedMetric = metricDAO.get(value.getMetric().getId());
+        Metric managedMetric = getManagedMetric(value.getMetric());
 
         value.setTestExecution(managedExecution);
         value.setMetric(managedMetric);
@@ -321,6 +321,29 @@ public class TestExecutionServiceBean implements TestExecutionService {
                 removeTagFromTestExecution(tag, testExecution);
             }
         }
+    }
+
+    /**
+     * TODO: document this
+     *
+     * @param metric
+     * @return
+     */
+    private Metric getManagedMetric(Metric metric) {
+        if (metric == null) {
+            return null;
+        }
+
+        Metric managedMetric = null;
+        if (metric.getId() != null) {
+            return metricDAO.get(metric.getId());
+        }
+
+        if (metric.getName() != null) {
+            return metricDAO.getByName(metric.getName());
+        }
+
+        return null;
     }
 
 }

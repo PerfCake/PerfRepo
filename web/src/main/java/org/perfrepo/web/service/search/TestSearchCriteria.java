@@ -17,6 +17,7 @@ package org.perfrepo.web.service.search;
 import org.perfrepo.enums.OrderBy;
 import org.perfrepo.web.model.user.Group;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -28,7 +29,7 @@ public class TestSearchCriteria {
 
    private String name;
    private String uid;
-   private Set<Group> groups;
+   private Set<Group> groups = new HashSet<>();
    private OrderBy orderBy = OrderBy.NAME_ASC;
    private Integer limitFrom;
    private Integer limitHowMany;

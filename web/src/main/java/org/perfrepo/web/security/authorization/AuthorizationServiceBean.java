@@ -14,12 +14,14 @@
  */
 package org.perfrepo.web.security.authorization;
 
+import org.perfrepo.web.dao.GroupDAO;
 import org.perfrepo.web.model.Entity;
 import org.perfrepo.web.model.Test;
 import org.perfrepo.enums.AccessLevel;
 import org.perfrepo.enums.AccessType;
 import org.perfrepo.web.model.report.Permission;
 import org.perfrepo.web.model.report.Report;
+import org.perfrepo.web.model.user.Group;
 import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.dao.PermissionDAO;
 import org.perfrepo.web.dao.TestDAO;
@@ -42,6 +44,9 @@ public class AuthorizationServiceBean implements AuthorizationService {
 
    @Inject
    private TestDAO testDAO;
+
+   @Inject
+   private GroupDAO groupDAO;
 
    @Inject
    private PermissionDAO permissionDAO;
@@ -83,8 +88,14 @@ public class AuthorizationServiceBean implements AuthorizationService {
    }
 
    private boolean isUserAuthorizedForTest(User user, AccessType accessType, Test test) {
-      Test managedTest = testDAO.get(test.getId());
-      return groupService.isUserInGroup(user, managedTest.getGroup());
+      Group managedGroup = null;
+      if (test.getId() != null) {
+         managedGroup = testDAO.get(test.getId()).getGroup();
+      } else {
+         managedGroup = groupDAO.findByName(test.getGroup().getName());
+      }
+
+      return groupService.isUserInGroup(user, managedGroup);
    }
 
    @Override

@@ -10,6 +10,10 @@ import org.perfrepo.dto.util.validation.ValidationErrors;
  */
 public class UnauthorizedException extends ValidationException {
 
+    public UnauthorizedException(String message) {
+        this(message, new ValidationErrors());
+    }
+
     /**
      * Constructs a {@link UnauthorizedException} with the specified detail message.
      *

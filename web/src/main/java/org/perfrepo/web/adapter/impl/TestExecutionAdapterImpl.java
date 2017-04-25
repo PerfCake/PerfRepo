@@ -4,7 +4,9 @@ import org.perfrepo.dto.test_execution.AttachmentDto;
 import org.perfrepo.dto.test_execution.ParameterDto;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
 import org.perfrepo.dto.test_execution.TestExecutionSearchCriteria;
-import org.perfrepo.dto.test_execution.ValueDto;
+import org.perfrepo.dto.test_execution.ValuesGroupDto;
+import org.perfrepo.dto.test_execution.mass_operation.ParameterMassOperationDto;
+import org.perfrepo.dto.test_execution.mass_operation.TagMassOperationDto;
 import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.web.adapter.TestExecutionAdapter;
 import org.perfrepo.web.adapter.converter.AttachmentConverter;
@@ -94,14 +96,14 @@ public class TestExecutionAdapterImpl implements TestExecutionAdapter {
     }
 
     @Override
-    public TestExecutionDto addExecutionValues(Long testExecutionId, Long metricId, List<ValueDto> executionValues) {
+    public TestExecutionDto addExecutionValues(Long testExecutionId, ValuesGroupDto valuesGroupDto) {
         TestExecution testExecution = new TestExecution();
         testExecution.setId(testExecutionId);
 
         Metric metric = new Metric();
-        metric.setId(metricId);
+        metric.setName(valuesGroupDto.getMetricName());
 
-        List<Value> values = valueConverter.convertFromDtoToEntity(executionValues);
+        List<Value> values = valueConverter.convertFromDtoToEntity(valuesGroupDto.getValues());
         values.stream().forEach(value -> { value.setMetric(metric); value.setTestExecution(testExecution); });
 
         // TODO this should be done with some replacement, temporal implementation
@@ -111,14 +113,14 @@ public class TestExecutionAdapterImpl implements TestExecutionAdapter {
     }
 
     @Override
-    public TestExecutionDto setExecutionValues(Long testExecutionId, Long metricId, List<ValueDto> executionValues) {
+    public TestExecutionDto setExecutionValues(Long testExecutionId, ValuesGroupDto valuesGroupDto) {
         TestExecution testExecution = new TestExecution();
         testExecution.setId(testExecutionId);
 
         Metric metric = new Metric();
-        metric.setId(metricId);
+        metric.setName(valuesGroupDto.getMetricName());
 
-        List<Value> values = valueConverter.convertFromDtoToEntity(executionValues);
+        List<Value> values = valueConverter.convertFromDtoToEntity(valuesGroupDto.getValues());
         values.stream().forEach(value -> { value.setMetric(metric); value.setTestExecution(testExecution); });
 
         // TODO this should be done with some replacement, temporal implementation
@@ -153,5 +155,37 @@ public class TestExecutionAdapterImpl implements TestExecutionAdapter {
     public AttachmentDto getTestExecutionAttachment(Long attachmentId, String hash) {
         TestExecutionAttachment attachment = testExecutionService.getAttachment(attachmentId);
         return attachmentConverter.convertFromEntityToDto(attachment);
+    }
+
+    //TODO: implement the methods below
+
+    @Override
+    public TestExecutionSearchCriteria getSearchCriteria() {
+        return null;
+    }
+
+    @Override
+    public void addTags(TagMassOperationDto massOperation) {
+
+    }
+
+    @Override
+    public void removeTags(TagMassOperationDto massOperation) {
+
+    }
+
+    @Override
+    public void addParameter(ParameterMassOperationDto massOperation) {
+
+    }
+
+    @Override
+    public void removeParameter(ParameterMassOperationDto massOperation) {
+
+    }
+
+    @Override
+    public void removeTestExecutions(Set<Long> testExecutionIds) {
+
     }
 }

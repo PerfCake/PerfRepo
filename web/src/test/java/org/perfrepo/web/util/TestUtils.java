@@ -26,6 +26,7 @@ public class TestUtils {
         war.addAsLibraries(Maven.resolver().resolve("commons-codec:commons-codec:1.9").withTransitivity().asFile());
         war.addAsLibraries(Maven.resolver().resolve("org.antlr:antlr:3.5.2").withTransitivity().asFile());
         war.addAsLibraries(Maven.resolver().resolve("org.apache.maven:maven-artifact:3.0.3").withTransitivity().asFile());
+        war.addAsLibraries(Maven.resolver().resolve("org.infinispan:infinispan-embedded:9.0.0.Final").withTransitivity().asFile());
 
         war.addAsResource("test-persistence.xml", "META-INF/persistence.xml");
         war.addAsResource("test-beans.xml", "META-INF/beans.xml");

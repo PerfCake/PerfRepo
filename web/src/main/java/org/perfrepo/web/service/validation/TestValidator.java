@@ -62,7 +62,7 @@ public class TestValidator implements ConstraintValidator<ValidTest, Test> {
         }
 
         if (type.contains(ValidationType.EXISTS) && (test.getId() == null || testDAO.get(test.getId()) == null)) {
-            context.buildConstraintViolationWithTemplate("{;}")
+            context.buildConstraintViolationWithTemplate("{;}") //TODO: fix the message
                     .addConstraintViolation();
             isValid =  false;
         }

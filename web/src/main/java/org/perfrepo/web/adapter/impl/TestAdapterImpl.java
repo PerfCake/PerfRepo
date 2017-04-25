@@ -1,6 +1,7 @@
 package org.perfrepo.web.adapter.impl;
 
 import org.perfrepo.dto.test.TestDto;
+import org.perfrepo.dto.test.TestSearchCriteria;
 import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.web.adapter.TestAdapter;
 import org.perfrepo.web.adapter.converter.GroupConverter;
@@ -91,6 +92,12 @@ public class TestAdapterImpl implements TestAdapter {
 
         SearchResult<TestDto> result = new SearchResult<>(testConverter.convertFromEntityToDto(resultWrapper.getResult()), resultWrapper.getTotalSearchResultsCount(), searchParams.getLimit(), searchParams.getOffset());
         return result;
+    }
+
+    @Override
+    public TestSearchCriteria getSearchCriteria() {
+        // TODO: implement
+        return null;
     }
 
     @Override

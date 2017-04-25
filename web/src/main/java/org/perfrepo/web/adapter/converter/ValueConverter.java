@@ -60,7 +60,7 @@ public class ValueConverter {
             ValuesGroupDto groupDto = dtos.get(value.getMetric().getId());
             if (groupDto == null) {
                 groupDto = new ValuesGroupDto();
-                groupDto.setMetricId(value.getMetric().getId());
+                groupDto.setMetricName(value.getMetric().getName());
                 dtos.put(value.getMetric().getId(), groupDto);
             }
 
@@ -85,7 +85,7 @@ public class ValueConverter {
         List<Value> values = new ArrayList<>();
         for (ValuesGroupDto valuesGroupDto: valuesGroupDtos) {
             List<Value> valuesPart = convertFromDtoToEntity(valuesGroupDto.getValues());
-            valuesPart.stream().forEach(value -> { Metric metric = new Metric(); metric.setId(valuesGroupDto.getMetricId()); value.setMetric(metric); });
+            valuesPart.stream().forEach(value -> { Metric metric = new Metric(); metric.setName(valuesGroupDto.getMetricName()); value.setMetric(metric); });
             values.addAll(valuesPart);
         }
 

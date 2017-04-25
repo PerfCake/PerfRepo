@@ -56,6 +56,6 @@ public class ValuesGroupDto implements Comparable<ValuesGroupDto> {
 
     @Override
     public int compareTo(ValuesGroupDto o) {
-        return metricId.compareTo(o.getMetricId());
+        return metricName.compareTo(o.getMetricName());
     }
 }

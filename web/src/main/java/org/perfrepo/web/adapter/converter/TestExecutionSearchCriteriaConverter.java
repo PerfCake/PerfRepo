@@ -27,7 +27,7 @@ public class TestExecutionSearchCriteriaConverter {
         criteria.setStartedAfter(dto.getStartedAfterFilter().stream().findFirst().orElse(null)); //TODO: review the set
         criteria.setStartedBefore(dto.getStartedBeforeFilter().stream().findFirst().orElse(null)); //TODO: review the set
         criteria.setTestName(dto.getTestNamesFilter().stream().findFirst().orElse(null));
-        criteria.setTestUIDs(dto.getTestUIDsFilter());
+        criteria.setTestUIDs(dto.getTestUniqueIdsFilter());
         return criteria;
     }
 }
