@@ -19,7 +19,7 @@ public class TestExecutionSearchCriteria {
 
     private Set<String> testNamesFilter = new HashSet<>();
 
-    private Set<String> testUniqueIdsFilter= new HashSet<>();
+    private Set<String> testUniqueIdsFilter = new HashSet<>();
 
     private Set<String> groupsFilter = new HashSet<>();
 
