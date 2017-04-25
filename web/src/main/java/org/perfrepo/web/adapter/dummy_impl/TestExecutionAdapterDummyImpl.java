@@ -46,8 +46,8 @@ public class TestExecutionAdapterDummyImpl implements TestExecutionAdapter {
         testExecution.setTest(storage.test().getById(testExecution.getTest().getId()));
 
         // it is not possible to set it, only in test execution detail
-        testExecution.setExecutionParameters(new LinkedHashSet<>());
-        testExecution.setExecutionValuesGroups(new LinkedHashSet<>());
+        //testExecution.setExecutionParameters(new LinkedHashSet<>());
+        //testExecution.setExecutionValuesGroups(new LinkedHashSet<>());
 
         return storage.testExecution().create(testExecution);
     }
