@@ -503,11 +503,11 @@ public class Storage {
     private List<BoxPlotSeriesValueDto> prepareBoxPlotSeriesValues() {
         List<BoxPlotSeriesValueDto> values = new ArrayList<>();
 
-        values.add(prepareBoxPlotSeriesValue(1L, 115.0, 180.0, 200.0, 250.0, 400.0, 50, 100, 425));
-        values.add(prepareBoxPlotSeriesValue(2L, 225.0, 300.0, 350.0, 400.0, 425.0, 174, 450, 500));
+        values.add(prepareBoxPlotSeriesValue(1L, 115.12, 183.22, 212.81, 253.61, 340.0, 51.22, 91.1, 426.33));
+        values.add(prepareBoxPlotSeriesValue(2L, 105.87, 210.21, 251.41, 362.23, 425.0, 34, 450, 497.43));
         values.add(prepareBoxPlotSeriesValue(3L, 25.0, 100.0, 200.0, 300.0, 400.0, 450, 470));
-        values.add(prepareBoxPlotSeriesValue(4L, 50.0, 75.0, 100.0, 125.0, 300.0,  450));
-        values.add(prepareBoxPlotSeriesValue(5L, 220.0, 320.0, 400.0, 425.0, 475.0));
+        values.add(prepareBoxPlotSeriesValue(5L, 20.0, 70.0, 195.0, 295.0, 405.0));
+        values.add(prepareBoxPlotSeriesValue(4L, 70.0, 85.0, 190.0, 225.0, 370.0,  450));
 
         return values;
     }
