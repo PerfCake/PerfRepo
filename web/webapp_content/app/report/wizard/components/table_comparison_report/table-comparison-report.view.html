@@ -29,7 +29,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Threshold</label>
+                        <label>
+                            Threshold
+                            <span class="pficon pficon-help" tooltip-append-to-body="true" uib-tooltip="Threshold
+                            (integer) for table cell condition formatting. Table cell can have red, green and neutral
+                            color. If the percentage difference of measured value and base value is lower than threshold
+                            (e.g. more than 5 %) and the metric is higher better, the cell is red.
+                             Analogically for other cases."></span>
+                        </label>
                         <input type="number" name="groups[{{groupIndex}}].threshold"
                                ng-model="group.threshold" class="form-control" pr-server-validation>
                     </div>
