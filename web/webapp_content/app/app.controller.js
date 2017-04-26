@@ -6,10 +6,11 @@
         .controller('AppController', AppController);
 
     function AppController(_comparisonSession, _info, authenticationService, comparisonSessionService, userModalService,
-                           $state, $scope) {
+                           modalService, $state, $scope) {
         var vm = this;
         vm.logout = logout;
         vm.settings = settings;
+        vm.support = support;
         vm.removeTestExecution = removeTestExecution;
         vm.removeAllTestExecutions = removeAllTestExecutions;
         vm.compareTestExecutions = compareTestExecutions;
@@ -71,6 +72,10 @@
 
         function settings() {
             var modalInstance = userModalService.editUser(vm.user.id);
+        }
+
+        function support() {
+            modalService.getSupport();
         }
     }
 })();
