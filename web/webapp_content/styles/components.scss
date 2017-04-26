@@ -363,6 +363,10 @@ div.report-wizard {
     display: none;
   }
 
+  .vAccordion--default v-pane, svg:not(:root), v-pane-content {
+    overflow: visible;
+  }
+
   v-pane-content {
     padding-left: 10px;
     border-left: 2px solid #ededed;
