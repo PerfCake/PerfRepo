@@ -20,33 +20,39 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group no-value-parameters">
                 <div class="col-xs-12">
-                    <button type="button" ng-click="vm.addParameter()" class="btn btn-default pull-right">
-                        <span class="pficon-add-circle-o" aria-hidden="true"></span> Add x-axis
-                    </button>
-                </div>
-            </div>
-
-            <div ng-show="vm.groupsParameters[vm.selectedMetricName].length > 0" class="form-group">
-                <div class="col-xs-12">
-                    <h4>X-axes</h4>
+                    <h4>
+                        Parameters
+                        <span class="pficon pficon-help" tooltip-append-to-body="true" uib-tooltip="The value parameter
+                        is required for multi-value results. It's used to determine the order of measured values and used
+                         as x-axis in the line chart. The name of parameter is for example time, percent or iterations."></span>
+                    </h4>
+                    <p ng-show="vm.groupsParameters[vm.selectedMetricName] == undefined || vm.groupsParameters[vm.selectedMetricName].length == 0">No value parameters</p>
                 </div>
             </div>
 
             <div class="form-group parameter-value" ng-repeat="parameter in vm.groupsParameters[vm.selectedMetricName]">
-                <label class="col-sm-2 control-label">Name</label>
-                <div class="col-sm-3">
+                <label class="col-sm-1 control-label">Name</label>
+                <div class="col-sm-4">
                     <input type="text" ng-model="parameter.name" class="form-control">
                 </div>
-                <label class="col-sm-2 control-label">Value</label>
-                <div class="col-sm-3">
+                <label class="col-sm-1 control-label">Value</label>
+                <div class="col-sm-4">
                     <input type="number" ng-model="parameter.value" class="form-control">
                 </div>
                 <div class="col-sm-2 remove-btn">
                     <a ng-click="vm.removeParameter($index)" class="btn btn-default">
                         <span class="pficon-delete" aria-hidden="true"></span> Remove
                     </a>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-xs-12">
+                    <button type="button" ng-click="vm.addParameter()" class="btn btn-default pull-right">
+                        <span class="pficon-add-circle-o" aria-hidden="true"></span> Add parameter
+                    </button>
                 </div>
             </div>
 
