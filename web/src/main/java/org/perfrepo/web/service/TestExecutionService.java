@@ -66,6 +66,13 @@ public interface TestExecutionService {
    void removeTestExecution(TestExecution testExecution);
 
    /**
+    * Deletes set of test executions at once.
+    *
+    * @param testExecutions
+    */
+   void removeTestExecutions(Set<TestExecution> testExecutions);
+
+   /**
     * Get {@link TestExecution}.
     *
     * @param id
@@ -282,5 +289,21 @@ public interface TestExecutionService {
     * @param testExecutions
     */
    void removeTagsFromTestExecutions(Set<Tag> tags, Collection<TestExecution> testExecutions);
+
+    /**
+     * TODO: document this
+     *
+     * @param parameters
+     * @param testExecutions
+     */
+   void addParametersToTestExecutions(Set<TestExecutionParameter> parameters, Collection<TestExecution> testExecutions);
+
+    /**
+     * TODO: document this
+     *
+     * @param parameters
+     * @param testExecutions
+     */
+   void removeParametersFromTestExecutions(Set<TestExecutionParameter> parameters, Collection<TestExecution> testExecutions);
 
 }

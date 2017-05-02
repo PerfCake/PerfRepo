@@ -125,6 +125,11 @@ public class TestExecutionServiceBean implements TestExecutionService {
     }
 
     @Override
+    public void removeTestExecutions(Set<TestExecution> testExecutions) {
+        testExecutions.stream().forEach(testExecution -> removeTestExecution(testExecution));
+    }
+
+    @Override
     public TestExecution getTestExecution(Long id) {
         return testExecutionDAO.get(id);
     }
@@ -323,6 +328,26 @@ public class TestExecutionServiceBean implements TestExecutionService {
         for (TestExecution testExecution: testExecutions) {
             for (Tag tag: tags) {
                 removeTagFromTestExecution(tag, testExecution);
+            }
+        }
+    }
+
+    @Override
+    public void addParametersToTestExecutions(Set<TestExecutionParameter> parameters, Collection<TestExecution> testExecutions) {
+        for (TestExecution testExecution: testExecutions) {
+            for (TestExecutionParameter parameter: parameters) {
+                parameter.setTestExecution(testExecution);
+                addParameter(parameter);
+            }
+        }
+    }
+
+    @Override
+    public void removeParametersFromTestExecutions(Set<TestExecutionParameter> parameters, Collection<TestExecution> testExecutions) {
+        for (TestExecution testExecution: testExecutions) {
+            for (TestExecutionParameter parameter: parameters) {
+                parameter.setTestExecution(testExecution);
+                removeParameter(parameter);
             }
         }
     }
