@@ -78,7 +78,6 @@ public class AuthenticationService {
 
             loggedUsers.put(token, userInfo);
 
-
             return authenticationDto;
         }
 

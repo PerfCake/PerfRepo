@@ -78,7 +78,7 @@ public class TestDAO extends DAO<Test, Long> {
       setOrderBy(criteria, search.getOrderBy(), root);
 
       TypedQuery<Test> query = query(criteria);
-      int firstResult = search.getLimitFrom() == null ? 0 : search.getLimitFrom();
+      int firstResult = search.getLimitFrom();
       query.setFirstResult(firstResult);
       if (search.getLimitHowMany() != null) {
          query.setMaxResults(search.getLimitHowMany());

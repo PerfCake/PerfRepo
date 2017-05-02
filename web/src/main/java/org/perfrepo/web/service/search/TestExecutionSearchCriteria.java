@@ -36,7 +36,7 @@ public class TestExecutionSearchCriteria {
    private Set<Group> groups = new HashSet<>();
    private Set<String> testUIDs = new HashSet<>();
    private String testName;
-   private Integer limitFrom;
+   private int limitFrom = 0;
    private Integer limitHowMany;
    private OrderBy orderBy = OrderBy.DATE_DESC;
    private String orderByParameter;
@@ -66,11 +66,11 @@ public class TestExecutionSearchCriteria {
       this.labelParameter = labelParameter;
    }
 
-   public Integer getLimitFrom() {
+   public int getLimitFrom() {
       return limitFrom;
    }
 
-   public void setLimitFrom(Integer limitFrom) {
+   public void setLimitFrom(int limitFrom) {
       this.limitFrom = limitFrom;
    }
 

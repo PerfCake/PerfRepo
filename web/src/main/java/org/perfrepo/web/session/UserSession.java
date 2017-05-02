@@ -1,6 +1,8 @@
 package org.perfrepo.web.session;
 
 import org.perfrepo.web.model.user.User;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
+import org.perfrepo.web.service.search.TestSearchCriteria;
 
 /**
  * Interface remembering currently logged user and his session settings.
@@ -10,4 +12,13 @@ import org.perfrepo.web.model.user.User;
 public interface UserSession {
 
     User getLoggedUser();
+
+    TestSearchCriteria getTestSearchCriteria();
+
+    void setTestSearchCriteria(TestSearchCriteria criteria);
+
+    TestExecutionSearchCriteria getTestExecutionSearchCriteria();
+
+    void setTestExecutionSearchCriteria(TestExecutionSearchCriteria criteria);
+
 }

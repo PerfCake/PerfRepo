@@ -31,7 +31,7 @@ public class TestSearchCriteria {
    private String uid;
    private Set<Group> groups = new HashSet<>();
    private OrderBy orderBy = OrderBy.NAME_ASC;
-   private Integer limitFrom;
+   private int limitFrom = 0;
    private Integer limitHowMany;
 
    public String getName() {
@@ -66,11 +66,11 @@ public class TestSearchCriteria {
       this.orderBy = orderBy;
    }
 
-   public Integer getLimitFrom() {
+   public int getLimitFrom() {
       return limitFrom;
    }
 
-   public void setLimitFrom(Integer limitFrom) {
+   public void setLimitFrom(int limitFrom) {
       this.limitFrom = limitFrom;
    }
 

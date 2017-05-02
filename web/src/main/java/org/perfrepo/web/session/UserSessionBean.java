@@ -14,9 +14,13 @@
  */
 package org.perfrepo.web.session;
 
+import org.perfrepo.enums.OrderBy;
 import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.security.authentication.AuthenticatedUser;
 import org.perfrepo.web.security.authentication.AuthenticatedUserInfo;
+import org.perfrepo.web.service.UserService;
+import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
+import org.perfrepo.web.service.search.TestSearchCriteria;
 
 import javax.inject.Inject;
 
@@ -31,11 +35,69 @@ public class UserSessionBean implements UserSession {
    @AuthenticatedUser
    private AuthenticatedUserInfo userInfo;
 
+   @Inject
+   private UserService userService;
+
+   @Override
    public User getLoggedUser() {
       User user = null;
       if (userInfo != null) {
          user = userInfo.getUser();
       }
       return user;
+   }
+
+   @Override
+   public TestSearchCriteria getTestSearchCriteria() {
+      if (userInfo == null) {
+         return null;
+      }
+
+      if (userInfo.getTestSearchCriteria() == null) {
+         TestSearchCriteria defaultSearchCriteria = new TestSearchCriteria();
+         defaultSearchCriteria.setLimitHowMany(20);
+         defaultSearchCriteria.setOrderBy(OrderBy.NAME_ASC);
+         defaultSearchCriteria.setGroups(userService.getUserGroups(userInfo.getUser()));
+
+         userInfo.setTestSearchCriteria(defaultSearchCriteria);
+      }
+
+      return userInfo.getTestSearchCriteria();
+   }
+
+   @Override
+   public TestExecutionSearchCriteria getTestExecutionSearchCriteria() {
+      if (userInfo == null) {
+         return null;
+      }
+
+      if (userInfo.getTestExecutionSearchCriteria() == null) {
+         TestExecutionSearchCriteria defaultSearchCriteria = new TestExecutionSearchCriteria();
+         defaultSearchCriteria.setLimitHowMany(20);
+         defaultSearchCriteria.setOrderBy(OrderBy.DATE_DESC);
+         defaultSearchCriteria.setGroups(userService.getUserGroups(userInfo.getUser()));
+
+         userInfo.setTestExecutionSearchCriteria(defaultSearchCriteria);
+      }
+
+      return userInfo.getTestExecutionSearchCriteria();
+   }
+
+   @Override
+   public void setTestSearchCriteria(TestSearchCriteria criteria) {
+      if (userInfo == null) {
+         return;
+      }
+
+      userInfo.setTestSearchCriteria(criteria);
+   }
+
+   @Override
+   public void setTestExecutionSearchCriteria(TestExecutionSearchCriteria criteria) {
+      if (userInfo == null) {
+         return;
+      }
+
+      userInfo.setTestExecutionSearchCriteria(criteria);
    }
 }

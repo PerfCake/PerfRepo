@@ -120,7 +120,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       fillParameterValues(query, search);
 
       //handle pagination
-      int firstResult = search.getLimitFrom() == null ? 0 : search.getLimitFrom();
+      int firstResult = search.getLimitFrom();
       query.setFirstResult(firstResult);
       if (search.getLimitHowMany() != null) {
          query.setMaxResults(search.getLimitHowMany());

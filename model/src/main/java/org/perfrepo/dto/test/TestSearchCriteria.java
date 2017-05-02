@@ -20,7 +20,7 @@ public class TestSearchCriteria {
 
     private Set<String> groupsFilter = new HashSet<>();
 
-    private int limit = 5;
+    private Integer limit = 5;
 
     private int offset = 0;
 
@@ -93,7 +93,7 @@ public class TestSearchCriteria {
      *
      * @return Limit count of records.
      */
-    public int getLimit() {
+    public Integer getLimit() {
         return limit;
     }
 
@@ -102,7 +102,7 @@ public class TestSearchCriteria {
      *
      * @param limit Limit count of records.
      */
-    public void setLimit(int limit) {
+    public void setLimit(Integer limit) {
         this.limit = limit;
     }
 

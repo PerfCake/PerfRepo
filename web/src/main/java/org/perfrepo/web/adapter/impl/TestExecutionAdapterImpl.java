@@ -22,6 +22,7 @@ import org.perfrepo.web.model.TestExecutionParameter;
 import org.perfrepo.web.model.Value;
 import org.perfrepo.web.model.to.SearchResultWrapper;
 import org.perfrepo.web.service.TestExecutionService;
+import org.perfrepo.web.session.UserSession;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -55,6 +56,9 @@ public class TestExecutionAdapterImpl implements TestExecutionAdapter {
 
     @Inject
     private TestExecutionSearchCriteriaConverter searchCriteriaConverter;
+
+    @Inject
+    private UserSession userSession;
 
     @Override
     public TestExecutionDto getTestExecution(Long id) {
@@ -147,6 +151,7 @@ public class TestExecutionAdapterImpl implements TestExecutionAdapter {
         org.perfrepo.web.service.search.TestExecutionSearchCriteria criteria = searchCriteriaConverter.convertFromDtoToEntity(searchParams);
         SearchResultWrapper<TestExecution> resultWrapper = testExecutionService.searchTestExecutions(criteria);
 
+        userSession.setTestExecutionSearchCriteria(criteria);
         SearchResult<TestExecutionDto> result = new SearchResult<>(testExecutionConverter.convertFromEntityToDto(resultWrapper.getResult()), resultWrapper.getTotalSearchResultsCount(), searchParams.getLimit(), searchParams.getOffset());
         return result;
     }
@@ -161,7 +166,7 @@ public class TestExecutionAdapterImpl implements TestExecutionAdapter {
 
     @Override
     public TestExecutionSearchCriteria getSearchCriteria() {
-        return null;
+        return searchCriteriaConverter.convertFromEntityToDto(userSession.getTestExecutionSearchCriteria());
     }
 
     @Override

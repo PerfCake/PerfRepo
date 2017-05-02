@@ -11,6 +11,7 @@ import org.perfrepo.web.adapter.converter.TestSearchCriteriaConverter;
 import org.perfrepo.web.model.Test;
 import org.perfrepo.web.model.to.SearchResultWrapper;
 import org.perfrepo.web.service.TestService;
+import org.perfrepo.web.session.UserSession;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -21,6 +22,9 @@ import java.util.List;
  * @author Jiri Holusa (jholusa@redhat.com)
  */
 public class TestAdapterImpl implements TestAdapter {
+
+    @Inject
+    private UserSession userSession;
 
     @Inject
     private TestService testService;
@@ -90,14 +94,14 @@ public class TestAdapterImpl implements TestAdapter {
         org.perfrepo.web.service.search.TestSearchCriteria criteriaEntity = testSearchCriteriaConverter.convertFromDtoToEntity(searchParams);
         SearchResultWrapper<Test> resultWrapper = testService.searchTests(criteriaEntity);
 
+        userSession.setTestSearchCriteria(criteriaEntity);
         SearchResult<TestDto> result = new SearchResult<>(testConverter.convertFromEntityToDto(resultWrapper.getResult()), resultWrapper.getTotalSearchResultsCount(), searchParams.getLimit(), searchParams.getOffset());
         return result;
     }
 
     @Override
     public TestSearchCriteria getSearchCriteria() {
-        // TODO: implement
-        return null;
+        return testSearchCriteriaConverter.convertFromEntityToDto(userSession.getTestSearchCriteria());
     }
 
     @Override

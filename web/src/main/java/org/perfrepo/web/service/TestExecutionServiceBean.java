@@ -16,6 +16,7 @@ import org.perfrepo.web.dao.TestExecutionAttachmentDAO;
 import org.perfrepo.web.dao.TestExecutionDAO;
 import org.perfrepo.web.dao.TestExecutionParameterDAO;
 import org.perfrepo.web.dao.ValueDAO;
+import org.perfrepo.web.session.UserSession;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -63,6 +64,9 @@ public class TestExecutionServiceBean implements TestExecutionService {
 
     @Inject
     private TagDAO tagDAO;
+
+    @Inject
+    private UserSession userSession;
 
     /******** Methods related directly to test execution object ********/
 

@@ -31,7 +31,7 @@ public class TestExecutionSearchCriteria {
 
     private Set<Date> startedBeforeFilter = new HashSet<>();
 
-    private int limit = 10;
+    private Integer limit = 10;
 
     private int offset = 0;
 
@@ -109,11 +109,11 @@ public class TestExecutionSearchCriteria {
         this.startedBeforeFilter = startedBeforeFilter;
     }
 
-    public int getLimit() {
+    public Integer getLimit() {
         return limit;
     }
 
-    public void setLimit(int limit) {
+    public void setLimit(Integer limit) {
         this.limit = limit;
     }
 
