@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * TODO: document this
+ * Converter for Group between entity and DTO.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

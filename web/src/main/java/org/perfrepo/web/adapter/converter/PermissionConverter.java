@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * TODO: document this
+ * Converter for Permission between entity and DTO.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

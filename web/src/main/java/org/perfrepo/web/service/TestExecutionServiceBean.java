@@ -210,7 +210,7 @@ public class TestExecutionServiceBean implements TestExecutionService {
 
     @Override
     public void removeParameter(TestExecutionParameter parameter) {
-        TestExecutionParameter managedParameter = testExecutionParameterDAO.get(parameter.getId());
+        TestExecutionParameter managedParameter = getManagedParameter(parameter);
         testExecutionParameterDAO.remove(managedParameter);
     }
 
@@ -274,7 +274,7 @@ public class TestExecutionServiceBean implements TestExecutionService {
     public Tag addTag(Tag tag, TestExecution testExecution) {
         TestExecution managedExecution = testExecutionDAO.get(testExecution.getId());
 
-        Tag managedTag = tagDAO.findByName(tag.getName());
+        Tag managedTag = getManagedTag(tag);
         if (managedTag == null) {
             managedTag = tagDAO.create(tag);
         }
@@ -289,7 +289,7 @@ public class TestExecutionServiceBean implements TestExecutionService {
     @Override
     public void removeTagFromTestExecution(Tag tag, TestExecution testExecution) {
         TestExecution managedExecution = testExecutionDAO.get(testExecution.getId());
-        Tag managedTag = tagDAO.get(tag.getId());
+        Tag managedTag = getManagedTag(tag);
 
         managedExecution.getTags().remove(managedTag);
         managedTag.getTestExecutions().remove(managedExecution);
@@ -314,6 +314,8 @@ public class TestExecutionServiceBean implements TestExecutionService {
         return tagDAO.findByPrefix(prefix);
     }
 
+    /******** Methods related to mass operations ********/
+
     @Override
     public void addTagsToTestExecutions(Set<Tag> tags, Collection<TestExecution> testExecutions) {
         for (TestExecution testExecution: testExecutions) {
@@ -336,8 +338,9 @@ public class TestExecutionServiceBean implements TestExecutionService {
     public void addParametersToTestExecutions(Set<TestExecutionParameter> parameters, Collection<TestExecution> testExecutions) {
         for (TestExecution testExecution: testExecutions) {
             for (TestExecutionParameter parameter: parameters) {
-                parameter.setTestExecution(testExecution);
-                addParameter(parameter);
+                TestExecutionParameter parameterClone = parameter.clone();
+                parameterClone.setTestExecution(testExecution);
+                addParameter(parameterClone);
             }
         }
     }
@@ -363,13 +366,50 @@ public class TestExecutionServiceBean implements TestExecutionService {
             return null;
         }
 
-        Metric managedMetric = null;
         if (metric.getId() != null) {
             return metricDAO.get(metric.getId());
         }
 
         if (metric.getName() != null) {
             return metricDAO.getByName(metric.getName());
+        }
+
+        return null;
+    }
+
+    /**
+     * TODO: document this
+     *
+     * @param tag
+     * @return
+     */
+    private Tag getManagedTag(Tag tag) {
+        if (tag == null) {
+            return null;
+        }
+
+        if (tag.getId() != null) {
+            return tagDAO.get(tag.getId());
+        }
+
+        if (tag.getName() != null) {
+            return tagDAO.findByName(tag.getName());
+        }
+
+        return null;
+    }
+
+    private TestExecutionParameter getManagedParameter(TestExecutionParameter parameter) {
+        if (parameter == null) {
+            return null;
+        }
+
+        if (parameter.getId() != null) {
+            return testExecutionParameterDAO.get(parameter.getId());
+        }
+
+        if (parameter.getName() != null && parameter.getTestExecution() != null && parameter.getTestExecution().getId() != null) {
+            return testExecutionParameterDAO.getParameterByNameAndExecution(parameter.getTestExecution(), parameter);
         }
 
         return null;

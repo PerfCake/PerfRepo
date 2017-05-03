@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
- * TODO: document this
+ * Converter for TestSearchCriteria between entity and DTO.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
@@ -20,7 +20,7 @@ public class TestSearchCriteriaConverter {
         org.perfrepo.web.service.search.TestSearchCriteria criteriaEntity = new org.perfrepo.web.service.search.TestSearchCriteria();
 
         criteriaEntity.setGroups(criteria.getGroupsFilter() != null ? criteria.getGroupsFilter().stream().map(groupString -> { Group group = new Group(); group.setName(groupString); return group; }).collect(Collectors.toSet()) : null);
-        //TODO: don't use sets in the DTO search criteria
+        //TODO: review the set
         criteriaEntity.setUid(criteria.getUniqueIdsFilter() != null ? criteria.getUniqueIdsFilter().stream().findFirst().orElse(null) : null);
         criteriaEntity.setName(criteria.getNamesFilter() != null ? criteria.getNamesFilter().stream().findFirst().orElse(null) : null);
         criteriaEntity.setLimitHowMany(criteria.getLimit());

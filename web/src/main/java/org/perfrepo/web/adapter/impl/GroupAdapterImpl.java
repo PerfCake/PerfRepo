@@ -9,8 +9,6 @@ import javax.inject.Inject;
 import java.util.List;
 
 /**
- * TODO: document this
- *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
 public class GroupAdapterImpl implements GroupAdapter {

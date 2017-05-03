@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * TODO: document this
+ * Converter for Attachment between entity and DTO.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

@@ -33,7 +33,7 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = TestExecutionParameter.FIND_BY_TEST_ID, query = "SELECT DISTINCT p.name FROM TestExecutionParameter p, TestExecution e WHERE p.testExecution.id = e.id AND e.test.id = :testId"),
     @NamedQuery(name = TestExecutionParameter.FIND_BY_TEST_EXECUTION, query = "SELECT parameter FROM TestExecutionParameter parameter WHERE parameter.testExecution.id = :executionId")
 })
-public class TestExecutionParameter implements Entity<TestExecutionParameter>, Comparable<TestExecutionParameter> {
+public class TestExecutionParameter implements Entity<TestExecutionParameter>, Comparable<TestExecutionParameter>, Cloneable {
 
    private static final long serialVersionUID = -5534543562306898358L;
 
@@ -131,6 +131,17 @@ public class TestExecutionParameter implements Entity<TestExecutionParameter>, C
               ", name='" + name + '\'' +
               ", value='" + value + '\'' +
               '}';
+   }
+
+   @Override
+   public TestExecutionParameter clone() {
+      TestExecutionParameter clone;
+      try {
+         clone = (TestExecutionParameter) super.clone();
+      } catch (CloneNotSupportedException e) {
+         throw new RuntimeException("Clone is not supported on test execution parameter.");
+      }
+      return clone;
    }
 
 }

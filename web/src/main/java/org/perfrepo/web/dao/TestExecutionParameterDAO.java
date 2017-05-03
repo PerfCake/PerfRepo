@@ -37,14 +37,13 @@ import java.util.Map;
 public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long> {
 
    /**
-    * Discovers if test execution already has the parameter, in other words
-    * if it breaks the unique (testExecutionId, name) constraint
+    * TODO: document this
     *
-    * @param testExecutionId
-    * @param param
-    * @return true if there's already test execution parameter with same pair (testExecutionId, param_name)
+    * @param testExecution
+    * @param parameter
+    * @return
     */
-   public boolean hasTestParam(Long testExecutionId, TestExecutionParameter param) {
+   public TestExecutionParameter getParameterByNameAndExecution(TestExecution testExecution, TestExecutionParameter parameter) {
       CriteriaBuilder cb = criteriaBuilder();
       CriteriaQuery<TestExecutionParameter> criteria = cb.createQuery(TestExecutionParameter.class);
 
@@ -58,11 +57,15 @@ public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long>
       criteria.select(rParam);
 
       TypedQuery<TestExecutionParameter> query = query(criteria);
-      query.setParameter("testExecutionId", testExecutionId);
-      query.setParameter("paramName", param.getName());
+      query.setParameter("testExecutionId", testExecution.getId());
+      query.setParameter("paramName", parameter.getName());
       List<TestExecutionParameter> params = query.getResultList();
 
-      return params.size() > 0 && !params.get(0).getId().equals(param.getId());
+      if (params.isEmpty()) {
+         return null;
+      }
+
+      return params.get(0);
    }
 
    /**

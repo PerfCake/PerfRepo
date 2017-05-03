@@ -8,8 +8,6 @@ import org.perfrepo.web.security.authentication.AuthenticationService;
 import javax.inject.Inject;
 
 /**
- * TODO: document this
- *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
 public class AuthenticationAdapterImpl implements AuthenticationAdapter {

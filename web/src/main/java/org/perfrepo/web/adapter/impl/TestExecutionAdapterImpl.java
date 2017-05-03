@@ -11,7 +11,6 @@ import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.web.adapter.TestExecutionAdapter;
 import org.perfrepo.web.adapter.converter.AttachmentConverter;
 import org.perfrepo.web.adapter.converter.ParameterConverter;
-import org.perfrepo.web.adapter.converter.TagConverter;
 import org.perfrepo.web.adapter.converter.TestExecutionConverter;
 import org.perfrepo.web.adapter.converter.TestExecutionSearchCriteriaConverter;
 import org.perfrepo.web.adapter.converter.ValueConverter;
@@ -33,8 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * TODO: document this
- *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
 public class TestExecutionAdapterImpl implements TestExecutionAdapter {
@@ -183,6 +180,6 @@ public class TestExecutionAdapterImpl implements TestExecutionAdapter {
     @Override
     public void removeTestExecutions(Set<Long> testExecutionIds) {
         Set<TestExecution> testExecutions = testExecutionIds.stream().map(id -> { TestExecution testExecution = new TestExecution(); testExecution.setId(id); return testExecution; }).collect(Collectors.toSet());
-        testExecutionService.removeTestExecution();
+        testExecutionService.removeTestExecutions(testExecutions);
     }
 }

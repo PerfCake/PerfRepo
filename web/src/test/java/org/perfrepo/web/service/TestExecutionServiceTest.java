@@ -31,7 +31,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -151,6 +153,31 @@ public class TestExecutionServiceTest {
         TestExecution testExecutionToDelete = updatedTestExecution;
         testExecutionService.removeTestExecution(testExecutionToDelete);
         assertNull(testExecutionService.getTestExecution(testExecutionToDelete.getId()));
+    }
+
+    @org.junit.Test
+    public void testRemoveTestExecutions() {
+        TestExecution testExecution1 = new TestExecution();
+        fillTestExecution("exec1", tests.get(0), testExecution1);
+        TestExecution createdTestExecution1 = testExecutionService.createTestExecution(testExecution1);
+
+        TestExecution testExecution2 = new TestExecution();
+        fillTestExecution("exec2", tests.get(0), testExecution2);
+        TestExecution createdTestExecution2 = testExecutionService.createTestExecution(testExecution2);
+
+        TestExecution testExecution3 = new TestExecution();
+        fillTestExecution("exec3", tests.get(0), testExecution3);
+        TestExecution createdTestExecution3 = testExecutionService.createTestExecution(testExecution3);
+
+        List<TestExecution> testExecutions = testExecutionService.getAllTestExecutions();
+        assertEquals(3, testExecutions.size());
+
+        Set<TestExecution> executionsToRemove = Stream.of(createdTestExecution1, createdTestExecution2).collect(Collectors.toSet());
+        testExecutionService.removeTestExecutions(executionsToRemove);
+
+        List<TestExecution> testExecutionsAfterRemoval = testExecutionService.getAllTestExecutions();
+        assertEquals(1, testExecutionsAfterRemoval.size());
+        assertTestExecution(createdTestExecution3, testExecutionsAfterRemoval.get(0));
     }
 
     @org.junit.Test
@@ -396,6 +423,29 @@ public class TestExecutionServiceTest {
     }
 
     @org.junit.Test
+    public void testParameterMassOperations() {
+        TestExecution testExecution1 = new TestExecution();
+        fillTestExecution("exec1", tests.get(0), testExecution1);
+        TestExecution createdTestExecution1 = testExecutionService.createTestExecution(testExecution1);
+
+        TestExecutionParameter parameter1 = new TestExecutionParameter();
+        fillParameter("param1", createdTestExecution1, parameter1);
+        TestExecutionParameter parameter2 = new TestExecutionParameter();
+        fillParameter("param2", createdTestExecution1, parameter2);
+        Set<TestExecutionParameter> parametersToAdd = Stream.of(parameter1, parameter2).collect(Collectors.toSet());
+
+        testExecutionService.addParametersToTestExecutions(parametersToAdd, new HashSet<>(Arrays.asList(createdTestExecution1)));
+
+        List<TestExecutionParameter> parametersForExec1 = testExecutionService.getParameters(createdTestExecution1);
+        assertEquals(parametersToAdd.size(), parametersForExec1.size());
+        assertTrue(parametersToAdd.stream().allMatch(expected -> parametersForExec1.stream()
+                .anyMatch(actual -> expected.getName().equals(actual.getName()) && expected.getValue().equals(actual.getValue()))));
+
+        testExecutionService.removeParametersFromTestExecutions(parametersToAdd, new HashSet<>(Arrays.asList(createdTestExecution1)));
+        assertTrue(testExecutionService.getParameters(createdTestExecution1).isEmpty());
+    }
+
+    @org.junit.Test
     public void testFindParametersByPrefix() {
         TestExecution testExecution1 = new TestExecution();
         fillTestExecution("exec1", tests.get(0), testExecution1);
@@ -490,6 +540,28 @@ public class TestExecutionServiceTest {
 
         assertEquals(1, result.getTotalSearchResultsCount());
         assertEquals(createdTestExecution.getId(), result.getResult().get(0).getId());
+    }
+
+    @org.junit.Test
+    public void testGetValues() {
+        TestExecution testExecution = new TestExecution();
+        fillTestExecution("exec1", tests.get(0), testExecution);
+
+        Value value1 = new Value();
+        fillValue(1, metrics.get(0), testExecution, value1);
+
+        Value value2 = new Value();
+        fillValue(2, metrics.get(0), testExecution, value2);
+        List<Value> values = Arrays.asList(value1, value2);
+        testExecution.setValues(values);
+
+        TestExecution createdTestExecution = testExecutionService.createTestExecution(testExecution);
+
+        List<Value> actualValues = testExecutionService.getValues(createdTestExecution);
+        List<Value> expectedValues = Arrays.asList(value1, value2);
+        assertEquals(expectedValues.size(), actualValues.size());
+        assertTrue(expectedValues.stream().allMatch(expected -> actualValues.stream()
+                .anyMatch(actual -> expected.getResultValue().equals(actual.getResultValue()))));
     }
 
     /*** HELPER METHODS ***/

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * TODO: document this
+ * Converter for TestExecutionSearchCriteria between entity and DTO.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

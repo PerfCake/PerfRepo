@@ -129,7 +129,7 @@ public class ReportDAO extends DAO<Report, Long> {
     }
 
     /**
-     * TODO: document this
+     * Helper method. Creates predicates that limits the search based on permissions.
      *
      * @param filter
      * @param user
