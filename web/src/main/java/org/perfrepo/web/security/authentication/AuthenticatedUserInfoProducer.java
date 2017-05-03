@@ -6,7 +6,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 /**
- * TODO: document this
+ * Producer for AuthenticatedUserInfo, basically handles authentication.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

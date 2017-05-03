@@ -37,7 +37,8 @@ import java.util.Map;
 public class TestExecutionParameterDAO extends DAO<TestExecutionParameter, Long> {
 
    /**
-    * TODO: document this
+    * Retrieves parameter object with specified name for certain test execution. Used to get managed object, if you only know
+    * name and test execution, not ID.
     *
     * @param testExecution
     * @param parameter

@@ -4,7 +4,7 @@ import org.perfrepo.enums.OrderBy;
 import org.perfrepo.enums.ReportFilter;
 
 /**
- * TODO: document this
+ * Search criteria for reports.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

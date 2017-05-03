@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * TODO: document this
+ * Implementation of ReportService.
  *
  * @author Jiri Holusa <jholusa@redhat.com>
  */
@@ -176,7 +176,7 @@ public class ReportServiceBean implements ReportService {
    }
 
     /**
-     * TODO: document this
+     * Updates report properties. Deletes non existing ones, adds new ones and updates existing.
      *
      * @param newProperties
      * @param report

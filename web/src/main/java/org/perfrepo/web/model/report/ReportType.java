@@ -1,7 +1,7 @@
 package org.perfrepo.web.model.report;
 
 /**
- * TODO: document this
+ * Types of report.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

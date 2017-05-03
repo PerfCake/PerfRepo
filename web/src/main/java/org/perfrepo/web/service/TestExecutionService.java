@@ -291,7 +291,7 @@ public interface TestExecutionService {
    void removeTagsFromTestExecutions(Set<Tag> tags, Collection<TestExecution> testExecutions);
 
     /**
-     * TODO: document this
+     * Perform mass operation. Adds parameters to test executions.
      *
      * @param parameters
      * @param testExecutions
@@ -299,7 +299,7 @@ public interface TestExecutionService {
    void addParametersToTestExecutions(Set<TestExecutionParameter> parameters, Collection<TestExecution> testExecutions);
 
     /**
-     * TODO: document this
+     * Perform mass operation. Removes parameters from test executions.
      *
      * @param parameters
      * @param testExecutions

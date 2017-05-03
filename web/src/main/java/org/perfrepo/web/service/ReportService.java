@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * TODO: document this and review methods documentation
+ * Service layer for report in general. Provides general method, not specific to any type of report.
+ *
  * TODO: add validation
  * TODO: add authorization
  *
@@ -70,7 +71,7 @@ public interface ReportService {
    List<Report> getAllReports();
 
    /**
-    * TODO: document this
+    * Searches through all reports based on criteria.
     *
     * @param criteria
     * @return

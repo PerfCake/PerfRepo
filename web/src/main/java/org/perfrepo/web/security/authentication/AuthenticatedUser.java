@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO: document this
+ * Qualifier annotation used for injection of authenticated user object.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

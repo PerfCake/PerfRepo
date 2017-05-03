@@ -6,7 +6,7 @@ import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.service.search.TestSearchCriteria;
 
 /**
- * TODO: document this
+ * Used for storing all information about currently logged user.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */

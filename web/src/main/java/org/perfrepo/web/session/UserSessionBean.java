@@ -25,8 +25,6 @@ import org.perfrepo.web.service.search.TestSearchCriteria;
 import javax.inject.Inject;
 
 /**
- * TODO: document this
- *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
 public class UserSessionBean implements UserSession {

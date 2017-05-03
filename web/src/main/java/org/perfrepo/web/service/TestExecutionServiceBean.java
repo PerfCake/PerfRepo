@@ -356,7 +356,7 @@ public class TestExecutionServiceBean implements TestExecutionService {
     }
 
     /**
-     * TODO: document this
+     * Retrieves managed metric object based on ID or name, since both is unique.
      *
      * @param metric
      * @return
@@ -378,7 +378,7 @@ public class TestExecutionServiceBean implements TestExecutionService {
     }
 
     /**
-     * TODO: document this
+     * Retrieves managed tag object based on ID or name, since both are unique.
      *
      * @param tag
      * @return
@@ -399,6 +399,12 @@ public class TestExecutionServiceBean implements TestExecutionService {
         return null;
     }
 
+    /**
+     * Retrieves managed parameter based on ID or name and test execution, since this is unique.
+     *
+     * @param parameter
+     * @return
+     */
     private TestExecutionParameter getManagedParameter(TestExecutionParameter parameter) {
         if (parameter == null) {
             return null;

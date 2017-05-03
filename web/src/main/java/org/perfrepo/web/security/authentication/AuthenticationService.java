@@ -20,7 +20,7 @@ import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
 /**
- * TODO: document this
+ * Service that handles authentication.
  *
  * @author Jiri Holusa (jholusa@redhat.com)
  */
