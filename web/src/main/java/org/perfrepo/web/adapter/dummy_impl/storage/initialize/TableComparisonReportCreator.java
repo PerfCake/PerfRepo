@@ -48,17 +48,17 @@ public class TableComparisonReportCreator {
         // table 1 - comparison items
         List<ComparisonItemDto> items1 = new ArrayList<>();
         table1.setItems(items1);
-        items1.add(prepareComparisonItem("Test execution 1", 1L, null, false, null, null, ComparisonItemSelector.TEST_EXECUTION_ID));
-        items1.add(prepareComparisonItem("Test execution 2", 2L, 1L, true, "echo AND test", null, ComparisonItemSelector.TAG_QUERY));
-        items1.add(prepareComparisonItem("Test execution 3", 3L, 1L, false, "socket OR test", "version=1.2", ComparisonItemSelector.PARAMETER_QUERY));
-        items1.add(prepareComparisonItem("Test execution 3", 4L, 2L, false, null, "version=1.2", ComparisonItemSelector.TEST_EXECUTION_ID));
+        items1.add(prepareComparisonItem("Demo app  v.0.1", 1L, null, false, null, null, ComparisonItemSelector.TEST_EXECUTION_ID));
+        items1.add(prepareComparisonItem("Demo app v.0.2", 2L, 1L, true, "echo AND test", null, ComparisonItemSelector.TAG_QUERY));
+        items1.add(prepareComparisonItem("Demo app v.0.2.5", 3L, 1L, false, "socket OR test", "version=1.2", ComparisonItemSelector.PARAMETER_QUERY));
+        items1.add(prepareComparisonItem("Demo app v.0.3", 4L, 2L, false, null, "version=1.2", ComparisonItemSelector.TEST_EXECUTION_ID));
         // table 1 - header cells
         List<HeaderCellDto> headerCells1 = new ArrayList<>();
         table1.setTableHeaderCells(headerCells1);
-        headerCells1.add(prepareHeaderCell("Test execution 1", false, 1L));
-        headerCells1.add(prepareHeaderCell("Test execution 2", true, 2L));
-        headerCells1.add(prepareHeaderCell("Test execution 3", false, 3L));
-        headerCells1.add(prepareHeaderCell("Test execution 4", false, 4L));
+        headerCells1.add(prepareHeaderCell("Demo app  v.0.1", false, 1L));
+        headerCells1.add(prepareHeaderCell("Demo app v.0.2", true, 2L));
+        headerCells1.add(prepareHeaderCell("Demo app v.0.2.5", false, 3L));
+        headerCells1.add(prepareHeaderCell("Demo app v.0.3", false, 4L));
         // table 1 - rows
         List<RowDto> rows = new ArrayList<>();
         table1.setTableRows(rows);
@@ -112,7 +112,7 @@ public class TableComparisonReportCreator {
 
     private static RowDto prepareTableRowMultiValue() {
         RowDto row = new RowDto();
-        row.setMetricName("Response time multi-value");
+        row.setMetricName("Response time [ms]");
         row.setValueType(MeasuredValueType.MULTI_VALUE);
         row.setCells(new ArrayList<>());
         row.getCells().add(prepareContentCellMultiValue(false, 20.24, 20.54, 21.43, 21.54, 34.43, 34.54, 34.98, 19.43, 18.98));
@@ -143,8 +143,8 @@ public class TableComparisonReportCreator {
         contentCell.setBaseline(baseline);
         contentCell.setValues(new HashMap<>());
 
-        contentCell.getValues().put("Time", chartValuesTime);
-        contentCell.getValues().put("Percent", chartValuesPercent);
+        contentCell.getValues().put("Time [s]", chartValuesTime);
+        contentCell.getValues().put("Percent [%]", chartValuesPercent);
 
         return contentCell;
     }
