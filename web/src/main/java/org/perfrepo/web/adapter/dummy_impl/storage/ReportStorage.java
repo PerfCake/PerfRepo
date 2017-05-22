@@ -91,10 +91,10 @@ public class ReportStorage {
             case NAME_DESC:
                 sortComparator = (report1, report2) -> report2.getName().compareToIgnoreCase(report1.getName());
                 break;
-            case REPORT_TYPE_ASC:
+            case TYPE_ASC:
                 sortComparator = (report1, report2) -> report1.getTypeName().compareTo(report2.getTypeName());
                 break;
-            case REPORT_TYPE_DESC:
+            case TYPE_DESC:
                 sortComparator = (report1, report2) -> report2.getTypeName().compareTo(report1.getTypeName());
                 break;
             default:

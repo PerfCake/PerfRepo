@@ -19,6 +19,7 @@ import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.security.authentication.AuthenticatedUser;
 import org.perfrepo.web.security.authentication.AuthenticatedUserInfo;
 import org.perfrepo.web.service.UserService;
+import org.perfrepo.web.service.search.ReportSearchCriteria;
 import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.service.search.TestSearchCriteria;
 
@@ -97,5 +98,26 @@ public class UserSessionBean implements UserSession {
       }
 
       userInfo.setTestExecutionSearchCriteria(criteria);
+   }
+
+   @Override
+   public ReportSearchCriteria getReportSearchCriteria() {
+      if (userInfo == null) {
+         return null;
+      }
+
+      if (userInfo.getReportSearchCriteria() == null) {
+         ReportSearchCriteria defaultCriteria = new ReportSearchCriteria();
+         defaultCriteria.setLimitHowMany(20);
+         //TODO: add some defaults
+         userInfo.setReportSearchCriteria(defaultCriteria);
+      }
+
+      return userInfo.getReportSearchCriteria();
+   }
+
+   @Override
+   public void setReportSearchCriteria(ReportSearchCriteria criteria) {
+
    }
 }

@@ -14,6 +14,7 @@
  */
 package org.perfrepo.web.model.report;
 
+import org.perfrepo.enums.report.ReportType;
 import org.perfrepo.web.model.Entity;
 import org.perfrepo.web.model.user.User;
 
@@ -57,6 +58,10 @@ public class Report implements Entity<Report>, Comparable<Report> {
    @Size(max = 255)
    private String name;
 
+   @Column(name = "description")
+   @Size(max = 4096)
+   private String description;
+
    @Column(name = "type")
    @NotNull
    @Enumerated(EnumType.STRING)
@@ -88,6 +93,14 @@ public class Report implements Entity<Report>, Comparable<Report> {
 
    public void setName(String name) {
       this.name = name;
+   }
+
+   public String getDescription() {
+      return description;
+   }
+
+   public void setDescription(String description) {
+      this.description = description;
    }
 
    public ReportType getType() {

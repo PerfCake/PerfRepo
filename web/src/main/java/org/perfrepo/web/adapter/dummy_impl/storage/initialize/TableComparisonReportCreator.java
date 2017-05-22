@@ -2,8 +2,15 @@ package org.perfrepo.web.adapter.dummy_impl.storage.initialize;
 
 import org.perfrepo.dto.report.PermissionDto;
 import org.perfrepo.dto.report.ReportDto;
-import org.perfrepo.dto.report.table_comparison.*;
-import org.perfrepo.dto.report.table_comparison.view.*;
+import org.perfrepo.dto.report.table_comparison.ComparisonItemDto;
+import org.perfrepo.dto.report.table_comparison.GroupDto;
+import org.perfrepo.dto.report.table_comparison.TableComparisonReportDto;
+import org.perfrepo.dto.report.table_comparison.TableDto;
+import org.perfrepo.dto.report.table_comparison.view.ContentCellDto;
+import org.perfrepo.dto.report.table_comparison.view.HeaderCellDto;
+import org.perfrepo.dto.report.table_comparison.view.MultiContentCellDto;
+import org.perfrepo.dto.report.table_comparison.view.RowDto;
+import org.perfrepo.dto.report.table_comparison.view.SingleContentCellDto;
 import org.perfrepo.enums.AccessLevel;
 import org.perfrepo.enums.AccessType;
 import org.perfrepo.enums.MeasuredValueType;
@@ -13,7 +20,9 @@ import org.perfrepo.enums.report.ComparisonItemSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Jiri Grunwald (grunwjir@gmail.com)
@@ -78,7 +87,7 @@ public class TableComparisonReportCreator {
         tableReport.getGroups().add(group1);
         tableReport.getGroups().add(group1);
         // permissions
-        List<PermissionDto> permissions = new ArrayList<>();
+        Set<PermissionDto> permissions = new HashSet<>();
         permissions.add(InstanceCreator.createPermission(AccessLevel.PUBLIC, AccessType.READ, null, null, null, null));
         permissions.add(InstanceCreator.createPermission(AccessLevel.GROUP, AccessType.WRITE, 1L, null,
                 "super users", null));

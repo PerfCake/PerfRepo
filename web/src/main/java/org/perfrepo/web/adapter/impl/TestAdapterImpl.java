@@ -27,52 +27,40 @@ public class TestAdapterImpl implements TestAdapter {
     @Inject
     private TestService testService;
 
-    @Inject
-    private TestConverter testConverter;
-
-    @Inject
-    private GroupConverter groupConverter;
-
-    @Inject
-    private MetricConverter metricConverter;
-
-    @Inject
-    private TestSearchCriteriaConverter testSearchCriteriaConverter;
-
     @Override
     public TestDto getTest(Long id) {
         Test test = testService.getTest(id);
-        TestDto dto = testConverter.convertFromEntityToDto(test);
+        TestDto dto = TestConverter.convertFromEntityToDto(test);
         //dto.setAlerts(testService); TODO: add alerts
-        dto.setGroup(groupConverter.convertFromEntityToDto(test.getGroup()));
-        dto.setMetrics(metricConverter.convertFromEntityToDto(testService.getMetricsForTest(test)));
+        dto.setGroup(GroupConverter.convertFromEntityToDto(test.getGroup()));
+        dto.setMetrics(MetricConverter.convertFromEntityToDto(testService.getMetricsForTest(test)));
         return dto;
     }
 
     @Override
     public TestDto getTest(String uid) {
         Test test = testService.getTest(uid);
-        TestDto dto = testConverter.convertFromEntityToDto(test);
+        TestDto dto = TestConverter.convertFromEntityToDto(test);
         //dto.setAlerts(testService); TODO: add alerts
-        dto.setGroup(groupConverter.convertFromEntityToDto(test.getGroup()));
-        dto.setMetrics(metricConverter.convertFromEntityToDto(testService.getMetricsForTest(test)));
+        dto.setGroup(GroupConverter.convertFromEntityToDto(test.getGroup()));
+        dto.setMetrics(MetricConverter.convertFromEntityToDto(testService.getMetricsForTest(test)));
         return dto;
     }
 
     @Override
     public TestDto createTest(TestDto testDto) {
-        Test testEntity = testConverter.convertFromDtoToEntity(testDto);
+        Test testEntity = TestConverter.convertFromDtoToEntity(testDto);
         Test createdTest = testService.createTest(testEntity);
 
-        return testConverter.convertFromEntityToDto(createdTest);
+        return TestConverter.convertFromEntityToDto(createdTest);
     }
 
     @Override
     public TestDto updateTest(TestDto testDto) {
-        Test testEntity = testConverter.convertFromDtoToEntity(testDto);
+        Test testEntity = TestConverter.convertFromDtoToEntity(testDto);
         Test updatedTest = testService.updateTest(testEntity);
 
-        return testConverter.convertFromEntityToDto(updatedTest);
+        return TestConverter.convertFromEntityToDto(updatedTest);
     }
 
     @Override
@@ -84,22 +72,22 @@ public class TestAdapterImpl implements TestAdapter {
 
     @Override
     public List<TestDto> getAllTests() {
-        return testConverter.convertFromEntityToDto(testService.getAllTests());
+        return TestConverter.convertFromEntityToDto(testService.getAllTests());
     }
 
     @Override
     public SearchResult<TestDto> searchTests(org.perfrepo.dto.test.TestSearchCriteria searchParams) {
-        org.perfrepo.web.service.search.TestSearchCriteria criteriaEntity = testSearchCriteriaConverter.convertFromDtoToEntity(searchParams);
+        org.perfrepo.web.service.search.TestSearchCriteria criteriaEntity = TestSearchCriteriaConverter.convertFromDtoToEntity(searchParams);
         SearchResultWrapper<Test> resultWrapper = testService.searchTests(criteriaEntity);
 
         userSession.setTestSearchCriteria(criteriaEntity);
-        SearchResult<TestDto> result = new SearchResult<>(testConverter.convertFromEntityToDto(resultWrapper.getResult()), resultWrapper.getTotalSearchResultsCount(), searchParams.getLimit(), searchParams.getOffset());
+        SearchResult<TestDto> result = new SearchResult<>(TestConverter.convertFromEntityToDto(resultWrapper.getResult()), resultWrapper.getTotalSearchResultsCount(), searchParams.getLimit(), searchParams.getOffset());
         return result;
     }
 
     @Override
     public TestSearchCriteria getSearchCriteria() {
-        return testSearchCriteriaConverter.convertFromEntityToDto(userSession.getTestSearchCriteria());
+        return TestSearchCriteriaConverter.convertFromEntityToDto(userSession.getTestSearchCriteria());
     }
 
     @Override

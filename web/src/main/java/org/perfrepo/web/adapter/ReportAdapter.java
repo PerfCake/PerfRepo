@@ -104,6 +104,12 @@ public interface ReportAdapter {
      */
     ReportDto getTableComparisonReportPreview();
 
+    /**
+     * TODO: document this
+     *
+     * @param reportId
+     * @param favourite
+     */
     void markReportFavourite(Long reportId, boolean favourite);
 
     /**

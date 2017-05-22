@@ -133,7 +133,7 @@ public class TestExecutionAdapterImpl implements TestExecutionAdapter {
         org.perfrepo.web.service.search.TestExecutionSearchCriteria criteria = TestExecutionSearchCriteriaConverter.convertFromDtoToEntity(searchParams);
         SearchResultWrapper<TestExecution> resultWrapper = testExecutionService.searchTestExecutions(criteria);
 
-        userSession.setTestExecutionSearchCriteria(criteria);
+        userSession.setTestExecutionSearchCriteria(criteria); //TODO: revisit this, when searching for last test executions, it messes up the "normal" search
         SearchResult<TestExecutionDto> result = new SearchResult<>(TestExecutionConverter.convertFromEntityToDto(resultWrapper.getResult()), resultWrapper.getTotalSearchResultsCount(), searchParams.getLimit(), searchParams.getOffset());
         return result;
     }

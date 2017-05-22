@@ -102,6 +102,8 @@ ALTER TABLE user_group ADD COLUMN type character varying(25);
 UPDATE user_group SET type = 'REGULAR_USER';
 ALTER TABLE user_group ALTER COLUMN type SET NOT NULL;
 
+ALTER TABLE report ADD COLUMN description character varying(4096);
+
 COMMIT;
 
 BEGIN;

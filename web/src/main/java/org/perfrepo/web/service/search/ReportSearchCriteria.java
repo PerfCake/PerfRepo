@@ -13,7 +13,7 @@ public class ReportSearchCriteria {
     private String name;
     private OrderBy orderBy = OrderBy.NAME_ASC;
     private ReportFilter filter = ReportFilter.TEAM;
-    private Integer limitFrom;
+    private int limitFrom = 0;
     private Integer limitHowMany;
 
     public ReportFilter getFilter() {
@@ -24,11 +24,11 @@ public class ReportSearchCriteria {
         this.filter = filter;
     }
 
-    public Integer getLimitFrom() {
+    public int getLimitFrom() {
         return limitFrom;
     }
 
-    public void setLimitFrom(Integer limitFrom) {
+    public void setLimitFrom(int limitFrom) {
         this.limitFrom = limitFrom;
     }
 

@@ -15,6 +15,7 @@
 package org.perfrepo.web.util;
 
 import org.perfrepo.web.model.user.User;
+import org.perfrepo.web.service.search.ReportSearchCriteria;
 import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.service.search.TestSearchCriteria;
 import org.perfrepo.web.session.UserSession;
@@ -65,6 +66,16 @@ public class UserSessionMock implements UserSession, Serializable {
 
    @Override
    public void setTestExecutionSearchCriteria(TestExecutionSearchCriteria criteria) {
+
+   }
+
+   @Override
+   public ReportSearchCriteria getReportSearchCriteria() {
+      return null;
+   }
+
+   @Override
+   public void setReportSearchCriteria(ReportSearchCriteria criteria) {
 
    }
 }

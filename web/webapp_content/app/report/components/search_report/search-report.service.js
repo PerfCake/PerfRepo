@@ -29,7 +29,7 @@
                 sortType: 'alpha'
             },
             {
-                id: 'REPORT_TYPE',
+                id: 'TYPE',
                 title: 'Type',
                 sortType: 'alpha'
             }

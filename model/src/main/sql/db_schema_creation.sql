@@ -579,6 +579,7 @@ CREATE TABLE report (
   id bigint NOT NULL,
   name character varying(255) NOT NULL,
   type character varying(255) NOT NULL,
+  description character varying(4096),
   user_id bigint NOT NULL
 );
 

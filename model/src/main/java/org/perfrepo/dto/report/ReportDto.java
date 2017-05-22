@@ -6,7 +6,8 @@ import org.perfrepo.dto.report.box_plot.BoxPlotReportDto;
 import org.perfrepo.dto.report.metric_history.MetricHistoryReportDto;
 import org.perfrepo.dto.report.table_comparison.TableComparisonReportDto;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Jiri Grunwald (grunwjir@gmail.com)
@@ -19,7 +20,7 @@ import java.util.List;
         @JsonSubTypes.Type(value = TableComparisonReportDto.class, name = "TABLE_COMPARISON"),
         @JsonSubTypes.Type(value = MetricHistoryReportDto.class, name = "METRIC_HISTORY"),
         @JsonSubTypes.Type(value = BoxPlotReportDto.class, name = "BOX_PLOT")})
-public abstract class ReportDto {
+public class ReportDto {
 
     private Long id;
 
@@ -29,7 +30,7 @@ public abstract class ReportDto {
 
     private String typeName;
 
-    private List<PermissionDto> permissions;
+    private Set<PermissionDto> permissions = new HashSet<>();
 
     private boolean favourite;
 
@@ -65,11 +66,11 @@ public abstract class ReportDto {
         this.typeName = typeName;
     }
 
-    public List<PermissionDto> getPermissions() {
+    public Set<PermissionDto> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<PermissionDto> permissions) {
+    public void setPermissions(Set<PermissionDto> permissions) {
         this.permissions = permissions;
     }
 

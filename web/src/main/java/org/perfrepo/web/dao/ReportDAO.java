@@ -68,7 +68,7 @@ public class ReportDAO extends DAO<Report, Long> {
         setOrderBy(criteria, search.getOrderBy(), root);
 
         TypedQuery<Report> query = query(criteria);
-        int firstResult = search.getLimitFrom() == null ? 0 : search.getLimitFrom();
+        int firstResult = search.getLimitFrom();
         query.setFirstResult(firstResult);
         if (search.getLimitHowMany() != null) {
             query.setMaxResults(search.getLimitHowMany());
@@ -118,7 +118,7 @@ public class ReportDAO extends DAO<Report, Long> {
                 String pattern = search.getName().replace("*", "%").toLowerCase();
                 predicates.add(cb.like(cb.lower(root.<String>get("name")), pattern));
             } else {
-                predicates.add(cb.equal(cb.lower(root.<String>get("name")), search.getName()));
+                predicates.add(cb.equal(cb.lower(root.<String>get("name")), search.getName().toLowerCase()));
             }
         }
 

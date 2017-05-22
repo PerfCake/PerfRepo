@@ -1,26 +1,44 @@
 package org.perfrepo.web.adapter.dummy_impl.storage;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.perfrepo.dto.report.PermissionDto;
 import org.perfrepo.dto.report.ReportDto;
-import org.perfrepo.dto.report.box_plot.*;
+import org.perfrepo.dto.report.box_plot.BoxPlotDto;
+import org.perfrepo.dto.report.box_plot.BoxPlotReportDto;
+import org.perfrepo.dto.report.box_plot.BoxPlotSeriesDto;
+import org.perfrepo.dto.report.box_plot.BoxPlotSeriesValueDto;
+import org.perfrepo.dto.report.metric_history.BaselineDto;
+import org.perfrepo.dto.report.metric_history.BaselineValueDto;
+import org.perfrepo.dto.report.metric_history.ChartDto;
+import org.perfrepo.dto.report.metric_history.MetricHistoryReportDto;
 import org.perfrepo.dto.report.metric_history.SeriesDto;
 import org.perfrepo.dto.report.metric_history.SeriesValueDto;
-import org.perfrepo.dto.report.metric_history.*;
-import org.perfrepo.dto.report.PermissionDto;
 import org.perfrepo.dto.test_execution.AttachmentDto;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
 import org.perfrepo.enums.AccessLevel;
 import org.perfrepo.enums.AccessType;
 import org.perfrepo.enums.MeasuredValueType;
 import org.perfrepo.enums.MetricComparator;
-import org.perfrepo.web.adapter.dummy_impl.builders.*;
+import org.perfrepo.web.adapter.dummy_impl.builders.GroupDtoBuilder;
+import org.perfrepo.web.adapter.dummy_impl.builders.MetricDtoBuilder;
+import org.perfrepo.web.adapter.dummy_impl.builders.TestDtoBuilder;
+import org.perfrepo.web.adapter.dummy_impl.builders.TestExecutionDtoBuilder;
+import org.perfrepo.web.adapter.dummy_impl.builders.UserDtoBuilder;
+import org.perfrepo.web.adapter.dummy_impl.builders.ValueDtoBuilder;
+import org.perfrepo.web.adapter.dummy_impl.builders.ValuesGroupDtoBuilder;
 import org.perfrepo.web.adapter.dummy_impl.storage.initialize.InstanceCreator;
 import org.perfrepo.web.adapter.dummy_impl.storage.initialize.TableComparisonReportCreator;
 
 import javax.inject.Singleton;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * Temporary in-memory storage interface for development purpose.
@@ -412,7 +430,7 @@ public class Storage {
         baseline2.setValue(prepareBaselineValue2(series21));
         chart2.getBaselines().add(baseline2);
         // permissions
-        List<PermissionDto> permissions = new ArrayList<>();
+        Set<PermissionDto> permissions = new HashSet<>();
         permissions.add(InstanceCreator.createPermission(AccessLevel.PUBLIC, AccessType.READ, null, null, null, null));
         permissions.add(InstanceCreator.createPermission(AccessLevel.GROUP, AccessType.WRITE, 1L, null, "super users", null));
         permissions.add(InstanceCreator.createPermission(AccessLevel.USER, AccessType.READ, null, 1L, null, "Jiri Grunwald (grunwjir)"));

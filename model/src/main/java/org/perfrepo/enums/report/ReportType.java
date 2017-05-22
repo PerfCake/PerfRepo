@@ -20,5 +20,10 @@ public enum ReportType {
     /**
      * Compute boxplots for test executions and compare them across different test runs.
      */
-    BOX_PLOT
+    BOX_PLOT,
+
+    /**
+     * TODO: maybe to be removed
+     */
+    TEST_GROUP;
 }
