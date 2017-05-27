@@ -33,7 +33,9 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -45,6 +47,18 @@ public class ReportDAO extends DAO<Report, Long> {
 
     @Inject
     private GroupDAO groupDAO;
+
+    /**
+     * TODO: document this
+     *
+     * @param userId
+     * @return
+     */
+    public List<Report> getFavoriteReports(Long userId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        return findByNamedQuery(Report.GET_FAVORITE, params);
+    }
 
     /**
      * Main search method for tests. All criteria are passed via transfer object.

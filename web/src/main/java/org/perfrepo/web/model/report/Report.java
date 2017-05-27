@@ -21,12 +21,17 @@ import org.perfrepo.web.model.user.User;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -44,9 +49,14 @@ import java.util.Set;
  */
 @javax.persistence.Entity
 @Table(name = "report")
+@NamedQueries({
+        @NamedQuery(name = Report.GET_FAVORITE, query = "SELECT report FROM Report report, User user WHERE user.id = :userId AND report MEMBER OF user.favoriteReports")
+})
 public class Report implements Entity<Report>, Comparable<Report> {
 
    private static final long serialVersionUID = -2188625358440509257L;
+
+   public static final String GET_FAVORITE = "Report.getFavoriteReports";
 
    @Id
    @SequenceGenerator(name = "REPORT_ID_GENERATOR", sequenceName = "REPORT_SEQUENCE", allocationSize = 1)
@@ -78,6 +88,15 @@ public class Report implements Entity<Report>, Comparable<Report> {
 
    @OneToMany(mappedBy = "report")
    private Set<Permission> permissions = new HashSet<>();
+
+   // users that marked the report as favorite
+   @ManyToMany(fetch = FetchType.LAZY)
+   @JoinTable(
+      name = "favorite_report",
+      joinColumns = {@JoinColumn(name = "report_id")},
+      inverseJoinColumns = { @JoinColumn(name = "user_id")}
+   )
+   private Set<User> favorizers = new HashSet<>();
 
    public Long getId() {
       return id;
@@ -133,6 +152,14 @@ public class Report implements Entity<Report>, Comparable<Report> {
 
    public void setPermissions(Set<Permission> permissions) {
       this.permissions = permissions;
+   }
+
+   public Set<User> getFavorizers() {
+      return favorizers;
+   }
+
+   public void setFavorizers(Set<User> favorizers) {
+      this.favorizers = favorizers;
    }
 
    @Override

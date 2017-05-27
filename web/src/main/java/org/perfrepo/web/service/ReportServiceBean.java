@@ -138,6 +138,29 @@ public class ReportServiceBean implements ReportService {
       return reportPropertyDAO.findByReport(report.getId());
    }
 
+   @Override
+   public List<Report> getFavoriteReports() {
+      return reportDAO.getFavoriteReports(userSession.getLoggedUser().getId());
+   }
+
+   @Override
+   public void markReportAsFavorite(Report report) {
+      User managedUser = userService.getUser(userSession.getLoggedUser().getId());
+      Report managedReport = reportDAO.get(report.getId());
+
+      managedUser.getFavoriteReports().add(managedReport);
+      managedReport.getFavorizers().add(managedUser);
+   }
+
+   @Override
+   public void unmarkReportAsFavorite(Report report) {
+      User managedUser = userService.getUser(userSession.getLoggedUser().getId());
+      Report managedReport = reportDAO.get(report.getId());
+
+      managedUser.getFavoriteReports().remove(managedReport);
+      managedReport.getFavorizers().remove(managedUser);
+   }
+
    /******** Methods related to permissions ********/
 
    @Override

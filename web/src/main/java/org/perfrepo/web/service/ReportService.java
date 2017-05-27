@@ -86,6 +86,27 @@ public interface ReportService {
      */
    List<ReportProperty> getReportProperties(Report report);
 
+   /**
+    * TODO: document this
+    *
+    * @return
+    */
+   List<Report> getFavoriteReports();
+
+   /**
+    * TODO: document this
+    *
+    * @param report
+    */
+   void markReportAsFavorite(Report report);
+
+   /**
+    * TODO: document this
+    *
+    * @param report
+    */
+   void unmarkReportAsFavorite(Report report);
+
    /******** Methods related to permissions ********/
 
    /**

@@ -108,9 +108,9 @@ public interface ReportAdapter {
      * TODO: document this
      *
      * @param reportId
-     * @param favourite
+     * @param favorite
      */
-    void markReportFavourite(Long reportId, boolean favourite);
+    void markReportFavourite(Long reportId, boolean favorite);
 
     /**
      * Validate report wizard step - report information (name, description...).

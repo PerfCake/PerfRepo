@@ -405,6 +405,60 @@ public class ReportServiceTest {
         assertSearchResultWithOrdering(expectedResult2, actualResult2);
     }
 
+    @org.junit.Test
+    public void testFavoriteReport() {
+        Report report1 = new Report();
+        fillReport("aa_report", report1);
+        report1.setUser(testUser1);
+        Report createdReport1 = reportService.createReport(report1);
+
+        Report report2 = new Report();
+        fillReport("ab_report", report2);
+        report2.setType(ReportType.TABLE_COMPARISON);
+        report2.setUser(testUser1);
+        Report createdReport2 = reportService.createReport(report2);
+
+        Report report3 = new Report();
+        fillReport("report3", report3);
+        report3.setUser(testUser2);
+        Report createdReport3 = reportService.createReport(report3);
+
+        reportService.markReportAsFavorite(createdReport1);
+        reportService.markReportAsFavorite(createdReport2);
+        UserSessionMock.setLoggedUser(testUser2);
+        reportService.markReportAsFavorite(createdReport3);
+
+        UserSessionMock.setLoggedUser(testUser1);
+        List<Report> favoriteReportsForUser1 = reportService.getFavoriteReports();
+        List<Report> expectedResults1 = Arrays.asList(createdReport1, createdReport2);
+        assertEquals(expectedResults1.size(), favoriteReportsForUser1.size());
+        assertTrue(expectedResults1.stream().
+                allMatch(expected -> favoriteReportsForUser1.stream().anyMatch(actual -> expected.getId().equals(actual.getId()))));
+
+        UserSessionMock.setLoggedUser(testUser2);
+        List<Report> favoriteReportsForUser2 = reportService.getFavoriteReports();
+        List<Report> expectedResults2 = Arrays.asList(createdReport3);
+        assertEquals(expectedResults2.size(), favoriteReportsForUser2.size());
+        assertTrue(expectedResults2.stream().
+                allMatch(expected -> favoriteReportsForUser2.stream().anyMatch(actual -> expected.getId().equals(actual.getId()))));
+
+        UserSessionMock.setLoggedUser(testUser1);
+        reportService.unmarkReportAsFavorite(createdReport2);
+
+        List<Report> favoriteReportsForUser12 = reportService.getFavoriteReports();
+        List<Report> expectedResults12 = Arrays.asList(createdReport1);
+        assertEquals(expectedResults12.size(), favoriteReportsForUser12.size());
+        assertTrue(expectedResults12.stream().
+                allMatch(expected -> favoriteReportsForUser12.stream().anyMatch(actual -> expected.getId().equals(actual.getId()))));
+
+        UserSessionMock.setLoggedUser(testUser2);
+        List<Report> favoriteReportsForUser22 = reportService.getFavoriteReports();
+        List<Report> expectedResults22 = Arrays.asList(createdReport3);
+        assertEquals(expectedResults22.size(), favoriteReportsForUser22.size());
+        assertTrue(expectedResults22.stream().
+                allMatch(expected -> favoriteReportsForUser22.stream().anyMatch(actual -> expected.getId().equals(actual.getId()))));
+    }
+
     /*** HELPER METHODS ***/
 
     private void assertReport(Report expected, Report actual) {

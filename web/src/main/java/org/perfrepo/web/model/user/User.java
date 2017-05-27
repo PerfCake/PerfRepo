@@ -17,6 +17,7 @@ package org.perfrepo.web.model.user;
 import org.hibernate.validator.constraints.Email;
 import org.perfrepo.web.model.Entity;
 import org.perfrepo.web.model.Test;
+import org.perfrepo.web.model.report.Report;
 
 import javax.persistence.Column;
 import javax.persistence.EnumType;
@@ -83,6 +84,9 @@ public class User implements Entity<User>, Comparable<User> {
    @ManyToMany(mappedBy = "subscribers")
    private Set<Test> subscribedTests = new HashSet<>();
 
+   @ManyToMany(mappedBy = "favorizers")
+   private Set<Report> favoriteReports = new HashSet<>();
+
    public Long getId() {
       return id;
    }
@@ -145,6 +149,14 @@ public class User implements Entity<User>, Comparable<User> {
 
    public void setSubscribedTests(Set<Test> subscribedTests) {
       this.subscribedTests = subscribedTests;
+   }
+
+   public Set<Report> getFavoriteReports() {
+      return favoriteReports;
+   }
+
+   public void setFavoriteReports(Set<Report> favoriteReports) {
+      this.favoriteReports = favoriteReports;
    }
 
    @Override

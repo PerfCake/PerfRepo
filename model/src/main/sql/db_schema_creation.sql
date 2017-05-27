@@ -592,6 +592,23 @@ ADD CONSTRAINT report_user_fkey FOREIGN KEY (user_id) REFERENCES "user"(id) ON D
 CREATE INDEX report_user_id ON report(user_id);
 
 --
+-- Name: report; Type: TABLE; Schema: public; Owner: perfrepo; Tablespace:
+--
+CREATE TABLE favorite_report (
+  user_id bigint NOT NULL,
+  report_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.favorite_report OWNER TO perfrepo;
+ALTER TABLE ONLY public.favorite_report
+ADD CONSTRAINT favorite_report_user_fkey FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.favorite_report
+ADD CONSTRAINT favorite_report_report_fkey FOREIGN KEY (report_id) REFERENCES "report"(id) ON DELETE CASCADE;
+CREATE INDEX favorite_report_user_id ON favorite_report(user_id);
+CREATE INDEX favorite_report_report_id ON favorite_report(report_id);
+
+--
 -- Name: report_sequence; Type: SEQUENCE; Schema: public; Owner: perfrepo
 --
 

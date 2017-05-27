@@ -14,6 +14,7 @@ import org.perfrepo.web.session.UserSession;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * TODO: document this
@@ -59,6 +60,14 @@ public class ReportAdapterImpl implements ReportAdapter {
         SearchResultWrapper<Report> resultWrapper = reportService.searchReports(criteria);
 
         SearchResult<ReportDto> result = new SearchResult<>(ReportConverter.convertFromEntityToDto(resultWrapper.getResult()), resultWrapper.getTotalSearchResultsCount(), searchParams.getLimit(), searchParams.getOffset());
+
+        List<Long> favoriteReportsIds = reportService.getFavoriteReports().stream().map(Report::getId).collect(Collectors.toList());
+        if (!favoriteReportsIds.isEmpty()) {
+            result.getData().stream()
+                    .filter(reportDto -> favoriteReportsIds.contains(reportDto.getId()))
+                    .forEach(reportDto -> reportDto.setFavourite(true));
+        }
+
         return result;
     }
 
@@ -78,8 +87,14 @@ public class ReportAdapterImpl implements ReportAdapter {
     }
 
     @Override
-    public void markReportFavourite(Long reportId, boolean favourite) {
-
+    public void markReportFavourite(Long reportId, boolean favorite) {
+        Report report = new Report();
+        report.setId(reportId);
+        if (favorite) {
+            reportService.markReportAsFavorite(report);
+        } else {
+            reportService.unmarkReportAsFavorite(report);
+        }
     }
 
     @Override
