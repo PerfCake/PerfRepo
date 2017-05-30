@@ -5,6 +5,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.perfrepo.enums.report.ReportType;
@@ -27,6 +28,7 @@ import static org.junit.Assert.assertTrue;
  * @author Jiri Holusa (jholusa@redhat.com)
  */
 @RunWith(Arquillian.class)
+@Ignore
 public class ReportDAOTest {
 
    @Inject
