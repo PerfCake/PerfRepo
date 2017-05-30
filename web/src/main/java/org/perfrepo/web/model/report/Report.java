@@ -50,13 +50,15 @@ import java.util.Set;
 @javax.persistence.Entity
 @Table(name = "report")
 @NamedQueries({
-        @NamedQuery(name = Report.GET_FAVORITE, query = "SELECT report FROM Report report, User user WHERE user.id = :userId AND report MEMBER OF user.favoriteReports")
+        @NamedQuery(name = Report.GET_FAVORITE, query = "SELECT report FROM Report report, User user WHERE user.id = :userId AND report MEMBER OF user.favoriteReports"),
+        @NamedQuery(name = Report.IS_FAVORITE, query = "SELECT report FROM Report report, User user WHERE user.id = :userId AND report.id = :reportId AND report MEMBER OF user.favoriteReports")
 })
 public class Report implements Entity<Report>, Comparable<Report> {
 
    private static final long serialVersionUID = -2188625358440509257L;
 
    public static final String GET_FAVORITE = "Report.getFavoriteReports";
+   public static final String IS_FAVORITE = "Report.isFavorite";
 
    @Id
    @SequenceGenerator(name = "REPORT_ID_GENERATOR", sequenceName = "REPORT_SEQUENCE", allocationSize = 1)

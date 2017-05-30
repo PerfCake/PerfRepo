@@ -161,6 +161,11 @@ public class ReportServiceBean implements ReportService {
       managedReport.getFavorizers().remove(managedUser);
    }
 
+   @Override
+   public boolean isReportFavorie(Report report) {
+      return reportDAO.isReportFavorite(report.getId(), userSession.getLoggedUser().getId());
+   }
+
    /******** Methods related to permissions ********/
 
    @Override
@@ -198,6 +203,22 @@ public class ReportServiceBean implements ReportService {
       return permissionDAO.getByReport(report.getId());
    }
 
+   @Override
+   public Set<Permission> getDefaultPermissions() {
+      Set<Permission> defaultPermissions = new HashSet<>();
+
+      Set<Group> userGroups = userService.getUserGroups(userSession.getLoggedUser());
+      for (Group group: userGroups) {
+         Permission permission = new Permission();
+         permission.setAccessType(AccessType.WRITE);
+         permission.setLevel(AccessLevel.GROUP);
+         permission.setGroup(group);
+         defaultPermissions.add(permission);
+      }
+
+      return defaultPermissions;
+   }
+
     /**
      * Updates report properties. Deletes non existing ones, adds new ones and updates existing.
      *
@@ -222,23 +243,4 @@ public class ReportServiceBean implements ReportService {
       report.setProperties(newProperties);
    }
 
-   /**
-    * Returns the default permissions WRITE group
-    *
-    * @return
-    */
-   private Set<Permission> getDefaultPermissions() {
-      Set<Permission> defaultPermissions = new HashSet<>();
-
-      Set<Group> userGroups = userService.getUserGroups(userSession.getLoggedUser());
-      for (Group group: userGroups) {
-         Permission permission = new Permission();
-         permission.setAccessType(AccessType.WRITE);
-         permission.setLevel(AccessLevel.GROUP);
-         permission.setGroup(group);
-         defaultPermissions.add(permission);
-      }
-
-      return defaultPermissions;
-   }
 }

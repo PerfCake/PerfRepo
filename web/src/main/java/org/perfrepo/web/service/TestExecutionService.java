@@ -21,6 +21,7 @@ import org.perfrepo.web.model.TestExecutionAttachment;
 import org.perfrepo.web.model.TestExecutionParameter;
 import org.perfrepo.web.model.Value;
 import org.perfrepo.web.model.to.SearchResultWrapper;
+import org.perfrepo.web.model.to.SingleValueResultWrapper;
 import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 
 import java.util.Collection;
@@ -231,6 +232,15 @@ public interface TestExecutionService {
      * @param testExecution
      */
     List<Value> getValues(Metric metric, TestExecution testExecution);
+
+    /**
+     * TODO: document this
+     *
+     * @param criteria
+     * @param metric
+     * @return
+     */
+    List<SingleValueResultWrapper> getSingleValues(TestExecutionSearchCriteria criteria, Metric metric);
 
    /******** Methods related to tags ********/
 

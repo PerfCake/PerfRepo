@@ -16,11 +16,13 @@ public class SingleValueResultWrapper {
 
    private final Double value;
    private final Long execId;
+   private final String execName;
    private final Date startedDate;
 
-   public SingleValueResultWrapper(Double value, Long execId, Date startedDate) {
+   public SingleValueResultWrapper(Double value, Long execId, String execName, Date startedDate) {
       this.value = value;
       this.execId = execId;
+      this.execName = execName;
       this.startedDate = new Date(startedDate.getTime());
    }
 
@@ -30,6 +32,10 @@ public class SingleValueResultWrapper {
 
    public Long getExecId() {
       return execId;
+   }
+
+   public String getExecName() {
+      return execName;
    }
 
    public Date getStartedDate() {

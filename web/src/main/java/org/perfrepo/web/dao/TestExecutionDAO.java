@@ -154,7 +154,7 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       Predicate selectedMetric = cb.equal(metricJoin.get("id"), metric.getId());
       Predicate selectedTestExecutions = testExecution.get("id").in(testExecutionIds);
 
-      criteriaQuery.select(cb.construct(SingleValueResultWrapper.class, valueJoin.get("resultValue"), testExecution.get("id"), testExecution.get("started")));
+      criteriaQuery.select(cb.construct(SingleValueResultWrapper.class, valueJoin.get("resultValue"), testExecution.get("id"), testExecution.get("name"), testExecution.get("started")));
       criteriaQuery.where(cb.and(selectedMetric, selectedTestExecutions));
       //TODO: this won't work correctly with ordering by parameter value, fix it according to searchMultiValues
       //TODO: this will be fixed when re-doing Metric history report

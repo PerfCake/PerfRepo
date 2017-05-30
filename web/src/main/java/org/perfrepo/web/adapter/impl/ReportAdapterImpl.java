@@ -3,17 +3,23 @@ package org.perfrepo.web.adapter.impl;
 import org.perfrepo.dto.report.PermissionDto;
 import org.perfrepo.dto.report.ReportDto;
 import org.perfrepo.dto.report.ReportSearchCriteria;
+import org.perfrepo.dto.report.box_plot.BoxPlotReportDto;
+import org.perfrepo.dto.report.metric_history.MetricHistoryReportDto;
+import org.perfrepo.dto.report.table_comparison.TableComparisonReportDto;
 import org.perfrepo.dto.util.SearchResult;
 import org.perfrepo.web.adapter.ReportAdapter;
+import org.perfrepo.web.adapter.converter.PermissionConverter;
 import org.perfrepo.web.adapter.converter.ReportConverter;
 import org.perfrepo.web.adapter.converter.ReportSearchCriteriaConverter;
 import org.perfrepo.web.model.report.Report;
 import org.perfrepo.web.model.to.SearchResultWrapper;
 import org.perfrepo.web.service.ReportService;
+import org.perfrepo.web.service.reports.metrichistory.MetricHistoryReportService;
 import org.perfrepo.web.session.UserSession;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +33,9 @@ public class ReportAdapterImpl implements ReportAdapter {
     private ReportService reportService;
 
     @Inject
+    private MetricHistoryReportService metricHistoryReportService;
+
+    @Inject
     private UserSession userSession;
 
     @Override
@@ -36,7 +45,20 @@ public class ReportAdapterImpl implements ReportAdapter {
 
     @Override
     public ReportDto createReport(ReportDto report) {
-        return null;
+        ReportDto result = null;
+        if (report instanceof MetricHistoryReportDto) {
+            result = metricHistoryReportService.create((MetricHistoryReportDto) report);
+        } else if (report instanceof TableComparisonReportDto) {
+            //TODO: add implementation
+            throw new UnsupportedOperationException("Not supported yet.");
+        } else if (report instanceof BoxPlotReportDto) {
+            //TODO: add implementation
+            throw new UnsupportedOperationException("Not supported yet.");
+        } else {
+            throw new IllegalArgumentException("Unsupported report type.");
+        }
+
+        return result;
     }
 
     @Override
@@ -77,8 +99,8 @@ public class ReportAdapterImpl implements ReportAdapter {
     }
 
     @Override
-    public List<PermissionDto> getDefaultReportPermissions() {
-        return null;
+    public Set<PermissionDto> getDefaultReportPermissions() {
+        return PermissionConverter.convertFromEntityToDto(reportService.getDefaultPermissions());
     }
 
     @Override

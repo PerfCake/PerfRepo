@@ -61,6 +61,20 @@ public class ReportDAO extends DAO<Report, Long> {
     }
 
     /**
+     * TODO: document this
+     *
+     * @param reportId
+     * @param userId
+     * @return
+     */
+    public boolean isReportFavorite(Long reportId, Long userId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("reportId", reportId);
+        params.put("userId", userId);
+        return !findByNamedQuery(Report.IS_FAVORITE, params).isEmpty();
+    }
+
+    /**
      * Main search method for tests. All criteria are passed via transfer object.
      *
      * @param search

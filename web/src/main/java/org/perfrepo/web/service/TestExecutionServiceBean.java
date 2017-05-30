@@ -8,6 +8,7 @@ import org.perfrepo.web.model.TestExecutionAttachment;
 import org.perfrepo.web.model.TestExecutionParameter;
 import org.perfrepo.web.model.Value;
 import org.perfrepo.web.model.to.SearchResultWrapper;
+import org.perfrepo.web.model.to.SingleValueResultWrapper;
 import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.dao.MetricDAO;
 import org.perfrepo.web.dao.TagDAO;
@@ -266,6 +267,11 @@ public class TestExecutionServiceBean implements TestExecutionService {
     @Override
     public List<Value> getValues(Metric metric, TestExecution testExecution) {
         return valueDAO.findByMetricAndExecution(metric.getId(), testExecution.getId());
+    }
+
+    @Override
+    public List<SingleValueResultWrapper> getSingleValues(TestExecutionSearchCriteria criteria, Metric metric) {
+        return testExecutionDAO.searchValues(criteria, metric);
     }
 
     /******** Methods related to tags ********/

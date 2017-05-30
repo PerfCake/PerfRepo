@@ -6,6 +6,7 @@ import org.perfrepo.dto.report.ReportSearchCriteria;
 import org.perfrepo.dto.util.SearchResult;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Service adapter for reports. Adapter provides operations for
@@ -95,7 +96,7 @@ public interface ReportAdapter {
      *
      * @return List of access permissions.
      */
-    List<PermissionDto> getDefaultReportPermissions();
+    Set<PermissionDto> getDefaultReportPermissions();
 
     /**
      * Return table comparison report preview. The source of selected test executions is comparison session.

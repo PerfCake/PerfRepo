@@ -107,6 +107,15 @@ public interface ReportService {
     */
    void unmarkReportAsFavorite(Report report);
 
+   /**
+    * TODO: document this
+    *
+    * @param report
+    * @return
+    */
+   boolean isReportFavorie(Report report);
+
+
    /******** Methods related to permissions ********/
 
    /**
@@ -137,4 +146,11 @@ public interface ReportService {
     * @return
     */
    Set<Permission> getReportPermissions(Report report);
+
+   /**
+    * Returns the default permissions WRITE group
+    *
+    * @return
+    */
+   Set<Permission> getDefaultPermissions();
 }

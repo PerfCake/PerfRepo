@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Web service endpoint for reports.
@@ -92,7 +93,7 @@ public class ReportRestApi {
    @GET
    @Path("/wizard/default-permissions")
    public Response getDefaultPermissions() {
-      List<PermissionDto> permissions = reportAdapter.getDefaultReportPermissions();
+      Set<PermissionDto> permissions = reportAdapter.getDefaultReportPermissions();
 
       return Response.ok().entity(permissions).build();
    }

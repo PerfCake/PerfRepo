@@ -8,7 +8,7 @@ import org.perfrepo.enums.AccessType;
  *
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
-public class PermissionDto {
+public class PermissionDto implements Comparable<PermissionDto> {
 
     private AccessLevel level;
 
@@ -72,5 +72,30 @@ public class PermissionDto {
 
     public void setUserFullName(String userFullName) {
         this.userFullName = userFullName;
+    }
+
+    @Override
+    public int compareTo(PermissionDto o) {
+        if (o == null) {
+            return -1;
+        }
+
+        if (level.compareTo(o.getLevel()) != 0) {
+            return level.compareTo(o.getLevel());
+        }
+
+        if (type.compareTo(o.getType()) != 0) {
+            return type.compareTo(o.getType());
+        }
+
+        if (groupId != null) {
+            return groupId.compareTo(o.getGroupId());
+        }
+
+        if (userId != null) {
+            return userId.compareTo(o.getUserId());
+        }
+
+        return 0;
     }
 }
