@@ -75,7 +75,7 @@ ALTER TABLE public.tag_sequence OWNER TO perfrepo;
 
 CREATE TABLE test (
     id bigint NOT NULL,
-    groupid character varying(255) NOT NULL,
+    group_id bigint NOT NULL,
     name character varying(2047) NOT NULL,
     uid character varying(2047) NOT NULL,
     description character varying(10239)
@@ -93,7 +93,7 @@ CREATE TABLE test_execution (
     name character varying(255) NOT NULL,
     test_id bigint NOT NULL,
     started timestamp without time zone NOT NULL
-);
+);group
 
 
 ALTER TABLE public.test_execution OWNER TO perfrepo;
@@ -218,7 +218,7 @@ CREATE TABLE "user" (
     first_name character varying(2047) NOT NULL,
     last_name character varying(2047) NOT NULL,
     email character varying(2047) NOT NULL,
-    type character varying(25) NOT NULL;
+    type character varying(25) NOT NULL
 );
 
 
@@ -368,22 +368,6 @@ ALTER TABLE ONLY test_execution_parameter
 
 ALTER TABLE ONLY test_execution
     ADD CONSTRAINT test_execution_pkey PRIMARY KEY (id);
-
-
---
--- Name: test_execution_tag_pkey; Type: CONSTRAINT; Schema: public; Owner: perfrepo; Tablespace: 
---
-
-ALTER TABLE ONLY test_execution_tag
-    ADD CONSTRAINT test_execution_tag_pkey PRIMARY KEY (id);
-
-
---
--- Name: test_metric_pkey; Type: CONSTRAINT; Schema: public; Owner: perfrepo; Tablespace: 
---
-
-ALTER TABLE ONLY test_metric
-    ADD CONSTRAINT test_metric_pkey PRIMARY KEY (id);
 
 
 --
@@ -721,7 +705,7 @@ ALTER TABLE public.group_sequence OWNER TO perfrepo;
 --
 
 CREATE TABLE user_group (
-  type character varying(25) NOT NULL;
+  type character varying(25) NOT NULL,
   user_id bigint NOT NULL,
   group_id bigint NOT NULL
 );
@@ -855,8 +839,8 @@ CREATE INDEX alert_tag_tag ON alert_tag(tag_id);
 -- User/Group data
 --
 
-insert into public.user (id, username, first_name, last_name, email, password) values (nextVal('user_sequence'), 'perfrepouser', 'perfrepouser', 'perfrepouser', 'example@example.com', '/+aGXwHMbhcz5HDdSx9FRg==');
+insert into public.user (id, username, first_name, last_name, email, password, type) values (nextVal('user_sequence'), 'perfrepouser', 'perfrepouser', 'perfrepouser', 'example@example.com', '/+aGXwHMbhcz5HDdSx9FRg==', 'SUPER_ADMIN');
 
 insert into public.group (id, name) values (nextVal('group_sequence'), 'perfrepouser');
 
-insert into user_group (user_id, group_id) values ((select id from public.user where username='perfrepouser'), (select id from public.group where name='perfrepouser'));
+insert into user_group (user_id, group_id, type) values ((select id from public.user where username='perfrepouser'), (select id from public.group where name='perfrepouser'), 'GROUP_ADMIN');
