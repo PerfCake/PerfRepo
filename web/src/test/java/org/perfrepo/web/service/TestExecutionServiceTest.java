@@ -114,21 +114,22 @@ public class TestExecutionServiceTest {
     @After
     public void cleanUp() throws UnauthorizedException {
         UserSessionMock.setLoggedUser(adminUser);
-        for (User user: userService.getAllUsers()) {
-            userService.removeUser(user);
-        }
 
         for (TestExecution testExecution: testExecutionService.getAllTestExecutions()) {
             testExecutionService.removeTestExecution(testExecution);
+        }
+
+        //removing of the test also removes test executions and metrics
+        for (Test test: testService.getAllTests()) {
+            testService.removeTest(test);
         }
 
         for (Group group: groupService.getAllGroups()) {
             groupService.removeGroup(group);
         }
 
-        //removing of the test also removes test executions and metrics
-        for (Test test: testService.getAllTests()) {
-            testService.removeTest(test);
+        for (User user: userService.getAllUsers()) {
+            userService.removeUser(user);
         }
     }
 

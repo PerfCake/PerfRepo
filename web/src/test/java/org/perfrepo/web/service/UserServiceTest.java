@@ -67,6 +67,10 @@ public class UserServiceTest {
     @After
     public void cleanUp() throws Exception {
         UserSessionMock.setLoggedUser(adminUser);
+        for (Test test: testService.getAllTests()) {
+            testService.removeTest(test);
+        }
+
         // deletion of favorite parameters is done via cascade on foreign key in database
         for (User user: userService.getAllUsers()) {
             userService.removeUser(user);
@@ -74,10 +78,6 @@ public class UserServiceTest {
 
         for (Group group: groupService.getAllGroups()) {
             groupService.removeGroup(group);
-        }
-
-        for (Test test: testService.getAllTests()) {
-            testService.removeTest(test);
         }
     }
 
