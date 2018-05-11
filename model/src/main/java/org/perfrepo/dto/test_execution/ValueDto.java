@@ -1,5 +1,6 @@
 package org.perfrepo.dto.test_execution;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -11,7 +12,7 @@ public class ValueDto {
 
     private double value;
 
-    private Set<ValueParameterDto> parameters;
+    private Set<ValueParameterDto> parameters = new HashSet<>();
 
     public double getValue() {
         return value;
