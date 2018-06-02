@@ -7,7 +7,7 @@ import org.perfrepo.web.adapter.AlertAdapter;
 import org.perfrepo.web.adapter.dummy_impl.storage.Storage;
 import org.perfrepo.web.adapter.exceptions.BadRequestException;
 import org.perfrepo.web.adapter.exceptions.NotFoundException;
-import org.perfrepo.web.adapter.exceptions.ValidationException;
+import org.perfrepo.dto.exception.ValidationException;
 
 import javax.inject.Inject;
 import java.util.ArrayList;

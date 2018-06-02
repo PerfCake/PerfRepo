@@ -1,5 +1,7 @@
 package org.perfrepo.web.adapter.exceptions;
 
+import org.perfrepo.dto.exception.AdapterException;
+
 /**
  * This unchecked exception is thrown if service adapter could not find requested resource.
  *

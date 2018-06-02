@@ -1,4 +1,4 @@
-package org.perfrepo.web.adapter.exceptions;
+package org.perfrepo.dto.exception;
 
 import org.perfrepo.dto.util.validation.ValidationErrors;
 
@@ -13,6 +13,9 @@ import org.perfrepo.dto.util.validation.ValidationErrors;
 public class ValidationException extends AdapterException {
 
     private ValidationErrors validationErrors;
+
+    public ValidationException() {
+    }
 
     /**
      * Constructs a {@link ValidationException} with the specified detail message

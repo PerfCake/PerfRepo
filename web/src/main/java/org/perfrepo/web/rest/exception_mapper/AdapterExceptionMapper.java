@@ -1,6 +1,6 @@
 package org.perfrepo.web.rest.exception_mapper;
 
-import org.perfrepo.web.adapter.exceptions.AdapterException;
+import org.perfrepo.dto.exception.AdapterException;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

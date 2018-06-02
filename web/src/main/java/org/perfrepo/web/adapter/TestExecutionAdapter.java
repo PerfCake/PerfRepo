@@ -22,7 +22,6 @@ public interface TestExecutionAdapter {
      * @return The found {@link TestExecutionDto} object.
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     TestExecutionDto getTestExecution(Long id);
 
@@ -43,8 +42,6 @@ public interface TestExecutionAdapter {
      * @return The created {@link TestExecutionDto} object.
      *
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     TestExecutionDto createTestExecution(TestExecutionDto testExecution);
 
@@ -66,8 +63,6 @@ public interface TestExecutionAdapter {
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     TestExecutionDto updateTestExecution(TestExecutionDto testExecution);
 
@@ -87,8 +82,6 @@ public interface TestExecutionAdapter {
      * @return The updated {@link TestExecutionDto} object.
      *
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     TestExecutionDto setTestExecutionParameters(Long testExecutionId, Set<ParameterDto> testExecutionParameters);
 
@@ -101,8 +94,6 @@ public interface TestExecutionAdapter {
      * @return The updated {@link TestExecutionDto} object.
      *
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     TestExecutionDto addExecutionValues(Long testExecutionId, ValuesGroupDto valuesGroup);
 
@@ -115,8 +106,6 @@ public interface TestExecutionAdapter {
      * @return The updated {@link TestExecutionDto} object.
      *
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     TestExecutionDto setExecutionValues(Long testExecutionId, ValuesGroupDto valuesGroup);
 
@@ -127,7 +116,6 @@ public interface TestExecutionAdapter {
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     void removeTestExecution(Long id);
 
@@ -146,7 +134,6 @@ public interface TestExecutionAdapter {
      * @return List of {@link TestExecutionDto} test executions.
      *
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     SearchResult<TestExecutionDto> searchTestExecutions(TestExecutionSearchCriteria searchParams);
 
@@ -165,7 +152,6 @@ public interface TestExecutionAdapter {
      * @return The found {@link AttachmentDto} object.
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     AttachmentDto getTestExecutionAttachment(Long attachmentId, String hash);
 

@@ -1,7 +1,7 @@
 package org.perfrepo.web.rest.exception_mapper;
 
 import org.perfrepo.dto.util.validation.FieldError;
-import org.perfrepo.web.adapter.exceptions.ValidationException;
+import org.perfrepo.dto.exception.ValidationException;
 
 import java.util.List;
 

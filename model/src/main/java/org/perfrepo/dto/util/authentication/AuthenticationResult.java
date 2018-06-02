@@ -17,6 +17,8 @@ public class AuthenticationResult {
 
     private Date expiration;
 
+    private String message;
+
     public String getToken() {
         return token;
     }
@@ -39,5 +41,13 @@ public class AuthenticationResult {
 
     public void setExpiration(Date expiration) {
         this.expiration = expiration;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

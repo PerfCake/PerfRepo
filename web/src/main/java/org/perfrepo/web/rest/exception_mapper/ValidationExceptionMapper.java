@@ -1,7 +1,7 @@
 package org.perfrepo.web.rest.exception_mapper;
 
 import org.apache.http.HttpStatus;
-import org.perfrepo.web.adapter.exceptions.ValidationException;
+import org.perfrepo.dto.exception.ValidationException;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -16,8 +16,6 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
 
     @Override
     public Response toResponse(ValidationException exception) {
-        ValidationExceptionResponse responseEntity = new ValidationExceptionResponse(exception);
-
-        return Response.status(HttpStatus.SC_UNPROCESSABLE_ENTITY).entity(responseEntity).build();
+        return Response.status(HttpStatus.SC_UNPROCESSABLE_ENTITY).entity(exception).build();
     }
 }

@@ -19,7 +19,6 @@ public interface AlertAdapter {
      * @return The found {@link AlertDto} test alert.
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the test alert does not exist.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     AlertDto getAlert(Long id);
 
@@ -42,8 +41,6 @@ public interface AlertAdapter {
      * @return The created {@link AlertDto} test alert.
      *
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     AlertDto createAlert(AlertDto alert);
 
@@ -67,8 +64,6 @@ public interface AlertAdapter {
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     AlertDto updateAlert(AlertDto alert);
 
@@ -79,7 +74,6 @@ public interface AlertAdapter {
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     void removeAlert(Long id);
 
@@ -91,7 +85,6 @@ public interface AlertAdapter {
      * @return List of test alerts.
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     List<AlertDto> getAllAlertsForTest(Long testId);
 }

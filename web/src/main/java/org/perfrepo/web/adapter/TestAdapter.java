@@ -20,7 +20,6 @@ public interface TestAdapter {
      * @return The found {@link TestDto} object.
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     TestDto getTest(Long id);
 
@@ -32,7 +31,6 @@ public interface TestAdapter {
      * @return The found {@link TestDto} object.
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     TestDto getTest(String uid);
 
@@ -50,8 +48,6 @@ public interface TestAdapter {
      *
      * @param testDto Parameters of the test that will be created.
      * @return Created {@link TestDto} object.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     TestDto createTest(TestDto testDto);
 
@@ -71,8 +67,6 @@ public interface TestAdapter {
      * @return Updated {@link TestDto} object.
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     TestDto updateTest(TestDto testDto);
 
@@ -83,7 +77,6 @@ public interface TestAdapter {
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     void removeTest(Long id);
 
@@ -102,7 +95,6 @@ public interface TestAdapter {
      * @return List of {@link TestDto} tests.
      *
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     SearchResult<TestDto> searchTests(TestSearchCriteria searchParams);
 
@@ -128,7 +120,6 @@ public interface TestAdapter {
      * @param testId Test {@link TestDto} identifier.
      *
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     void addSubscriber(Long testId);
 
@@ -138,7 +129,6 @@ public interface TestAdapter {
      * @param testId Test {@link TestDto} identifier.
      *
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     void removeSubscriber(Long testId);
 }

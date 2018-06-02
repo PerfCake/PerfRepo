@@ -23,7 +23,6 @@ public interface ReportAdapter {
      * @return Found {@link ReportDto} object.
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     ReportDto getReport(Long id);
 
@@ -35,8 +34,6 @@ public interface ReportAdapter {
      * @return The created {@link ReportDto} object.
      *
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     ReportDto createReport(ReportDto report);
 
@@ -49,8 +46,6 @@ public interface ReportAdapter {
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     ReportDto updateReport(ReportDto report);
 
@@ -61,7 +56,6 @@ public interface ReportAdapter {
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     void removeReport(Long id);
 
@@ -80,7 +74,6 @@ public interface ReportAdapter {
      * @return List of {@link ReportDto} tests.
      *
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     SearchResult<ReportDto> searchReports(ReportSearchCriteria searchParams);
 
@@ -120,8 +113,6 @@ public interface ReportAdapter {
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     void validateWizardReportInfoStep(ReportDto report);
 
@@ -132,8 +123,6 @@ public interface ReportAdapter {
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     void validateWizardReportConfigurationStep(ReportDto report);
 
@@ -144,8 +133,6 @@ public interface ReportAdapter {
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     void validateWizardReportPermissionStep(ReportDto report);
 }

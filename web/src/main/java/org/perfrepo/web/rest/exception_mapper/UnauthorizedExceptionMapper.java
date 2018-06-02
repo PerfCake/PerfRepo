@@ -3,11 +3,12 @@ package org.perfrepo.web.rest.exception_mapper;
 import org.perfrepo.web.adapter.exceptions.UnauthorizedException;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 /**
- * Maps {@link UnauthorizedException} exception to HTTP response. Sets 403 status code.
+ * Maps {@link UnauthorizedException} exception to HTTP response. Sets 401 status code.
  * @author Jiri Grunwald (grunwjir@gmail.com)
  */
 @Provider
@@ -16,6 +17,6 @@ public class UnauthorizedExceptionMapper implements ExceptionMapper<Unauthorized
     @Override
     public Response toResponse(UnauthorizedException exception) {
         ValidationExceptionResponse responseEntity = new ValidationExceptionResponse(exception, "UNAUTHORIZED EXCEPTION");
-        return Response.status(Response.Status.FORBIDDEN).entity(responseEntity).build();
+        return Response.status(Status.UNAUTHORIZED).entity(responseEntity).build();
     }
 }

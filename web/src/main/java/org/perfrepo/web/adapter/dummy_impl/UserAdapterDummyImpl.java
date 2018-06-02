@@ -5,7 +5,7 @@ import org.perfrepo.dto.util.validation.ValidationErrors;
 import org.perfrepo.web.adapter.UserAdapter;
 import org.perfrepo.web.adapter.dummy_impl.storage.Storage;
 import org.perfrepo.web.adapter.exceptions.NotFoundException;
-import org.perfrepo.web.adapter.exceptions.ValidationException;
+import org.perfrepo.dto.exception.ValidationException;
 
 import javax.inject.Inject;
 import java.util.List;

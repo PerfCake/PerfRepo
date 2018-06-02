@@ -19,7 +19,6 @@ public interface MetricAdapter {
      * @return Found {@link MetricDto} object.
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     MetricDto getMetric(Long id);
 
@@ -39,8 +38,6 @@ public interface MetricAdapter {
      *
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the object does not exist.
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.ValidationException If the input parameters are not valid.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     MetricDto updateMetric(MetricDto dto);
 
@@ -59,7 +56,6 @@ public interface MetricAdapter {
      * @param testId Test {@link org.perfrepo.dto.test.TestDto} identifier.
      * @return Metric {@link MetricDto} that was added to test.
      * @throws org.perfrepo.web.adapter.exceptions.NotFoundException If the test does not exist.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     MetricDto addMetric(MetricDto dto, Long testId);
 
@@ -70,7 +66,6 @@ public interface MetricAdapter {
      * @param testId Test {@link org.perfrepo.dto.test.TestDto} identifier.
      *
      * @throws org.perfrepo.web.adapter.exceptions.BadRequestException If the request is bad.
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     void removeMetric(Long metricId, Long testId);
 
@@ -79,7 +74,6 @@ public interface MetricAdapter {
      *
      * @return The list of all stored {@link MetricDto} objects.
      *
-     * @throws org.perfrepo.web.adapter.exceptions.AdapterException If anything bad happened.
      */
     List<MetricDto> getAllMetrics();
 }

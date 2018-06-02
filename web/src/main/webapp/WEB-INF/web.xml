@@ -27,6 +27,7 @@
 				org.perfrepo.web.rest.exception_mapper.NotFoundExceptionMapper,
 				org.perfrepo.web.rest.exception_mapper.UnauthorizedExceptionMapper,
 				org.perfrepo.web.rest.exception_mapper.ValidationExceptionMapper,
+				org.perfrepo.web.rest.exception_mapper.ConstraintViolationExceptionMapper,
 				org.perfrepo.web.rest.exception_mapper.AdapterExceptionMapper
 			</param-value>
 		</init-param>

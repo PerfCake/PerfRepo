@@ -1,5 +1,6 @@
 package org.perfrepo.web.adapter.exceptions;
 
+import org.perfrepo.dto.exception.ValidationException;
 import org.perfrepo.dto.util.validation.ValidationErrors;
 
 /**
