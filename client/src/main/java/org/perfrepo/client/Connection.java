@@ -11,6 +11,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
@@ -74,17 +75,31 @@ public class Connection {
         return response.readEntity(clazz);
     }
 
+    public <T> T get(String path, GenericType<T> clazz) {
+        Response response = createInvocationBuilder(path).get();
+        return response.readEntity(clazz);
+    }
+
     public <T> T post(String path, T payload, Class<T> clazz) {
         Response response = createInvocationBuilder(path).post(Entity.entity(payload, MEDIA_TYPE));
 
         if (response.getStatus() == 422) {
             throw new ClientException("Validation error occurred when doing post to server. Status code: " + response.getStatus(), response.readEntity(ValidationException.class));
-        } else if (response.getStatus() != HttpURLConnection.HTTP_OK) {
+        } else if (response.getStatus() != HttpURLConnection.HTTP_OK && response.getStatus() != HttpURLConnection.HTTP_CREATED) {
             throw new ClientException("Error occurred when doing post to server. Status code: " + response.getStatus() + "; "
             + "Status message: " + response.readEntity(String.class));
         }
 
         return response.readEntity(clazz);
+    }
+
+    public void delete(String path) {
+        Response response = createInvocationBuilder(path).delete();
+
+        if (response.getStatus() != HttpURLConnection.HTTP_NO_CONTENT) {
+            throw new ClientException("Error occurred when doing delete to server. Status code: " + response.getStatus() + "; "
+                    + "Status message: " + response.readEntity(String.class));
+        }
     }
 
     public String getToken() {

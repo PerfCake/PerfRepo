@@ -3,7 +3,11 @@ package org.perfrepo.web.rest.endpoints;
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
-import org.perfrepo.dto.test_execution.*;
+import org.perfrepo.dto.test_execution.AttachmentDto;
+import org.perfrepo.dto.test_execution.ParameterDto;
+import org.perfrepo.dto.test_execution.TestExecutionDto;
+import org.perfrepo.dto.test_execution.TestExecutionSearchCriteria;
+import org.perfrepo.dto.test_execution.ValuesGroupDto;
 import org.perfrepo.dto.test_execution.mass_operation.ParameterMassOperationDto;
 import org.perfrepo.dto.test_execution.mass_operation.TagMassOperationDto;
 import org.perfrepo.dto.util.SearchResult;
@@ -11,13 +15,19 @@ import org.perfrepo.web.adapter.TestExecutionAdapter;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,9 +80,9 @@ public class TestExecutionRestApi {
    public Response create(TestExecutionDto testExecutionDto) {
       TestExecutionDto createdTestExecution = testExecutionAdapter.createTestExecution(testExecutionDto);
 
-      URI uri = URI.create("/test-executions/" + createdTestExecution.getId());
+//      URI uri = URI.create("/test-executions/" + createdTestExecution.getId());
 
-      return Response.created(uri).build();
+      return Response.ok(createdTestExecution).build();
    }
 
    @PUT

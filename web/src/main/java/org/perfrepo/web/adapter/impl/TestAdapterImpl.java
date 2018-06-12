@@ -10,6 +10,7 @@ import org.perfrepo.web.adapter.converter.TestConverter;
 import org.perfrepo.web.adapter.converter.TestSearchCriteriaConverter;
 import org.perfrepo.web.model.Test;
 import org.perfrepo.web.model.to.SearchResultWrapper;
+import org.perfrepo.web.service.GroupService;
 import org.perfrepo.web.service.TestService;
 import org.perfrepo.web.session.UserSession;
 
@@ -27,9 +28,16 @@ public class TestAdapterImpl implements TestAdapter {
     @Inject
     private TestService testService;
 
+    @Inject
+    private GroupService groupService;
+
     @Override
     public TestDto getTest(Long id) {
         Test test = testService.getTest(id);
+        if (test == null) {
+            return null;
+        }
+
         TestDto dto = TestConverter.convertFromEntityToDto(test);
         //dto.setAlerts(testService); TODO: add alerts
         dto.setGroup(GroupConverter.convertFromEntityToDto(test.getGroup()));
@@ -50,8 +58,9 @@ public class TestAdapterImpl implements TestAdapter {
     @Override
     public TestDto createTest(TestDto testDto) {
         Test testEntity = TestConverter.convertFromDtoToEntity(testDto);
-        Test createdTest = testService.createTest(testEntity);
+        testEntity.setGroup(groupService.getGroup(testEntity.getGroup().getName()));
 
+        Test createdTest = testService.createTest(testEntity);
         return TestConverter.convertFromEntityToDto(createdTest);
     }
 

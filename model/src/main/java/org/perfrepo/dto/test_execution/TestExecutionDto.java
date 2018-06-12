@@ -25,7 +25,7 @@ public class TestExecutionDto {
 
     private String comment;
 
-    private Date started;
+    private Date started = new Date();
 
     private Set<ParameterDto> executionParameters = new HashSet<>();
 
