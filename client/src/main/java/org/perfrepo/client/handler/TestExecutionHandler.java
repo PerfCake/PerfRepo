@@ -3,7 +3,7 @@ package org.perfrepo.client.handler;
 import org.perfrepo.client.Connection;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
 
-import java.util.ArrayList;
+import javax.ws.rs.core.GenericType;
 import java.util.List;
 
 public class TestExecutionHandler extends Handler {
@@ -31,7 +31,7 @@ public class TestExecutionHandler extends Handler {
 
     public List<TestExecutionDto> getAll() {
         String path = CONTEXT_PATH;
-        return connection.get(path, ArrayList.class);
+        return connection.get(path, new GenericType<List<TestExecutionDto>>() { });
     }
 
 

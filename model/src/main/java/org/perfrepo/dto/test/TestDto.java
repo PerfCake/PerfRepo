@@ -4,6 +4,7 @@ import org.perfrepo.dto.alert.AlertDto;
 import org.perfrepo.dto.metric.MetricDto;
 import org.perfrepo.dto.group.GroupDto;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -23,9 +24,9 @@ public class TestDto {
 
     private GroupDto group;
 
-    private Set<MetricDto> metrics;
+    private Set<MetricDto> metrics = new HashSet<>();
 
-    private Set<AlertDto> alerts;
+    private Set<AlertDto> alerts = new HashSet<>();
 
     public Long getId() {
         return id;

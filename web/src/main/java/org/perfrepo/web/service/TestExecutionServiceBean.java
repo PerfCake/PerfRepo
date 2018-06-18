@@ -78,7 +78,8 @@ public class TestExecutionServiceBean implements TestExecutionService {
 
         TestExecution createdExecution = testExecutionDAO.create(testExecution);
 
-        Set<Tag> tags = testExecution.getTags();
+        Set<Tag> tags = new HashSet<>(testExecution.getTags());
+        testExecution.getTags().clear();
         for (Tag tag: tags) {
             addTag(tag, createdExecution);
         }
