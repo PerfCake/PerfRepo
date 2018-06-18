@@ -3,7 +3,7 @@ package org.perfrepo.web.adapter.converter;
 import org.perfrepo.dto.test_execution.ParameterDto;
 import org.perfrepo.web.model.TestExecutionParameter;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -30,7 +30,7 @@ public class ParameterConverter {
         return dto;
     }
 
-    public static Set<ParameterDto> convertFromEntityToDto(List<TestExecutionParameter> parameters) {
+    public static Set<ParameterDto> convertFromEntityToDto(Collection<TestExecutionParameter> parameters) {
         Set<ParameterDto> dtos = new TreeSet<>();
         parameters.stream().forEach(parameter -> dtos.add(convertFromEntityToDto(parameter)));
         return dtos;

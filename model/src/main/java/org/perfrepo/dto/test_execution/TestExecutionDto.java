@@ -4,9 +4,9 @@ import org.perfrepo.dto.test.TestDto;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Data transfer object that represents a execution of a test.
@@ -21,15 +21,15 @@ public class TestExecutionDto {
 
     private TestDto test;
 
-    private Set<String> tags = new HashSet<>();
+    private Set<String> tags = new TreeSet<>();
 
     private String comment;
 
     private Date started = new Date();
 
-    private Set<ParameterDto> executionParameters = new HashSet<>();
+    private Set<ParameterDto> executionParameters = new TreeSet<>();
 
-    private Set<ValuesGroupDto> executionValuesGroups = new HashSet<>();
+    private Set<ValuesGroupDto> executionValuesGroups = new TreeSet<>();
 
     private List<AttachmentDto> executionAttachments = new ArrayList<>();
 

@@ -12,6 +12,8 @@ import org.perfrepo.dto.test_execution.TestExecutionDto;
 import org.perfrepo.dto.test_execution.ValueDto;
 import org.perfrepo.dto.test_execution.ValueParameterDto;
 import org.perfrepo.dto.test_execution.ValuesGroupDto;
+import org.perfrepo.enums.MeasuredValueType;
+import org.perfrepo.enums.MetricComparator;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,8 +21,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractClientTest {
@@ -68,6 +68,62 @@ public abstract class AbstractClientTest {
         return test;
     }
 
+    public static MetricDto createMetric(String name) {
+        MetricDto metric = new MetricDto();
+        metric.setName("name_" + name);
+        metric.setComparator(MetricComparator.HIGHER_BETTER);
+
+        return metric;
+    }
+
+    public static ParameterDto createParameter(String name) {
+        ParameterDto parameter = new ParameterDto();
+        parameter.setName("name_" + name);
+        parameter.setValue("value_" + name);
+
+        return parameter;
+    }
+
+    public static ValuesGroupDto createValueGroupSingleValue(double initialValue, MetricDto metric) {
+        ValuesGroupDto valueGroup = new ValuesGroupDto();
+        valueGroup.setMetricName(metric.getName());
+        valueGroup.setValueType(MeasuredValueType.SINGLE_VALUE);
+        valueGroup.setValues(Arrays.asList(createSingleValue(initialValue)));
+
+        return valueGroup;
+    }
+
+    public static ValuesGroupDto createValueGroupMultiValue(double initialValue, MetricDto metric) {
+        ValuesGroupDto valueGroup = new ValuesGroupDto();
+        valueGroup.setMetricName(metric.getName());
+        valueGroup.setValueType(MeasuredValueType.MULTI_VALUE);
+
+        String parameterName = "param1_name";
+        valueGroup.setParameterNames(createSet(parameterName));
+        valueGroup.setValues(Arrays.asList(createMultiValue(initialValue, parameterName), createMultiValue(initialValue + 10, parameterName), createMultiValue(initialValue + 20, parameterName)));
+
+        return valueGroup;
+    }
+
+    public static ValueDto createSingleValue(double result) {
+        ValueDto value = new ValueDto();
+        value.setValue(result);
+
+        return value;
+    }
+
+    public static ValueDto createMultiValue(double result, String parameterName) {
+        ValueDto value = new ValueDto();
+        value.setValue(result);
+
+        ValueParameterDto valueParameter = new ValueParameterDto();
+        valueParameter.setName(parameterName);
+        valueParameter.setValue(result);
+        value.setParameters(createSet(valueParameter));
+
+        return value;
+    }
+
     /** ---------- Helper assertions ---------- **/
 
     public static void assertTestExecution(TestExecutionDto expected, TestExecutionDto actual) {
@@ -78,7 +134,6 @@ public abstract class AbstractClientTest {
         assertEquals(expected.getStarted(), actual.getStarted());
         assertEquals(expected.getTags(), actual.getTags());
 
-        assertTest(expected.getTest(), actual.getTest());
         assertAttachments(expected.getExecutionAttachments(), actual.getExecutionAttachments());
         assertParameters(expected.getExecutionParameters(), actual.getExecutionParameters());
         assertValueGroups(expected.getExecutionValuesGroups(), actual.getExecutionValuesGroups());
@@ -130,7 +185,7 @@ public abstract class AbstractClientTest {
 
         assertEquals(expected.size(), actual.size());
         assertTrue("Expected: " + expected + "; Actual: " + actual, expected.stream().allMatch(expectedItem -> actual.stream()
-                .anyMatch(actualItem -> assertMetric(expectedItem, actualItem))));
+                .anyMatch(actualItem -> expectedItem.equals(actualItem))));
     }
 
     public static boolean assertMetric(MetricDto expected, MetricDto actual) {
@@ -168,16 +223,7 @@ public abstract class AbstractClientTest {
 
         assertEquals(expected.size(), actual.size());
         assertTrue("Expected: " + expected + "; Actual: " + actual, expected.stream().allMatch(expectedItem -> actual.stream()
-                .anyMatch(actualItem -> assertParameter(expectedItem, actualItem))));
-    }
-
-    public static boolean assertParameter(ParameterDto expected, ParameterDto actual) {
-        if (areBothNull(expected, actual)) return true;
-
-        assertEquals(expected.getName(), actual.getName());
-        assertEquals(expected.getValue(), actual.getValue());
-
-        return true;
+                .anyMatch(actualItem -> expectedItem.equals(actualItem))));
     }
 
     public static void assertValueGroups(Collection<ValuesGroupDto> expected, Collection<ValuesGroupDto> actual) {
@@ -185,7 +231,7 @@ public abstract class AbstractClientTest {
 
         assertEquals(expected.size(), actual.size());
         assertTrue("Expected: " + expected + "; Actual: " + actual, expected.stream().allMatch(expectedItem -> actual.stream()
-                .anyMatch(actualItem -> assertValueGroup(expectedItem, actualItem))));
+                .anyMatch(actualItem -> expectedItem.equals(actualItem))));
     }
 
     public static boolean assertValueGroup(ValuesGroupDto expected, ValuesGroupDto actual) {

@@ -54,4 +54,10 @@ public class MetricConverter {
 
         return metric;
     }
+
+    public static Set<Metric> convertFromDtoToEntity(Set<MetricDto> dtos) {
+        Set<Metric> metrics = new TreeSet<>();
+        dtos.stream().forEach(dto -> metrics.add(convertFromDtoToEntity(dto)));
+        return metrics;
+    }
 }

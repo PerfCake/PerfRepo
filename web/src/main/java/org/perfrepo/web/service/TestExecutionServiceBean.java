@@ -1,5 +1,6 @@
 package org.perfrepo.web.service;
 
+import org.perfrepo.web.dao.ValueParameterDAO;
 import org.perfrepo.web.model.Metric;
 import org.perfrepo.web.model.Tag;
 import org.perfrepo.web.model.Test;
@@ -7,6 +8,7 @@ import org.perfrepo.web.model.TestExecution;
 import org.perfrepo.web.model.TestExecutionAttachment;
 import org.perfrepo.web.model.TestExecutionParameter;
 import org.perfrepo.web.model.Value;
+import org.perfrepo.web.model.ValueParameter;
 import org.perfrepo.web.model.to.SearchResultWrapper;
 import org.perfrepo.web.model.to.SingleValueResultWrapper;
 import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
@@ -53,6 +55,9 @@ public class TestExecutionServiceBean implements TestExecutionService {
 
     @Inject
     private ValueDAO valueDAO;
+
+    @Inject
+    private ValueParameterDAO valueParameterDAO;
 
     @Inject
     private TestExecutionParameterDAO testExecutionParameterDAO;
@@ -241,7 +246,14 @@ public class TestExecutionServiceBean implements TestExecutionService {
         value.setTestExecution(managedExecution);
         value.setMetric(managedMetric);
 
-        return valueDAO.create(value);
+        Value createdValue = valueDAO.create(value);
+
+        for (ValueParameter parameter: value.getParameters().values()) {
+            parameter.setValue(createdValue);
+            ValueParameter createdParameter = valueParameterDAO.create(parameter);
+        }
+
+        return createdValue;
     }
 
     @Override
@@ -289,7 +301,6 @@ public class TestExecutionServiceBean implements TestExecutionService {
         managedExecution.getTags().add(managedTag);
         managedTag.getTestExecutions().add(managedExecution);
 
-        tag = managedTag;
         return managedTag;
     }
 

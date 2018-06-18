@@ -42,6 +42,7 @@ public class TestAdapterImpl implements TestAdapter {
         //dto.setAlerts(testService); TODO: add alerts
         dto.setGroup(GroupConverter.convertFromEntityToDto(test.getGroup()));
         dto.setMetrics(MetricConverter.convertFromEntityToDto(testService.getMetricsForTest(test)));
+
         return dto;
     }
 
@@ -52,6 +53,7 @@ public class TestAdapterImpl implements TestAdapter {
         //dto.setAlerts(testService); TODO: add alerts
         dto.setGroup(GroupConverter.convertFromEntityToDto(test.getGroup()));
         dto.setMetrics(MetricConverter.convertFromEntityToDto(testService.getMetricsForTest(test)));
+
         return dto;
     }
 
@@ -59,6 +61,7 @@ public class TestAdapterImpl implements TestAdapter {
     public TestDto createTest(TestDto testDto) {
         Test testEntity = TestConverter.convertFromDtoToEntity(testDto);
         testEntity.setGroup(groupService.getGroup(testEntity.getGroup().getName()));
+        testEntity.setMetrics(MetricConverter.convertFromDtoToEntity(testDto.getMetrics()));
 
         Test createdTest = testService.createTest(testEntity);
         return TestConverter.convertFromEntityToDto(createdTest);

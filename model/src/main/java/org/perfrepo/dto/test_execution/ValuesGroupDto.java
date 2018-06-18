@@ -58,4 +58,28 @@ public class ValuesGroupDto implements Comparable<ValuesGroupDto> {
     public int compareTo(ValuesGroupDto o) {
         return metricName.compareTo(o.getMetricName());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ValuesGroupDto)) return false;
+
+        ValuesGroupDto that = (ValuesGroupDto) o;
+
+        if (getMetricName() != null ? !getMetricName().equals(that.getMetricName()) : that.getMetricName() != null)
+            return false;
+        if (getParameterNames() != null ? !getParameterNames().equals(that.getParameterNames()) : that.getParameterNames() != null)
+            return false;
+        if (getValues() != null ? !getValues().equals(that.getValues()) : that.getValues() != null) return false;
+        return getValueType() == that.getValueType();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getMetricName() != null ? getMetricName().hashCode() : 0;
+        result = 31 * result + (getParameterNames() != null ? getParameterNames().hashCode() : 0);
+        result = 31 * result + (getValues() != null ? getValues().hashCode() : 0);
+        result = 31 * result + (getValueType() != null ? getValueType().hashCode() : 0);
+        return result;
+    }
 }
