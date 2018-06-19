@@ -1,5 +1,7 @@
 package org.perfrepo.dto.test_execution;
 
+import java.util.Arrays;
+
 /**
  * Represents a attachment of a test execution.
  *
@@ -65,5 +67,27 @@ public class AttachmentDto {
 
     public void setHash(String hash) {
         this.hash = hash;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AttachmentDto)) return false;
+
+        AttachmentDto that = (AttachmentDto) o;
+
+        if (getFilename() != null ? !getFilename().equals(that.getFilename()) : that.getFilename() != null)
+            return false;
+        if (getMimeType() != null ? !getMimeType().equals(that.getMimeType()) : that.getMimeType() != null)
+            return false;
+        return Arrays.equals(getContent(), that.getContent());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getFilename() != null ? getFilename().hashCode() : 0;
+        result = 31 * result + (getMimeType() != null ? getMimeType().hashCode() : 0);
+        result = 31 * result + Arrays.hashCode(getContent());
+        return result;
     }
 }

@@ -5,10 +5,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.perfrepo.client.AbstractClientTest;
 import org.perfrepo.dto.test.TestDto;
+import org.perfrepo.dto.test_execution.AttachmentDto;
 import org.perfrepo.dto.test_execution.ParameterDto;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
 import org.perfrepo.dto.test_execution.ValuesGroupDto;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -92,5 +95,20 @@ public class TestExecutionCRUDTest extends AbstractClientTest {
         createdTestExecution = client.testExecution().get(createdTestExecution.getId());
         assertTestExecution(testExecution, createdTestExecution);
     }
+
+    @Test
+    public void testCreateWithAttachments() {
+        TestExecutionDto testExecution = createTestExecution("testExecution1", test);
+
+        List<AttachmentDto> expectedAttachments = Arrays.asList(createAttachment("attachment1"), createAttachment("attachment2"), createAttachment("attachment3"));
+        testExecution.setExecutionAttachments(expectedAttachments);
+
+        TestExecutionDto createdTestExecution = client.testExecution().create(testExecution);
+        // we must fetch the test execution again, because we want to check attachments, which are not loaded by default after creation
+        createdTestExecution = client.testExecution().get(createdTestExecution.getId());
+        assertTestExecution(testExecution, createdTestExecution);
+    }
+
+
 
 }

@@ -18,6 +18,7 @@ import org.perfrepo.enums.MetricComparator;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -124,6 +125,20 @@ public abstract class AbstractClientTest {
         return value;
     }
 
+    public static AttachmentDto createAttachment(String name) {
+        AttachmentDto attachment = new AttachmentDto();
+
+        byte[] content = new byte[10];
+        Random random = new Random();
+        random.nextBytes(content);
+        attachment.setContent(content);
+
+        attachment.setFilename("filename_" + name);
+        attachment.setMimeType("text/plain");
+
+        return attachment;
+    }
+
     /** ---------- Helper assertions ---------- **/
 
     public static void assertTestExecution(TestExecutionDto expected, TestExecutionDto actual) {
@@ -203,7 +218,7 @@ public abstract class AbstractClientTest {
 
         assertEquals(expected.size(), actual.size());
         assertTrue("Expected: " + expected + "; Actual: " + actual, expected.stream().allMatch(expectedItem -> actual.stream()
-                .anyMatch(actualItem -> assertAttachment(expectedItem, actualItem))));
+                .anyMatch(actualItem -> expectedItem.equals(actualItem))));
     }
 
     public static boolean assertAttachment(AttachmentDto expected, AttachmentDto actual) {
