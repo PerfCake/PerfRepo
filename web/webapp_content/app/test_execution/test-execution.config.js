@@ -15,6 +15,12 @@
                 resolve: {
                     _testExecution: function(testExecutionService, $stateParams) {
                         return testExecutionService.getById($stateParams.id);
+                    },
+                    _test: function(testService, testExecutionService, $stateParams) {
+                        var testExecution = testExecutionService.getById($stateParams.id);
+                        return testExecution.then(function(response) {
+                            return testService.getById(response.test.id);
+                        })
                     }
                 }
             })

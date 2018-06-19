@@ -9,12 +9,13 @@
         .module('org.perfrepo.testExecution.detail')
         .controller('DetailTestExecutionController', DetailTestExecutionController);
 
-    function DetailTestExecutionController(_testExecution, testExecutionService, comparisonSessionService,
+    function DetailTestExecutionController(_testExecution, _test, testExecutionService, comparisonSessionService,
                                            testExecutionModalService, $state, $scope, Page) {
         var vm = this;
         vm.testExecution = _testExecution;
+        vm.test = _test;
         vm.metricsName = [];
-        angular.forEach(vm.testExecution.test.metrics, function(metric) {
+        angular.forEach(vm.test.metrics, function(metric) {
             vm.metricsName.push(metric.name);
         });
 
