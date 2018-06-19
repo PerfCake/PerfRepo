@@ -21,7 +21,9 @@ public class TestExecutionHandler extends Handler {
 
     public TestExecutionDto create(TestExecutionDto testExecution) {
         String path = CONTEXT_PATH;
-        return connection.post(path, testExecution, TestExecutionDto.class);
+        String createdUri = connection.post(path, testExecution);
+
+        return get(popId(createdUri));
     }
 
     public void delete(Long id) {

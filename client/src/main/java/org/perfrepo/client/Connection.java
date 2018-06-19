@@ -80,17 +80,19 @@ public class Connection {
         return response.readEntity(clazz);
     }
 
-    public <T> T post(String path, T payload, Class<T> clazz) {
+    public <T> String post(String path, T payload) {
         Response response = createInvocationBuilder(path).post(Entity.entity(payload, MEDIA_TYPE));
 
         if (response.getStatus() == 422) {
             throw new ClientException("Validation error occurred when doing post to server. Status code: " + response.getStatus(), response.readEntity(ValidationException.class));
-        } else if (response.getStatus() != HttpURLConnection.HTTP_OK && response.getStatus() != HttpURLConnection.HTTP_CREATED) {
+        } else if (response.getStatus() == HttpURLConnection.HTTP_CREATED) {
+            return response.getHeaderString("Location");
+        } else if (response.getStatus() == HttpURLConnection.HTTP_OK) {
+          throw new UnsupportedOperationException("Not supported yet.");
+        } else {
             throw new ClientException("Error occurred when doing post to server. Status code: " + response.getStatus() + "; "
             + "Status message: " + response.readEntity(String.class));
         }
-
-        return response.readEntity(clazz);
     }
 
     public void delete(String path) {

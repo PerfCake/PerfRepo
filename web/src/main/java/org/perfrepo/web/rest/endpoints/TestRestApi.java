@@ -21,6 +21,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -84,9 +85,9 @@ public class TestRestApi {
    @POST
    public Response create(TestDto testDto) {
       TestDto createdTest = testAdapter.createTest(testDto);
-//      URI uri = URI.create("/tests/" + createdTest.getId());
+      URI uri = URI.create("/tests/" + createdTest.getId());
 
-      return Response.ok(createdTest).build();
+      return Response.created(uri).build();
    }
 
    @PUT

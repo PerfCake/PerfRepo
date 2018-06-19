@@ -21,7 +21,9 @@ public class TestHandler extends Handler {
 
     public TestDto create(TestDto test) {
         String path = CONTEXT_PATH;
-        return connection.post(path, test, TestDto.class);
+        String createdUri = connection.post(path, test);
+
+        return get(popId(createdUri));
     }
 
     public void delete(Long id) {
@@ -33,6 +35,5 @@ public class TestHandler extends Handler {
         String path = CONTEXT_PATH;
         return connection.get(path, new GenericType<List<TestDto>>() { });
     }
-
 
 }

@@ -9,4 +9,9 @@ public abstract class Handler {
     public Handler(Connection connection) {
         this.connection = connection;
     }
+
+    public static Long popId(String uri) {
+        String[] parts = uri.split("/");
+        return Long.parseLong(parts[parts.length - 1]);
+    }
 }

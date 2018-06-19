@@ -28,6 +28,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,10 +80,9 @@ public class TestExecutionRestApi {
    @POST
    public Response create(TestExecutionDto testExecutionDto) {
       TestExecutionDto createdTestExecution = testExecutionAdapter.createTestExecution(testExecutionDto);
+      URI uri = URI.create("/test-executions/" + createdTestExecution.getId());
 
-//      URI uri = URI.create("/test-executions/" + createdTestExecution.getId());
-
-      return Response.ok(createdTestExecution).build();
+      return Response.created(uri).build();
    }
 
    @PUT
