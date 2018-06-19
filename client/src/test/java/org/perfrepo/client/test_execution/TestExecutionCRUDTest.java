@@ -109,6 +109,4 @@ public class TestExecutionCRUDTest extends AbstractClientTest {
         assertTestExecution(testExecution, createdTestExecution);
     }
 
-
-
 }
