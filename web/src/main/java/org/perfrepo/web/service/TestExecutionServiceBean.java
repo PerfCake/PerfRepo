@@ -1,5 +1,12 @@
 package org.perfrepo.web.service;
 
+import org.perfrepo.web.dao.MetricDAO;
+import org.perfrepo.web.dao.TagDAO;
+import org.perfrepo.web.dao.TestDAO;
+import org.perfrepo.web.dao.TestExecutionAttachmentDAO;
+import org.perfrepo.web.dao.TestExecutionDAO;
+import org.perfrepo.web.dao.TestExecutionParameterDAO;
+import org.perfrepo.web.dao.ValueDAO;
 import org.perfrepo.web.dao.ValueParameterDAO;
 import org.perfrepo.web.model.Metric;
 import org.perfrepo.web.model.Tag;
@@ -12,13 +19,6 @@ import org.perfrepo.web.model.ValueParameter;
 import org.perfrepo.web.model.to.SearchResultWrapper;
 import org.perfrepo.web.model.to.SingleValueResultWrapper;
 import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
-import org.perfrepo.web.dao.MetricDAO;
-import org.perfrepo.web.dao.TagDAO;
-import org.perfrepo.web.dao.TestDAO;
-import org.perfrepo.web.dao.TestExecutionAttachmentDAO;
-import org.perfrepo.web.dao.TestExecutionDAO;
-import org.perfrepo.web.dao.TestExecutionParameterDAO;
-import org.perfrepo.web.dao.ValueDAO;
 import org.perfrepo.web.session.UserSession;
 
 import javax.ejb.Stateless;
@@ -114,7 +114,17 @@ public class TestExecutionServiceBean implements TestExecutionService {
 
     @Override
     public TestExecution updateTestExecution(TestExecution updatedTestExecution) {
-        return testExecutionDAO.merge(updatedTestExecution);
+        TestExecution existingExecution = testExecutionDAO.get(updatedTestExecution.getId());
+
+        existingExecution.setName(updatedTestExecution.getName());
+        existingExecution.setComment(updatedTestExecution.getComment());
+        existingExecution.setStarted(updatedTestExecution.getStarted());
+
+        Set<Tag> existingTags = new HashSet<>(existingExecution.getTags());
+        existingTags.stream().forEach(tag -> removeTagFromTestExecution(tag, existingExecution));
+        updatedTestExecution.getTags().stream().forEach(tag -> addTag(tag, existingExecution));
+
+        return existingExecution;
     }
 
     @Override
