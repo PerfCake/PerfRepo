@@ -15,7 +15,7 @@
 
         function remove() {
             testExecutionService.setExecutionValues(vm.testExecutionId, {
-                metricName: vm.executionValuesGroup,
+                metricName: vm.executionValuesGroup.metricName,
                 values: []
             }).then(function () {
                 $uibModalInstance.close();

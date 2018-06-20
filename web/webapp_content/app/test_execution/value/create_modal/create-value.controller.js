@@ -12,7 +12,6 @@
         vm.metricsName = _metricsName;
         vm.testExecutionId = _testExecutionId;
         vm.multiValue = _multiValue;
-        vm.selectedMetricName = _metricsName[0];
         vm.valueObject = {};
         vm.save = save;
         vm.cancel = cancel;

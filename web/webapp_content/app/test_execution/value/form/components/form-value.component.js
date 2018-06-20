@@ -8,7 +8,7 @@
                 valueObject: '<',
                 valuesGroups: '<',
                 metricsName: '<',
-                selectedMetricName: '<',
+                selectedMetricName: '=',
                 disableMetric: '<',
                 onSave: '&',
                 onCancel: '&'

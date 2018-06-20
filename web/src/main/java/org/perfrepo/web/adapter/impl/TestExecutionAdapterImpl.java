@@ -110,11 +110,14 @@ public class TestExecutionAdapterImpl implements TestExecutionAdapter {
         Metric metric = new Metric();
         metric.setName(valuesGroupDto.getMetricName());
 
-        List<Value> values = ValueConverter.convertFromDtoToEntity(valuesGroupDto.getValues());
-        values.stream().forEach(value -> { value.setMetric(metric); value.setTestExecution(testExecution); });
-
         // TODO this should be done with some replacement, temporal implementation
-        values.stream().forEach(value -> testExecutionService.addValue(value));
+        List<Value> currentValues = testExecutionService.getValues(metric, testExecution);
+        currentValues.stream().forEach(value -> testExecutionService.removeValue(value));
+
+        List<Value> newValues = ValueConverter.convertFromDtoToEntity(valuesGroupDto.getValues());
+        newValues.stream().forEach(value -> { value.setMetric(metric); value.setTestExecution(testExecution); });
+        newValues.stream().forEach(value -> testExecutionService.addValue(value));
+
         TestExecution updatedTestExecution = testExecutionService.getTestExecution(testExecutionId);
         return TestExecutionConverter.convertFromEntityToDto(updatedTestExecution);
     }
