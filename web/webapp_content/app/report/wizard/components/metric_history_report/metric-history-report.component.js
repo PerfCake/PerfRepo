@@ -112,7 +112,9 @@
         function baselineTestExecutionChanged(testExecutionId, chartIndex, baselineIndex) {
             vm.data.charts[chartIndex].baselines[baselineIndex].metricName = undefined;
             testExecutionService.getById(testExecutionId).then(function(testExecution) {
-                vm.testExecutionMetrics[testExecution.id] = testExecution.test.metrics;
+                testService.getById(testExecution.test.id).then(function(retrievedTest) {
+                    vm.testExecutionMetrics[testExecution.id] = retrievedTest.metrics;
+                });
             });
         }
     }

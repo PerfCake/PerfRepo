@@ -39,6 +39,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.perfrepo.web.service.reports.ReportUtils.createReportProperty;
+
 /**
  * TODO: document this and all methods
  *
@@ -77,10 +79,18 @@ public class MetricHistoryReportService {
      * @return
      */
     public MetricHistoryReportDto create(MetricHistoryReportDto reportToCreate) {
+        //TODO: handle permissions
         Report report = serialize(reportToCreate);
         Report createdReport = reportService.createReport(report);
 
         return get(createdReport.getId());
+    }
+
+    public MetricHistoryReportDto update(MetricHistoryReportDto reportToUpdate) {
+        Report report = serialize(reportToUpdate);
+        Report updatedReport = reportService.updateReport(report);
+
+        return get(updatedReport.getId());
     }
 
     public MetricHistoryReportDto get(Long id) {
@@ -105,10 +115,10 @@ public class MetricHistoryReportService {
 
         int chartIndex = 0;
         String chartPrefix = "chart" + chartIndex + ".";
-        while (properties.containsKey(chartPrefix + ".name")) {
+        while (properties.containsKey(chartPrefix + "name")) {
             ChartDto chartDto = new ChartDto();
-            chartDto.setName(properties.get(chartPrefix + ".name").getValue());
-            chartDto.setDescription(properties.get(chartPrefix + ".description").getValue());
+            chartDto.setName(properties.get(chartPrefix + "name").getValue());
+            chartDto.setDescription(properties.get(chartPrefix + "description").getValue());
 
             loadSeries(entity, chartPrefix, chartDto);
             loadBaselines(entity, chartPrefix, chartDto);
@@ -138,8 +148,8 @@ public class MetricHistoryReportService {
             baselineDto.setExecutionId(executionId);
 
             BaselineValueDto baselineValueDto = new BaselineValueDto();
-            baselineValueDto.setX1(1);
-            baselineValueDto.setX2(chartDto.getSeries().stream().mapToInt(series -> series.getValues().size()).max().getAsInt());
+            baselineValueDto.setX1(0);
+            baselineValueDto.setX2(chartDto.getSeries().stream().mapToInt(series -> series.getValues().size()).max().getAsInt() - 1); // -1 as the first position is 0 and we're counting sizes
             baselineValueDto.setExecutionId(executionId);
 
             TestExecution testExecution = new TestExecution();
@@ -163,7 +173,7 @@ public class MetricHistoryReportService {
         Map<String, ReportProperty> properties = entity.getProperties();
 
         int seriesIndex = 0;
-        String seriesPrefix = prefix + ".series" + seriesIndex + ".";
+        String seriesPrefix = prefix + "series" + seriesIndex + ".";
         while (properties.containsKey(seriesPrefix + "name")) {
             SeriesDto seriesDto = new SeriesDto();
 
@@ -183,8 +193,10 @@ public class MetricHistoryReportService {
             seriesDtos.add(seriesDto);
 
             seriesIndex++;
-            seriesPrefix = prefix + ".series" + seriesIndex + ".";
+            seriesPrefix = prefix + "series" + seriesIndex + ".";
         }
+
+        dto.setSeries(seriesDtos);
     }
 
     private List<SeriesValueDto> computeSeries(SeriesDto seriesDto) {
@@ -290,24 +302,6 @@ public class MetricHistoryReportService {
 
             createReportProperty(baselinePrefix + "execId", baseline.getExecutionId(), entity);
         }
-    }
-
-    private void createReportProperty(String name, String value, Report report) {
-        //TODO: this method doesn't deal with updating existing properties at all, probably copy the implementation from boxplot service
-        ReportProperty property = new ReportProperty();
-        property.setName(name);
-        property.setValue(value);
-        property.setReport(report);
-
-        report.getProperties().put(name, property);
-    }
-
-    private void createReportProperty(String name, Number value, Report report) {
-        createReportProperty(name, String.valueOf(value), report);
-    }
-
-    private void createReportProperty(String name, ComparisonItemSelector selector, Report report) {
-        createReportProperty(name, selector.toString(), report);
     }
 
 }
