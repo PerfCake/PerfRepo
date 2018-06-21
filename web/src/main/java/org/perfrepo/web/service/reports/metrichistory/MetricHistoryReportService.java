@@ -22,7 +22,9 @@ import org.perfrepo.web.model.report.ReportProperty;
 import org.perfrepo.web.model.to.SingleValueResultWrapper;
 import org.perfrepo.web.service.ReportService;
 import org.perfrepo.web.service.TestExecutionService;
+import org.perfrepo.web.service.UserService;
 import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
+import org.perfrepo.web.session.UserSession;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -61,6 +63,12 @@ public class MetricHistoryReportService {
 
     @Inject
     private TestExecutionService testExecutionService;
+
+    @Inject
+    private UserSession userSession;
+
+    @Inject
+    private UserService userService;
 
     /**
      * TODO: document this
@@ -228,6 +236,7 @@ public class MetricHistoryReportService {
 
     private Report serialize(MetricHistoryReportDto dto) {
         Report report = new Report();
+        report.setUser(userService.getUser(userSession.getLoggedUser().getId()));
 
         serializeBasicInfo(dto, report);
         serializeCharts(dto.getCharts(), report);
@@ -255,7 +264,7 @@ public class MetricHistoryReportService {
     }
 
     private void serializeSeries(List<SeriesDto> seriesList, String prefix, Report entity) {
-        for (int i = 0; i < 0; i++) {
+        for (int i = 0; i < seriesList.size(); i++) {
             SeriesDto series =  seriesList.get(i);
             String seriesPrefix = prefix + "series" + i + ".";
             createReportProperty(seriesPrefix + "name", series.getName(), entity);
@@ -271,7 +280,7 @@ public class MetricHistoryReportService {
     }
 
     private void serializeBaselines(List<BaselineDto> baselines, String prefix, Report entity) {
-        for (int i = 0; i < 0; i++) {
+        for (int i = 0; i < baselines.size(); i++) {
             BaselineDto baseline = baselines.get(i);
             String baselinePrefix = prefix + "baseline" + i + ".";
             createReportProperty(baselinePrefix + "name", baseline.getName(), entity);

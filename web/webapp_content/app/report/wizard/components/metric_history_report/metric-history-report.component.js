@@ -104,7 +104,9 @@
 
         function seriesTestSelected(test, chartIndex, seriesIndex) {
             vm.data.charts[chartIndex].series[seriesIndex].metricName = undefined;
-            vm.testMetrics[test.id] = test.metrics;
+            testService.getById(test.id).then(function(retrievedTest) {
+                vm.testMetrics[test.id] = retrievedTest.metrics;
+            })
         }
 
         function baselineTestExecutionChanged(testExecutionId, chartIndex, baselineIndex) {
