@@ -93,7 +93,7 @@ CREATE TABLE test_execution (
     name character varying(255) NOT NULL,
     test_id bigint NOT NULL,
     started timestamp without time zone NOT NULL
-);group
+);
 
 
 ALTER TABLE public.test_execution OWNER TO perfrepo;
