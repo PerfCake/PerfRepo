@@ -28,7 +28,7 @@ public abstract class AbstractClientTest {
 
     public static final String TEST_USERNAME = "perfrepouser";
     public static final String TEST_PASSWORD = "perfrepouser1.";
-    public static final String TEST_URL = "http://localhost:8080/rest/json";
+    public static final String TEST_URL = "http://localhost:8080";
 
     public static final String TEST_GROUP = "perfrepouser";
 

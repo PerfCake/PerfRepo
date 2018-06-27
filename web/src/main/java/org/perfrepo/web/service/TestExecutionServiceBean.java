@@ -78,7 +78,7 @@ public class TestExecutionServiceBean implements TestExecutionService {
 
     @Override
     public TestExecution createTestExecution(TestExecution testExecution) {
-        Test managedTest = testDAO.get(testExecution.getTest().getId());
+        Test managedTest = getManagedTest(testExecution.getTest());
         testExecution.setTest(managedTest);
 
         TestExecution createdExecution = testExecutionDAO.create(testExecution);
@@ -446,6 +446,22 @@ public class TestExecutionServiceBean implements TestExecutionService {
 
         if (parameter.getName() != null && parameter.getTestExecution() != null && parameter.getTestExecution().getId() != null) {
             return testExecutionParameterDAO.getParameterByNameAndExecution(parameter.getTestExecution(), parameter);
+        }
+
+        return null;
+    }
+
+    private Test getManagedTest(Test test) {
+        if (test == null) {
+            return null;
+        }
+
+        if (test.getId() != null) {
+            return testDAO.get(test.getId());
+        }
+
+        if (test.getUid() != null) {
+            return testDAO.findByUid(test.getUid());
         }
 
         return null;

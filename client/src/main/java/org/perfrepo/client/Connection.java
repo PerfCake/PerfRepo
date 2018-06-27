@@ -20,6 +20,7 @@ import java.net.UnknownHostException;
 public class Connection {
 
     private static final String MEDIA_TYPE = MediaType.APPLICATION_JSON;
+    private static final String REST_ENDPOINT = "rest/json";
 
     private final String username;
     private final String password;
@@ -33,7 +34,7 @@ public class Connection {
         this.password = password;
 
         client = ClientBuilder.newClient();
-        baseTarget = client.target(url);
+        baseTarget = client.target(url + "/" + REST_ENDPOINT);
 
         login();
     }
