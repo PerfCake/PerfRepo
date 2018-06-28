@@ -4,6 +4,7 @@ import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.service.search.ReportSearchCriteria;
 import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.service.search.TestSearchCriteria;
+import org.perfrepo.web.session.ComparisonSession;
 
 /**
  * Used for storing all information about currently logged user.
@@ -16,6 +17,7 @@ public class AuthenticatedUserInfo {
     private TestSearchCriteria testSearchCriteria;
     private TestExecutionSearchCriteria testExecutionSearchCriteria;
     private ReportSearchCriteria reportSearchCriteria;
+    private ComparisonSession comparisonSession;
 
     public User getUser() {
         return user;
@@ -47,5 +49,13 @@ public class AuthenticatedUserInfo {
 
     public void setReportSearchCriteria(ReportSearchCriteria reportSearchCriteria) {
         this.reportSearchCriteria = reportSearchCriteria;
+    }
+
+    public ComparisonSession getComparisonSession() {
+        return comparisonSession;
+    }
+
+    public void setComparisonSession(ComparisonSession comparisonSession) {
+        this.comparisonSession = comparisonSession;
     }
 }

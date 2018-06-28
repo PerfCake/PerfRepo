@@ -18,6 +18,7 @@ import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.service.search.ReportSearchCriteria;
 import org.perfrepo.web.service.search.TestExecutionSearchCriteria;
 import org.perfrepo.web.service.search.TestSearchCriteria;
+import org.perfrepo.web.session.ComparisonSession;
 import org.perfrepo.web.session.UserSession;
 
 import javax.enterprise.context.SessionScoped;
@@ -76,6 +77,16 @@ public class UserSessionMock implements UserSession, Serializable {
 
    @Override
    public void setReportSearchCriteria(ReportSearchCriteria criteria) {
+
+   }
+
+   @Override
+   public ComparisonSession getComparisonSession() {
+      return null;
+   }
+
+   @Override
+   public void setComparisonSession(ComparisonSession session) {
 
    }
 }

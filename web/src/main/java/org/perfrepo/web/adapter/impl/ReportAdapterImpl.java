@@ -5,10 +5,17 @@ import org.perfrepo.dto.report.ReportDto;
 import org.perfrepo.dto.report.ReportSearchCriteria;
 import org.perfrepo.dto.report.box_plot.BoxPlotReportDto;
 import org.perfrepo.dto.report.metric_history.MetricHistoryReportDto;
+import org.perfrepo.dto.report.table_comparison.ComparisonItemDto;
+import org.perfrepo.dto.report.table_comparison.GroupDto;
 import org.perfrepo.dto.report.table_comparison.TableComparisonReportDto;
+import org.perfrepo.dto.report.table_comparison.TableDto;
+import org.perfrepo.dto.test_execution.TestExecutionDto;
+import org.perfrepo.dto.test_execution.TestExecutionSearchCriteria;
 import org.perfrepo.dto.util.SearchResult;
+import org.perfrepo.enums.report.ComparisonItemSelector;
 import org.perfrepo.enums.report.ReportType;
 import org.perfrepo.web.adapter.ReportAdapter;
+import org.perfrepo.web.adapter.TestExecutionAdapter;
 import org.perfrepo.web.adapter.converter.PermissionConverter;
 import org.perfrepo.web.adapter.converter.ReportConverter;
 import org.perfrepo.web.adapter.converter.ReportSearchCriteriaConverter;
@@ -20,6 +27,8 @@ import org.perfrepo.web.service.reports.tablecomparison.TableComparisonReportSer
 import org.perfrepo.web.session.UserSession;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,6 +48,9 @@ public class ReportAdapterImpl implements ReportAdapter {
 
     @Inject
     private TableComparisonReportService tableComparisonReportService;
+
+    @Inject
+    private TestExecutionAdapter testExecutionAdapter;
 
     @Inject
     private UserSession userSession;
@@ -132,7 +144,40 @@ public class ReportAdapterImpl implements ReportAdapter {
 
     @Override
     public ReportDto getTableComparisonReportPreview() {
-        return null;
+        Set<Long> testExecutionIds = userSession.getComparisonSession().getTestExecutionIds();
+        TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
+        searchCriteria.setIdsFilter(testExecutionIds);
+        List<TestExecutionDto> testExecutions = testExecutionAdapter.searchTestExecutions(searchCriteria).getData();
+
+        TableComparisonReportDto reportDto = new TableComparisonReportDto();
+
+        reportDto.setName("Comparison");
+        reportDto.setTypeName(ReportType.TABLE_COMPARISON.name());
+
+        GroupDto group = new GroupDto();
+        group.setThreshold(5);
+        group.setName("Comparison group");
+
+        TableDto table = new TableDto();
+        table.setName("Comparison table");
+
+        List<ComparisonItemDto> items = new ArrayList<>();
+        for (TestExecutionDto testExecution: testExecutions) {
+            ComparisonItemDto item = new ComparisonItemDto();
+            item.setSelector(ComparisonItemSelector.TEST_EXECUTION_ID);
+            item.setAlias(testExecution.getName());
+            item.setExecutionId(testExecution.getId());
+            items.add(item);
+        }
+        table.setItems(items);
+
+        List<TableDto> tables = Arrays.asList(table);
+        group.setTables(tables);
+
+        List<GroupDto> groups = Arrays.asList(group);
+        reportDto.setGroups(groups);
+
+        return tableComparisonReportService.preview(reportDto);
     }
 
     @Override

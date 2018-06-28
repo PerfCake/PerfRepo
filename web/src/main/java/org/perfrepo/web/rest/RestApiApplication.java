@@ -26,7 +26,7 @@ public class RestApiApplication extends Application {
       classes.add(AuthenticationRestApi.class);
       classes.add(TestExecutionRestApi.class);
       classes.add(ReportRestApi.class);
-      classes.add(ComparisonSessionApi.class);
+      classes.add(ComparisonSessionRestApi.class);
       classes.add(DashboardRestApi.class);
       classes.add(GeneralRestApi.class);
       classes.add(JacksonConfig.class);

@@ -130,14 +130,25 @@ public class TableComparisonReportService {
     public TableComparisonReportDto get(Long id) {
         Report report = reportService.getReport(id); //TODO: add non existing check
         TableComparisonReportDto computedReport = loadReport(report);
+        loadPermissions(report, computedReport);
         return computedReport;
+    }
+
+    /**
+     * TODO: document this
+     *
+     * @param dto
+     * @return
+     */
+    public TableComparisonReportDto preview(TableComparisonReportDto dto) {
+        Report report = serialize(dto);
+        return loadReport(report);
     }
 
     private TableComparisonReportDto loadReport(Report report) {
         TableComparisonReportDto resultDto = new TableComparisonReportDto();
 
         loadBasicInfo(report, resultDto);
-        loadPermissions(report, resultDto);
         loadGroups(report, resultDto);
 
         return resultDto;

@@ -120,4 +120,23 @@ public class UserSessionBean implements UserSession {
    public void setReportSearchCriteria(ReportSearchCriteria criteria) {
 
    }
+
+   @Override
+   public ComparisonSession getComparisonSession() {
+      if (userInfo == null) {
+         return null;
+      }
+
+      if (userInfo.getComparisonSession() == null) {
+         ComparisonSession session = new ComparisonSession();
+         userInfo.setComparisonSession(session);
+      }
+
+      return userInfo.getComparisonSession();
+   }
+
+   @Override
+   public void setComparisonSession(ComparisonSession session) {
+
+   }
 }

@@ -20,7 +20,7 @@ import java.util.Set;
 @RequestScoped
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class ComparisonSessionApi {
+public class ComparisonSessionRestApi {
 
     @Inject
     private ComparisonSessionAdapter comparisonSessionAdapter;

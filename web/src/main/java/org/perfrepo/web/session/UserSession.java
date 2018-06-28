@@ -26,4 +26,8 @@ public interface UserSession {
 
     void setReportSearchCriteria(ReportSearchCriteria criteria);
 
+    ComparisonSession getComparisonSession();
+
+    void setComparisonSession(ComparisonSession session);
+
 }
