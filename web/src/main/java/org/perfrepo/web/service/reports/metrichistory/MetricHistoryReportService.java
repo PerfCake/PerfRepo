@@ -205,7 +205,7 @@ public class MetricHistoryReportService {
         TestExecutionSearchCriteria searchCriteria = new TestExecutionSearchCriteria();
 
         Test test = testDao.get(seriesDto.getTestId());
-        searchCriteria.setTestUIDs(Stream.of(test.getName()).collect(Collectors.toSet()));
+        searchCriteria.setTestUIDs(Stream.of(test.getUid()).collect(Collectors.toSet()));
         Metric metric = metricDAO.getByName(seriesDto.getMetricName());
 
         if (seriesDto.getFilter() == ComparisonItemSelector.PARAMETER_QUERY) {

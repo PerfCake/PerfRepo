@@ -41,7 +41,7 @@ public class ReportRestApi {
    public Response create(ReportDto reportDto) {
       ReportDto createdReport = reportAdapter.createReport(reportDto);
 
-      URI uri = URI.create("/alerts/" + createdReport.getId());
+      URI uri = URI.create("/reports/" + createdReport.getId());
 
       return Response.created(uri).build();
    }

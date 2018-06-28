@@ -145,6 +145,10 @@ public class TestExecutionDAO extends DAO<TestExecution, Long> {
       CriteriaQuery<SingleValueResultWrapper> criteriaQuery = cb.createQuery(SingleValueResultWrapper.class);
 
       List<TestExecution> testExecutions = searchTestExecutions(search).getResult();
+      if (testExecutions.isEmpty()) {
+         return new ArrayList<>();
+      }
+
       List<Long> testExecutionIds = testExecutions.stream().map(TestExecution::getId).collect(Collectors.toList());
 
       Root<TestExecution> testExecution = criteriaQuery.from(TestExecution.class);
