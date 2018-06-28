@@ -1,6 +1,7 @@
 package org.perfrepo.web.adapter;
 
 import org.perfrepo.dto.user.UserDto;
+import org.perfrepo.web.service.exceptions.IncorrectPasswordException;
 
 import java.util.List;
 
@@ -19,5 +20,5 @@ public interface UserAdapter {
 
     UserDto getUser(Long id);
 
-    UserDto updateUser(UserDto user);
+    UserDto updateUser(UserDto user) throws IncorrectPasswordException;
 }

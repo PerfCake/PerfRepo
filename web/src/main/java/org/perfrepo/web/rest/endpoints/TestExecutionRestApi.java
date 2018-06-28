@@ -118,7 +118,6 @@ public class TestExecutionRestApi {
    public Response setParameters(@PathParam("id") Long testExecutionId, Set<ParameterDto> testExecutionParameters) {
        testExecutionAdapter.setTestExecutionParameters(testExecutionId, testExecutionParameters);
 
-
        return Response.noContent().build();
    }
    /**

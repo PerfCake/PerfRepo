@@ -57,7 +57,8 @@ public class User implements Entity<User>, Comparable<User> {
    private String username;
 
    @Column(name = "password")
-   @NotNull(message = "{user.passwordRequired}")
+   // TODO: figure this out. When updating the user, we need to have the password empty
+   //   @NotNull(message = "{user.passwordRequired}")
    @Size(max = 300)
    private String password;
 

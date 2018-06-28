@@ -2,6 +2,7 @@ package org.perfrepo.web.rest.endpoints;
 
 import org.perfrepo.dto.user.UserDto;
 import org.perfrepo.web.adapter.UserAdapter;
+import org.perfrepo.web.service.exceptions.IncorrectPasswordException;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -40,7 +41,7 @@ public class UserRestApi {
     }
 
     @PUT
-    public Response update(UserDto userDto) {
+    public Response update(UserDto userDto) throws IncorrectPasswordException {
         userAdapter.updateUser(userDto);
 
         return Response.noContent().build();

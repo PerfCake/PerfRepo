@@ -100,7 +100,9 @@ public class UserServiceBean implements UserService {
          throw new UnauthorizedException("authorization.user.notAllowedToUpdateDifferentUser", userSession.getLoggedUser().getUsername());
       }
 
-      user.setPassword(computeMd5(user.getPassword()));
+      // TODO: see User.password comment
+      User currentUser = userDAO.get(user.getId());
+      user.setPassword(currentUser.getPassword());
 
       User updatedUser = userDAO.merge(user);
       return updatedUser;

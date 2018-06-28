@@ -7,8 +7,10 @@ import org.infinispan.configuration.global.GlobalConfiguration;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.perfrepo.dto.user.UserDto;
 import org.perfrepo.dto.util.authentication.AuthenticationResult;
 import org.perfrepo.dto.util.authentication.LoginCredentialParams;
+import org.perfrepo.web.adapter.converter.UserConverter;
 import org.perfrepo.web.adapter.exceptions.UnauthorizedException;
 import org.perfrepo.web.model.user.User;
 import org.perfrepo.web.service.UserService;
@@ -60,6 +62,7 @@ public class AuthenticationService {
         }
 
         User user = userService.getUser(credentials.getUsername());
+        UserDto userDto = UserConverter.convertFromEntityToDto(user);
 
         if (user == null) {
             throw new UnauthorizedException("Bad login.");
@@ -72,6 +75,7 @@ public class AuthenticationService {
             //TODO: use real token, probably JWT
             String token = credentials.getUsername();
             authenticationDto.setToken(token);
+            authenticationDto.setUser(userDto);
 
             AuthenticatedUserInfo userInfo = new AuthenticatedUserInfo();
             userInfo.setUser(user);
