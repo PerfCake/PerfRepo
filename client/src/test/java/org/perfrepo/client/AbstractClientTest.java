@@ -3,8 +3,9 @@ package org.perfrepo.client;
 import org.junit.After;
 import org.junit.Before;
 import org.perfrepo.dto.alert.AlertDto;
-import org.perfrepo.dto.group.GroupDto;
 import org.perfrepo.dto.metric.MetricDto;
+import org.perfrepo.dto.report.table_comparison.GroupDto;
+import org.perfrepo.dto.report.table_comparison.TableComparisonReportDto;
 import org.perfrepo.dto.test.TestDto;
 import org.perfrepo.dto.test_execution.AttachmentDto;
 import org.perfrepo.dto.test_execution.ParameterDto;
@@ -15,9 +16,11 @@ import org.perfrepo.dto.test_execution.ValuesGroupDto;
 import org.perfrepo.enums.MeasuredValueType;
 import org.perfrepo.enums.MetricComparator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -41,6 +44,8 @@ public abstract class AbstractClientTest {
 
     @After
     public void cleanup() {
+        client.report().getAll().stream()
+                .forEach(report -> client.report().delete(report.getId()));
         client.testExecution().getAll().stream()
                 .forEach(testExecution -> client.testExecution().delete(testExecution.getId()));
         client.test().getAll().stream()
@@ -48,6 +53,22 @@ public abstract class AbstractClientTest {
     }
 
     /** ---------- Helper methods for entity creation ------------ **/
+
+    public static TableComparisonReportDto createTableComparisonReport(String name) {
+        TableComparisonReportDto report = new TableComparisonReportDto();
+        report.setName("name_" + name);
+        report.setDescription("description_" + name);
+
+        List<GroupDto> groups = new ArrayList<>();
+        GroupDto group = new GroupDto();
+        group.setName("table_name_" + name);
+        group.setDescription("table_description_" + name);
+
+        groups.add(group);
+        report.setGroups(groups);
+
+        return report;
+    }
 
     public static TestExecutionDto createTestExecution(String name, TestDto test) {
         TestExecutionDto testExecution = new TestExecutionDto();
@@ -62,7 +83,7 @@ public abstract class AbstractClientTest {
         test.setName("name_" + name);
         test.setUid("uid_" + name);
 
-        GroupDto groupDto = new GroupDto();
+        org.perfrepo.dto.group.GroupDto groupDto = new org.perfrepo.dto.group.GroupDto();
         groupDto.setName(TEST_GROUP);
         test.setGroup(groupDto);
 
@@ -166,7 +187,7 @@ public abstract class AbstractClientTest {
         assertMetrics(expected.getMetrics(), actual.getMetrics());
     }
 
-    public static void assertGroup(GroupDto expected, GroupDto actual) {
+    public static void assertGroup(org.perfrepo.dto.group.GroupDto expected, org.perfrepo.dto.group.GroupDto actual) {
         if (areBothNull(expected, actual)) return;
 
         assertEquals(expected.getName(), actual.getName());
