@@ -384,7 +384,7 @@ public class TableComparisonReportService {
         if (difference > threshold) {
             return CellStyle.GOOD;
         }
-        if (difference < threshold) {
+        if (-difference > threshold) {
             return CellStyle.BAD;
         }
         return CellStyle.NEUTRAL;
