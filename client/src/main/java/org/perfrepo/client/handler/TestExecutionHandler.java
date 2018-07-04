@@ -2,6 +2,7 @@ package org.perfrepo.client.handler;
 
 import org.perfrepo.client.Connection;
 import org.perfrepo.dto.test_execution.TestExecutionDto;
+import org.perfrepo.dto.test_execution.TestExecutionSearchCriteria;
 
 import javax.ws.rs.core.GenericType;
 import java.util.List;
@@ -36,5 +37,9 @@ public class TestExecutionHandler extends Handler {
         return connection.get(path, new GenericType<List<TestExecutionDto>>() { });
     }
 
+    public List<TestExecutionDto> search(TestExecutionSearchCriteria searchCriteria) {
+        String path = CONTEXT_PATH + "search";
+        return connection.post(path, searchCriteria, new GenericType<List<TestExecutionDto>>() { });
+    }
 
 }

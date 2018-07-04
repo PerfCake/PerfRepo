@@ -171,6 +171,12 @@ public class TestDAO extends DAO<Test, Long> {
     */
    private void setOrderBy(CriteriaQuery criteria, OrderBy orderBy, Root root) {
       CriteriaBuilder cb = criteriaBuilder();
+      Order defaultOrder = cb.asc(root.get("name"));
+
+      if (orderBy == null) {
+         criteria.orderBy(defaultOrder);
+         return;
+      }
 
       Order order;
       switch (orderBy) {
@@ -193,7 +199,7 @@ public class TestDAO extends DAO<Test, Long> {
             order = cb.desc(root.get("groupId"));
             break;
          default:
-            order = cb.asc(root.get("name"));
+            order = defaultOrder;
       }
 
       criteria.orderBy(order);

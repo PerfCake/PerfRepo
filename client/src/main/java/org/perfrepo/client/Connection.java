@@ -96,6 +96,11 @@ public class Connection {
         }
     }
 
+    public <T, K> K post(String path, T payload, GenericType<K> clazz) {
+        Response response = createInvocationBuilder(path).post(Entity.entity(payload, MEDIA_TYPE));
+        return response.readEntity(clazz);
+    }
+
     public void delete(String path) {
         Response response = createInvocationBuilder(path).delete();
 

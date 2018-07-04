@@ -1,5 +1,6 @@
 package org.perfrepo.dto.report.table_comparison;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public class GroupDto {
 
     private int threshold;
 
-    private List<TableDto> tables;
+    private List<TableDto> tables = new ArrayList<>();
 
     public String getName() {
         return name;
