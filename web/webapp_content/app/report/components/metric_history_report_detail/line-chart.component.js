@@ -72,7 +72,7 @@
                     tickFormat: function(d){
                         return d3.format('.0f')(d);
                     },
-                    axisLabelDistance: -10
+                    axisLabelDistance: 18
                 },
                 lines: {
                     dispatch: {
