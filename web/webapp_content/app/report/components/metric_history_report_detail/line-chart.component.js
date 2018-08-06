@@ -56,7 +56,7 @@
                     top: 40,
                     right: 20,
                     bottom: 40,
-                    left: 55
+                    left: 95
                 },
                 x: function(d){ return d.x; },
                 y: function(d){ return d.y; },
@@ -70,7 +70,7 @@
                 yAxis: {
                     axisLabel: "Metric value",
                     tickFormat: function(d){
-                        return d3.format('.02f')(d);
+                        return d3.format('.0f')(d);
                     },
                     axisLabelDistance: -10
                 },
