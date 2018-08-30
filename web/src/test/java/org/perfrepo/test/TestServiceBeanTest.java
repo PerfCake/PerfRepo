@@ -14,6 +14,19 @@
  */
 package org.perfrepo.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.security.PrivilegedAction;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import javax.ejb.EJBException;
+import javax.inject.Inject;
+import javax.security.auth.Subject;
+import javax.security.auth.login.LoginContext;
+
 import org.apache.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -23,26 +36,24 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
+import org.perfrepo.model.Alert;
 import org.perfrepo.model.Metric;
 import org.perfrepo.model.MetricComparator;
 import org.perfrepo.model.Test;
+import org.perfrepo.model.TestExecution;
+import org.perfrepo.model.Value;
 import org.perfrepo.model.builder.TestBuilder;
-import org.perfrepo.model.to.TestExecutionSearchTO;
+import org.perfrepo.model.builder.TestExecutionBuilder;
+import org.perfrepo.web.alerting.ConditionChecker;
+import org.perfrepo.web.controller.TestController;
 import org.perfrepo.web.dao.DAO;
 import org.perfrepo.web.security.Secured;
 import org.perfrepo.web.service.TestService;
 import org.perfrepo.web.service.TestServiceBean;
 import org.perfrepo.web.service.exceptions.ServiceException;
 import org.perfrepo.web.session.TEComparatorSession;
-
-import javax.ejb.EJBException;
-import javax.inject.Inject;
-import javax.security.auth.Subject;
-import javax.security.auth.login.LoginContext;
-import java.security.PrivilegedAction;
-import java.util.concurrent.Callable;
+import org.perfrepo.web.util.MultiValue;
 
 /**
  * Tests for {@link TestServiceBean}
@@ -50,28 +61,30 @@ import java.util.concurrent.Callable;
  * @author Michal Linhard (mlinhard@redhat.com)
  */
 @RunWith(Arquillian.class)
-@Ignore
 public class TestServiceBeanTest {
 
    private static final Logger log = Logger.getLogger(TestServiceBeanTest.class);
 
-   private static String testUserRole = System.getProperty("perfrepo.test.role", "testuser");
+   private static String testUserRole = System.getProperty("perfrepo.test.role", "perfrepouser");
 
    @Deployment
    public static Archive<?> createDeployment() {
       WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
-      war.addPackage(DAO.class.getPackage());
-      war.addPackage(TestService.class.getPackage());
+      war.addPackages(true, Alert.class.getPackage());
+      war.addPackages(true, TestService.class.getPackage());
+      war.addPackages(true, TestController.class.getPackage());
       war.addPackage(Secured.class.getPackage());
       war.addPackage(TEComparatorSession.class.getPackage());
-      war.addPackage(Test.class.getPackage());
-      war.addPackage(TestBuilder.class.getPackage());
-      war.addPackage(TestExecutionSearchTO.class.getPackage());
       war.addPackage(JBossLoginContextFactory.class.getPackage());
+      war.addPackage(ConditionChecker.class.getPackage());
+      war.addPackage(MultiValue.class.getPackage());
+      war.addPackage(DAO.class.getPackage());
+      war.addPackages(true, Alert.class.getPackage());
+      war.addAsLibrary(new File("target/test-libs/antlr-runtime.jar"));
+      war.addAsLibrary(new File("target/test-libs/maven-artifact.jar"));
       war.addAsResource("test-persistence.xml", "META-INF/persistence.xml");
       war.addAsResource("users.properties");
       war.addAsResource("roles.properties");
-      war.addAsWebInfResource("test-jbossas-ds.xml");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
       return war;
    }
@@ -192,7 +205,7 @@ public class TestServiceBeanTest {
          public Void call() throws Exception {
             assert testService.getAllFullTests().isEmpty();
             Test test = testService.createTest(test("test1").metric("metric1", "desc").metric("metric2", "desc").build());
-            testService.addMetric(test, Metric.builder().name("metric3").description("metric 3").build());
+            testService.addMetric(test, Metric.builder().name("metric3").description("metric 3").comparator(MetricComparator.HB).build());
             assert testService.getAllFullTests().size() == 1;
             return null;
          }
@@ -207,7 +220,7 @@ public class TestServiceBeanTest {
             assert testService.getAllFullTests().isEmpty();
             Test createdTest = testService.createTest(test("test1").metric("A", "desc").build());
             try {
-               testService.addMetric(createdTest, Metric.builder().name("A").description("desc").build());
+               testService.addMetric(createdTest, Metric.builder().name("A").description("desc").comparator(MetricComparator.HB).build());
                assert false;
             } catch (ServiceException e) {
                // ok
@@ -246,7 +259,7 @@ public class TestServiceBeanTest {
             testService.createTest(test("test1").metric("A", "desc").build());
             Test test2 = testService.createTest(test("test2").metric("B", "desc").build());
             try {
-               testService.addMetric(test2, Metric.builder().name("A").description("desc").build());
+               testService.addMetric(test2, Metric.builder().name("A").description("desc").comparator(MetricComparator.HB).build());
                assert false;
             } catch (ServiceException e) {
                // ok

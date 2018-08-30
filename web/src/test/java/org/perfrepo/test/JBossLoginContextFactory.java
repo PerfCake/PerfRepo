@@ -111,7 +111,7 @@ public class JBossLoginContextFactory {
     * @return the configured LoginContext.
     */
    public static LoginContext createLoginContext(final String username, final String password) throws LoginException {
-      final String configurationName = "Arquillian Testing";
+      final String configurationName = "Arquillian-Testing";
 
       CallbackHandler cbh = new JBossLoginContextFactory.NamePasswordCallbackHandler(username, password);
       Configuration config = new JBossJaasConfiguration(configurationName);
