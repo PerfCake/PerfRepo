@@ -19,7 +19,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.security.PrivilegedAction;
-import java.util.List;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
 import java.util.concurrent.Callable;
 
 import javax.ejb.EJBException;
@@ -143,6 +146,15 @@ public class TestServiceBeanTest {
    protected TestBuilder test(String nameAndUid) {
       return Test.builder().name(nameAndUid).groupId(testUserRole).uid(nameAndUid).description("description for " + nameAndUid);
    }
+   
+   protected TestExecutionBuilder testExec(String nameAndUid, boolean createTest) throws Exception {
+      if (createTest) {
+         testService.createTest(test(nameAndUid).description("test test").metric("metric1", MetricComparator.HB, "").build());
+      }
+      //test must exists otherwise it will fail anyway
+      Test test = testService.getTestByUID(nameAndUid);
+      return TestExecution.builder().name(nameAndUid).testId(test.getId()).started(Date.from(Instant.now())).tag("tag");
+   }
 
    @org.junit.Test
    public void testCreateDeleteTest() throws Exception {
@@ -265,6 +277,36 @@ public class TestServiceBeanTest {
                // ok
             }
             assert testService.getAllFullTests().size() == 1;
+            return null;
+         }
+      });
+   }
+   
+   @org.junit.Test //PERFREPO-273
+   public void testUpdateTestExecutionValue() throws Exception {
+      asUser(testUserRole, new Callable<Void>() {
+         @Override
+         public Void call() throws Exception {
+            assertTrue(testService.getAllFullTests().isEmpty());
+            testService.createTestExecution(testExec("test1", true).value("metric1", 100.0).build());
+            Collection<TestExecution> execs = testService.getTestExecutions(Arrays.asList("tag"), Arrays.asList("test1"));
+            assertEquals(1, execs.size());
+            TestExecution te = execs.iterator().next();
+            Collection<Value> values = te.getValues();
+            assertEquals(1, values.size());
+            Value val = values.iterator().next();
+            assertEquals(100.0, val.getResultValue().doubleValue(), 0.001);
+            
+            TestExecution newTe = te.clone();
+            Value newVal = val.clone();
+            newVal.setResultValue(200.0);
+            newTe.setValues(Arrays.asList(newVal));
+            testService.updateTestExecution(newTe);
+            execs = testService.getTestExecutions(Arrays.asList("tag"), Arrays.asList("test1"));
+            assertEquals(1, execs.size());
+            values = execs.iterator().next().getValues();
+            assertEquals(1, values.size());
+            assertEquals(200.0, values.iterator().next().getResultValue().doubleValue(), 0.001);
             return null;
          }
       });
