@@ -123,7 +123,14 @@ Also you have to add test datasource `PerfRepoTestDS`into the WildFly, ideally p
                 </datasource>
 ```
 
-
-
-
-
+For testing session bean, authentication is require and thus you have to also add appropriate security domain:
+```xml
+                <security-domain name="Arquillian-Testing" cache-type="default">
+                    <authentication>
+                        <login-module code="UsersRoles" flag="required">
+                            <module-option name="usersProperties" value="users.properties"/>
+                            <module-option name="rolesProperties" value="roles.properties"/>
+                        </login-module>
+                    </authentication>
+                </security-domain>
+```

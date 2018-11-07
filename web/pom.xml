@@ -294,6 +294,26 @@
                </execution>
             </executions>
          </plugin>
+         
+         <!-- for tests -->
+         <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-test-libs</id>
+                        <phase>process-test-resources</phase>
+                        <configuration>
+                            <includeScope>test</includeScope>
+                            <outputDirectory>${project.build.directory}/test-libs</outputDirectory>
+                            <stripVersion>true</stripVersion>
+                        </configuration>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
       </plugins>
 
